@@ -6,11 +6,6 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
-dist/
-.env
-.env.*
-.DS_Store
-
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
@@ -45,6 +40,10 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+dist/
+.env
+.env.*
+.DS_Store
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
