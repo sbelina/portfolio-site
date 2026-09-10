@@ -1,0 +1,15 @@
+{
+  "name": "Producing Curiosity — Sami Belina",
+  "short_name": "Producing Curiosity",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#151614",
+  "theme_color": "#151614",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
