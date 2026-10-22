@@ -21,6 +21,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   const shellRef = useRef<HTMLElement>(null)
   const lockRef = useRef(false)
   const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const timersRef = useRef<Set<number>>(new Set())
   const [phase, setPhase] = useState<Phase>('question')
   const [revealed, setRevealed] = useState(false)
   const [step, setStep] = useState(0)
@@ -35,7 +36,21 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     [],
   )
 
+  const clearTimers = useCallback(() => {
+    timersRef.current.forEach((timer) => window.clearTimeout(timer))
+    timersRef.current.clear()
+  }, [])
+
+  const schedule = useCallback((callback: () => void, delay: number) => {
+    const timer = window.setTimeout(() => {
+      timersRef.current.delete(timer)
+      callback()
+    }, delay)
+    timersRef.current.add(timer)
+  }, [])
+
   const reset = useCallback(() => {
+    clearTimers()
     window.scrollTo({ top: 0, behavior: 'auto' })
     setPhase('question')
     setRevealed(false)
@@ -45,10 +60,13 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     setStatus('')
     setDiveProgress(0)
     lockRef.current = false
-    window.setTimeout(() => setRevealed(true), 680)
-  }, [])
+    schedule(() => setRevealed(true), reducedMotion ? 0 : 680)
+  }, [clearTimers, reducedMotion, schedule])
 
-  useEffect(() => reset(), [forceReplayKey, reset])
+  useEffect(() => {
+    reset()
+    return clearTimers
+  }, [forceReplayKey, reset, clearTimers])
 
   const advanceAttempt = useCallback(
     (nextVector = { x: 0.12, y: -1 }) => {
@@ -63,7 +81,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
 
       if (nextAttempt < 3) {
         setStatus(nextAttempt === 1 ? 'The surface yields in that direction, then returns.' : 'The surface yields farther, then returns.')
-        window.setTimeout(() => {
+        schedule(() => {
           setEffect('idle')
           lockRef.current = false
         }, reducedMotion ? 180 : 720)
@@ -71,7 +89,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       }
 
       setStatus(step === 2 ? 'Pattern recognized. The page opens.' : 'The boundary opens. The next step appears.')
-      window.setTimeout(() => {
+      schedule(() => {
         const nextStep = step + 1
         setStep(nextStep)
         setAttempt(0)
@@ -80,11 +98,13 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
         lockRef.current = false
       }, reducedMotion ? 220 : 820)
     },
-    [attempt, phase, reducedMotion, step],
+    [attempt, phase, reducedMotion, step, schedule],
   )
 
   useEffect(() => {
     if (phase !== 'steps' || step >= 3) return
+    const shell = shellRef.current
+    if (!shell) return
 
     const onWheel = (event: WheelEvent) => {
       if (Math.abs(event.deltaY) < 8 && Math.abs(event.deltaX) < 8) return
@@ -99,7 +119,8 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!['ArrowDown', 'PageDown', ' ', 'End'].includes(event.key)) return
       const target = event.target as HTMLElement | null
-      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
+      if (event.altKey || event.ctrlKey || event.metaKey ||
+        target?.closest('a, button, input, textarea, select, [contenteditable="true"]')) return
       event.preventDefault()
       advanceAttempt({ x: 0.16, y: -1 })
     }
@@ -122,16 +143,16 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       advanceAttempt({ x: clamp(dx / magnitude, -1, 1), y: clamp(dy / magnitude, -1, 1) })
     }
 
-    window.addEventListener('wheel', onWheel, { passive: false })
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchend', onTouchEnd, { passive: false })
+    shell.addEventListener('wheel', onWheel, { passive: false })
+    shell.addEventListener('keydown', onKeyDown)
+    shell.addEventListener('touchstart', onTouchStart, { passive: true })
+    shell.addEventListener('touchend', onTouchEnd, { passive: false })
 
     return () => {
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchend', onTouchEnd)
+      shell.removeEventListener('wheel', onWheel)
+      shell.removeEventListener('keydown', onKeyDown)
+      shell.removeEventListener('touchstart', onTouchStart)
+      shell.removeEventListener('touchend', onTouchEnd)
     }
   }, [advanceAttempt, phase, step])
 
@@ -159,15 +180,8 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   }
 
   const skip = () => {
-    setPhase('dive')
-    setStep(3)
-    setStatus('Introduction skipped.')
-    requestAnimationFrame(() => {
-      const shell = shellRef.current
-      if (!shell) return
-      window.scrollTo({ top: shell.offsetTop + shell.offsetHeight, behavior: reducedMotion ? 'auto' : 'smooth' })
-      onComplete()
-    })
+    clearTimers()
+    onComplete()
   }
 
   const dive = () => {

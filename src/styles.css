@@ -46,6 +46,16 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 }
 
 /* INTRO ------------------------------------------------------------ */
+.main-skip-link {
+  display: block;
+  width: max-content;
+  max-width: calc(100% - 2rem);
+  margin: .75rem 1rem .75rem auto;
+  padding: .75rem 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
 .intro-shell { position: relative; background: #0b0c0b; color: #f5f1e6; }
 .intro-shell--locked { height: 100vh; overflow: hidden; }
 /* Sticky stage remains pinned for ~2.5 viewport-heights of actual scrolling. */
@@ -100,8 +110,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   font-weight: 520;
 }
 .question {
-  opacity: 0;
-  filter: blur(7px);
+  opacity: .75;
+  filter: none;
   transform: translateY(4px);
   transition: opacity 760ms ease, filter 900ms ease, transform 900ms ease;
 }
