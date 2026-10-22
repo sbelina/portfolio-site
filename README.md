@@ -2,6 +2,12 @@
 
 React + TypeScript + Vite prototype for Sami Belina's portfolio, prepared for a GitHub → Cloudflare Pages deployment.
 
+## Codex development context
+
+Start with [AGENTS.md](AGENTS.md) and the [Codex context index](docs/codex/README.md). The handoff includes the product direction, full researched IA/backend brief, implementation work packages, evidence rules, open decisions, and a [copy-ready first task](docs/codex/START-CODEX.md).
+
+These documents describe proposed multi-page architecture and an expandable private authoring/publishing workflow. They do not mean a router, CMS, database, or publishing backend is already installed. Preserve the distinction between current implementation and target behavior.
+
 ## v0.5 changes
 
 - Deployment-safe repository root with `.gitignore` and Node 22 pinning
@@ -94,3 +100,4 @@ See `DEPLOY.md` for the browser-first GitHub → Cloudflare Pages setup. No comm
 The generated `package-lock.json` is committed. Use Node 22 and `npm ci` for repeatable installs. Run `npm test` for production-build browser and automated accessibility checks; see `DEPLOY.md` for browser installation and preview instructions.
 
 The observed Cloudflare deployment is a Worker, not Pages. See [the audit](docs/AUDIT.md), [intro states](docs/INTRO-STATES.md), [proposed Content Studio and roadmap](docs/CONTENT-ARCHITECTURE.md), and [keyboard research brief](docs/KEYBOARD-RESEARCH.md). Architecture and content migration remain subject to owner approval.
+
