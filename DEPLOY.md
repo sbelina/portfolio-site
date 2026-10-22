@@ -73,3 +73,11 @@ Add `www.producingcuriosity.com` and, once active, configure its canonical redir
 Before release, record the current Worker version/build ID, Git SHA, domain/route values and DNS settings; verify the selected prior version actually serves the working compiled site. Preserve the current content and assets separately before any migration. Never include private snapshots in the public repo.
 
 If a release fails, use Cloudflare's version/deployment history to restore the recorded known-good Worker version where available, or redeploy the exact known-good compiled artifact. Verify HTML, JS/CSS, mount, links and intro bypass again. Roll back source with a reviewed revert PR rather than rewriting main history. A routing change can be restored from recorded settings if necessary, but the known broken GitHub origin is not a working application rollback. No production version was changed during this audit, so no rollback was executed.
+
+## Authorized GitHub Pages release path
+
+Sam subsequently requested completion and publication. The domain still routes to GitHub Pages; the separate Cloudflare check failed without exposing its build log. To repair the existing domain without inventing Cloudflare configuration, the workflow now publishes Vite's compiled `dist` to the existing GitHub Pages site after build/browser checks. PRs run checks only; deployment runs on pushes to main. The repository Pages setting must use `build_type: workflow`, retaining the existing `producingcuriosity.com` custom domain.
+
+This is a supported release path using the existing GitHub Pages origin, not a Cloudflare routing change or evidence that the failed Worker branch build has been repaired. The working workers.dev deployment remains available separately. Do not change Cloudflare origin/DNS settings concurrently with this release without rechecking which host serves the domain.
+
+Before merging, verify the latest exact PR commit's GitHub checks, record Pages settings and working Worker version, and check the new build artifact contains only `dist`. After merging, confirm the deploy job succeeds and inspect both public HTML and JavaScript MIME/mounting in a fresh browser. Keep the Cloudflare build-log request and outstanding human accessibility checks recorded separately; publication does not establish complete WCAG compliance or Emergent feature parity.

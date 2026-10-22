@@ -56,6 +56,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   background: var(--paper);
   color: var(--ink);
 }
+.project-content { min-width: 0; overflow-wrap: anywhere; }
 .intro-shell { position: relative; background: #0b0c0b; color: #f5f1e6; }
 .intro-shell--locked { height: 100vh; overflow: hidden; }
 /* Sticky stage remains pinned for ~2.5 viewport-heights of actual scrolling. */

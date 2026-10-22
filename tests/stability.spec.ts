@@ -182,3 +182,25 @@ test('touch gestures retain the authored resistance sequence', async ({ browser 
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
   await context.close()
 })
+
+test('expanded text spacing preserves access and reflow', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.setViewportSize({ width: 320, height: 720 })
+  await page.goto('/')
+  await page.addStyleTag({ content: '* { line-height: 1.5 !important; letter-spacing: .12em !important; word-spacing: .16em !important; } p { margin-bottom: 2em !important; }' })
+  await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Contact' }).click()
+  await expect(page.locator('#contact')).toBeInViewport()
+  await page.getByRole('link', { name: 'hello@sbelina.com' }).scrollIntoViewIfNeeded()
+  await expect(page.getByRole('link', { name: 'hello@sbelina.com' })).toBeInViewport()
+})
+
+test('graph layer and selected-state accessibility', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  await page.getByRole('button', { name: '+ archive', exact: true }).click()
+  await page.getByRole('button', { name: 'tag: #systems. Select to trace connections.', exact: true }).click()
+  const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
+  expect(result.violations).toEqual([])
+})
