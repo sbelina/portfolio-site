@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Editorial planning inventory; not a deployment allowlist or an authentication mechanism.",
+  "sourceCommit": "abaa9a9aa28dfc665f8b34816559209c797114b8",
+  "approvalPolicy": "Only Sam approves an exact candidate revision; approval and publication are separate actions.",
+  "pages": [
+    {
+      "id": "page-home",
+      "title": "Home",
+      "kind": "landing",
+      "proposedUrl": "/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-investigations",
+      "title": "Investigations",
+      "kind": "landing",
+      "proposedUrl": "/investigations/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-patterns",
+      "title": "Patterns",
+      "kind": "landing",
+      "proposedUrl": "/patterns/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-perspective",
+      "title": "Perspective",
+      "kind": "landing",
+      "proposedUrl": "/perspective/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-about",
+      "title": "About / contact",
+      "kind": "landing",
+      "proposedUrl": "/about/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-archive",
+      "title": "Archive",
+      "kind": "landing",
+      "proposedUrl": "/archive/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "page-map",
+      "title": "Constellation map (optional)",
+      "kind": "landing",
+      "proposedUrl": "/map/",
+      "contentAvailability": "existing_sections_require_page_draft",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "claims-operations",
+      "title": "Move feedback points upstream.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/claims-operations/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "brand-research",
+      "title": "A survey has two users. I argued for the respondent.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/brand-research/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "enterprise-ai",
+      "title": "A decision model became the team structure.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/enterprise-ai/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "documentation-recovery",
+      "title": "Each revision absorbed a defect the last one missed.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/documentation-recovery/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "civic-service",
+      "title": "What looked like apathy was administrative friction.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/civic-service/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "accessibility-ai",
+      "title": "Automated validation passed. Real-world use still failed.",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/accessibility-ai/",
+      "contentAvailability": "prototype_summary",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "pattern-delivered-not-complete",
+      "title": "Delivered ≠ Complete",
+      "kind": "pattern",
+      "proposedUrl": "/patterns/delivered-not-complete/",
+      "contentAvailability": "concept_only",
+      "reviewStatus": "needs_page_draft",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": null
+    },
+    {
+      "id": "the-bends",
+      "title": "A Spotlight on The Bends",
+      "kind": "writing",
+      "proposedUrl": "/notes/the-bends/",
+      "contentAvailability": "excerpt_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/the-bends.md"
+    },
+    {
+      "id": "calculus-of-syntax",
+      "title": "The Calculus of Syntax",
+      "kind": "writing",
+      "proposedUrl": "/perspective/calculus-of-syntax/",
+      "contentAvailability": "excerpt_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/calculus-of-syntax.md"
+    },
+    {
+      "id": "conjunction-conjecture",
+      "title": "Conjunction Conjecture",
+      "kind": "writing",
+      "proposedUrl": "/perspective/conjunction-conjecture/",
+      "contentAvailability": "excerpt_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/conjunction-conjecture.md"
+    },
+    {
+      "id": "tool-vs-toy",
+      "title": "AI: A Tool vs. A Toy",
+      "kind": "writing",
+      "proposedUrl": "/perspective/tool-vs-toy/",
+      "contentAvailability": "excerpt_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/tool-vs-toy.md"
+    },
+    {
+      "id": "mundane-evidence",
+      "title": "The mundane is evidence.",
+      "kind": "writing",
+      "proposedUrl": "/notes/mundane-evidence/",
+      "contentAvailability": "excerpt_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/mundane-evidence.md"
+    },
+    {
+      "id": "archive-wage",
+      "title": "The Evolution of the Federal Minimum Wage",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-wage.md"
+    },
+    {
+      "id": "archive-dead-internet",
+      "title": "The Dead Internet Theory",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-dead-internet.md"
+    },
+    {
+      "id": "archive-hive-mind",
+      "title": "The Singularity: Humanity’s Ascent to a Hive Mind",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-hive-mind.md"
+    },
+    {
+      "id": "archive-mourning-coffee",
+      "title": "Mourning Coffee",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-mourning-coffee.md"
+    },
+    {
+      "id": "archive-bridge",
+      "title": "Ego eram, ultra pontem.",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-bridge.md"
+    },
+    {
+      "id": "archive-left",
+      "title": "What’s left?",
+      "kind": "writing",
+      "proposedUrl": null,
+      "contentAvailability": "description_only",
+      "reviewStatus": "needs_manuscript",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "writing/review/archive-left.md"
+    }
+  ]
+}

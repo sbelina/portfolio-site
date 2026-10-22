@@ -16,6 +16,10 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 Existing context remains important: [content architecture proposal](../CONTENT-ARCHITECTURE.md), [intro states](../INTRO-STATES.md), [keyboard investigation](../KEYBOARD-RESEARCH.md), [audit](../AUDIT.md), [release notes](../RELEASE.md), and [deployment instructions](../../DEPLOY.md).
 
+## Writing and page review
+
+Open the [writing review folder](../../writing/README.md), [page review list](PAGE-REVIEW.md), and [workflow specification](WRITING-REVIEW-WORKFLOW.md). Eleven existing excerpts/descriptions have review records; full manuscripts remain to be supplied through private content storage. Approval and publication are separate, and the current documents do not implement CMS controls.
+
 ## Status and authority
 
 Prepared 22 October 2026 against main commit `0fb948124a5f02455818f10bbbdc53d2fafbe6b4` (tree `562fe5f2c8f2f23bd32e173a48064ff5a7485218`). Reinspect before implementation. The live domain was not retested as part of this documentation handoff.
