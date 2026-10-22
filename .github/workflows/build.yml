@@ -29,6 +29,9 @@ jobs:
     - name: Run build
       run: npm run build
 
+    - name: Validate Worker deployment packaging
+      run: npm run check:deploy
+
     - name: Install Chromium
       run: npx playwright install --with-deps chromium
 
@@ -44,27 +47,3 @@ jobs:
           playwright-report/
           test-results/
         retention-days: 14
-
-    - name: Upload compiled site for GitHub Pages
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: dist
-
-  deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    concurrency:
-      group: github-pages
-      cancel-in-progress: false
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy compiled site
-        id: deployment
-        uses: actions/deploy-pages@v4

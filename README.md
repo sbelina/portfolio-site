@@ -15,12 +15,12 @@ React + TypeScript + Vite prototype for Sami Belina's portfolio, prepared for a 
 ## What this version contains
 
 ### Required intro
-- Once-per-session interaction using `sessionStorage`
-- Delayed **how does one produce curiosity?** opening with the `?` as a real button
+- First-visit interaction remembered across browser sessions using `localStorage`, with a replay option
+- Delayed **how does one produce curiosity?** opening with the entire phrase as a real button
 - Steps 1–3 use a three-intent rhythm: two yielding failures, then a slight magnification and breakthrough
-- Directional movement follows wheel/trackpad, touch-swipe, or keyboard intent
+- Directional movement follows desktop clicks/drags, wheel/trackpad, touch-swipe, or keyboard intent
 - Geometry-led temporal echoes inspired by Austin Malerba's Element Mirror work, implemented locally for portability
-- Step 4 **dive in** opens roughly 2.5 screens of actual scroll before the index
+- Step 4 **dive in** pauses for 2.2 seconds, then moves automatically through a short expanding passage into the index
 - Reduced-motion behavior, skip control, live-region announcements, and a focusable non-gesture route
 - Footer **Replay introduction** control
 

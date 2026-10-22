@@ -9,6 +9,7 @@ function shouldShowIntro() {
   try {
     return !window.location.hash &&
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      localStorage.getItem(SESSION_KEY) !== 'true' &&
       sessionStorage.getItem(SESSION_KEY) !== 'true'
   } catch {
     // Storage and motion preferences are enhancements, never prerequisites.
@@ -35,11 +36,20 @@ export default function App() {
 
   const completeIntro = useCallback(() => {
     try {
-      sessionStorage.setItem(SESSION_KEY, 'true')
+      localStorage.setItem(SESSION_KEY, 'true')
     } catch {
       // Keep the current visit usable even when storage is unavailable or full.
     }
     setShowIntro(false)
+  }, [])
+
+  useEffect(() => {
+    try {
+      // Remember the visit, including reduced-motion and legacy-session visits.
+      localStorage.setItem(SESSION_KEY, 'true')
+    } catch {
+      // Access to the site does not depend on browser storage.
+    }
   }, [])
 
   useEffect(() => {
@@ -55,7 +65,7 @@ export default function App() {
   const replayIntro = () => {
     setShowIntro(true)
     setReplayKey((value) => value + 1)
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const selectTag = (tag: string) => {

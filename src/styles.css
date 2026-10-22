@@ -59,8 +59,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .project-content { min-width: 0; overflow-wrap: anywhere; }
 .intro-shell { position: relative; background: #0b0c0b; color: #f5f1e6; }
 .intro-shell--locked { height: 100vh; overflow: hidden; }
-/* Sticky stage remains pinned for ~2.5 viewport-heights of actual scrolling. */
-.intro-shell--dive { height: 350vh; }
+/* A short passage keeps the automatic dive moving directly into the content. */
+.intro-shell--dive { height: 140vh; }
 .intro-stage {
   position: sticky;
   top: 0;
@@ -100,9 +100,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   transform-origin: center;
   will-change: transform, filter, opacity;
 }
-.intro-source-wrap { position: relative; z-index: 4; display: grid; place-items: center; }
+.intro-source-wrap { position: relative; z-index: 4; display: grid; place-items: center; transform: translate(var(--drag-x, 0px), var(--drag-y, 0px)); }
 .intro-source { position: relative; z-index: 5; }
-.question, .step-copy p, .mirror {
+.question, .step-copy > p:not(.intro-hint), .step-prompt, .mirror {
   margin: 0;
   font-size: clamp(1.5rem, 4.2vw, 4.8rem);
   line-height: 1.08;
@@ -117,6 +117,34 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   transition: opacity 760ms ease, filter 900ms ease, transform 900ms ease;
 }
 .question.is-revealed { opacity: 1; filter: blur(0); transform: translateY(0); }
+.question-trigger, .step-prompt {
+  border: 0;
+  padding: .15em;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: inherit;
+  cursor: pointer;
+}
+.step-prompt { font-size: clamp(1.5rem, 4.2vw, 4.8rem); line-height: 1.08; letter-spacing: -.045em; font-weight: 520; }
+.intro-field--draggable { touch-action: none; user-select: none; cursor: grab; }
+.intro-field--draggable:active { cursor: grabbing; }
+.step-copy .intro-hint { max-width: 28rem; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.5; text-align: center; }
+.dive-passage {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: clamp(90px, 12vw, 180px);
+  height: 8px;
+  border-top: 1px solid var(--holds);
+  border-bottom: 1px solid var(--holds);
+  box-shadow: 0 0 24px rgba(86, 199, 206, .18);
+  opacity: calc(1 - var(--dive-progress));
+  transform: translate(-50%, -50%) scale(calc(1 + var(--dive-progress) * 34));
+  pointer-events: none;
+}
 .intro-tone--unresolved .intro-source { color: var(--unresolved); }
 .intro-tone--pressure .intro-source { color: var(--ink); }
 .intro-tone--pressure .mirror-stack { color: var(--pressure); }

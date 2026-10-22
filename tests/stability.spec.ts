@@ -17,7 +17,7 @@ test('first visit: mouse skip removes intro and focuses content; returning visit
 
 test('denied session storage never prevents content mounting', async ({ page }) => {
   await page.addInitScript(() => {
-    Object.defineProperty(window, 'sessionStorage', { get() { throw new DOMException('Storage denied', 'SecurityError') } })
+    Object.defineProperty(window, 'localStorage', { get() { throw new DOMException('Storage denied', 'SecurityError') } })
   })
   await page.goto('/')
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
@@ -124,14 +124,14 @@ test('the original three attempts per step still lead through the dive to main c
   await page.goto('/')
   await page.getByRole('button', { name: 'Begin exploring the question' }).click()
   for (let step = 1; step <= 3; step++) {
-    await expect(page.locator('.step-copy p')).toContainText(`step ${step}:`)
+    await expect(page.locator('.step-prompt, .step-copy > p:not(.intro-hint)')).toContainText(`step ${step}:`)
     for (let attempt = 0; attempt < 3; attempt++) {
       await page.getByRole('button', { name: 'Test the boundary' }).focus()
       await page.keyboard.press('Enter')
       await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/, { timeout: 3000 })
     }
   }
-  await expect(page.locator('.step-copy p')).toContainText('step 4: dive in')
+  await expect(page.locator('.step-prompt, .step-copy > p:not(.intro-hint)')).toContainText('step 4: dive in')
   await page.getByRole('button', { name: 'Dive into the portfolio' }).focus()
   await page.keyboard.press('Enter')
   await page.locator('main').scrollIntoViewIfNeeded()
@@ -203,4 +203,73 @@ test('graph layer and selected-state accessibility', async ({ page }) => {
   await page.getByRole('button', { name: 'tag: #systems. Select to trace connections.', exact: true }).click()
   const result = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()
   expect(result.violations).toEqual([])
+})
+
+
+test('the opening words themselves begin the sequence and desktop clicks advance attempts', async ({ page }) => {
+  await page.goto('/')
+  const phrase = page.getByRole('button', { name: 'Begin exploring the question' })
+  await expect(phrase).toContainText('how does one produce curiosity')
+  await phrase.click({ position: { x: 30, y: 25 } })
+  const step = page.getByRole('button', { name: 'step 1: question the boundaries', exact: true })
+  await step.click()
+  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields in that direction')
+  await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/)
+  await step.click()
+  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields farther')
+})
+
+test('desktop drag follows direction and counts only one attempt', async ({ page }) => {
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
+  const bounds = (await page.locator('.intro-field').boundingBox())!
+  const x = bounds.x + bounds.width / 2
+  const y = bounds.y + bounds.height / 2
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await page.mouse.move(x + 100, y - 50, { steps: 8 })
+  expect(await page.locator('.intro-field').evaluate(e => e.style.getPropertyValue('--drag-x'))).not.toBe('0px')
+  await page.mouse.up()
+  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields in that direction')
+  await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/)
+  await expect(page.getByRole('button', { name: 'step 1: question the boundaries', exact: true })).toBeVisible()
+})
+
+test('dive starts automatically after a pause and completes without more input', async ({ page }) => {
+  await page.clock.install()
+  await page.goto('/')
+  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
+  for (let step = 1; step <= 3; step++) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      await page.getByRole('button', { name: 'Test the boundary' }).focus()
+      await page.keyboard.press('Enter')
+      await page.clock.runFor(850)
+    }
+  }
+  await expect(page.getByRole('button', { name: 'Dive into the portfolio' })).toBeVisible()
+  await page.clock.runFor(2600)
+  const first = await page.evaluate(() => scrollY)
+  await page.clock.runFor(350)
+  expect(await page.evaluate(() => scrollY)).toBeGreaterThan(first)
+  await page.clock.runFor(1800)
+  await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
+})
+
+test('first presentation is remembered across new browser sessions; replay remains available', async ({ browser }) => {
+  const first = await browser.newContext()
+  const page = await first.newPage()
+  await page.goto('http://127.0.0.1:4174/')
+  await expect(page.getByRole('region', { name: intro })).toBeVisible()
+  // Close midway, before completion: the visit must still be remembered.
+  const state = await first.storageState()
+  await first.close()
+  const returning = await browser.newContext({ storageState: state })
+  const next = await returning.newPage()
+  await next.goto('http://127.0.0.1:4174/')
+  await expect(next.getByRole('region', { name: intro })).toHaveCount(0)
+  await expect(next.getByRole('heading', { name: heading })).toBeInViewport()
+  await next.getByRole('button', { name: 'Replay introduction' }).click()
+  await expect(next.getByRole('region', { name: intro })).toBeInViewport()
+  await returning.close()
 })
