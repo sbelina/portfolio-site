@@ -15,12 +15,12 @@ React + TypeScript + Vite prototype for Sami Belina's portfolio, prepared for a 
 ## What this version contains
 
 ### Required intro
-- Once-per-session interaction using `sessionStorage`
-- Delayed **how does one produce curiosity?** opening with the `?` as a real button
+- First-visit interaction remembered across browser sessions using `localStorage`, with a replay option
+- Delayed **how does one produce curiosity?** opening with the entire phrase as a real button
 - Steps 1–3 use a three-intent rhythm: two yielding failures, then a slight magnification and breakthrough
-- Directional movement follows wheel/trackpad, touch-swipe, or keyboard intent
+- Directional movement follows desktop clicks/drags, wheel/trackpad, touch-swipe, or keyboard intent
 - Geometry-led temporal echoes inspired by Austin Malerba's Element Mirror work, implemented locally for portability
-- Step 4 **dive in** opens roughly 2.5 screens of actual scroll before the index
+- Step 4 **dive in** pauses for 2.2 seconds, then moves automatically through a short expanding passage into the index
 - Reduced-motion behavior, skip control, live-region announcements, and a focusable non-gesture route
 - Footer **Replay introduction** control
 
@@ -64,7 +64,7 @@ The older minimum-wage charts remain deliberately **outside this repository hand
 ## Run
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -91,4 +91,6 @@ This is still a single-page prototype. The next production pass can split full c
 
 See `DEPLOY.md` for the browser-first GitHub → Cloudflare Pages setup. No command line is required for the initial repository upload.
 
-A `package-lock.json` is intentionally not fabricated in this handoff because this execution environment cannot reach the npm registry. The first successful `npm install` will generate it; commit that generated lockfile afterward.
+The generated `package-lock.json` is committed. Use Node 22 and `npm ci` for repeatable installs. Run `npm test` for production-build browser and automated accessibility checks; see `DEPLOY.md` for browser installation and preview instructions.
+
+The observed Cloudflare deployment is a Worker, not Pages. See [the audit](docs/AUDIT.md), [intro states](docs/INTRO-STATES.md), [proposed Content Studio and roadmap](docs/CONTENT-ARCHITECTURE.md), and [keyboard research brief](docs/KEYBOARD-RESEARCH.md). Architecture and content migration remain subject to owner approval.

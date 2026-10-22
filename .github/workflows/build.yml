@@ -1,10 +1,13 @@
-yamlname: Node.js Build
+name: Node.js Build and Browser Checks
 
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
+
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -17,11 +20,30 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20'
+        node-version-file: '.node-version'
         cache: 'npm'
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run build
       run: npm run build
+
+    - name: Validate Worker deployment packaging
+      run: npm run check:deploy
+
+    - name: Install Chromium
+      run: npx playwright install --with-deps chromium
+
+    - name: Run browser and accessibility checks
+      run: npm test
+
+    - name: Upload browser evidence
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: browser-results
+        path: |
+          playwright-report/
+          test-results/
+        retention-days: 14

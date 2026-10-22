@@ -20,7 +20,9 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   const shellRef = useRef<HTMLElement>(null)
   const lockRef = useRef(false)
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null)
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null)
+  const suppressClickRef = useRef(false)
+  const timersRef = useRef<Set<number>>(new Set())
   const [phase, setPhase] = useState<Phase>('question')
   const [revealed, setRevealed] = useState(false)
   const [step, setStep] = useState(0)
@@ -29,14 +31,30 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   const [vector, setVector] = useState({ x: 0.12, y: -1 })
   const [status, setStatus] = useState('')
   const [diveProgress, setDiveProgress] = useState(0)
+  const [diving, setDiving] = useState(false)
+  const [drag, setDrag] = useState({ x: 0, y: 0 })
 
   const reducedMotion = useMemo(
     () => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     [],
   )
 
+  const clearTimers = useCallback(() => {
+    timersRef.current.forEach((timer) => window.clearTimeout(timer))
+    timersRef.current.clear()
+  }, [])
+
+  const schedule = useCallback((callback: () => void, delay: number) => {
+    const timer = window.setTimeout(() => {
+      timersRef.current.delete(timer)
+      callback()
+    }, delay)
+    timersRef.current.add(timer)
+  }, [])
+
   const reset = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    clearTimers()
+    window.scrollTo({ top: 0, behavior: 'instant' })
     setPhase('question')
     setRevealed(false)
     setStep(0)
@@ -44,11 +62,18 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     setEffect('idle')
     setStatus('')
     setDiveProgress(0)
+    setDiving(false)
+    setDrag({ x: 0, y: 0 })
+    pointerStartRef.current = null
+    suppressClickRef.current = false
     lockRef.current = false
-    window.setTimeout(() => setRevealed(true), 680)
-  }, [])
+    schedule(() => setRevealed(true), reducedMotion ? 0 : 680)
+  }, [clearTimers, reducedMotion, schedule])
 
-  useEffect(() => reset(), [forceReplayKey, reset])
+  useEffect(() => {
+    reset()
+    return clearTimers
+  }, [forceReplayKey, reset, clearTimers])
 
   const advanceAttempt = useCallback(
     (nextVector = { x: 0.12, y: -1 }) => {
@@ -63,7 +88,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
 
       if (nextAttempt < 3) {
         setStatus(nextAttempt === 1 ? 'The surface yields in that direction, then returns.' : 'The surface yields farther, then returns.')
-        window.setTimeout(() => {
+        schedule(() => {
           setEffect('idle')
           lockRef.current = false
         }, reducedMotion ? 180 : 720)
@@ -71,7 +96,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       }
 
       setStatus(step === 2 ? 'Pattern recognized. The page opens.' : 'The boundary opens. The next step appears.')
-      window.setTimeout(() => {
+      schedule(() => {
         const nextStep = step + 1
         setStep(nextStep)
         setAttempt(0)
@@ -80,11 +105,13 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
         lockRef.current = false
       }, reducedMotion ? 220 : 820)
     },
-    [attempt, phase, reducedMotion, step],
+    [attempt, phase, reducedMotion, step, schedule],
   )
 
   useEffect(() => {
     if (phase !== 'steps' || step >= 3) return
+    const shell = shellRef.current
+    if (!shell) return
 
     const onWheel = (event: WheelEvent) => {
       if (Math.abs(event.deltaY) < 8 && Math.abs(event.deltaX) < 8) return
@@ -99,50 +126,29 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     const onKeyDown = (event: KeyboardEvent) => {
       if (!['ArrowDown', 'PageDown', ' ', 'End'].includes(event.key)) return
       const target = event.target as HTMLElement | null
-      if (target?.matches('input, textarea, select, [contenteditable="true"]')) return
+      if (event.altKey || event.ctrlKey || event.metaKey ||
+        target?.closest('a, button, input, textarea, select, [contenteditable="true"]')) return
       event.preventDefault()
       advanceAttempt({ x: 0.16, y: -1 })
     }
 
-    const onTouchStart = (event: TouchEvent) => {
-      const touch = event.touches[0]
-      touchStartRef.current = { x: touch.clientX, y: touch.clientY }
-    }
-
-    const onTouchEnd = (event: TouchEvent) => {
-      const start = touchStartRef.current
-      const touch = event.changedTouches[0]
-      touchStartRef.current = null
-      if (!start || !touch) return
-      const dx = touch.clientX - start.x
-      const dy = touch.clientY - start.y
-      if (Math.hypot(dx, dy) < 22) return
-      event.preventDefault()
-      const magnitude = Math.max(Math.abs(dx), Math.abs(dy), 1)
-      advanceAttempt({ x: clamp(dx / magnitude, -1, 1), y: clamp(dy / magnitude, -1, 1) })
-    }
-
-    window.addEventListener('wheel', onWheel, { passive: false })
-    window.addEventListener('keydown', onKeyDown)
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchend', onTouchEnd, { passive: false })
+    shell.addEventListener('wheel', onWheel, { passive: false })
+    shell.addEventListener('keydown', onKeyDown)
 
     return () => {
-      window.removeEventListener('wheel', onWheel)
-      window.removeEventListener('keydown', onKeyDown)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchend', onTouchEnd)
+      shell.removeEventListener('wheel', onWheel)
+      shell.removeEventListener('keydown', onKeyDown)
     }
   }, [advanceAttempt, phase, step])
 
   useEffect(() => {
-    if (phase !== 'dive') return
+    if (phase !== 'dive' || diving) return
 
     const onScroll = () => {
       const shell = shellRef.current
       if (!shell) return
       const rect = shell.getBoundingClientRect()
-      const scrollable = Math.max(shell.offsetHeight - window.innerHeight, 1)
+      const scrollable = Math.max(shell.offsetHeight, 1)
       const progressed = clamp(-rect.top / scrollable, 0, 1)
       setDiveProgress(progressed)
       if (progressed > 0.985) onComplete()
@@ -151,7 +157,37 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [onComplete, phase])
+  }, [onComplete, phase, diving])
+
+  useEffect(() => {
+    if (phase !== 'dive') return
+    schedule(() => setDiving(true), reducedMotion ? 0 : 2200)
+  }, [phase, reducedMotion, schedule])
+
+  useEffect(() => {
+    if (!diving) return
+    if (reducedMotion) {
+      onComplete()
+      return
+    }
+    const shell = shellRef.current
+    if (!shell) return
+    const start = window.scrollY
+    const target = shell.offsetTop + shell.offsetHeight
+    const startedAt = performance.now()
+    let frame = 0
+    const move = (now: number) => {
+      const progress = clamp((now - startedAt) / 1600, 0, 1)
+      // Continuous movement through the short passage; no blank scroll interval.
+      const eased = progress * progress * (3 - 2 * progress)
+      setDiveProgress(eased)
+      window.scrollTo({ top: start + (target - start) * eased, behavior: 'instant' })
+      if (progress < 1) frame = requestAnimationFrame(move)
+      else onComplete()
+    }
+    frame = requestAnimationFrame(move)
+    return () => cancelAnimationFrame(frame)
+  }, [diving, reducedMotion, onComplete])
 
   const begin = () => {
     setPhase('steps')
@@ -159,20 +195,11 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   }
 
   const skip = () => {
-    setPhase('dive')
-    setStep(3)
-    setStatus('Introduction skipped.')
-    requestAnimationFrame(() => {
-      const shell = shellRef.current
-      if (!shell) return
-      window.scrollTo({ top: shell.offsetTop + shell.offsetHeight, behavior: reducedMotion ? 'auto' : 'smooth' })
-      onComplete()
-    })
+    clearTimers()
+    onComplete()
   }
 
-  const dive = () => {
-    window.scrollBy({ top: window.innerHeight * 0.78, behavior: reducedMotion ? 'auto' : 'smooth' })
-  }
+  const dive = () => setDiving(true)
 
   const yieldDistance = effect === 'resist-one' ? 14 : effect === 'resist-two' ? 28 : effect === 'breakthrough' ? 44 : 0
   const dx = yieldDistance * vector.x
@@ -195,13 +222,64 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     <section
       ref={shellRef}
       className={`intro-shell ${phase === 'dive' ? 'intro-shell--dive' : 'intro-shell--locked'}`}
+      style={{ '--dive-progress': diveProgress } as React.CSSProperties}
       aria-label="Producing Curiosity introduction"
     >
       <div className="intro-stage">
-        <button className="skip-link" type="button" onClick={skip}>Skip introduction</button>
+        <button className="skip-link" type="button" onClick={skip} onPointerUp={(event) => {
+          if (event.pointerType === 'touch') {
+            event.preventDefault()
+            skip()
+          }
+        }}>Skip introduction</button>
 
         <div
-          className={`intro-field effect-${effect} intro-tone--${introTone}`}
+          className={`intro-field effect-${effect} intro-tone--${introTone}${phase === 'steps' ? ' intro-field--draggable' : ''}`}
+          onPointerDown={(event) => {
+            suppressClickRef.current = false
+            if (phase !== 'steps' || lockRef.current || event.button !== 0 || !event.isPrimary) return
+            pointerStartRef.current = { x: event.clientX, y: event.clientY }
+          }}
+          onPointerMove={(event) => {
+            const start = pointerStartRef.current
+            if (!start) return
+            const x = event.clientX - start.x
+            const y = event.clientY - start.y
+            if (Math.hypot(x, y) < 12) return
+            event.currentTarget.setPointerCapture(event.pointerId)
+            setDrag({ x: clamp(x * .25, -44, 44), y: clamp(y * .25, -44, 44) })
+          }}
+          onPointerUp={(event) => {
+            const start = pointerStartRef.current
+            pointerStartRef.current = null
+            setDrag({ x: 0, y: 0 })
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+            if (!start) return
+            const x = event.clientX - start.x
+            const y = event.clientY - start.y
+            if (Math.hypot(x, y) < 22) {
+              if (event.pointerType === 'touch') {
+                event.preventDefault()
+                suppressClickRef.current = true
+                advanceAttempt()
+              }
+              return
+            }
+            suppressClickRef.current = true
+            const magnitude = Math.max(Math.abs(x), Math.abs(y), 1)
+            advanceAttempt({ x: clamp(x / magnitude, -1, 1), y: clamp(y / magnitude, -1, 1) })
+          }}
+          onPointerCancel={() => {
+            pointerStartRef.current = null
+            setDrag({ x: 0, y: 0 })
+          }}
+          onClickCapture={(event) => {
+            if (!suppressClickRef.current) return
+            suppressClickRef.current = false
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+          onClick={() => { if (phase === 'steps') advanceAttempt() }}
           style={{
             '--dx': `${dx}px`,
             '--dy': `${dy}px`,
@@ -210,6 +288,8 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
             '--effect-scale': scale,
             '--dive-scale': diveScale,
             '--dive-progress': diveProgress,
+            '--drag-x': `${drag.x}px`,
+            '--drag-y': `${drag.y}px`,
           } as React.CSSProperties}
         >
           <div className="intro-source-wrap">
@@ -222,19 +302,21 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
             <div className="intro-source">
               {phase === 'question' ? (
                 <p className={`question ${revealed ? 'is-revealed' : ''}`}>
-                  <span>how does one produce curiosity</span>
                   <button
                     type="button"
-                    className="question-mark"
+                    className="question-trigger"
                     aria-label="Begin exploring the question"
                     onClick={begin}
                   >
-                    ?
+                    how does one produce curiosity<span className="question-mark" aria-hidden="true">?</span>
                   </button>
                 </p>
               ) : (
                 <div className="step-copy">
-                  <p>{STEPS[step]}</p>
+                  {step < 3 ? (
+                    <button className="step-prompt" type="button" onClick={(event) => { event.stopPropagation(); advanceAttempt() }}>{STEPS[step]}</button>
+                  ) : <p>{STEPS[step]}</p>}
+                  {step < 3 ? <p className="intro-hint">Click, drag, scroll, or use the keyboard.</p> : null}
                   {step === 3 ? (
                     <button type="button" className="dive-arrow" aria-label="Dive into the portfolio" onClick={dive}>
                       <span aria-hidden="true">↓</span>
@@ -256,6 +338,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
             <span className="depth-token depth-token--c depth-token--pressure">turn</span>
             <span className="depth-token depth-token--d depth-token--holds">structure</span>
           </div>
+          {phase === 'dive' ? <div className="dive-passage" aria-hidden="true" /> : null}
         </div>
 
         {phase === 'steps' && step < 3 ? (

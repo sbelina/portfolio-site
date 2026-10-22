@@ -1,27 +1,71 @@
-import { useCallback, useEffect, useState } from 'react'
+import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
 import { archiveItems, graphTagIds, projects, writings } from './data'
 
 const SESSION_KEY = 'producing-curiosity:intro-seen'
 
+function shouldShowIntro() {
+  try {
+    return !window.location.hash &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+      localStorage.getItem(SESSION_KEY) !== 'true' &&
+      sessionStorage.getItem(SESSION_KEY) !== 'true'
+  } catch {
+    // Storage and motion preferences are enhancements, never prerequisites.
+    return false
+  }
+}
+
+class IntroBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
 export default function App() {
-  const [showIntro, setShowIntro] = useState(() => sessionStorage.getItem(SESSION_KEY) !== 'true')
+  const [showIntro, setShowIntro] = useState(shouldShowIntro)
   const [replayKey, setReplayKey] = useState(0)
   const [graphSelection, setGraphSelection] = useState<string | null>(null)
 
   const completeIntro = useCallback(() => {
-    sessionStorage.setItem(SESSION_KEY, 'true')
+    try {
+      localStorage.setItem(SESSION_KEY, 'true')
+    } catch {
+      // Keep the current visit usable even when storage is unavailable or full.
+    }
+    setShowIntro(false)
   }, [])
 
   useEffect(() => {
-    if (!showIntro) requestAnimationFrame(() => document.getElementById('index')?.focus({ preventScroll: true }))
+    try {
+      // Remember the visit, including reduced-motion and legacy-session visits.
+      localStorage.setItem(SESSION_KEY, 'true')
+    } catch {
+      // Access to the site does not depend on browser storage.
+    }
+  }, [])
+
+  useEffect(() => {
+    if (showIntro) return
+    const frame = requestAnimationFrame(() => {
+      const destination = document.getElementById(window.location.hash.slice(1) || 'index')
+      destination?.focus({ preventScroll: true })
+      destination?.scrollIntoView({ behavior: 'instant', block: 'start' })
+    })
+    return () => cancelAnimationFrame(frame)
   }, [showIntro])
 
   const replayIntro = () => {
     setShowIntro(true)
     setReplayKey((value) => value + 1)
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
   const selectTag = (tag: string) => {
@@ -44,7 +88,12 @@ export default function App() {
 
   return (
     <>
-      {showIntro ? <IntroExperience forceReplayKey={replayKey} onComplete={completeIntro} /> : null}
+      <a className="main-skip-link" href="#index" onClick={completeIntro}>Skip to main content</a>
+      {showIntro ? (
+        <IntroBoundary key={replayKey}>
+          <IntroExperience forceReplayKey={replayKey} onComplete={completeIntro} />
+        </IntroBoundary>
+      ) : null}
 
       <main id="index" className="site-main" tabIndex={-1}>
         <header className="site-header">
