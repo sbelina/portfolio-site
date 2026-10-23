@@ -12,6 +12,8 @@ const dates = { createdAt: timestamp.nullable(), updatedAt: timestamp.nullable()
 
 export const blockSchema = z.discriminatedUnion('type', [
   z.strictObject({ id: uuidSchema, type: z.literal('prose'), markdown: text }),
+  // Literal verse, not Markdown: retain original whitespace and punctuation.
+  z.strictObject({ id: uuidSchema, type: z.literal('verse'), text }),
   z.strictObject({ id: uuidSchema, type: z.literal('callout'), label: z.string().min(1), markdown: text }),
   z.strictObject({ id: uuidSchema, type: z.literal('evidence'), evidenceId: uuidSchema }),
   z.strictObject({ id: uuidSchema, type: z.literal('image'), assetId: uuidSchema, caption: text.optional() }),
@@ -23,7 +25,7 @@ export type ContentBlock = z.infer<typeof blockSchema>
 export const entrySchema = z.strictObject({
   ...base, ...dates,
   kind: z.enum(['investigation', 'pattern', 'perspective', 'observation', 'experiment', 'reference']),
-  format: z.enum(['case', 'field_note', 'essay']).optional(),
+  format: z.enum(['case', 'field_note', 'essay', 'poetry']).optional(),
   slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/).max(120),
   title: z.string().max(300), summary: z.string().max(2000),
   editorialState: z.enum(['draft', 'review', 'approved', 'withdrawn']), visibility,
@@ -35,9 +37,11 @@ export const entrySchema = z.strictObject({
     ctx.addIssue({ code: 'custom', path: ['createdAt'], message: 'Only unreviewed drafts may have unknown dates' })
   }
   if (entry.editorialState === 'approved') {
-    for (const field of ['title', 'summary', 'contribution', 'createdAt', 'updatedAt'] as const) {
+    for (const field of ['title', 'summary', 'createdAt', 'updatedAt'] as const) {
       if (!entry[field]?.trim()) ctx.addIssue({ code: 'custom', path: [field], message: 'Approved entries require this field' })
     }
+    if (entry.format !== 'poetry' && !entry.contribution?.trim()) ctx.addIssue({ code: 'custom', path: ['contribution'], message: 'Approved non-poetry entries require contribution' })
+    if (entry.format === 'poetry' && !entry.blocks.some(block => block.type === 'verse' && block.text.trim())) ctx.addIssue({ code: 'custom', path: ['blocks'], message: 'Approved poetry requires nonempty verse' })
     if (!entry.authorIds.length) ctx.addIssue({ code: 'custom', path: ['authorIds'], message: 'Approved entries require attribution' })
   }
   if (new Set(entry.blocks.map(block => block.id)).size !== entry.blocks.length) {
@@ -108,7 +112,7 @@ export type ReleaseManifest = z.infer<typeof manifestSchema>
 export const approvalSchema = z.strictObject({ candidateDigest: digestSchema, approvedBy: z.string().min(1), approvedAt: timestamp })
 export type CandidateApproval = z.infer<typeof approvalSchema>
 
-export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
+export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'format' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
 export type PublicRelationship = Pick<Relationship, 'id' | 'fromId' | 'toId' | 'type' | 'rationale' | 'evidenceIds'>
 export type PublicEvidence = Pick<Evidence, 'id' | 'title' | 'source' | 'locator' | 'observedAt' | 'role' | 'limitations' | 'assetIds' | 'kind' | 'measurement'>
 export type PublicAsset = Pick<Asset, 'id' | 'url' | 'mimeType' | 'width' | 'height' | 'alt' | 'decorative' | 'credit' | 'checksum'>

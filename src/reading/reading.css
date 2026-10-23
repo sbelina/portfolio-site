@@ -100,3 +100,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
   .reading-kicker, .reading-fixture strong, .reading-contribution h2, .reading-callout h2, .reading-metadata dt { color: #333; }
   .reading-block { break-inside: avoid; }
 }
+
+/* Verse remains literal text. Soft wrapping changes presentation, never the source. */
+.reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
+.reading-article--poetry .reading-body { max-width: 46rem; }

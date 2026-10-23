@@ -10,5 +10,8 @@ test('default production output contains no local fixtures or private drafts', a
   expect(content.entries).toEqual([])
   expect(content.relationships).toEqual([])
   await expect(access('dist/investigations/fixture-claims-handoff/index.html')).rejects.toThrow()
+  await expect(access('dist/perspective/fixture-verse-spacing/index.html')).rejects.toThrow()
+  await expect(access('dist/writing/review/the-bends.md')).rejects.toThrow()
+  await expect(access('dist/docs/codex/page-review.json')).rejects.toThrow()
   expect(await readFile('dist/index.html', 'utf8')).toContain('I swim upstream toward the problem.')
 })

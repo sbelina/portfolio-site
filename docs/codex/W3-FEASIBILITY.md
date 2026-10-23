@@ -67,3 +67,11 @@ A successful feasibility trial produces a short adoption decision, private confi
 Stop the dependent operation on credential exposure, unauthorized repository access, anonymous private asset delivery, stale-save data loss, or a candidate/approval mismatch. Revoke affected access using the owner's supported controls and preserve non-sensitive failure evidence. Continue unrelated local schema/template work.
 
 Run the trial in isolated private storage with a verified export before destructive tests. Never remove or overwrite current public content or unavailable Emergent work. A production rollout, new purchase or migration requires its own explicit authorization.
+
+## Prepared interface proposal and local proof boundary
+
+[W3-CONTRACT-PROPOSAL.md](W3-CONTRACT-PROPOSAL.md) specifies draft-save versus publication rules, expected-revision **and atomic Git-head** checks, operation permissions, protected page/data/asset previews, exact-candidate approval/publication, failure handling and portable restore. Every service interface there remains proposed.
+
+`tests/authoring-proposal.spec.ts` exercises current draft/publication validation and synthetic JSON export integrity, plus test-only pure save-precondition and preview-policy examples. These examples implement no server endpoint, real session, atomic storage operation or protected asset delivery; they do not demonstrate durable authoring or authorize publication. Actual test results belong in the integrated implementation status/PR.
+
+The smallest external gate is one owner-designated **private Git repository and repository-scoped editor/app access through a supported owner sign-in**. Prove save → close session → authenticate → reopen and a stale-save conflict there using synthetic records before choosing an editor or adding preview/publishing infrastructure. Real manuscripts and production publication are unnecessary for that first proof. Do not use localStorage or an in-memory editor as its replacement.

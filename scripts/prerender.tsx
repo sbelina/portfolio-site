@@ -5,7 +5,7 @@ import path from 'node:path'
 import { renderToString } from 'react-dom/server'
 import App from '../src/App'
 import { ReadingPage, type ReadingPageData } from '../src/reading/ReadingPage'
-import { renderBlocks } from '../src/reading/render-blocks'
+import { readingPageData } from '../src/reading/page-data'
 import type { PublicProjection } from '../src/content/model'
 import { migrationLedger } from './legacy-adapter'
 import { verifyPublicAssets } from './public-assets'
@@ -21,7 +21,6 @@ if (release.schemaVersion !== 1 || release.status !== 'no-approved-content') thr
 const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : empty
 const escapeJson = (value: unknown) => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029')
 const attr = (value: string) => value.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-const renderedMarkdown = renderBlocks(projection)
 const [homeTemplate, readingTemplate] = await Promise.all([readFile(path.join(output, 'index.html'), 'utf8'), readFile(path.join(output, 'reading.html'), 'utf8')])
 const legacyIds = new Set([...renderToString(<App />).matchAll(/\bid="([^"]+)"/g)].map(match => match[1]))
 baselineAnchors.forEach(id => legacyIds.add(id))
@@ -47,10 +46,9 @@ async function page(file: string, data: ReadingPageData, title: string, descript
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-const base = { projection, renderedMarkdown, fixture }
-await page('investigations/index.html', { ...base, kind: 'collection' }, 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/')
-for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...base, kind: 'entry', entryId: entry.id }, `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
-await page('404.html', { ...base, kind: 'not-found', projection: empty, renderedMarkdown: {} }, 'Page not found — Producing Curiosity', 'This reading is not available.')
+await page('investigations/index.html', readingPageData(projection, 'collection', fixture), 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/')
+for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, readingPageData(projection, 'entry', fixture, entry.id), `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
+await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
 if (redirects.length) await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {

@@ -29,8 +29,17 @@ const pattern: Entry = {
     { id: '20000000-0000-4000-8000-000000000002', type: 'callout', label: 'Limitations', markdown: 'One invented example cannot establish a general pattern. There are no measured outcomes or real supporting sources here. The incoming link below preserves the original direction: the example illustrates the pattern; the backlink does not reverse that assertion.' },
   ],
 }
+// Invented only for formatting/security checks, not an excerpt or a private manuscript.
+export const syntheticVerse = '  A test line—nothing borrowed.\nThe second line keeps its comma,\n\n\tA tab starts this stanza.\n    Four spaces hold this turn.\nLiteral markup: <script>window.poetryExecuted = true</script> & *asterisks*.\nA deliberately long unbroken synthetic token: abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz'
+const poem: Entry = {
+  ...investigation, id: '88888888-8888-4888-8888-888888888888', kind: 'perspective', format: 'poetry',
+  slug: 'fixture-verse-spacing', title: 'Fixture: a spacing study',
+  summary: 'Synthetic verse for line-break, whitespace and safe-rendering checks; not an existing poem or complete manuscript.',
+  contribution: undefined, evidenceIds: [],
+  blocks: [{ id: '80000000-0000-4000-8000-000000000001', type: 'verse', text: syntheticVerse }],
+}
 export const fixtureStore: ContentStore = {
-  entries: [investigation, pattern, { ...investigation, revision: 2, editorialState: 'draft', visibility: 'restricted', title: 'PRIVATE_DRAFT_CANARY_8b72', summary: 'An unselected synthetic private draft must never reach public output.' }],
+  entries: [investigation, pattern, poem, { ...investigation, revision: 2, editorialState: 'draft', visibility: 'restricted', title: 'PRIVATE_DRAFT_CANARY_8b72', summary: 'An unselected synthetic private draft must never reach public output.' }],
   relationships: [{ schemaVersion: 1, id: '44444444-4444-4444-8444-444444444444', revision: 1, visibility: 'public', reviewState: 'approved', fromId: id.investigation, toId: id.pattern, type: 'illustrates', rationale: 'In this synthetic example, a handoff is not treated as complete until the receiving role can use it. This illustrates a provisional pattern, not a measured outcome.', evidenceIds: [id.evidence], provenance: 'import' }],
   evidence: [{ schemaVersion: 1, id: id.evidence, revision: 1, visibility: 'public', reviewState: 'approved', title: 'Synthetic handoff scenario', source: 'Public-safe test fixture', locator: 'Synthetic scenario in tests/fixtures/reading-content.ts', observedAt: date, role: 'context', limitations: 'Invented solely to test rendering and disclosure. Not real source evidence or a result.', assetIds: [], rights: 'cleared', redaction: 'not-required', kind: 'reference' }],
   assets: [],

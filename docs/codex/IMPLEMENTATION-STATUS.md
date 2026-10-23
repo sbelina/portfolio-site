@@ -23,7 +23,7 @@ No separate Emergent source/export or reviewed canonical manuscript was supplied
 
 ### W1: mechanical content and projection contract
 
-`src/content/model.ts` validates versioned entries, blocks, evidence, assets, relationships, aliases, selected revisions and candidate records. Identity and revisions are separate; slugs are editable. The static registered comparison block accepts data only, not executable editor code. Unknown original dates remain null in drafts; approved entries require dates, contribution and attribution.
+`src/content/model.ts` validates versioned entries, blocks, evidence, assets, relationships, aliases, selected revisions and candidate records. Identity and revisions are separate; slugs are editable. The static registered comparison block accepts data only, not executable editor code. Unknown original dates remain null in drafts; approved entries require dates and attribution, plus contribution for non-poetry formats (see the follow-up poetry extension below).
 
 `buildPublicProjection` selects exact ID/revision/digest references. A newer draft B can coexist with selected approved A. Changes after candidate approval, duplicate identity/revision/route/alias ownership, missing references, private endpoints, unsupported blocks and unsafe asset types fail validation. Symmetric edges are normalized; directed relations retain direction. Output is detached, deeply frozen and allowlisted. Backlinks are derived navigation, not inverse claims.
 
@@ -102,3 +102,27 @@ For a failed branch proof, stop the local fixture Worker and regenerate from the
 Run the private Git-backed authoring feasibility trial in [W3-FEASIBILITY.md](W3-FEASIBILITY.md), after reviewing this slice. It needs a private content repository, owner authentication/session verification, protected page **and asset** preview, exact candidate approval enforcement and relevant service access. Prove create Observation → three explained connections → save → reopen in a new session → private preview → approve exact candidate → publish → revise → restore without editing source. Test stale saves, denial, privacy and export/restore. Do not replace this with an editor mockup or localStorage persistence.
 
 Before real canonical migration, obtain approved Claims wording, source/metric/contribution/rights review, an approved pattern/relationship interpretation, and the separate source required for any Emergent parity claim. No service purchase, custom OAuth, database or AI runtime is selected by this implementation.
+
+## Follow-up implementation on the same feature branch
+
+Merged latest handoff `1b39e59eae4d1838f52121bc9aa4d5e0b5211954` into the existing feature branch without conflicts. The 14 writing/workflow/structured-inventory files match that handoff byte-for-byte; all inventory approvals remain empty. `PAGE-REVIEW.md` and the Codex index now distinguish technical templates from the proposed real editorial pages. No review record became a publication allowlist, and no excerpt was imported as a complete work.
+
+### Payload and poetry changes
+
+`src/reading/page-data.ts` builds a page-specific payload: one current entry, its sanitized Markdown, relevant relationships, referenced evidence/assets and linked IDs/titles/paths. Collection cards contain metadata only; 404 payloads contain no content records. Full public indexes remain separate and are not fetched by reading pages. Tests compare an existing payload before/after adding an unrelated article and inspect actual generated HTML bootstrap data.
+
+The content contract adds explicit `format: poetry` and literal-text `verse` blocks. Public projection retains format. Poems do not require or display the investigation contribution panel or automatic evidence layout; existing case/essay/field-note requirements remain. Literal text is React-escaped and CSS preserves whitespace with soft wrapping. The fixture includes indentation, blank lines, punctuation, literal markup and a long token to exercise narrow reflow. It is wholly synthetic, never an imported excerpt/manuscript.
+
+Local poetry route (after `npm run build:fixtures` and `npm run preview:fixtures -- --ip 127.0.0.1 --port 4174`): `/perspective/fixture-verse-spacing/`. This URL is deliberately absent from the production-safe hosted preview and is not listed as a real investigation. Default artifact checks now explicitly reject the poem route/text and check that writing review files and the page inventory are not copied to the site.
+
+### Authoring scope
+
+W3 interfaces and local synthetic policy/contract proofs are preparation only. No durable save API, identity provider, protected preview service, approval authority or editor is implemented. See [W3 feasibility](W3-FEASIBILITY.md) for draft/publication rules, concurrency, authentication, page/asset protection, candidate binding, recovery and the smallest external dependency.
+
+### Follow-up verification and recovery
+
+Follow-up final local run: **69/69 tests passed** on pinned Node 22 and system Chromium, including all original homepage/intro regressions, four page-payload checks, five poetry checks and four test-only authoring-proposal checks. A clean `npm ci`, application/tool type checks, production/fixture builds, public artifact audit, Worker deployment dry-run, relative documentation links/fences and `git diff --check` passed. An initial clean install failed because the default home npm cache was unwritable; setting `npm_config_cache=/workspace/.cloud-tools/cache/npm` restored the frozen install without changing the lockfile or bypassing integrity/TLS.
+
+The [separate independent reviewer](FOLLOWUP-REVIEW.md) found no substantive issue after integrated code/artifact inspection. Manual review covered the generated poetry screenshot at 320px and 200% text enlargement; literal markup, spacing and wrapped text were visible without horizontal clipping. Browser-toolbar zoom, real screen readers, physical devices, durable private saves, authenticated approvals and protected page/asset service behavior remain unverified. Prior 56-test evidence above describes the original slice. Remote CI and hosted-preview results for the resulting follow-up commit are recorded in draft PR #3, separately from this local evidence.
+
+Recovery remains source-controlled: stop the local Worker, discard/rebuild generated outputs, or revert the follow-up commit through review while retaining the handoff merge and original slice. No production release occurred, so no live rollback is necessary. Do not delete manuscripts/review records to fix a build. The next bounded task is the authorized private W3 save/reopen trial; real publishing remains a later separately authorized step.

@@ -1,14 +1,7 @@
 import React, { type ReactNode } from 'react'
-import type { PublicEntry, PublicEvidence, PublicProjection } from '../content/model'
-
-export type ReadingPageData = {
-  kind: 'collection' | 'entry' | 'not-found'
-  projection: PublicProjection
-  entryId?: string
-  fixture: boolean
-  /** Build-time, allowlist-sanitized HTML. Never populated from private source in a browser. */
-  renderedMarkdown: Record<string, string>
-}
+import type { PublicEntry, PublicEvidence } from '../content/model'
+import type { ReadingPageData, ReadingContext } from './page-data'
+export type { ReadingPageData } from './page-data'
 
 type Block = PublicEntry['blocks'][number]
 
@@ -21,8 +14,9 @@ function dateLabel(value: string | null) {
   return value ? new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(value)) : 'Not recorded'
 }
 
-function blockLabel(block: Block, index: number, projection: PublicProjection) {
+function blockLabel(block: Block, index: number, projection: ReadingContext) {
   switch (block.type) {
+    case 'verse': return `Verse ${index + 1}`
     case 'callout': return block.label
     case 'prose': return block.markdown.match(/^#{1,6}\s+(.+)$/m)?.[1] ?? `Reading section ${index + 1}`
     case 'evidence': return projection.evidence.find(evidence => evidence.id === block.evidenceId)?.title ?? 'Evidence'
@@ -62,6 +56,7 @@ function EvidenceDisclosure({ evidence }: { evidence: PublicEvidence }) {
 
 function ContentBlock({ block, page }: { block: Block; page: ReadingPageData }) {
   switch (block.type) {
+    case 'verse': return <p className="reading-verse">{block.text}</p>
     case 'prose': return <SafeMarkdown block={block} html={page.renderedMarkdown} />
     case 'callout': return <aside className="reading-callout"><h2>{block.label}</h2><SafeMarkdown block={block} html={page.renderedMarkdown} /></aside>
     case 'evidence': {
@@ -87,7 +82,7 @@ function ContentBlock({ block, page }: { block: Block; page: ReadingPageData }) 
   }
 }
 
-function Connections({ entry, projection }: { entry: PublicEntry; projection: PublicProjection }) {
+function Connections({ entry, projection }: { entry: PublicEntry; projection: ReadingContext }) {
   const relationships = projection.relationships.filter(item => item.fromId === entry.id || item.toId === entry.id)
   if (!relationships.length) return null
   return (
@@ -117,16 +112,17 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Pu
 }
 
 function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData }) {
+  const poetry = entry.format === 'poetry'
   const extraEvidence = page.projection.evidence.filter(evidence => entry.evidenceIds.includes(evidence.id) && !entry.blocks.some(block => block.type === 'evidence' && block.evidenceId === evidence.id))
   return (
-    <article className="reading-article">
+    <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}`}>
       <nav className="reading-breadcrumbs" aria-label="Breadcrumb">
         <a href="/">Home</a><span aria-hidden="true">/</span>
         {entry.kind === 'investigation' ? <><a href="/investigations/">Investigations</a><span aria-hidden="true">/</span></> : null}
         <span aria-current="page">{entry.title}</span>
       </nav>
       <header className="reading-entry-header">
-        <p className="reading-kicker">{entry.kind}{page.fixture ? ' · synthetic fixture' : ''}</p>
+        <p className="reading-kicker">{poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : ''}</p>
         <h1 id="reading-title">{entry.title}</h1>
         <p className="reading-summary">{entry.summary}</p>
         <dl className="reading-metadata">
@@ -134,31 +130,31 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
           {entry.updatedAt !== entry.createdAt ? <div><dt>Updated</dt><dd><time dateTime={entry.updatedAt ?? undefined}>{dateLabel(entry.updatedAt)}</time></dd></div> : null}
           <div><dt>Revision</dt><dd>{entry.revision}</dd></div>
         </dl>
-        <section className="reading-contribution" id="contribution" aria-labelledby="reading-contribution-title">
+        {!poetry ? <section className="reading-contribution" id="contribution" aria-labelledby="reading-contribution-title">
           <h2 id="reading-contribution-title">Contribution and scope</h2>
           <p>{entry.contribution}</p>
-        </section>
+        </section> : null}
       </header>
       <nav className="reading-contents" aria-label="On this page">
         <h2>In this reading</h2>
         <ol>
-          <li><a href="#contribution">Contribution and scope</a></li>
+          {!poetry ? <li><a href="#contribution">Contribution and scope</a></li> : null}
           {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
-          {extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
+          {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
           {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
         </ol>
       </nav>
       <div className="reading-body">
         {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
       </div>
-      {extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
+      {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
       <p className="reading-back"><a href="/investigations/">← All investigations</a></p>
     </article>
   )
 }
 
-function Collection({ projection }: { projection: PublicProjection }) {
+function Collection({ projection }: { projection: ReadingContext }) {
   const investigations = projection.entries.filter(entry => entry.kind === 'investigation')
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
   return (
@@ -171,7 +167,7 @@ function Collection({ projection }: { projection: PublicProjection }) {
 }
 
 export function ReadingPage({ page }: { page: ReadingPageData }) {
-  const entry = page.kind === 'entry' ? page.projection.entries.find(item => item.id === page.entryId) : undefined
+  const entry = page.kind === 'entry' ? page.entry : undefined
   let content: ReactNode
   if (page.kind === 'collection') content = <Collection projection={page.projection} />
   else if (entry) content = <EntryView entry={entry} page={page} />

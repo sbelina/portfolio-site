@@ -1,6 +1,6 @@
 # Pages for Sam to review
 
-This is the proposed page inventory, including writing. All approval fields begin empty. Current production state has not been reverified; existing single-page excerpts should not be confused with approved standalone pages.
+This is the proposed editorial page inventory, including writing. The feature branch has a production-safe Home/Investigations shell and local-only synthetic reading templates; see [implementation status](IMPLEMENTATION-STATUS.md). That technical implementation does not approve the proposed real pages below. All approval fields begin empty. Current production state has not been reverified; existing single-page excerpts should not be confused with approved standalone pages.
 
 **Review → request changes or approve an exact revision → choose Publish → confirm live.**
 You may approve without publishing, or defer a piece.
