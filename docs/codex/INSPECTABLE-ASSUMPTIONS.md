@@ -57,3 +57,9 @@ Only the implemented block is registered. Unsupported future diagram types canno
 ## Recovery
 
 Generated output is disposable. Rebuild `dist` or `dist-fixtures` after failures; do not move fixture data into production to repair an empty preview. Revert this feature through review if rejected, preserving the earlier writing trial and originals. No data migration, DNS change, production deployment or publication occurred; no live rollback is required. A future real visualization needs source/rights review and exact candidate approval.
+
+## Final check record
+
+On implementation commit `1271168`, clean frozen install, public and private type checks, production/fixture/private builds, public artifact audit and both Worker packaging dry-runs passed. **79/79 public tests** and **10/10 private-workflow tests** passed. Seven public cases specifically cover this diagram; three private cases cover source/proposal/revision boundaries, and the integrated workflow also edits the real form and accepts the block into a durable draft. The real Worker restart proof preserved saved workspace revision28 and its digest through fresh login. No deployment was performed.
+
+The final normal-width320px and desktop captures were visually reviewed; controls and source accounts remained readable without clipping. The separate200% text-enlargement/reflow check passed. Existing writing/inventory/workflow files were checked byte-for-byte against `f73f257`; planning approvals remain empty. Documentation links/fences and `git diff --check` passed. Native browser zoom, physical devices and real screen readers remain unverified; these checks establish no comprehension benefit. Remote CI/hosted preview was not run because this branch was not pushed or deployed.
