@@ -1,7 +1,9 @@
-import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
+import React from 'react'
+import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
 import { archiveItems, graphTagIds, projects, writings } from './data'
+import { emptyHomeReading, type HomeReading } from './home-reading'
 
 const SESSION_KEY = 'producing-curiosity:intro-seen'
 
@@ -29,10 +31,13 @@ class IntroBoundary extends Component<{ children: ReactNode }, { failed: boolean
   }
 }
 
-export default function App() {
-  const [showIntro, setShowIntro] = useState(shouldShowIntro)
+export default function App({ reading = emptyHomeReading }: { reading?: HomeReading }) {
+  // Server and first client render agree. Browser preferences are an enhancement.
+  const [showIntro, setShowIntro] = useState(false)
+  const [introReady, setIntroReady] = useState(false)
   const [replayKey, setReplayKey] = useState(0)
   const [graphSelection, setGraphSelection] = useState<string | null>(null)
+  const introInitialised = useRef(false)
 
   const completeIntro = useCallback(() => {
     try {
@@ -44,23 +49,34 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (introInitialised.current) return
+    introInitialised.current = true
+    const fragment = window.location.hash.slice(1)
+    if (Object.hasOwn(reading.fragmentRedirects, fragment)) {
+      window.location.replace(reading.fragmentRedirects[fragment])
+      return
+    }
+    setShowIntro(shouldShowIntro())
+    setIntroReady(true)
     try {
       // Remember the visit, including reduced-motion and legacy-session visits.
       localStorage.setItem(SESSION_KEY, 'true')
     } catch {
       // Access to the site does not depend on browser storage.
     }
-  }, [])
+  }, [reading])
 
   useEffect(() => {
-    if (showIntro) return
+    if (!introReady || showIntro) return
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined
+    if (navigation?.type === 'back_forward') return
     const frame = requestAnimationFrame(() => {
       const destination = document.getElementById(window.location.hash.slice(1) || 'index')
       destination?.focus({ preventScroll: true })
       destination?.scrollIntoView({ behavior: 'instant', block: 'start' })
     })
     return () => cancelAnimationFrame(frame)
-  }, [showIntro])
+  }, [showIntro, introReady])
 
   const replayIntro = () => {
     setShowIntro(true)
@@ -102,6 +118,7 @@ export default function App() {
             <span>Producing Curiosity</span>
           </a>
           <nav aria-label="Primary navigation">
+            <a href="/investigations/">Investigations</a>
             <a href="#work">Work</a>
             <a href="#connections">Map</a>
             <a href="#practice">Practice</a>
@@ -133,6 +150,20 @@ export default function App() {
             <span className="color-key color-key--pressure"><i aria-hidden="true" /> <strong>Coral</strong> pressure point</span>
             <span className="color-key color-key--holds"><i aria-hidden="true" /> <strong>Teal</strong> what holds</span>
           </div>
+        </section>
+
+        <section className="reading-gateway" aria-labelledby="reading-gateway-title">
+          <p className="eyebrow">Seeing What Systems Miss</p>
+          <h2 id="reading-gateway-title">Questions, evidence, and explained connections.</h2>
+          <p>Open an investigation at its own address, read its limitations, and follow the reasoning into a related pattern.</p>
+          {reading.fixture ? <p className="reading-fixture-note">Development fixtures — synthetic examples, not approved case studies. Excluded from production builds.</p> : null}
+          <a className="primary-link" href="/investigations/">Browse investigations →</a>
+          {reading.entries.map((entry) => <article key={entry.id}>
+            <h3><a href={entry.path}>{entry.title}</a></h3><p>{entry.summary}</p>
+          </article>)}
+          {Object.entries(reading.fragmentRedirects).map(([fragment, path]) => (
+            <p key={fragment} id={fragment}><a href={path}>Continue to the connected reading page →</a></p>
+          ))}
         </section>
 
         <section className="work" id="work" aria-labelledby="work-title">

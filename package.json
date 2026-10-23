@@ -8,22 +8,30 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && tsc -p tsconfig.tools.json && vite build && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx && tsx --tsconfig tsconfig.app.json scripts/audit-public.ts",
     "preview": "vite preview",
-    "test": "playwright test",
+    "test": "npm run build && playwright test",
     "test:ui": "playwright test --ui",
-    "check:deploy": "wrangler deploy --dry-run"
+    "check:deploy": "wrangler deploy --dry-run",
+    "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
+    "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc"
   },
   "dependencies": {
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.64.1",
+    "@types/node": "22.20.5",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.7",
+    "@types/sanitize-html": "2.16.2",
     "@vitejs/plugin-react": "6.1.1",
+    "marked": "18.1.1",
+    "sanitize-html": "2.18.1",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "wrangler": "4.152.0"

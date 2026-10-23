@@ -74,8 +74,8 @@ test('unavailable motion API leaves an operable route to content', async ({ page
 test('blocked JavaScript retains a readable fallback', async ({ page }) => {
   await page.route('**/assets/*.js', route => route.abort())
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Producing Curiosity', exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Email Sam Belina' })).toHaveAttribute('href', 'mailto:hello@sbelina.com')
+  await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'hello@sbelina.com' })).toHaveAttribute('href', 'mailto:hello@sbelina.com')
 })
 
 test('automated WCAG checks on intro and main content', async ({ page }) => {

@@ -778,3 +778,10 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   .archive-grid { grid-template-columns: 1fr; }
   .graph-layer-control { border-radius: 18px; }
 }
+
+/* Connected reading entry; existing sections and their anchors remain intact. */
+.reading-gateway { padding: 3rem 0; border-block: 1px solid var(--line); }
+.reading-gateway h2 { max-width: 42rem; font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.15; }
+.reading-gateway p { max-width: 46rem; line-height: 1.65; }
+.reading-gateway article { margin-top: 2rem; }
+.reading-fixture-note { border-left: 3px solid var(--pressure); padding-left: 1rem; }

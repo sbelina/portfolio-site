@@ -150,3 +150,6 @@ vite.config.ts.timestamp-*
 
 # Local Cloudflare runtime state
 .wrangler/
+
+# Explicit local synthetic reading build
+dist-fixtures/
