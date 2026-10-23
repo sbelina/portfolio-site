@@ -134,7 +134,18 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           <p className="hero-copy">
             I design research, decision structures, workflows, and operating systems for ambiguous problems — especially when the visible failure is downstream from its cause.
           </p>
-          <p className="hero-thesis">Across environments, I keep finding the same thing: people blamed for failures that were structural.</p>
+          <p className="hero-thesis">Across environments, I keep finding the same thing: the problem people see is rarely the one creating the outcome.</p>
+          <div className="hero-study" aria-labelledby="study-label">
+            <p id="study-label">What I’m studying</p>
+            <ul>
+              <li>Structural causality</li>
+              <li>Information flow</li>
+              <li>Incentives</li>
+              <li>Feedback loops</li>
+              <li>Hidden work</li>
+              <li>Organizational learning</li>
+            </ul>
+          </div>
           <div className="hero-actions">
             <a className="primary-link" href="#work">See the work ↓</a>
             <a className="secondary-link" href="#connections">Trace the system ↗</a>

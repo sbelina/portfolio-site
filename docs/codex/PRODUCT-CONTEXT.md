@@ -69,3 +69,11 @@ The repository README already records an original local CSS/DOM implementation i
 The first release does not need a force-directed graph, automatic AI associations, real-time collaboration, vector search, or a generic visual page builder. It needs useful content, reliable routes, understandable relationships, and an authoring workflow that truly persists.
 
 The hexagonal keyboard investigation remains separately scoped by [its research brief](../KEYBOARD-RESEARCH.md). Do not repeat the disputed “QWERTY was designed to slow typists” story as settled history. No ergonomic or speed superiority is established by an on-screen geometry comparison. It must not block the publishing milestone.
+
+## Owner positioning and study areas — 2026-10-23
+
+Homepage lead: “Across environments, I keep finding the same thing: the problem people see is rarely the one creating the outcome.”
+
+Areas of inquiry: structural causality, information flow, incentives, feedback loops, hidden work, and organizational learning. These describe what Sam studies; they are not claims of proven causal effects. Connect future investigations to these areas only where the material supports the connection.
+
+The intro requires one deliberate action total. Its three teaching stages unfold automatically, followed by the dive. Do not restore repeated-input gates: the owner wants the same teaching with less frustration and waiting. Whether this improves comprehension remains a question for observation, not an established result.

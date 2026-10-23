@@ -46,7 +46,7 @@ These are **not Sam's manuscripts, evidence, metrics, outcomes or approved publi
 
 Worker `404-page` handling and trailing-slash normalization replace unconditional SPA success fallback. Unknown pages return real HTTP 404. Reviewed path aliases use finite server rules; URL fragments use a small client mapping plus useful HTML links. Existing real home fragments stay useful, with no false claim of server-side hash redirects. Unreviewed real case fragments are not redirected to synthetic fixtures. Object-prototype names cannot become compatibility redirect targets.
 
-Home rendering is deterministic on server and first client render. Storage/motion/fragment decisions happen after hydration, with a StrictMode-safe one-time initialization guard. The intro keeps its attempts, echoes, clicks/drags, automatic short dive, persistent first-visit memory, skip/replay and reduced-motion/failure behavior. Direct reading documents do not load the intro at all.
+Home rendering is deterministic on server and first client render. Storage/motion/fragment decisions happen after hydration, with a StrictMode-safe one-time initialization guard. The intro now needs one action to unfold three automatic stages, retaining echoes, directional clicks/drags, automatic short dive, persistent first-visit memory, skip/replay and reduced-motion/failure behavior. Direct reading documents do not load the intro at all.
 
 ## Public/private and artifact boundary
 
