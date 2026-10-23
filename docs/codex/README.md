@@ -16,6 +16,10 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 Existing context remains important: [content architecture proposal](../CONTENT-ARCHITECTURE.md), [intro states](../INTRO-STATES.md), [keyboard investigation](../KEYBOARD-RESEARCH.md), [audit](../AUDIT.md), [release notes](../RELEASE.md), and [deployment instructions](../../DEPLOY.md).
 
+## Development as an experiment
+
+Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hypothesis, adapted research practices, comparison design, and evidence record. The shared footer describes the idea, process, and current implementation.
+
 ## Writing and page review
 
 Open the [writing review folder](../../writing/README.md), [page review list](PAGE-REVIEW.md), and [workflow specification](WRITING-REVIEW-WORKFLOW.md). Eleven existing excerpts/descriptions have review records; full manuscripts remain to be supplied through private content storage. Approval and publication are separate, and the current documents do not implement CMS controls.

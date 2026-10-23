@@ -1,3 +1,4 @@
+import { ExperimentNote } from './components/ExperimentNote'
 import React from 'react'
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { ConnectionGraph } from './components/ConnectionGraph'
@@ -309,6 +310,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           <a href="#index">Back to top ↑</a>
           <button type="button" className="footer-replay" onClick={replayIntro}>Replay introduction</button>
         </div>
+        <ExperimentNote />
       </footer>
     </>
   )

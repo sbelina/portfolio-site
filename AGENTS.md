@@ -36,6 +36,10 @@ Distinguish implemented behavior from proposals. This documentation package does
 - Do not place repository-write tokens or service secrets in browser code or Vite public environment variables. Preview pages and their assets require real authorization; hidden links and noindex do not provide privacy.
 - A publishing workflow must bind owner approval to exact content/application revisions and assets. Validate the public projection, serialize deployment, and keep the prior healthy release on failure. Content fields and workflow payload assertions are not authorization.
 
+## Development experiment
+
+Follow [the development experiment](docs/codex/DEVELOPMENT-EXPERIMENT.md) when testing new methods. Define the question and acceptance conditions before building; load relevant context progressively; preserve correction provenance; distinguish human observations from simulations and automated checks. Record actual results and limitations. Update the shared footer experiment statement when verified capabilities change.
+
 ## Verification and reporting
 
 Use the repository-pinned Node version and lockfile. For runtime changes, the current checks are `npm ci`, `npm run build`, `npm run check:deploy`, and `npm test`; inspect the current scripts and CI before running. Install required Playwright browsers using the repository's documented procedure. Never disable TLS or dependency integrity checks to make installation pass.
