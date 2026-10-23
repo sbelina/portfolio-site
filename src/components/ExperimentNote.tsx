@@ -8,14 +8,14 @@ export function ExperimentNote() {
       <div className="experiment-note__body">
         <p className="experiment-note__intro">A portfolio for experimentation, connected ideas, and the perspective of its creator, Sam Belina. The website itself is part of the inquiry.</p>
         <h2>The idea</h2>
-        <p>What happens when a website is approached through research, systems thinking, writing, design, accessibility, and engineering together?</p>
+        <p>A portfolio for experimentation, connecting ideas, and sharing its creator’s perspective. The website itself is part of that inquiry.</p>
         <h2>The working hypothesis</h2>
-        <p>Combining those disciplines with an understanding of the language used to describe their methods can help a creator guide a large language model toward a coherent, accessible website that expresses connected ideas and a personal perspective.</p>
+        <p>Can multidisciplinary methods, deliberately translated into implementation instructions through LLM prompting, produce a different kind of website?</p>
         <p>The question is whether that approach produces a meaningfully different experience from prompting for familiar page layouts. That remains an open question, not a demonstrated result.</p>
         <h2>The process</h2>
-        <p>Frame a question, translate methods into instructions and constraints, build a small example, inspect its behavior, and revise. Sources, corrections, human judgment, and the limits of each experiment belong in the record.</p>
+        <p>My writing, research, and observations inform the design; agents suggest structures and connections; I review their interpretation. We build small examples, inspect behavior, record sources and uncertainties, and revise.</p>
         <h2>The implementation</h2>
-        <p>Built with React, TypeScript, and Vite for a Cloudflare Worker, with LLM-assisted development. This version includes reading templates, versioned content contracts, and explained connections. Private authoring and authenticated publishing are still being developed. Automated checks provide technical evidence; human reading and accessibility review are part of the continuing work.</p>
+        <p>Built with React, TypeScript, and Vite for a Cloudflare Worker, with LLM-assisted development. This version includes reading templates, versioned content contracts, and explained connections. An isolated local writing trial has been exercised with synthetic manuscripts; hosted CMS integration and production publishing remain unimplemented. Original manuscripts stay separate from suggested edits. Automated checks provide technical evidence; human reading and accessibility review are part of the continuing work.</p>
         <a href="https://github.com/sbelina/portfolio-site">Explore the source and development history</a>
       </div>
     </details>

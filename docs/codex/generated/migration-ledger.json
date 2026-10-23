@@ -211,6 +211,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "study-label",
+      "destination": "/#study-label",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "reading-gateway-title",
       "destination": "/#reading-gateway-title",
       "source": "new reading gateway/bootstrap",

@@ -153,3 +153,10 @@ vite.config.ts.timestamp-*
 
 # Explicit local synthetic reading build
 dist-fixtures/
+
+# Private local authoring configuration and output
+.dev.vars*
+dist-studio/
+.studio-local/
+.studio-password
+studio-test-results/

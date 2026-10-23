@@ -25,11 +25,9 @@ function frozen<T>(value: T): T {
  * W4 must authenticate the approver and protect the release workflow; a JSON
  * approvedBy field, manifest, or this pure function cannot authorize publication.
  */
-export function buildPublicProjection(input: ContentStore, selection: ReleaseManifest, approvals: CandidateApproval[]): PublicProjection {
+export function validateCandidateProjection(input: ContentStore, selection: ReleaseManifest): PublicProjection {
   const store = storeSchema.parse(input)
   const manifest = manifestSchema.parse(selection)
-  const trustedApprovals = approvals.map(approval => approvalSchema.parse(approval))
-  if (!trustedApprovals.some(approval => approval.candidateDigest === digestRecord(manifest))) throw new Error('Candidate approval does not match exact selection')
   const allIdentities = new Map<string, string>()
   const select = <T extends { id: string; revision: number }>(records: T[], refs: RecordRef[], category: string): T[] => {
     const byRevision = new Map<string, T>()
@@ -120,4 +118,13 @@ export function buildPublicProjection(input: ContentStore, selection: ReleaseMan
   }
   // Freeze a detached allowlisted copy; later private-store edits cannot mutate it.
   return frozen(projection)
+}
+
+/** A mechanically valid candidate is not authenticated approval. Trusted callers
+ * supply authenticated approval provenance; this helper verifies only integrity. */
+export function buildPublicProjection(input: ContentStore, selection: ReleaseManifest, approvals: CandidateApproval[]): PublicProjection {
+  const manifest = manifestSchema.parse(selection)
+  const trustedApprovals = approvals.map(approval => approvalSchema.parse(approval))
+  if (!trustedApprovals.some(approval => approval.candidateDigest === digestRecord(manifest))) throw new Error('Candidate approval does not match exact selection')
+  return validateCandidateProjection(input, manifest)
 }

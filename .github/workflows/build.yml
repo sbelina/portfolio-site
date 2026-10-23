@@ -37,6 +37,9 @@ jobs:
     - name: Run browser and accessibility checks
       run: npm test
 
+    - name: Verify isolated private local writing trial
+      run: npm run test:studio && npm run studio:restart-proof && npm run check:studio
+
     - name: Upload browser evidence
       if: always()
       uses: actions/upload-artifact@v4
@@ -45,4 +48,5 @@ jobs:
         path: |
           playwright-report/
           test-results/
+          studio-test-results/
         retention-days: 14

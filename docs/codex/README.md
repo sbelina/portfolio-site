@@ -24,11 +24,15 @@ Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hyp
 
 Open the [writing review folder](../../writing/README.md), [page review list](PAGE-REVIEW.md), and [workflow specification](WRITING-REVIEW-WORKFLOW.md). Eleven existing excerpts/descriptions have review records; full manuscripts remain to be supplied through private content storage. Approval and publication are separate, and the current documents do not implement CMS controls.
 
+## Current private writing trial
+
+See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE-WRITING-TRIAL.md). The isolated Worker now implements local authenticated durable saves and protected previews; hosted Pages CMS integration and production publication remain unimplemented. The source probe is not a full CMS trial.
+
 ## Status and authority
 
 Prepared 22 October 2026 against main commit `0fb948124a5f02455818f10bbbdc53d2fafbe6b4` (tree `562fe5f2c8f2f23bd32e173a48064ff5a7485218`). Reinspect before implementation. The live domain was not retested as part of this documentation handoff.
 
-The application baseline was a single-page React/Vite prototype. This feature branch implements finite prerendered reading routes and a validated public projection; see [slice decisions](SLICE-DECISIONS.md). The content studio, durable private saves, protected previews and authenticated publishing workflow remain proposed. No external editor or paid service is selected merely by documenting it.
+The application baseline was a single-page React/Vite prototype. This feature branch implements finite prerendered reading routes and a validated public projection; see [slice decisions](SLICE-DECISIONS.md). The hosted content studio and authenticated publishing workflow remain proposed; the separate local trial is described above. No external editor or paid service is selected merely by documenting it.
 
 The user's latest explicit request determines task scope. Root `AGENTS.md` provides durable working guidance. The older `docs/AGENTS-PROPOSAL.md` remains a historical proposal, not a second active instruction file. Existing source and measured tests establish actual implementation state. This directory expands earlier architecture proposals; conflicts that materially affect implementation should be called out and resolved in a small decision record, not silently blended.
 

@@ -14,7 +14,14 @@
     "test:ui": "playwright test --ui",
     "check:deploy": "wrangler deploy --dry-run",
     "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
-    "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc"
+    "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc",
+    "studio:setup": "tsx scripts/studio-setup.ts",
+    "studio:build": "tsc -p tsconfig.studio.json && vite build --config vite.studio.config.ts && tsx scripts/studio-assets.ts",
+    "studio:migrate": "wrangler d1 execute DB --local --config wrangler.studio.jsonc --file migrations/0001_studio.sql",
+    "studio:dev": "wrangler dev --local --config wrangler.studio.jsonc --ip 127.0.0.1 --port 4180",
+    "test:studio": "playwright test --config playwright.studio.config.ts",
+    "check:studio": "wrangler deploy --dry-run --config wrangler.studio.jsonc",
+    "studio:restart-proof": "tsx scripts/studio-restart-proof.ts"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -29,6 +36,8 @@
     "@types/react-dom": "19.2.7",
     "@types/sanitize-html": "2.16.2",
     "@vitejs/plugin-react": "6.1.1",
+    "fast-xml-parser": "5.11.2",
+    "fflate": "0.8.3",
     "marked": "18.1.1",
     "sanitize-html": "2.18.1",
     "tsx": "4.23.15",

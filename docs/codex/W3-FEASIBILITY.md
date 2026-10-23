@@ -1,3 +1,5 @@
+> Follow-up: [source evaluation](CMS-EVALUATION.md) and [local private trial](PRIVATE-WRITING-TRIAL.md) distinguish implemented local mechanisms from the still-unverified hosted CMS. The original proposal below remains the real adoption gate.
+
 # Next bounded task: private Git-backed authoring feasibility
 
 Status: preparation for W3, not an installed editor or a proven publishing workflow. W0–W2 supplies a validated reading/projection boundary. It does not demonstrate saving, owner authentication, protected preview, approval, publication or restoration.
