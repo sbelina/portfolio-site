@@ -136,3 +136,7 @@ Pages CMS is the conditional recommendation after source inspection. Native JSON
 Final verification and remaining gaps are recorded in the trial document. No site deployment, Git push, DNS change, service purchase or real manuscript import occurred in this task.
 
 Verification for this isolated trial: clean install, public type/build/artifact checks and **72/72** existing tests passed; private build and **3/3** integrated scenarios passed; real Worker restart/fresh-login persistence proof passed; public/private Worker dry-run packaging passed; pinned native Pages serialization/reference probe passed. See the trial record for test scope, manual screenshot review, repaired findings and unverified hosted/native-CMS capabilities. These are local results, not remote CI or owner approval of real writing.
+
+## Verification follow-up
+
+A separate verification pass reproduced and repaired three edge cases: short-section omission in split proposals, slug round-trip alias collisions, and missing old-path redirects in draft previews. Public checks passed **72/72**; expanded private checks passed **7/7**, along with real restart persistence, packaging dry-runs and the native Pages field/serialization probe. See [the verification record](WRITING-VERIFICATION.md) for severity, reproduction, fixes and remaining hosted/native-CMS gaps. No real writing was imported or published.

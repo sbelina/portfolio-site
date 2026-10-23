@@ -79,6 +79,9 @@ test('authenticated durable synthetic intake → review → connected preview �
  // A new draft does not mutate the frozen approved candidate.
  await action({type:'metadata',entryId:first.id,title:'A newer synthetic draft',slug:first.slug+'-new',summary:'Changed draft only.',contribution:'Synthetic only.'})
  expect(envelope.workspace.candidates.at(-1)!.projection.entries.find(e=>e.id===first.id)?.title).toBe(first.title)
+ const oldDraftURL=await owner.request.get(base+`/preview/draft${route}`,{maxRedirects:0})
+ expect(oldDraftURL.status()).toBe(302)
+ expect(oldDraftURL.headers().location).toContain(first.slug+'-new')
  const raceBase=envelope.version
  const race=await Promise.all(['Race A','Race B'].map(title=>owner.request.post(base+'/api/actions',{headers:{Origin:base,'X-CSRF-Token':csrf},data:{expectedVersion:raceBase,action:{type:'metadata',entryId:first.id,title,slug:first.slug+'-new',summary:'Synthetic concurrency test.',contribution:'Synthetic only.'}}})))
  expect(race.map(r=>r.status()).sort()).toEqual([200,409])

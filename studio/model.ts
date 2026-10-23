@@ -40,13 +40,15 @@ function sections(text: string, digest: string): Section[] {
  const headers = [...text.matchAll(/^## (.+\?)\s*$/gm)]
  // Only explicit independent questions qualify automatically. All remain proposals.
  if (headers.length < 2 || headers[0].index !== 0) return []
- return headers.map((match,i) => {
+ const proposed = headers.map((match,i) => {
   const start = match.index!, end = headers[i+1]?.index ?? text.length
   return { id: randomUUID(), title: match[1], slug: slugify(match[1]), summary: text.slice(start + match[0].length,end).trim().slice(0,180), collection: 'observation' as const, passage: { start,end,sourceDigest:digest }, reason: 'An explicit section question with its own passage; owner review still required.' }
- }).filter(s => s.passage.end-s.passage.start >= 120)
+ })
+ // Never omit a short passage to make the remaining outline look complete.
+ return proposed.every(s => s.passage.end-s.passage.start >= 120) ? proposed : []
 }
 export function draftProjection(w: Workspace): PublicProjection {
- return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds})=>({id,fromId,toId,type,rationale,evidenceIds})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:[] }
+ return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds})=>({id,fromId,toId,type,rationale,evidenceIds})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:w.store.aliases.filter(a=>a.reviewState==='approved').map(a=>a.kind==='path'?{id:a.id,kind:a.kind,path:a.path,targetId:a.targetId}:{id:a.id,kind:a.kind,fragment:a.fragment,targetId:a.targetId}) }
 }
 export function applyAction(source: Workspace, action: Action, version: number, subject: string, appRevision: string, now = new Date().toISOString()): Workspace {
  const w = structuredClone(source)
@@ -103,6 +105,7 @@ export function applyAction(source: Workspace, action: Action, version: number, 
  case 'metadata': {
   const e=getEntry(action.entryId), oldPath=entryPath(e)
   Object.assign(e,{title:action.title,slug:action.slug,summary:action.summary,contribution:action.contribution});entrySchema.parse(e)
+  w.store.aliases=w.store.aliases.filter(a=>a.kind!=='path' || a.targetId!==e.id || a.path!==entryPath(e))
   if(entryPath(e)!==oldPath && !w.store.aliases.some(a=>a.kind==='path' && a.path===oldPath)) w.store.aliases.push({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'approved',kind:'path',path:oldPath,targetId:e.id})
   bump(e); break
  }

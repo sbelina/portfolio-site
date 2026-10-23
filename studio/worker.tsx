@@ -77,7 +77,7 @@ async function handle(request:Request,env:Env):Promise<Response> {
    next=structuredClone(workspace);const index=next.store.entries.findIndex(e=>e.id===args.entryId)
    next.store.entries[index]={...entry,revision:target.revision+1,visibility:'restricted',editorialState:'draft',updatedAt:new Date().toISOString()}
    const restoredPath=entryPath(next.store.entries[index]),previousPath=entryPath(target)
-   next.store.aliases=next.store.aliases.filter(a=>a.kind!=='path' || a.path!==restoredPath)
+   next.store.aliases=next.store.aliases.filter(a=>a.kind!=='path' || a.targetId!==target.id || a.path!==restoredPath)
    if(previousPath!==restoredPath && !next.store.aliases.some(a=>a.kind==='path' && a.path===previousPath))next.store.aliases.push({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'approved',kind:'path',path:previousPath,targetId:target.id})
    storeSchema.parse(next.store)
   }
