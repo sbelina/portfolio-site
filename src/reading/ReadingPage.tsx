@@ -1,3 +1,4 @@
+import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
@@ -17,6 +18,7 @@ function dateLabel(value: string | null) {
 
 function blockLabel(block: Block, index: number, projection: ReadingContext) {
   switch (block.type) {
+    case 'assumed_observed': return block.title
     case 'verse': return `Verse ${index + 1}`
     case 'callout': return block.label
     case 'prose': return block.markdown.match(/^#{1,6}\s+(.+)$/m)?.[1] ?? `Reading section ${index + 1}`
@@ -57,6 +59,7 @@ function EvidenceDisclosure({ evidence }: { evidence: PublicEvidence }) {
 
 function ContentBlock({ block, page }: { block: Block; page: ReadingPageData }) {
   switch (block.type) {
+    case 'assumed_observed': return <AssumedObserved block={block} evidence={page.projection.evidence}/>
     case 'verse': return <p className="reading-verse">{block.text}</p>
     case 'prose': return <SafeMarkdown block={block} html={page.renderedMarkdown} />
     case 'callout': return <aside className="reading-callout"><h2>{block.label}</h2><SafeMarkdown block={block} html={page.renderedMarkdown} /></aside>

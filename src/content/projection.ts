@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { diagramEvidenceIds } from './assumed-observed'
 import { approvalSchema, entryPath, manifestSchema, storeSchema, type CandidateApproval, type ContentStore, type PublicAlias, type PublicProjection, type RecordRef, type ReleaseManifest } from './model'
 export type { PublicEntry, PublicRelationship, PublicEvidence, PublicAsset, PublicAlias, PublicProjection } from './model'
 
@@ -78,6 +79,7 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
     for (const block of entry.blocks) {
       if (occupiedBlocks.has(block.id)) throw new Error('Duplicate public block identity')
       occupiedBlocks.add(block.id)
+      if (block.type === 'assumed_observed') assertReferences(diagramEvidenceIds(block), evidenceIds, 'Diagram references private or unselected evidence')
       if (block.type === 'evidence') assertReferences([block.evidenceId], evidenceIds, 'Evidence block references unselected evidence')
       if (block.type === 'image') assertReferences([block.assetId], assetIds, 'Image block references unselected asset')
     }

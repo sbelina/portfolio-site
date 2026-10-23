@@ -28,6 +28,10 @@ Open the [writing review folder](../../writing/README.md), [page review list](PA
 
 See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE-WRITING-TRIAL.md). The isolated Worker now implements local authenticated durable saves and protected previews; hosted Pages CMS integration and production publication remain unimplemented. The source probe is not a full CMS trial.
 
+## Inspectable visual slice
+
+[Assumed → observed](INSPECTABLE-ASSUMPTIONS.md) records the first synthetic interactive diagram, its structured editorial proposal, isolated preview, acceptance checks and later stages. It does not claim that the remaining diagram types are implemented.
+
 ## Status and authority
 
 Prepared 22 October 2026 against main commit `0fb948124a5f02455818f10bbbdc53d2fafbe6b4` (tree `562fe5f2c8f2f23bd32e173a48064ff5a7485218`). Reinspect before implementation. The live domain was not retested as part of this documentation handoff.

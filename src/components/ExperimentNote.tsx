@@ -16,6 +16,7 @@ export function ExperimentNote() {
         <p>My writing, research, and observations inform the design; agents suggest structures and connections; I review their interpretation. We build small examples, inspect behavior, record sources and uncertainties, and revise.</p>
         <h2>The implementation</h2>
         <p>Built with React, TypeScript, and Vite for a Cloudflare Worker, with LLM-assisted development. This version includes reading templates, versioned content contracts, and explained connections. An isolated local writing trial has been exercised with synthetic manuscripts; hosted CMS integration and production publishing remain unimplemented. Original manuscripts stay separate from suggested edits. Automated checks provide technical evidence; human reading and accessibility review are part of the continuing work.</p>
+        <p>The interactive reading experiments ask whether making assumptions, evidence, and relationships inspectable helps visitors understand how I investigate systems. We record interface observations as the site evolves. Improved comprehension has not been established; technical checks are not a substitute for evaluating it with readers.</p>
         <a href="https://github.com/sbelina/portfolio-site">Explore the source and development history</a>
       </div>
     </details>

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { assumedObservedSchema } from './assumed-observed'
 
 export const uuidSchema = z.uuid().regex(/^[0-9a-f-]+$/, 'UUIDs use canonical lowercase spelling')
 export const digestSchema = z.string().regex(/^[a-f0-9]{64}$/)
@@ -11,6 +12,7 @@ const ids = z.array(uuidSchema).refine(values => new Set(values).size === values
 const dates = { createdAt: timestamp.nullable(), updatedAt: timestamp.nullable() }
 
 export const blockSchema = z.discriminatedUnion('type', [
+  assumedObservedSchema,
   z.strictObject({ id: uuidSchema, type: z.literal('prose'), markdown: text }),
   // Literal verse, not Markdown: retain original whitespace and punctuation.
   z.strictObject({ id: uuidSchema, type: z.literal('verse'), text }),

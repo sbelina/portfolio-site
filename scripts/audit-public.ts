@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-export const forbiddenPublicMarkers = ['PUBLIC_SAFE_READING_FIXTURE_9b11', 'PRIVATE_DRAFT_CANARY_8b72', 'fixture-claims-handoff', 'fixture-delivered-not-complete', 'fixture-verse-spacing', 'A test line—nothing borrowed.', 'synthetic-test-approver-not-an-owner-approval', 'synthetic-trial-password-not-an-owner-credential', 'Synthetic connected manuscript', 'Synthetic verse import', 'OWNER_PASSWORD_HASH', 'pc_studio_session']
+export const forbiddenPublicMarkers = ['PUBLIC_SAFE_READING_FIXTURE_9b11', 'PRIVATE_DRAFT_CANARY_8b72', 'fixture-claims-handoff', 'fixture-delivered-not-complete', 'fixture-verse-spacing', 'fixture-assumed-observed', 'SYNTHETIC_AO_FIXTURE_4c2b', 'A test line—nothing borrowed.', 'synthetic-test-approver-not-an-owner-approval', 'synthetic-trial-password-not-an-owner-credential', 'Synthetic connected manuscript', 'Synthetic verse import', 'OWNER_PASSWORD_HASH', 'pc_studio_session']
 export async function auditPublic(directory: string) {
   const files: string[] = []
   async function walk(folder: string) {

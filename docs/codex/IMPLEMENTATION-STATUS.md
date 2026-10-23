@@ -140,3 +140,9 @@ Verification for this isolated trial: clean install, public type/build/artifact 
 ## Verification follow-up
 
 A separate verification pass reproduced and repaired three edge cases: short-section omission in split proposals, slug round-trip alias collisions, and missing old-path redirects in draft previews. Public checks passed **72/72**; expanded private checks passed **7/7**, along with real restart persistence, packaging dry-runs and the native Pages field/serialization probe. See [the verification record](WRITING-VERIFICATION.md) for severity, reproduction, fixes and remaining hosted/native-CMS gaps. No real writing was imported or published.
+
+## First inspectable visualization slice
+
+`feat/inspectable-assumptions` adds the [Assumed → observed component and editorial path](INSPECTABLE-ASSUMPTIONS.md), based on `f73f257`. It preserves the existing public reading/intro/writing features. The first diagram uses original SVG/HTML geometry, fixed positions, explicit relationship status/meaning, complete source/limitation accounts, keyboard/touch/stacked/no-JS behavior and a strict block schema. Source quotes and candidate/approval boundaries remain separate. The public-safe synthetic route is excluded from default production and the curated homepage.
+
+The local writing trial can propose, edit and accept/reject this block through forms with source provenance and missing evidence. An accepted block changes draft readiness, not publication. The shared footer explains the comprehension hypothesis without claiming an evaluated benefit. The arc index, categorical workflow tracks and shallow related-reading previews remain subsequent stages; this task starts with the first complete component as requested. No production deployment or publication is performed.

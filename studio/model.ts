@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { entrySchema, evidenceSchema, relationshipSchema, assetSchema, entryPath, type ContentStore, type Entry, type PublicProjection, type ReleaseManifest } from '../src/content/model'
 import { validateCandidateProjection, digestRecord } from '../src/content/projection'
+import { assumedObservedSchema, type AssumedObservedBlock } from '../src/content/assumed-observed'
 import { intakeText } from './intake'
 
 export const passes = ['Manuscript Intake', 'Editorial Reader', 'Evidence Reviewer', 'Connection Curator', 'Experience Reviewer', 'Release Checker'] as const
@@ -11,7 +12,8 @@ export type Section = { id: string; title: string; slug: string; summary: string
 export type Manuscript = { id: string; title: string; format: 'text' | 'markdown' | 'docx'; poetry: boolean; original: string; bytes: string; filename: string; digest: string; warnings: string[]; sections: Section[]; structure: 'undecided' | 'intact' | 'split'; complete: boolean; reviews: { pass: typeof passes[number]; suggestion: string; uncertainty: string; sources: Passage[]; decision: Decision; note: string; basis?: string }[] }
 export type Edit = { id: string; entryId: string; blockId: string; before: string; after: string; rationale: string; source: Passage; decision: Decision }
 export type Candidate = { digest: string; workspaceVersion: number; source: {kind:'local-d1';version:number;digest:string}; releaseEligible:false; applicationRevision: string; manifest: ReleaseManifest; projection: PublicProjection; assets: Record<string, string>; approval: null | { subject: string; at: string; digest: string }; published: false }
-export type Workspace = { schemaVersion: 1; manuscripts: Manuscript[]; store: ContentStore; edits: Edit[]; candidates: Candidate[] }
+export type VisualizationProposal={id:string;entryId:string;revision:number;spec:AssumedObservedBlock;decision:Decision;sourcePassages:Passage[];uncertainty:string}
+export type Workspace = { visualizations?:VisualizationProposal[]; schemaVersion: 1; manuscripts: Manuscript[]; store: ContentStore; edits: Edit[]; candidates: Candidate[] }
 export const emptyWorkspace = (): Workspace => ({ schemaVersion: 1, manuscripts: [], store: { entries: [], evidence: [], assets: [], relationships: [], aliases: [] }, edits: [], candidates: [] })
 const uuid = z.uuid(); const short = z.string().min(1).max(300); const text = z.string().max(200000)
 export const actionSchema = z.discriminatedUnion('type', [
@@ -28,6 +30,8 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('suggestConnections'), manuscriptId:uuid }),
  z.strictObject({ type: z.literal('reviseRelationship'), relationshipId:uuid, rationale:z.string().min(1).max(5000), relation:relationshipSchema.shape.type }),
  z.strictObject({ type: z.literal('decideRelationship'), relationshipId: uuid, decision: z.enum(['accept','reject']) }),
+ z.strictObject({type:z.literal('visualization'),entryId:uuid,spec:assumedObservedSchema}),
+ z.strictObject({type:z.literal('decideVisualization'),proposalId:uuid,decision:z.enum(['accept','reject'])}),
  z.strictObject({ type: z.literal('candidate') }),
  z.strictObject({ type: z.literal('approve'), digest: z.string().regex(/^[a-f0-9]{64}$/) }),
 ])
@@ -144,8 +148,33 @@ export function applyAction(source: Workspace, action: Action, version: number, 
   const r=w.store.relationships.find(r=>r.id===action.relationshipId);if(!r)throw Error('Relationship not found')
   r.reviewState=action.decision==='accept'?'approved':'rejected';r.revision++;break
  }
+ case 'visualization': {
+  const entry=getEntry(action.entryId),manuscript=manuscriptForEntry(w,entry.id)
+  if(!manuscript)throw Error('Original manuscript is required for visualization provenance')
+  if(action.spec.assumptions.some(a=>!manuscript.original.includes(a.sourcePassage)))throw Error('Assumption source passages must quote the preserved original exactly')
+  if(action.spec.observations.some(o=>!w.store.evidence.some(e=>e.id===o.evidenceId)))throw Error('Observation source is not in the private evidence ledger')
+  if(entry.blocks.some(b=>b.id===action.spec.id && b.type!=='assumed_observed'))throw Error('Visualization identity belongs to a different block type')
+  if(w.store.entries.some(e=>e.id!==entry.id && e.blocks.some(b=>b.id===action.spec.id)))throw Error('Visualization identity belongs to another entry')
+  const proposals=w.visualizations??=[]
+  const previous=proposals.find(p=>p.spec.id===action.spec.id)
+  if(previous && previous.entryId!==entry.id)throw Error('Visualization proposal belongs to another entry')
+  if(previous){previous.spec=action.spec;previous.revision++;previous.decision='pending'}
+  else proposals.push({id:randomUUID(),entryId:entry.id,revision:1,spec:action.spec,decision:'pending',sourcePassages:[{start:0,end:manuscript.original.length,sourceDigest:manuscript.digest}],uncertainty:'Owner-provided source quotations and relationship meanings are proposals, not independently verified evidence. Missing evidence remains explicit.'})
+  break
+ }
+ case 'decideVisualization': {
+  const proposal=w.visualizations?.find(p=>p.id===action.proposalId)
+  if(!proposal || proposal.decision!=='pending')throw Error('Visualization proposal is not pending')
+  if(action.decision==='accept'){
+   const entry=getEntry(proposal.entryId),index=entry.blocks.findIndex(b=>b.id===proposal.spec.id)
+   if(index<0)entry.blocks.push(proposal.spec);else entry.blocks[index]=proposal.spec
+   bump(entry)
+  }
+  proposal.decision=action.decision;break
+ }
  case 'candidate': {
   if(!w.store.entries.length || w.manuscripts.some(m=>m.structure==='undecided' || !m.complete || m.reviews.some(r=>r.decision!=='accept' || r.basis!==digestRecord(w.store))))throw Error('Choose a structure, confirm completeness, and complete all six review passes on the current draft (re-review after edits)')
+  if(w.visualizations?.some(p=>p.decision==='pending'))throw Error('Decide each visualization proposal before freezing a candidate')
   if(w.edits.some(e=>e.decision==='pending') || w.store.relationships.some(r=>r.reviewState==='proposed'))throw Error('Decide each edit and relationship before freezing a candidate')
   const store=structuredClone(w.store)
   store.entries.forEach(e=>{e.visibility='public';e.editorialState='approved'})
