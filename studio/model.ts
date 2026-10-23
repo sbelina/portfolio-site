@@ -25,6 +25,8 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('evidence'), entryId: uuid, title: short, source: short, locator: short, observedAt:z.iso.datetime({offset:true}), limitations: z.string().min(1).max(5000), rightsCleared: z.boolean() }),
  z.strictObject({ type: z.literal('asset'), entryId: uuid, bytes: z.string().max(100000), alt: z.string().min(1).max(2000), credit: short, rightsCleared: z.boolean() }),
  z.strictObject({ type: z.literal('relationship'), fromId: uuid, toId: uuid, rationale: z.string().min(1).max(5000), relation: relationshipSchema.shape.type }),
+ z.strictObject({ type: z.literal('suggestConnections'), manuscriptId:uuid }),
+ z.strictObject({ type: z.literal('reviseRelationship'), relationshipId:uuid, rationale:z.string().min(1).max(5000), relation:relationshipSchema.shape.type }),
  z.strictObject({ type: z.literal('decideRelationship'), relationshipId: uuid, decision: z.enum(['accept','reject']) }),
  z.strictObject({ type: z.literal('candidate') }),
  z.strictObject({ type: z.literal('approve'), digest: z.string().regex(/^[a-f0-9]{64}$/) }),
@@ -119,6 +121,21 @@ export function applyAction(source: Workspace, action: Action, version: number, 
  case 'relationship': {
   getEntry(action.fromId);getEntry(action.toId)
   w.store.relationships.push(relationshipSchema.parse({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'proposed',fromId:action.fromId,toId:action.toId,type:action.relation,rationale:action.rationale,evidenceIds:[],provenance:'owner'}));break
+ }
+ case 'suggestConnections': {
+  const m=w.manuscripts.find(m=>m.id===action.manuscriptId)
+  if(!m || m.structure!=='split')throw Error('Connection suggestions need independently generated section drafts')
+  const entries=w.store.entries.filter(e=>m.sections.some(s=>s.id===e.id)),first=entries[0]
+  for(const target of entries.slice(1,4)) {
+   if(w.store.relationships.some(r=>r.fromId===first.id && r.toId===target.id))continue
+   const section=m.sections.find(s=>s.id===target.id)!
+   w.store.relationships.push(relationshipSchema.parse({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'proposed',fromId:first.id,toId:target.id,type:'extends',rationale:`Proposed interpretation: “${target.title}” extends “${first.title}” by opening a second question in this manuscript. Its source passage begins: “${section.summary}”. Decide whether that adds a distinct perspective; shared authorship alone is not evidence.`,evidenceIds:[],provenance:'assistant_suggestion',internalNotes:JSON.stringify({method:'local-question-outline-heuristic-not-LLM',source:section.passage})}))
+  }
+  break
+ }
+ case 'reviseRelationship': {
+  const r=w.store.relationships.find(r=>r.id===action.relationshipId);if(!r)throw Error('Relationship not found')
+  r.rationale=action.rationale;r.type=action.relation;r.reviewState='proposed';r.revision++;break
  }
  case 'decideRelationship': {
   const r=w.store.relationships.find(r=>r.id===action.relationshipId);if(!r)throw Error('Relationship not found')

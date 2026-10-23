@@ -46,7 +46,10 @@ test('authenticated durable synthetic intake → review → connected preview �
  await action({type:'evidence',entryId:first.id,title:'Synthetic source',source:'Invented demonstration manuscript',locator:'Synthetic passage one',observedAt:'2000-01-01T00:00:00Z',limitations:'No factual validation or measured outcome.',rightsCleared:true})
  const png='iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aN0sAAAAASUVORK5CYII='
  await action({type:'asset',entryId:first.id,bytes:png,alt:'Synthetic one-pixel artifact',credit:'Synthetic test only',rightsCleared:true})
- await action({type:'relationship',fromId:first.id,toId:second.id,relation:'extends',rationale:'The receiving-role question extends the fictional handoff question. This is interpretation, not measured evidence.'})
+ await action({type:'suggestConnections',manuscriptId:m.id})
+ const suggestion=envelope.workspace.store.relationships.at(-1)!
+ expect(suggestion.reviewState).toBe('proposed');expect(suggestion.provenance).toBe('assistant_suggestion');expect(suggestion.internalNotes).toContain(m.digest)
+ await action({type:'reviseRelationship',relationshipId:suggestion.id,relation:'extends',rationale:'The receiving-role question extends the fictional handoff question. This is interpretation, not measured evidence.'})
  await action({type:'decideRelationship',relationshipId:envelope.workspace.store.relationships.at(-1)!.id,decision:'accept'})
  for(const pass of passes)await action({type:'review',manuscriptId:m.id,pass,decision:'accept',note:'Synthetic test operator completed this pass on invented writing; no human comprehension or real evidence claim.',complete:true})
  // Real stale-save rejection at the storage boundary, not a pure helper.
