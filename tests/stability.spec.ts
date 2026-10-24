@@ -74,8 +74,8 @@ test('unavailable motion API leaves an operable route to content', async ({ page
 test('blocked JavaScript retains a readable fallback', async ({ page }) => {
   await page.route('**/assets/*.js', route => route.abort())
   await page.goto('/')
-  await expect(page.getByRole('heading', { name: 'Producing Curiosity', exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Email Sam Belina' })).toHaveAttribute('href', 'mailto:hello@sbelina.com')
+  await expect(page.getByRole('heading', { name: heading })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'hello@sbelina.com' })).toHaveAttribute('href', 'mailto:hello@sbelina.com')
 })
 
 test('automated WCAG checks on intro and main content', async ({ page }) => {
@@ -120,21 +120,17 @@ test('intro render failure during replay cannot take down main content', async (
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
 })
 
-test('the original three attempts per step still lead through the dive to main content', async ({ page }) => {
+test('one keyboard action unfolds all three stages and opens main content', async ({ page }) => {
+  await page.clock.install()
   await page.goto('/')
-  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
-  for (let step = 1; step <= 3; step++) {
-    await expect(page.locator('.step-prompt, .step-copy > p:not(.intro-hint)')).toContainText(`step ${step}:`)
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await page.getByRole('button', { name: 'Test the boundary' }).focus()
-      await page.keyboard.press('Enter')
-      await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/, { timeout: 3000 })
-    }
-  }
-  await expect(page.locator('.step-prompt, .step-copy > p:not(.intro-hint)')).toContainText('step 4: dive in')
-  await page.getByRole('button', { name: 'Dive into the portfolio' }).focus()
+  await page.getByRole('button', { name: 'Begin exploring the question' }).focus()
   await page.keyboard.press('Enter')
-  await page.locator('main').scrollIntoViewIfNeeded()
+  for (let step = 1; step <= 3; step++) {
+    await expect(page.locator('.step-prompt')).toContainText(`step ${step}:`)
+    await page.clock.runFor(1000)
+  }
+  await expect(page.locator('.step-prompt')).toHaveText('dive in')
+  await page.clock.runFor(1200)
   await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
   await expect(page.locator('main')).toBeFocused()
 })
@@ -155,29 +151,27 @@ test('main content and skip remain usable at 320 CSS pixels', async ({ page }) =
 })
 
 
-test('interrupted attempt timers cannot advance a replay', async ({ page }) => {
+test('interrupted automatic stages cannot advance a replay', async ({ page }) => {
   await page.clock.install()
   await page.goto('/')
   await page.getByRole('button', { name: 'Begin exploring the question' }).click()
-  await page.getByRole('button', { name: 'Test the boundary' }).focus()
-  await page.keyboard.press('Enter')
+  await page.clock.runFor(400)
   await page.getByRole('button', { name: 'Skip introduction' }).click()
   await page.getByRole('button', { name: 'Replay introduction' }).click()
-  await page.clock.fastForward(2000)
+  await page.clock.fastForward(5000)
   await expect(page.getByRole('button', { name: 'Begin exploring the question' })).toBeVisible()
   await expect(page.locator('.step-copy')).toHaveCount(0)
 })
 
-test('touch gestures retain the authored resistance sequence', async ({ browser }) => {
+test('one touch swipe begins the automatic sequence', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   const page = await context.newPage()
   await page.goto('http://127.0.0.1:4174/')
-  await page.getByRole('button', { name: 'Begin exploring the question' }).tap()
   const client = await context.newCDPSession(page)
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 195, y: 550 }] })
   await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195, y: 350 }] })
   await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] })
-  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields')
+  await expect(page.locator('.intro-stage [aria-live]')).toContainText('Question the boundaries')
   await page.getByRole('button', { name: 'Skip introduction' }).tap()
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
   await context.close()
@@ -206,22 +200,24 @@ test('graph layer and selected-state accessibility', async ({ page }) => {
 })
 
 
-test('the opening words themselves begin the sequence and desktop clicks advance attempts', async ({ page }) => {
+test('repeated clicks do not restart or accelerate the automatic stages', async ({ page }) => {
+  await page.clock.install()
   await page.goto('/')
   const phrase = page.getByRole('button', { name: 'Begin exploring the question' })
   await expect(phrase).toContainText('how does one produce curiosity')
-  await phrase.click({ position: { x: 30, y: 25 } })
-  const step = page.getByRole('button', { name: 'step 1: question the boundaries', exact: true })
-  await step.click()
-  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields in that direction')
-  await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/)
-  await step.click()
-  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields farther')
+  await phrase.click()
+  await page.locator('.intro-field').dispatchEvent('click')
+  await page.locator('.intro-field').dispatchEvent('click')
+  await expect(page.locator('.step-prompt')).toContainText('step 1:')
+  await page.clock.runFor(1000)
+  await expect(page.locator('.step-prompt')).toContainText('step 2:')
+  await page.clock.runFor(1000)
+  await expect(page.locator('.step-prompt')).toContainText('step 3:')
 })
 
-test('desktop drag follows direction and counts only one attempt', async ({ page }) => {
+test('one desktop drag follows direction and begins the sequence', async ({ page }) => {
+  await page.clock.install()
   await page.goto('/')
-  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
   const bounds = (await page.locator('.intro-field').boundingBox())!
   const x = bounds.x + bounds.width / 2
   const y = bounds.y + bounds.height / 2
@@ -230,28 +226,25 @@ test('desktop drag follows direction and counts only one attempt', async ({ page
   await page.mouse.move(x + 100, y - 50, { steps: 8 })
   expect(await page.locator('.intro-field').evaluate(e => e.style.getPropertyValue('--drag-x'))).not.toBe('0px')
   await page.mouse.up()
-  await expect(page.locator('.intro-stage [aria-live]')).toContainText('The surface yields in that direction')
-  await expect(page.locator('.intro-field')).toHaveClass(/effect-idle/)
-  await expect(page.getByRole('button', { name: 'step 1: question the boundaries', exact: true })).toBeVisible()
+  await expect(page.locator('.step-prompt')).toContainText('step 1:')
+  expect(await page.locator('.intro-field').evaluate(e => parseFloat(e.style.getPropertyValue('--dx')))).toBeGreaterThan(0)
+  await page.clock.runFor(1000)
+  await expect(page.locator('.step-prompt')).toContainText('step 2:')
 })
 
-test('dive starts automatically after a pause and completes without more input', async ({ page }) => {
+test('one wheel gesture starts the sequence and dive moves continuously to content', async ({ page }) => {
   await page.clock.install()
   await page.goto('/')
-  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
-  for (let step = 1; step <= 3; step++) {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await page.getByRole('button', { name: 'Test the boundary' }).focus()
-      await page.keyboard.press('Enter')
-      await page.clock.runFor(850)
-    }
-  }
+  await page.locator('.intro-field').hover()
+  await page.mouse.wheel(0, 100)
+  await expect(page.locator('.step-prompt')).toContainText('step 1:')
+  await page.clock.runFor(3000)
   await expect(page.getByRole('button', { name: 'Dive into the portfolio' })).toBeVisible()
-  await page.clock.runFor(2600)
-  const first = await page.evaluate(() => scrollY)
   await page.clock.runFor(350)
+  const first = await page.evaluate(() => scrollY)
+  await page.clock.runFor(250)
   expect(await page.evaluate(() => scrollY)).toBeGreaterThan(first)
-  await page.clock.runFor(1800)
+  await page.clock.runFor(1000)
   await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
 })

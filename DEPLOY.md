@@ -73,3 +73,20 @@ Add `www.producingcuriosity.com` and, once active, configure its canonical redir
 Before release, record the current Worker version/build ID, Git SHA, domain/route values and DNS settings; verify the selected prior version actually serves the working compiled site. Preserve the current content and assets separately before any migration. Never include private snapshots in the public repo.
 
 If a release fails, use Cloudflare's version/deployment history to restore the recorded known-good Worker version where available, or redeploy the exact known-good compiled artifact. Verify HTML, JS/CSS, mount, links and intro bypass again. Roll back source with a reviewed revert PR rather than rewriting main history. A routing change can be restored from recorded settings if necessary, but the known broken GitHub origin is not a working application rollback. No production version was changed during this audit, so no rollback was executed.
+
+## W0–W2 development slice (not released)
+
+The connected reading work is isolated in a feature branch based on the Codex handoff. This task does **not** authorize merging, production deployment, DNS changes or publication of unreviewed content.
+
+The default `npm run build` now prerenders useful home/collection/404 HTML into `dist`, then audits public output. No canonical manuscript has approval, so the selected public content is empty and the existing legacy homepage remains available. `404-page` handling replaces the generic SPA success fallback; test routes against the Worker runtime, not Vite's SPA preview.
+
+Synthetic demonstrations use a separate build and Worker configuration:
+
+```sh
+npm run build:fixtures
+npm run preview:fixtures -- --ip 127.0.0.1 --port 4174
+```
+
+This writes only `dist-fixtures` and serves `/investigations/fixture-claims-handoff/` and `/patterns/fixture-delivered-not-complete/`. Fixture labels are mandatory. Do not deploy this directory through the production Worker. The normal Worker configuration continues to point only to `dist`. Tests explicitly start the fixture build/runtime and do not publish anything.
+
+A normal hosted branch preview contains only the production-safe empty selection; it does not demonstrate the unapproved synthetic article routes remotely. It is not a protected private CMS preview. See `docs/codex/IMPLEMENTATION-STATUS.md` for exact verification, limitations, migration and rollback guidance.
