@@ -27,3 +27,9 @@ The integration lead separately runs the repository's frozen install, type/build
 ## Approval scope and limits
 
 Approval is limited to this explicitly illustrative interaction experiment after the integration lead supplies the exact tested source commit and confirms the required checks. The final approval message identifies that commit. No actual reader-comprehension result, real screen-reader test, physical-device test or blanket WCAG-conformance claim is established. No approval extends to private writing, unpublished reading/studio branches, content migration, DNS changes or service purchases.
+
+## Final independent approval
+
+**APPROVE scoped publication of implementation `0755a37ab38bb996cbdf124e2ca370607d9dd51f`.** Both medium findings above are resolved. The reviewer inspected the integrated source and actual local Worker artifact, independently reproduced the observer-failure repair and narrow-layout correction, and checked the integration lead's final logs:39/39 browser tests passed, including26 preserved baseline checks and13 experiment checks; type/build/prerender/public-artifact and Worker deployment-package validation passed. No runtime/test changes differ from that commit at approval time.
+
+This approves only the illustrative hidden-work experiment, optional motion adapter, shared native footer and necessary build/routing changes. The integration lead must still verify remote CI and the hosted preview before merging that exact implementation, then verify production separately. A documentation-only approval record does not change the approved runtime. The limitations above remain; this is not human-reader evaluation, owner approval of writing or a private CMS release.
