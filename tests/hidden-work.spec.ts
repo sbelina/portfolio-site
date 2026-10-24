@@ -142,6 +142,28 @@ test('closing during a deferred import cannot mount an abandoned sketch', async 
   await expect(page.locator('canvas')).toHaveCount(0)
 })
 
+for (const failure of ['missing', 'constructor', 'observe'] as const) {
+  test(`resize API ${failure} failure retains static reading without leaking a canvas`, async ({ page }) => {
+    await page.addInitScript(mode => {
+      const NativeResizeObserver = window.ResizeObserver
+      Object.defineProperty(window, 'ResizeObserver', {
+        configurable: true,
+        value: mode === 'missing' ? undefined : mode === 'constructor'
+          ? class { constructor() { throw new Error('Simulated resize constructor failure') } }
+          : class extends NativeResizeObserver { observe() { throw new Error('Simulated observe failure') } },
+      })
+    }, failure)
+    await page.goto(url)
+    await page.locator('.work-disclosure > summary').click()
+    await page.locator('.process-drawing').scrollIntoViewIfNeeded()
+    await expect(page.getByRole('status')).toContainText('Motion unavailable')
+    await expect(page.getByRole('heading', { name: 'Find missing context' })).toBeVisible()
+    await expect(page.locator('canvas')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Reset experiment' }).click()
+    await expect(page.locator('canvas')).toHaveCount(0)
+  })
+}
+
 test('no JavaScript retains native reveal, text relationships, and footer disclosure', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   const page = await context.newPage()

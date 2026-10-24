@@ -12,8 +12,17 @@ export function createMotion(host: HTMLElement, content: ProcessExperiment, comp
   let ready = false
   let previous = 0
   const duration = 3600
-  const instance = new P5(p => {
+  let instance: P5 | undefined
+  // Establish fallible browser capabilities before creating a canvas/listeners.
+  if (typeof ResizeObserver !== 'function') throw new Error('Static view: resizing unavailable')
+  const resize = new ResizeObserver(() => {
+    if (!destroyed && ready) instance?.resizeCanvas(host.clientWidth, host.clientHeight, true)
+  })
+  try {
+    resize.observe(host)
+    instance = new P5(p => {
     p.setup = () => {
+      if (destroyed) return
       const canvas = p.createCanvas(host.clientWidth, host.clientHeight)
       canvas.elt.setAttribute('aria-hidden', 'true')
       canvas.elt.setAttribute('role', 'presentation')
@@ -41,17 +50,18 @@ export function createMotion(host: HTMLElement, content: ProcessExperiment, comp
       }
       if (progress >= 1) { running = false; p.noLoop(); complete() }
     }
-  }, host)
-  const resize = new ResizeObserver(() => {
-    if (!destroyed && ready) instance.resizeCanvas(host.clientWidth, host.clientHeight, true)
-  })
-  resize.observe(host)
+    }, host)
+  } catch (error) {
+    destroyed = true
+    resize.disconnect(); instance?.remove()
+    throw error
+  }
   return {
     setRunning(next) {
       if (destroyed || elapsed >= duration) return
       running = next; previous = performance.now()
-      if (ready) { if (next) instance.loop(); else instance.noLoop() }
+      if (ready) { if (next) instance?.loop(); else instance?.noLoop() }
     },
-    destroy() { destroyed = true; running = false; resize.disconnect(); instance.remove() },
+    destroy() { destroyed = true; running = false; resize.disconnect(); instance?.remove() },
   }
 }
