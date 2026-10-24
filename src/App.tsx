@@ -1,6 +1,7 @@
 import { Component, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
+import { ExperimentNote } from './components/ExperimentNote'
 import { archiveItems, graphTagIds, projects, writings } from './data'
 
 const SESSION_KEY = 'producing-curiosity:intro-seen'
@@ -276,8 +277,10 @@ export default function App() {
         <span>© {new Date().getFullYear()} Sami Belina</span>
         <div>
           <a href="#index">Back to top ↑</a>
+          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work ↗</a>
           <button type="button" className="footer-replay" onClick={replayIntro}>Replay introduction</button>
         </div>
+        <ExperimentNote />
       </footer>
     </>
   )

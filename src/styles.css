@@ -490,7 +490,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .contact-links { display: grid; gap: .9rem; justify-items: start; }
 .contact-links a { font-size: 1.05rem; text-underline-offset: .3em; }
 .contact-links a:hover { color: var(--ink); text-decoration-thickness: 2px; }
-.site-footer { max-width: 1480px; margin: 0 auto; padding: 2rem clamp(1.25rem, 5vw, 5rem) 3rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: var(--muted); font-size: .86rem; }
+.site-footer { flex-wrap: wrap; max-width: 1480px; margin: 0 auto; padding: 2rem clamp(1.25rem, 5vw, 5rem) 3rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 1rem; color: var(--muted); font-size: .86rem; }
 .site-footer > div { display: flex; flex-wrap: wrap; gap: .8rem 1.2rem; align-items: center; }
 .site-footer a { text-underline-offset: .25em; }
 .footer-replay { color: var(--ink); }
