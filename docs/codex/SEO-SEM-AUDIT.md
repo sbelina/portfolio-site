@@ -66,4 +66,17 @@ Fetched over verified HTTPS during this review:
 
 Acceptance: exact integrated public artifact includes substantive prerendered home content, correct unique metadata, valid escaped JSON-LD, canonical-only sitemap with the real experiment, empty collection/fixture/404 indexing exclusions, correct URL/alias behavior, host-scoped alias noindex, no private leaks, retained intro/p5/accessibility behavior and successful type/build/artifact/packaging/browser checks. Independently inspect the resulting commit and hosted preview, then production separately. Record automated browser checks separately from human accessibility or reader evaluation.
 
-Implementation and final SEO/SEM approval are pending the integration lead's candidate. This audit does not assert that any recommendation has already shipped. No paid campaign or external account operation is approved merely by this technical review.
+## Final SEO/SEM approval
+
+**APPROVE scoped publication of exact integrated implementation `1f1cbb81e9ac9c5e7a193ee0bc0ce0074ab67947`, subject to the integration lead's remote CI gate.** Source and generated-artifact inspection found no remaining substantive SEO issue. The implementation now prerenders the portfolio, shares escaped page metadata, adds accurate home-only `WebSite` JSON-LD, generates the sitemap from indexable public documents, excludes the empty collection/fixtures/404 from indexing, preserves existing routes and keeps private writing out of public artifacts. The static sitemap copy was removed so it cannot silently diverge from the generated inventory.
+
+Independent verified-HTTPS preview checks against [immutable version `f29915d6`](https://f29915d6-portfolio-site.sami-belina.workers.dev/) and the [branch alias](https://feat-integrated-seo-release-portfolio-site.sami-belina.workers.dev/) confirmed:
+
+- Both preview hosts return `X-Robots-Tag: noindex`; the immutable homepage and experiment carry their canonical production URLs and useful initial HTML.
+- The empty `/investigations/` document has `noindex, follow` in HTML. The sitemap lists exactly the canonical homepage and real hidden-work experiment, with no synthetic article or empty collection URLs.
+- Home metadata has one descriptive title and one consistent metadata set. Its parsed JSON-LD is `WebSite`, with the actual visible site name and canonical URL. The experiment has its own accurate title, description and sharing metadata.
+- An unknown preview URL returns404. The currently published apex remains200 without a deployment-wide `X-Robots-Tag: noindex`, so preview exclusion did not change the existing production hostname's indexing policy.
+
+The reviewer also inspected the integration lead's logs:96 public tests and10 local private-workflow tests passed; a real local Worker restart preserved the synthetic D1 draft across fresh login; seven final affected footer/SEO checks and deployment packaging passed. These are technical checks. Remote CI and the final merged production response, including the production Worker hostname's new noindex header and the apex's absence of it, must still be verified by the integration lead. A documentation-only approval record does not change the approved runtime.
+
+No Search Console submission, verified live search-index status, keyword-volume data, Google Ads campaign, paid spend, tracking installation, ranking lift or conversion result is claimed. The SEM brief above remains proposed research requiring owner-authorized account data. This approval does not publish private manuscripts or establish a hosted CMS workflow, human accessibility conformance or reader-comprehension outcome.
