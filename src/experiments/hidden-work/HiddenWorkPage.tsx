@@ -20,6 +20,8 @@ export function HiddenWorkPage() {
   const active = open && !reduced && !paused && visible && foreground
 
   useEffect(() => {
+    // A native disclosure may already have been opened before hydration.
+    setOpen(details.current?.open ?? false)
     setEnhanced(true)
     // A missing preference/visibility API fails to the complete static explanation.
     try {
