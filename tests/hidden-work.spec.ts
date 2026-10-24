@@ -142,6 +142,37 @@ test('closing during a deferred import cannot mount an abandoned sketch', async 
   await expect(page.locator('canvas')).toHaveCount(0)
 })
 
+for (const reducedMotion of ['no-preference', 'reduce'] as const) {
+  test(`native reveal before hydration survives delayed JavaScript with ${reducedMotion} motion`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion })
+    let release!: () => void
+    const hold = new Promise<void>(resolve => { release = resolve })
+    await page.route('**/assets/*.js', async route => { await hold; await route.continue() })
+    const sketches: string[] = []
+    page.on('request', request => { if (sketchRequest.test(request.url())) sketches.push(request.url()) })
+    await page.goto(url, { waitUntil: 'commit' })
+    await page.locator('.work-disclosure > summary').click()
+    await expect(page.getByRole('heading', { name: 'Find missing context' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Reset experiment' })).toHaveCount(0)
+    release()
+    await page.waitForLoadState('load')
+    await expect(page.getByRole('button', { name: 'Reset experiment' })).toBeVisible()
+    await page.locator('.process-drawing').scrollIntoViewIfNeeded()
+    if (reducedMotion === 'reduce') {
+      await expect(page.getByRole('status')).toContainText('Static view')
+      await expect(page.locator('canvas')).toHaveCount(0)
+      expect(sketches).toEqual([])
+    } else {
+      await expect(page.locator('canvas')).toHaveCount(1)
+      await page.getByRole('button', { name: 'Pause motion' }).click()
+      await expect(page.getByRole('button', { name: 'Resume motion' })).toBeVisible()
+    }
+    await page.getByRole('button', { name: 'Reset experiment' }).click()
+    await expect(page.locator('canvas')).toHaveCount(0)
+    await expect(page.locator('.work-disclosure > summary')).toBeFocused()
+  })
+}
+
 for (const failure of ['missing', 'constructor', 'observe'] as const) {
   test(`resize API ${failure} failure retains static reading without leaking a canvas`, async ({ page }) => {
     await page.addInitScript(mode => {

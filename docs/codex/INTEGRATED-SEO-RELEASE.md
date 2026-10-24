@@ -37,6 +37,8 @@ Automated browser emulation and local synthetic proofs are distinct from manual 
 
 ## Recovery and next task
 
+Postrelease correction: PR5 published the integration as `4d47c8d`/Worker `d6034566-8169-429d-a36d-9e53ec6aa504`; main CI passed96 public and10 private tests. A controlled delayed-JavaScript probe then exposed a native disclosure/hydration race in the existing experiment: text opened before JavaScript stayed readable but motion missed that first action. The mount effect now reads the existing native open state. Two regressions cover pre-hydration reveal with normal and reduced motion; the corrected local suite passed98/98 plus build/artifact/package checks. Independent review and hosted delayed-script verification are recorded on the corrective PR before publication. No SEO, content selection or private workflow contract changes in that correction.
+
 Preview locally with `npm run build` then `npx wrangler dev --local --ip 127.0.0.1 --port 4174`. Fixture-only pages require `npm run build:fixtures` and the fixtureWorker; see their existing records. Keep studio configuration/local databases outside public artifacts.
 
 Before release, retain verified production `e52ec03` and Worker version above. Do not merge a failed preview. For a regression, restore that healthy Worker version with authorized account access or revert the integrated release through a PR and the existing Git build. Source branches, review records and private local state must survive rollback; no DNS change or content-storage migration is required. Never restore the historical raw-TSX GitHub origin.
