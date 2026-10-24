@@ -2,6 +2,10 @@
 
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
+## Current integrated release
+
+See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SEO/SEM audit](SEO-SEM-AUDIT.md), and [independent integration review](INTEGRATED-RELEASE-REVIEW.md). These distinguish production-safe public behavior, fixture-only reading demonstrations, local authenticated writing, and remaining hosted CMS dependencies. Earlier handoff/proposal and task records remain historical context.
+
 ## Reading order
 
 | File | Purpose |

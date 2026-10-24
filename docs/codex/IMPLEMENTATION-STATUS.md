@@ -1,5 +1,7 @@
 # First development slice: W0–W2
 
+Current integration: [Integrated development and SEO release](INTEGRATED-SEO-RELEASE.md) supersedes earlier “unreleased branch” status for the combined candidate. Historical verification below remains tied to its original commits. No full manuscript or hosted editor is declared live.
+
 Status: draft implementation, not a production release. Integration lead: root; specialist ownership covered content/revision integrity, solutions architecture, and reading design/browser verification. The task explicitly forbids merging, production deployment, DNS changes, purchases and publication of unreviewed content.
 
 ## Baseline and branch
