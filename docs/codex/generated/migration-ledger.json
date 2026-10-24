@@ -1,0 +1,1785 @@
+{
+  "schemaVersion": 1,
+  "baseline": "abaa9a9aa28dfc665f8b34816559209c797114b8",
+  "sourceReview": "No approved migration wording or separate Emergent source supplied; original public prototype remains unchanged.",
+  "content": [
+    {
+      "legacyId": "claims-operations",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "6c2f9e3e-23c0-4362-ada4-7d18a6ed998a",
+      "oldLocation": "/#claims-operations",
+      "proposedRoute": "/investigations/claims-operations/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "brand-research",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "4c5ececa-e308-4a31-9566-b3cd2fc7a0b2",
+      "oldLocation": "/#brand-research",
+      "proposedRoute": "/investigations/brand-research/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "enterprise-ai",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "8a218cf2-1ad6-461a-af6e-3f7ccadd9429",
+      "oldLocation": "/#enterprise-ai",
+      "proposedRoute": "/investigations/enterprise-ai/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "documentation-recovery",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "33e3550d-6b04-4a91-878c-0225b464914d",
+      "oldLocation": "/#documentation-recovery",
+      "proposedRoute": "/investigations/documentation-recovery/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "civic-service",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "873dde95-923f-41a0-bd19-55041eb4aae1",
+      "oldLocation": "/#civic-service",
+      "proposedRoute": "/investigations/civic-service/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "accessibility-ai",
+      "originalFormat": "Case",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "36e61934-b32a-4b04-a9c2-d6f99b73b5a2",
+      "oldLocation": "/#accessibility-ai",
+      "proposedRoute": "/investigations/accessibility-ai/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "the-bends",
+      "originalFormat": "Field note",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "00d1df21-541a-49b7-a5a7-0bf7c108edba",
+      "oldLocation": "/#the-bends",
+      "proposedRoute": "/notes/the-bends/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "calculus-of-syntax",
+      "originalFormat": "Essay",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "dc8acb94-023d-4eab-85e6-a530289d8f54",
+      "oldLocation": "/#calculus-of-syntax",
+      "proposedRoute": "/perspective/calculus-of-syntax/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "conjunction-conjecture",
+      "originalFormat": "Essay",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "4bc44ccc-d0ab-4cb3-8908-73b012887db5",
+      "oldLocation": "/#conjunction-conjecture",
+      "proposedRoute": "/perspective/conjunction-conjecture/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "tool-vs-toy",
+      "originalFormat": "Essay",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "79dea5bd-6eca-4f13-a4ac-e7f8e4e331be",
+      "oldLocation": "/#tool-vs-toy",
+      "proposedRoute": "/perspective/tool-vs-toy/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "mundane-evidence",
+      "originalFormat": "Notebook",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "b7165bc7-701f-441d-a8ac-e5a69c0e5f75",
+      "oldLocation": "/#mundane-evidence",
+      "proposedRoute": "/notes/mundane-evidence/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-wage",
+      "originalFormat": "Research sample · 2025",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "35b1075e-ca59-4dcc-9822-992c2e01ad76",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-wage/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-dead-internet",
+      "originalFormat": "Early essay",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "df36ab34-e64d-4505-83ae-c9bab1cee871",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-dead-internet/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-hive-mind",
+      "originalFormat": "Early research paper",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "d55b5b53-dd87-46ed-b8e0-5958862ebeec",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-hive-mind/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-mourning-coffee",
+      "originalFormat": "Poem",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "bf3d8abf-cae8-4056-8201-d306af077657",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-mourning-coffee/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-bridge",
+      "originalFormat": "Prose fragment",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "7c75c273-d3fa-4039-984f-9d1d780bf460",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-bridge/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    },
+    {
+      "legacyId": "archive-left",
+      "originalFormat": "Poem fragment",
+      "classification": "proposed mapping; owner review required",
+      "contentId": "bdabb31f-5be1-4020-b72d-cdbdf6937ab3",
+      "oldLocation": "/#archive",
+      "proposedRoute": "/references/archive-left/",
+      "activeDestination": "retained legacy home fragment",
+      "review": "unreviewed draft; not selected for publication",
+      "dates": "unknown; no invented dates"
+    }
+  ],
+  "anchors": [
+    {
+      "id": "root",
+      "destination": "/#root",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "index",
+      "destination": "/#index",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "index-title",
+      "destination": "/#index-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "study-label",
+      "destination": "/#study-label",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "reading-gateway-title",
+      "destination": "/#reading-gateway-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work",
+      "destination": "/#work",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work-title",
+      "destination": "/#work-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "claims-operations",
+      "destination": "/#claims-operations",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "brand-research",
+      "destination": "/#brand-research",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "enterprise-ai",
+      "destination": "/#enterprise-ai",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "documentation-recovery",
+      "destination": "/#documentation-recovery",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "civic-service",
+      "destination": "/#civic-service",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "accessibility-ai",
+      "destination": "/#accessibility-ai",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "connections",
+      "destination": "/#connections",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "connections-title",
+      "destination": "/#connections-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice",
+      "destination": "/#practice",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice-title",
+      "destination": "/#practice-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "field-notes",
+      "destination": "/#field-notes",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "field-notes-title",
+      "destination": "/#field-notes-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "the-bends",
+      "destination": "/#the-bends",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "calculus-of-syntax",
+      "destination": "/#calculus-of-syntax",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "conjunction-conjecture",
+      "destination": "/#conjunction-conjecture",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tool-vs-toy",
+      "destination": "/#tool-vs-toy",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "mundane-evidence",
+      "destination": "/#mundane-evidence",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive",
+      "destination": "/#archive",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "closing-title",
+      "destination": "/#closing-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "contact",
+      "destination": "/#contact",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "contact-title",
+      "destination": "/#contact-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "home-reading",
+      "destination": "/#home-reading",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    }
+  ],
+  "graph": [
+    {
+      "id": "claims-operations",
+      "kind": "project",
+      "href": "#claims-operations",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "brand-research",
+      "kind": "project",
+      "href": "#brand-research",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "enterprise-ai",
+      "kind": "project",
+      "href": "#enterprise-ai",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "documentation-recovery",
+      "kind": "project",
+      "href": "#documentation-recovery",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "civic-service",
+      "kind": "project",
+      "href": "#civic-service",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "accessibility-ai",
+      "kind": "project",
+      "href": "#accessibility-ai",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-curiosity",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-problem-definition",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-evidence",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-systems",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-decision",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-research",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-upstream",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-measurement",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-structure",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-transfer",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-ai",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-accessibility",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-service-design",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-information-equity",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-operations",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-knowledge",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-question-design",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-respondent",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-synthesis",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-organizational-design",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-documentation",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-field-research",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-dependencies",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-access",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-conformance",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-assumptions",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-infrastructure",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-geometry-of-understanding",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-patterns",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-delta-theory",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-language",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-hierarchy",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-transmission",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-depth",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-information",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-interpretation",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-attention",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-facilitation",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-experimentation",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-play",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "tag-governance",
+      "kind": "tag",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "origin-language",
+      "kind": "origin",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "origin-seek-understand",
+      "kind": "origin",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "origin-multimodal",
+      "kind": "origin",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "origin-delta",
+      "kind": "origin",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "origin-spiral",
+      "kind": "origin",
+      "href": null,
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "writing-the-bends",
+      "kind": "writing",
+      "href": "#the-bends",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "writing-calculus-of-syntax",
+      "kind": "writing",
+      "href": "#calculus-of-syntax",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "writing-conjunction-conjecture",
+      "kind": "writing",
+      "href": "#conjunction-conjecture",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "writing-tool-vs-toy",
+      "kind": "writing",
+      "href": "#tool-vs-toy",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "writing-mundane-evidence",
+      "kind": "writing",
+      "href": "#mundane-evidence",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-wage",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-dead-internet",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-hive-mind",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-mourning-coffee",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-bridge",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    },
+    {
+      "id": "archive-left",
+      "kind": "archive",
+      "href": "#archive",
+      "status": "retained in existing graph; canonical conversion awaits review"
+    }
+  ],
+  "edges": [
+    {
+      "legacyId": "claims-operations::tag-systems",
+      "from": "claims-operations",
+      "to": "tag-systems",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "claims-operations::tag-operations",
+      "from": "claims-operations",
+      "to": "tag-operations",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "claims-operations::tag-problem-definition",
+      "from": "claims-operations",
+      "to": "tag-problem-definition",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "claims-operations::tag-measurement",
+      "from": "claims-operations",
+      "to": "tag-measurement",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "claims-operations::tag-upstream",
+      "from": "claims-operations",
+      "to": "tag-upstream",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "claims-operations::tag-transfer",
+      "from": "claims-operations",
+      "to": "tag-transfer",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-research",
+      "from": "brand-research",
+      "to": "tag-research",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-measurement",
+      "from": "brand-research",
+      "to": "tag-measurement",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-decision",
+      "from": "brand-research",
+      "to": "tag-decision",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-question-design",
+      "from": "brand-research",
+      "to": "tag-question-design",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-evidence",
+      "from": "brand-research",
+      "to": "tag-evidence",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "brand-research::tag-respondent",
+      "from": "brand-research",
+      "to": "tag-respondent",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-ai",
+      "from": "enterprise-ai",
+      "to": "tag-ai",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-systems",
+      "from": "enterprise-ai",
+      "to": "tag-systems",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-decision",
+      "from": "enterprise-ai",
+      "to": "tag-decision",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-structure",
+      "from": "enterprise-ai",
+      "to": "tag-structure",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-synthesis",
+      "from": "enterprise-ai",
+      "to": "tag-synthesis",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "enterprise-ai::tag-organizational-design",
+      "from": "enterprise-ai",
+      "to": "tag-organizational-design",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-knowledge",
+      "from": "documentation-recovery",
+      "to": "tag-knowledge",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-systems",
+      "from": "documentation-recovery",
+      "to": "tag-systems",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-research",
+      "from": "documentation-recovery",
+      "to": "tag-research",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-upstream",
+      "from": "documentation-recovery",
+      "to": "tag-upstream",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-transfer",
+      "from": "documentation-recovery",
+      "to": "tag-transfer",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "documentation-recovery::tag-documentation",
+      "from": "documentation-recovery",
+      "to": "tag-documentation",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-service-design",
+      "from": "civic-service",
+      "to": "tag-service-design",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-systems",
+      "from": "civic-service",
+      "to": "tag-systems",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-information-equity",
+      "from": "civic-service",
+      "to": "tag-information-equity",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-field-research",
+      "from": "civic-service",
+      "to": "tag-field-research",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-dependencies",
+      "from": "civic-service",
+      "to": "tag-dependencies",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "civic-service::tag-access",
+      "from": "civic-service",
+      "to": "tag-access",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-accessibility",
+      "from": "accessibility-ai",
+      "to": "tag-accessibility",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-ai",
+      "from": "accessibility-ai",
+      "to": "tag-ai",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-research",
+      "from": "accessibility-ai",
+      "to": "tag-research",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-measurement",
+      "from": "accessibility-ai",
+      "to": "tag-measurement",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-upstream",
+      "from": "accessibility-ai",
+      "to": "tag-upstream",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "accessibility-ai::tag-conformance",
+      "from": "accessibility-ai",
+      "to": "tag-conformance",
+      "label": null,
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-problem-definition",
+      "from": "tag-curiosity",
+      "to": "tag-problem-definition",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-research",
+      "from": "tag-curiosity",
+      "to": "tag-research",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-evidence",
+      "from": "tag-curiosity",
+      "to": "tag-evidence",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-evidence::tag-decision",
+      "from": "tag-evidence",
+      "to": "tag-decision",
+      "label": "informs",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-evidence::tag-measurement",
+      "from": "tag-evidence",
+      "to": "tag-measurement",
+      "label": "informs",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-decision::tag-structure",
+      "from": "tag-decision",
+      "to": "tag-structure",
+      "label": "becomes",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-structure::tag-transfer",
+      "from": "tag-structure",
+      "to": "tag-transfer",
+      "label": "survives through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-operations",
+      "from": "tag-systems",
+      "to": "tag-operations",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-service-design",
+      "from": "tag-systems",
+      "to": "tag-service-design",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-knowledge",
+      "from": "tag-systems",
+      "to": "tag-knowledge",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-ai::tag-accessibility",
+      "from": "tag-ai",
+      "to": "tag-accessibility",
+      "label": "requires",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-service-design::tag-information-equity",
+      "from": "tag-service-design",
+      "to": "tag-information-equity",
+      "label": "depends on",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-question-design",
+      "from": "tag-curiosity",
+      "to": "tag-question-design",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-experimentation",
+      "from": "tag-curiosity",
+      "to": "tag-experimentation",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-curiosity::tag-play",
+      "from": "tag-curiosity",
+      "to": "tag-play",
+      "label": "opens",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-evidence::tag-synthesis",
+      "from": "tag-evidence",
+      "to": "tag-synthesis",
+      "label": "becomes legible through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-evidence::tag-interpretation",
+      "from": "tag-evidence",
+      "to": "tag-interpretation",
+      "label": "becomes legible through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-evidence::tag-attention",
+      "from": "tag-evidence",
+      "to": "tag-attention",
+      "label": "becomes legible through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-decision::tag-organizational-design",
+      "from": "tag-decision",
+      "to": "tag-organizational-design",
+      "label": "is shaped by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-decision::tag-facilitation",
+      "from": "tag-decision",
+      "to": "tag-facilitation",
+      "label": "is shaped by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-decision::tag-governance",
+      "from": "tag-decision",
+      "to": "tag-governance",
+      "label": "is shaped by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-structure::tag-infrastructure",
+      "from": "tag-structure",
+      "to": "tag-infrastructure",
+      "label": "is carried by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-structure::tag-transmission",
+      "from": "tag-structure",
+      "to": "tag-transmission",
+      "label": "is carried by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-structure::tag-documentation",
+      "from": "tag-structure",
+      "to": "tag-documentation",
+      "label": "is carried by",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-hierarchy",
+      "from": "tag-systems",
+      "to": "tag-hierarchy",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-dependencies",
+      "from": "tag-systems",
+      "to": "tag-dependencies",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-systems::tag-depth",
+      "from": "tag-systems",
+      "to": "tag-depth",
+      "label": "contains",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-research::tag-question-design",
+      "from": "tag-research",
+      "to": "tag-question-design",
+      "label": "uses",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-research::tag-respondent",
+      "from": "tag-research",
+      "to": "tag-respondent",
+      "label": "uses",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-research::tag-patterns",
+      "from": "tag-research",
+      "to": "tag-patterns",
+      "label": "uses",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-research::tag-language",
+      "from": "tag-research",
+      "to": "tag-language",
+      "label": "uses",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-ai::tag-conformance",
+      "from": "tag-ai",
+      "to": "tag-conformance",
+      "label": "raises",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-ai::tag-experimentation",
+      "from": "tag-ai",
+      "to": "tag-experimentation",
+      "label": "raises",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-ai::tag-governance",
+      "from": "tag-ai",
+      "to": "tag-governance",
+      "label": "raises",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-ai::tag-play",
+      "from": "tag-ai",
+      "to": "tag-play",
+      "label": "raises",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-service-design::tag-access",
+      "from": "tag-service-design",
+      "to": "tag-access",
+      "label": "depends on",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-service-design::tag-field-research",
+      "from": "tag-service-design",
+      "to": "tag-field-research",
+      "label": "depends on",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-service-design::tag-transmission",
+      "from": "tag-service-design",
+      "to": "tag-transmission",
+      "label": "depends on",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-knowledge::tag-transmission",
+      "from": "tag-knowledge",
+      "to": "tag-transmission",
+      "label": "moves through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-knowledge::tag-information",
+      "from": "tag-knowledge",
+      "to": "tag-information",
+      "label": "moves through",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-information-equity::tag-access",
+      "from": "tag-information-equity",
+      "to": "tag-access",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-information-equity::tag-information",
+      "from": "tag-information-equity",
+      "to": "tag-information",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-information-equity::tag-hierarchy",
+      "from": "tag-information-equity",
+      "to": "tag-hierarchy",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-geometry-of-understanding::tag-language",
+      "from": "tag-geometry-of-understanding",
+      "to": "tag-language",
+      "label": "relates",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-geometry-of-understanding::tag-patterns",
+      "from": "tag-geometry-of-understanding",
+      "to": "tag-patterns",
+      "label": "relates",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-geometry-of-understanding::tag-systems",
+      "from": "tag-geometry-of-understanding",
+      "to": "tag-systems",
+      "label": "relates",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "tag-geometry-of-understanding::tag-interpretation",
+      "from": "tag-geometry-of-understanding",
+      "to": "tag-interpretation",
+      "label": "relates",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-language::tag-language",
+      "from": "origin-language",
+      "to": "tag-language",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-language::tag-curiosity",
+      "from": "origin-language",
+      "to": "tag-curiosity",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-language::tag-research",
+      "from": "origin-language",
+      "to": "tag-research",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-language::tag-patterns",
+      "from": "origin-language",
+      "to": "tag-patterns",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-seek-understand::tag-curiosity",
+      "from": "origin-seek-understand",
+      "to": "tag-curiosity",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-seek-understand::tag-problem-definition",
+      "from": "origin-seek-understand",
+      "to": "tag-problem-definition",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-seek-understand::tag-research",
+      "from": "origin-seek-understand",
+      "to": "tag-research",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-multimodal::tag-accessibility",
+      "from": "origin-multimodal",
+      "to": "tag-accessibility",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-multimodal::tag-information-equity",
+      "from": "origin-multimodal",
+      "to": "tag-information-equity",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-multimodal::tag-information",
+      "from": "origin-multimodal",
+      "to": "tag-information",
+      "label": "shaped",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-geometry-of-understanding",
+      "from": "origin-delta",
+      "to": "tag-geometry-of-understanding",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-systems",
+      "from": "origin-delta",
+      "to": "tag-systems",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-evidence",
+      "from": "origin-delta",
+      "to": "tag-evidence",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-decision",
+      "from": "origin-delta",
+      "to": "tag-decision",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-structure",
+      "from": "origin-delta",
+      "to": "tag-structure",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-delta::tag-delta-theory",
+      "from": "origin-delta",
+      "to": "tag-delta-theory",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-spiral::tag-measurement",
+      "from": "origin-spiral",
+      "to": "tag-measurement",
+      "label": "models",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-spiral::tag-transfer",
+      "from": "origin-spiral",
+      "to": "tag-transfer",
+      "label": "models",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-spiral::tag-systems",
+      "from": "origin-spiral",
+      "to": "tag-systems",
+      "label": "models",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "origin-spiral::tag-patterns",
+      "from": "origin-spiral",
+      "to": "tag-patterns",
+      "label": "models",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-systems",
+      "from": "writing-the-bends",
+      "to": "tag-systems",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-knowledge",
+      "from": "writing-the-bends",
+      "to": "tag-knowledge",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-hierarchy",
+      "from": "writing-the-bends",
+      "to": "tag-hierarchy",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-transmission",
+      "from": "writing-the-bends",
+      "to": "tag-transmission",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-depth",
+      "from": "writing-the-bends",
+      "to": "tag-depth",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-the-bends::tag-organizational-design",
+      "from": "writing-the-bends",
+      "to": "tag-organizational-design",
+      "label": "examines",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-calculus-of-syntax::tag-language",
+      "from": "writing-calculus-of-syntax",
+      "to": "tag-language",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-calculus-of-syntax::tag-structure",
+      "from": "writing-calculus-of-syntax",
+      "to": "tag-structure",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-calculus-of-syntax::tag-geometry-of-understanding",
+      "from": "writing-calculus-of-syntax",
+      "to": "tag-geometry-of-understanding",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-calculus-of-syntax::tag-patterns",
+      "from": "writing-calculus-of-syntax",
+      "to": "tag-patterns",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-calculus-of-syntax::tag-delta-theory",
+      "from": "writing-calculus-of-syntax",
+      "to": "tag-delta-theory",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-conjunction-conjecture::tag-language",
+      "from": "writing-conjunction-conjecture",
+      "to": "tag-language",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-conjunction-conjecture::tag-question-design",
+      "from": "writing-conjunction-conjecture",
+      "to": "tag-question-design",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-conjunction-conjecture::tag-research",
+      "from": "writing-conjunction-conjecture",
+      "to": "tag-research",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-conjunction-conjecture::tag-facilitation",
+      "from": "writing-conjunction-conjecture",
+      "to": "tag-facilitation",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-conjunction-conjecture::tag-curiosity",
+      "from": "writing-conjunction-conjecture",
+      "to": "tag-curiosity",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-tool-vs-toy::tag-ai",
+      "from": "writing-tool-vs-toy",
+      "to": "tag-ai",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-tool-vs-toy::tag-curiosity",
+      "from": "writing-tool-vs-toy",
+      "to": "tag-curiosity",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-tool-vs-toy::tag-experimentation",
+      "from": "writing-tool-vs-toy",
+      "to": "tag-experimentation",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-tool-vs-toy::tag-play",
+      "from": "writing-tool-vs-toy",
+      "to": "tag-play",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-tool-vs-toy::tag-governance",
+      "from": "writing-tool-vs-toy",
+      "to": "tag-governance",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-mundane-evidence::tag-evidence",
+      "from": "writing-mundane-evidence",
+      "to": "tag-evidence",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-mundane-evidence::tag-information",
+      "from": "writing-mundane-evidence",
+      "to": "tag-information",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-mundane-evidence::tag-interpretation",
+      "from": "writing-mundane-evidence",
+      "to": "tag-interpretation",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-mundane-evidence::tag-attention",
+      "from": "writing-mundane-evidence",
+      "to": "tag-attention",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "writing-mundane-evidence::tag-patterns",
+      "from": "writing-mundane-evidence",
+      "to": "tag-patterns",
+      "label": "explores",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-wage::tag-research",
+      "from": "archive-wage",
+      "to": "tag-research",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-wage::tag-measurement",
+      "from": "archive-wage",
+      "to": "tag-measurement",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-wage::tag-information",
+      "from": "archive-wage",
+      "to": "tag-information",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-dead-internet::tag-ai",
+      "from": "archive-dead-internet",
+      "to": "tag-ai",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-dead-internet::tag-information",
+      "from": "archive-dead-internet",
+      "to": "tag-information",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-dead-internet::tag-governance",
+      "from": "archive-dead-internet",
+      "to": "tag-governance",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-hive-mind::tag-ai",
+      "from": "archive-hive-mind",
+      "to": "tag-ai",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-hive-mind::tag-systems",
+      "from": "archive-hive-mind",
+      "to": "tag-systems",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-hive-mind::tag-governance",
+      "from": "archive-hive-mind",
+      "to": "tag-governance",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-mourning-coffee::tag-attention",
+      "from": "archive-mourning-coffee",
+      "to": "tag-attention",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-mourning-coffee::tag-information",
+      "from": "archive-mourning-coffee",
+      "to": "tag-information",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-bridge::tag-depth",
+      "from": "archive-bridge",
+      "to": "tag-depth",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-bridge::tag-curiosity",
+      "from": "archive-bridge",
+      "to": "tag-curiosity",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-bridge::tag-patterns",
+      "from": "archive-bridge",
+      "to": "tag-patterns",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-left::tag-problem-definition",
+      "from": "archive-left",
+      "to": "tag-problem-definition",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-left::tag-accessibility",
+      "from": "archive-left",
+      "to": "tag-accessibility",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-left::tag-assumptions",
+      "from": "archive-left",
+      "to": "tag-assumptions",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    },
+    {
+      "legacyId": "archive-left::tag-language",
+      "from": "archive-left",
+      "to": "tag-language",
+      "label": "archives",
+      "status": "retained; not promoted to approved canonical relationships"
+    }
+  ],
+  "dependencies": [
+    "Owner review of exact canonical text, evidence, rights and contributions",
+    "Separate Emergent export for feature parity"
+  ]
+}

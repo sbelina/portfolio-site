@@ -1,10 +1,11 @@
+import React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 const STEPS = [
   'step 1: question the boundaries',
   'step 2: test the limits',
   'step 3: recognize patterns',
-  'step 4: dive in',
+  'dive in',
 ]
 
 type Phase = 'question' | 'steps' | 'dive'
@@ -26,7 +27,6 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   const [phase, setPhase] = useState<Phase>('question')
   const [revealed, setRevealed] = useState(false)
   const [step, setStep] = useState(0)
-  const [attempt, setAttempt] = useState(0)
   const [effect, setEffect] = useState<Effect>('idle')
   const [vector, setVector] = useState({ x: 0.12, y: -1 })
   const [status, setStatus] = useState('')
@@ -58,7 +58,6 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     setPhase('question')
     setRevealed(false)
     setStep(0)
-    setAttempt(0)
     setEffect('idle')
     setStatus('')
     setDiveProgress(0)
@@ -75,41 +74,40 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     return clearTimers
   }, [forceReplayKey, reset, clearTimers])
 
-  const advanceAttempt = useCallback(
-    (nextVector = { x: 0.12, y: -1 }) => {
-      if (phase !== 'steps' || step >= 3 || lockRef.current) return
-      lockRef.current = true
-      setVector(nextVector)
-
-      const nextAttempt = attempt + 1
-      const nextEffect: Effect = nextAttempt === 1 ? 'resist-one' : nextAttempt === 2 ? 'resist-two' : 'breakthrough'
-      setAttempt(nextAttempt)
-      setEffect(nextEffect)
-
-      if (nextAttempt < 3) {
-        setStatus(nextAttempt === 1 ? 'The surface yields in that direction, then returns.' : 'The surface yields farther, then returns.')
-        schedule(() => {
-          setEffect('idle')
-          lockRef.current = false
-        }, reducedMotion ? 180 : 720)
-        return
-      }
-
-      setStatus(step === 2 ? 'Pattern recognized. The page opens.' : 'The boundary opens. The next step appears.')
-      schedule(() => {
-        const nextStep = step + 1
-        setStep(nextStep)
-        setAttempt(0)
-        setEffect('idle')
-        if (nextStep === 3) setPhase('dive')
-        lockRef.current = false
-      }, reducedMotion ? 220 : 820)
-    },
-    [attempt, phase, reducedMotion, step, schedule],
-  )
+  // One accepted action starts all three beats. Further input is never queued.
+  const begin = useCallback((nextVector = { x: 0.12, y: -1 }) => {
+    if (phase !== 'question' || lockRef.current) return
+    lockRef.current = true
+    clearTimers()
+    if (reducedMotion) {
+      onComplete()
+      return
+    }
+    setVector(nextVector)
+    setPhase('steps')
+    setStep(0)
+    setEffect('resist-one')
+    setStatus('Question the boundaries. The introduction continues automatically.')
+    schedule(() => {
+      setStep(1)
+      setEffect('resist-two')
+      setStatus('Test the limits.')
+    }, 1000)
+    schedule(() => {
+      setStep(2)
+      setEffect('breakthrough')
+      setStatus('Recognize patterns.')
+    }, 2000)
+    schedule(() => {
+      setStep(3)
+      setEffect('idle')
+      setPhase('dive')
+      setStatus('The page opens.')
+    }, 3000)
+  }, [phase, clearTimers, reducedMotion, onComplete, schedule])
 
   useEffect(() => {
-    if (phase !== 'steps' || step >= 3) return
+    if (phase !== 'question') return
     const shell = shellRef.current
     if (!shell) return
 
@@ -117,7 +115,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       if (Math.abs(event.deltaY) < 8 && Math.abs(event.deltaX) < 8) return
       event.preventDefault()
       const magnitude = Math.max(Math.abs(event.deltaX), Math.abs(event.deltaY), 1)
-      advanceAttempt({
+      begin({
         x: clamp(event.deltaX / magnitude, -1, 1),
         y: clamp(-event.deltaY / magnitude, -1, 1),
       })
@@ -129,7 +127,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       if (event.altKey || event.ctrlKey || event.metaKey ||
         target?.closest('a, button, input, textarea, select, [contenteditable="true"]')) return
       event.preventDefault()
-      advanceAttempt({ x: 0.16, y: -1 })
+      begin({ x: 0.16, y: -1 })
     }
 
     shell.addEventListener('wheel', onWheel, { passive: false })
@@ -139,7 +137,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       shell.removeEventListener('wheel', onWheel)
       shell.removeEventListener('keydown', onKeyDown)
     }
-  }, [advanceAttempt, phase, step])
+  }, [begin, phase])
 
   useEffect(() => {
     if (phase !== 'dive' || diving) return
@@ -161,7 +159,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
 
   useEffect(() => {
     if (phase !== 'dive') return
-    schedule(() => setDiving(true), reducedMotion ? 0 : 2200)
+    schedule(() => setDiving(true), reducedMotion ? 0 : 150)
   }, [phase, reducedMotion, schedule])
 
   useEffect(() => {
@@ -177,7 +175,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     const startedAt = performance.now()
     let frame = 0
     const move = (now: number) => {
-      const progress = clamp((now - startedAt) / 1600, 0, 1)
+      const progress = clamp((now - startedAt) / 900, 0, 1)
       // Continuous movement through the short passage; no blank scroll interval.
       const eased = progress * progress * (3 - 2 * progress)
       setDiveProgress(eased)
@@ -188,11 +186,6 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     frame = requestAnimationFrame(move)
     return () => cancelAnimationFrame(frame)
   }, [diving, reducedMotion, onComplete])
-
-  const begin = () => {
-    setPhase('steps')
-    setStatus('Step 1. Try to move through the page.')
-  }
 
   const skip = () => {
     clearTimers()
@@ -234,10 +227,10 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
         }}>Skip introduction</button>
 
         <div
-          className={`intro-field effect-${effect} intro-tone--${introTone}${phase === 'steps' ? ' intro-field--draggable' : ''}`}
+          className={`intro-field effect-${effect} intro-tone--${introTone}${phase === 'question' ? ' intro-field--draggable' : ''}`}
           onPointerDown={(event) => {
             suppressClickRef.current = false
-            if (phase !== 'steps' || lockRef.current || event.button !== 0 || !event.isPrimary) return
+            if (phase !== 'question' || lockRef.current || event.button !== 0 || !event.isPrimary) return
             pointerStartRef.current = { x: event.clientX, y: event.clientY }
           }}
           onPointerMove={(event) => {
@@ -261,13 +254,13 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
               if (event.pointerType === 'touch') {
                 event.preventDefault()
                 suppressClickRef.current = true
-                advanceAttempt()
+                begin()
               }
               return
             }
             suppressClickRef.current = true
             const magnitude = Math.max(Math.abs(x), Math.abs(y), 1)
-            advanceAttempt({ x: clamp(x / magnitude, -1, 1), y: clamp(y / magnitude, -1, 1) })
+            begin({ x: clamp(x / magnitude, -1, 1), y: clamp(y / magnitude, -1, 1) })
           }}
           onPointerCancel={() => {
             pointerStartRef.current = null
@@ -279,7 +272,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
             event.preventDefault()
             event.stopPropagation()
           }}
-          onClick={() => { if (phase === 'steps') advanceAttempt() }}
+          onClick={() => begin()}
           style={{
             '--dx': `${dx}px`,
             '--dy': `${dy}px`,
@@ -306,17 +299,15 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
                     type="button"
                     className="question-trigger"
                     aria-label="Begin exploring the question"
-                    onClick={begin}
+                    onClick={() => begin()}
                   >
                     how does one produce curiosity<span className="question-mark" aria-hidden="true">?</span>
                   </button>
                 </p>
               ) : (
                 <div className="step-copy">
-                  {step < 3 ? (
-                    <button className="step-prompt" type="button" onClick={(event) => { event.stopPropagation(); advanceAttempt() }}>{STEPS[step]}</button>
-                  ) : <p>{STEPS[step]}</p>}
-                  {step < 3 ? <p className="intro-hint">Click, drag, scroll, or use the keyboard.</p> : null}
+                  <p className="step-prompt">{STEPS[step]}</p>
+                  {step < 3 ? <p className="intro-hint">Unfolding automatically. Skip at any time.</p> : null}
                   {step === 3 ? (
                     <button type="button" className="dive-arrow" aria-label="Dive into the portfolio" onClick={dive}>
                       <span aria-hidden="true">↓</span>
@@ -340,12 +331,6 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
           </div>
           {phase === 'dive' ? <div className="dive-passage" aria-hidden="true" /> : null}
         </div>
-
-        {phase === 'steps' && step < 3 ? (
-          <button className="assistive-attempt" type="button" onClick={() => advanceAttempt({ x: 0.16, y: -1 })}>
-            Test the boundary
-          </button>
-        ) : null}
 
         <p className="sr-only" aria-live="polite">{status}</p>
       </div>

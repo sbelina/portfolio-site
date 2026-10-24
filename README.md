@@ -1,8 +1,18 @@
-# Producing Curiosity — v0.5 deployment-ready prototype
+# Producing Curiosity
 
-React + TypeScript + Vite prototype for Sami Belina's portfolio, prepared for a GitHub → Cloudflare Pages deployment.
+React, TypeScript and Vite on the existing Cloudflare Worker. The integrated build prerenders the portfolio and finite reading pages, with an optional p5.js experiment. See [current release scope and verification](docs/codex/INTEGRATED-SEO-RELEASE.md) and [deployment](DEPLOY.md).
 
-## v0.5 changes
+The public build contains the existing portfolio, the illustrative hidden-work experiment and a truthfully empty investigation collection. Reading/poetry/diagram fixtures are local-only; the authenticated D1 writing trial is a separate loopback-only Worker. Hosted CMS integration and new manuscript publication remain incomplete.
+
+The sections below preserve the original v0.5 baseline notes; the current intro uses one action followed by three automatic authored beats, skip/replay and an automatic dive. See [intro states](docs/INTRO-STATES.md).
+
+## Codex development context
+
+Start with [AGENTS.md](AGENTS.md) and the [Codex context index](docs/codex/README.md). The handoff includes the product direction, full researched IA/backend brief, implementation work packages, evidence rules, open decisions, and a [copy-ready first task](docs/codex/START-CODEX.md).
+
+These documents describe proposed multi-page architecture and an expandable private authoring/publishing workflow. They do not mean a router, CMS, database, or publishing backend is already installed. Preserve the distinction between current implementation and target behavior.
+
+## Original v0.5 changes
 
 - Deployment-safe repository root with `.gitignore` and Node 22 pinning
 - Exact package versions instead of `latest` dependency ranges
@@ -14,10 +24,10 @@ React + TypeScript + Vite prototype for Sami Belina's portfolio, prepared for a 
 
 ## What this version contains
 
-### Required intro
+### Intro
 - First-visit interaction remembered across browser sessions using `localStorage`, with a replay option
 - Delayed **how does one produce curiosity?** opening with the entire phrase as a real button
-- Steps 1–3 use a three-intent rhythm: two yielding failures, then a slight magnification and breakthrough
+- One deliberate action starts three automatic authored beats: attempts, resistance and breakthrough, followed by the transition
 - Directional movement follows desktop clicks/drags, wheel/trackpad, touch-swipe, or keyboard intent
 - Geometry-led temporal echoes inspired by Austin Malerba's Element Mirror work, implemented locally for portability
 - Step 4 **dive in** pauses for 2.2 seconds, then moves automatically through a short expanding passage into the index
@@ -78,18 +88,18 @@ The generated `dist/` folder can be hosted statically.
 
 ## Interaction implementation note
 
-The mirror behavior is original CSS/DOM work inspired by Element Mirror rather than a direct dependency. The semantic DOM remains the interface; visual echoes are `aria-hidden` and non-interactive. This preserves the intended feel — the surface yields in the attempted direction, temporal slices lag behind, the field returns, and the third attempt magnifies before resolving — without tying the prototype to a rendering dependency before the interaction is settled.
+The mirror behavior is original CSS/DOM work inspired by Element Mirror rather than a direct dependency. The semantic DOM remains the interface; visual echoes are `aria-hidden` and non-interactive. This preserves the intended feel — the surface yields in the attempted direction, temporal slices lag behind, the field returns, and the automatic breakthrough beat magnifies before resolving — without tying the prototype to a rendering dependency before the interaction is settled.
 
 ## Content strategy
 
 The public path remains professional and evidence-led. The writing is not a separate silo: it becomes another route into the same system. A reader can encounter `#knowledge` in a case, select it, and discover its relationship to a field note such as *The Bends*. Conversely, someone who enters through an essay can trace back to professional work.
 
-This is still a single-page prototype. The next production pass can split full case studies and full field notes into routes once the content, image rights, analytics, hosting, and publication-verification decisions are final.
+The public portfolio preserves its curated homepage. Finite reading templates and an empty investigation collection are integrated; full case studies and field notes enter those routes only after source, rights and exact-content approval.
 
 
 ## Deployment
 
-See `DEPLOY.md` for the browser-first GitHub → Cloudflare Pages setup. No command line is required for the initial repository upload.
+See `DEPLOY.md` for the existing GitHub → Cloudflare Worker build, preview and release process.
 
 The generated `package-lock.json` is committed. Use Node 22 and `npm ci` for repeatable installs. Run `npm test` for production-build browser and automated accessibility checks; see `DEPLOY.md` for browser installation and preview instructions.
 

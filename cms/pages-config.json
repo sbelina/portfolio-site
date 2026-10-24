@@ -1,0 +1,243 @@
+{
+  "content": [
+    {
+      "name": "entries",
+      "label": "Entries",
+      "type": "collection",
+      "path": "private/entries",
+      "format": "json",
+      "filename": "{fields.id}.json",
+      "fields": [
+        {
+          "name": "schemaVersion",
+          "type": "number",
+          "default": 1
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "revision",
+          "type": "number",
+          "readonly": true
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "slug",
+          "type": "string"
+        },
+        {
+          "name": "summary",
+          "type": "text"
+        },
+        {
+          "name": "kind",
+          "type": "select",
+          "options": {
+            "values": [
+              "investigation",
+              "pattern",
+              "perspective",
+              "observation",
+              "experiment",
+              "reference"
+            ]
+          }
+        },
+        {
+          "name": "format",
+          "type": "select",
+          "options": {
+            "values": [
+              "case",
+              "essay",
+              "field_note",
+              "poetry"
+            ]
+          }
+        },
+        {
+          "name": "editorialState",
+          "type": "select",
+          "default": "draft",
+          "options": {
+            "values": [
+              "draft",
+              "review"
+            ]
+          }
+        },
+        {
+          "name": "visibility",
+          "type": "select",
+          "default": "restricted",
+          "options": {
+            "values": [
+              "restricted"
+            ]
+          }
+        },
+        {
+          "name": "blocks",
+          "type": "object",
+          "list": true,
+          "fields": [
+            {
+              "name": "id",
+              "type": "uuid"
+            },
+            {
+              "name": "type",
+              "type": "select",
+              "options": {
+                "values": [
+                  "prose",
+                  "verse",
+                  "evidence"
+                ]
+              }
+            },
+            {
+              "name": "text",
+              "type": "text"
+            },
+            {
+              "name": "markdown",
+              "type": "text"
+            },
+            {
+              "name": "evidenceId",
+              "type": "reference",
+              "options": {
+                "collection": "evidence",
+                "value": "{fields.id}",
+                "label": "{fields.title}",
+                "search": "title"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "relationships",
+      "label": "Relationships",
+      "type": "collection",
+      "path": "private/relationships",
+      "format": "json",
+      "filename": "{fields.id}.json",
+      "fields": [
+        {
+          "name": "schemaVersion",
+          "type": "number",
+          "default": 1
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "revision",
+          "type": "number",
+          "readonly": true
+        },
+        {
+          "name": "fromId",
+          "type": "reference",
+          "options": {
+            "collection": "entries",
+            "value": "{fields.id}",
+            "label": "{fields.title}",
+            "search": "title"
+          }
+        },
+        {
+          "name": "toId",
+          "type": "reference",
+          "options": {
+            "collection": "entries",
+            "value": "{fields.id}",
+            "label": "{fields.title}",
+            "search": "title"
+          }
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "options": {
+            "values": [
+              "supports",
+              "challenges",
+              "extends",
+              "illustrates",
+              "contradicts",
+              "depends_on",
+              "emerged_from",
+              "shares_pattern"
+            ]
+          }
+        },
+        {
+          "name": "rationale",
+          "type": "text"
+        },
+        {
+          "name": "reviewState",
+          "type": "select",
+          "default": "proposed",
+          "options": {
+            "values": [
+              "proposed",
+              "approved",
+              "rejected"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "evidence",
+      "label": "Evidence",
+      "type": "collection",
+      "path": "private/evidence",
+      "format": "json",
+      "filename": "{fields.id}.json",
+      "fields": [
+        {
+          "name": "schemaVersion",
+          "type": "number",
+          "default": 1
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "revision",
+          "type": "number",
+          "readonly": true
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "source",
+          "type": "text"
+        },
+        {
+          "name": "locator",
+          "type": "text"
+        },
+        {
+          "name": "limitations",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}
