@@ -26,6 +26,8 @@ These are adaptations from reviewed documentation, not imported code, installed 
 
 ## A bounded development cycle
 
+Use the [dual-system inquiry loop](SYSTEMS-INQUIRY.md) within this cycle, including a Model Challenger review of meaningful explanations. The [current assessment](SYSTEMS-INQUIRY-ASSESSMENT.md) applies it to the existing components and defines a proposed static-versus-frame comparison. Neither the charter nor this protocol establishes a comprehension result.
+
 1. State the visitor/author problem, hypothesis, and what observation would challenge it.
 2. Translate the relevant methods into explicit behavior, constraints, and acceptance conditions. Name the discipline only when it changes a decision.
 3. Implement the smallest coherent example using the current stack. Preserve sources, authorship, and publication boundaries.

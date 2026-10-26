@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ExperimentNote } from '../../components/ExperimentNote'
+import { PublicNavigation } from '../../components/PublicNavigation'
 import { hiddenWork, processGeometry } from './content'
 import type { MotionLayer } from './sketch'
 
@@ -79,7 +80,7 @@ export function HiddenWorkPage() {
   return <>
     <a className="main-skip-link" href="#experiment">Skip to experiment</a>
     <main className="hidden-work-page" id="experiment" tabIndex={-1}>
-      <header className="experiment-header"><a href="/#index">△ Producing Curiosity</a><a href="/#work">Back to the portfolio</a></header>
+      <header className="experiment-header"><a href="/">△ Producing Curiosity</a><PublicNavigation currentPath="/experiments/reveal-hidden-work/" /></header>
       <p className="eyebrow">An interaction experiment · illustrative content</p>
       <h1>{hiddenWork.title}</h1>
       <p className="experiment-question">{hiddenWork.question}</p>

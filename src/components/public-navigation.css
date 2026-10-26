@@ -1,0 +1,8 @@
+.public-navigation { min-width: 0; font-size: .85rem; }
+.public-navigation ul { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; list-style: none; padding: 0; margin: 0; }
+.public-navigation li { min-width: 0; }
+.public-navigation a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; color: var(--reading-muted, var(--muted, #aaa89f)); text-underline-offset: .3em; }
+.public-navigation a:hover, .public-navigation a[aria-current="page"] { color: var(--reading-ink, var(--ink, #f1eee5)); }
+.public-navigation a[aria-current="page"] { text-decoration-thickness: 2px; }
+.public-navigation a:focus-visible { outline: 3px solid var(--reading-focus, var(--focus, #f2c84b)); outline-offset: 4px; }
+@media print { .public-navigation { display: none; } }

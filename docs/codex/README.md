@@ -6,6 +6,8 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SEO/SEM audit](SEO-SEM-AUDIT.md), and [independent integration review](INTEGRATED-RELEASE-REVIEW.md). These distinguish production-safe public behavior, fixture-only reading demonstrations, local authenticated writing, and remaining hosted CMS dependencies. Earlier handoff/proposal and task records remain historical context.
 
+The [navigation release and copy-editing setup](NAVIGATION-AND-EDITING.md) records the shared menus, condensing index header, current article-publication blockers, and agent-confirmed editing direction. It does not claim universal CMS editing or new manuscript approval.
+
 ## Reading order
 
 | File | Purpose |
@@ -23,6 +25,8 @@ Existing context remains important: [content architecture proposal](../CONTENT-A
 ## Development as an experiment
 
 Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hypothesis, adapted research practices, comparison design, and evidence record. The shared footer describes the idea, process, and current implementation.
+
+[Systems Inquiry Orchestrator v2](SYSTEMS-INQUIRY.md) supplies the recurring dual-system inquiry method. Read [the implementation assessment](SYSTEMS-INQUIRY-ASSESSMENT.md) before proposing frame switching, model histories, behavioral models, or a principle atlas. It separates current contracts from missing capabilities and specifies a bounded Frame Laboratory comparison; no laboratory implementation is authorized by that proposal.
 
 ## Writing and page review
 

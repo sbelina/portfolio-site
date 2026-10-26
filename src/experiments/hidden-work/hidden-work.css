@@ -1,3 +1,4 @@
+@import '../../components/public-navigation.css';
 .hidden-work-page { max-width: 1240px; margin: auto; padding: 2rem clamp(1.25rem, 5vw, 5rem) 4rem; overflow-wrap: anywhere; }
 .hidden-work-page p { line-height: 1.7; }
 .experiment-header { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 5rem; font-size: .85rem; }
