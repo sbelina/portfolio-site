@@ -40,6 +40,8 @@ Distinguish implemented behavior from proposals. This documentation package does
 
 Follow [the development experiment](docs/codex/DEVELOPMENT-EXPERIMENT.md) when testing new methods. Define the question and acceptance conditions before building; load relevant context progressively; preserve correction provenance; distinguish human observations from simulations and automated checks. Record actual results and limitations. Update the shared footer experiment statement when verified capabilities change.
 
+Apply [Systems Inquiry Orchestrator v2](docs/codex/SYSTEMS-INQUIRY.md) as additive inquiry guidance: **Notice → Frame → Model → Test → Interrogate → Revise**. Investigate both the system producing behavior and the frames producing its explanation. Ask **“What way of looking at this makes it appear true?”** of the subject matter and of your own development decisions. The loop is a reasoning and review method, not compulsory interface steps. The charter adds no feature, content, or release authorization; existing architecture, evidence, accessibility, and publication rules continue to govern. Start new frame/model work with [the capability assessment](docs/codex/SYSTEMS-INQUIRY-ASSESSMENT.md).
+
 ## Verification and reporting
 
 Use the repository-pinned Node version and lockfile. For runtime changes, the current checks are `npm ci`, `npm run build`, `npm run check:deploy`, and `npm test`; inspect the current scripts and CI before running. Install required Playwright browsers using the repository's documented procedure. Never disable TLS or dependency integrity checks to make installation pass.
