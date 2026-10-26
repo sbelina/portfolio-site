@@ -1,5 +1,6 @@
 @import '../visuals/assumed-observed.css';
 @import '../components/experiment-note.css';
+@import '../components/public-navigation.css';
 :root {
   color-scheme: dark;
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -24,11 +25,8 @@ a:hover { color: var(--reading-holds); }
 a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
 .reading-page { max-width: 1240px; margin: 0 auto; padding: 0 clamp(1.25rem, 5vw, 4rem); overflow-wrap: anywhere; }
 .reading-skip { display: inline-block; min-height: 44px; padding: .65rem 0; font-size: .85rem; }
-.reading-site-header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1rem 0 1.5rem; border-bottom: 1px solid var(--reading-line); }
+.reading-site-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 1.5rem; padding: 1rem 0 1.5rem; border-bottom: 1px solid var(--reading-line); }
 .reading-wordmark { font-weight: 720; text-decoration: none; }
-.reading-site-header nav { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
-.reading-site-header nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--reading-muted); }
-.reading-site-header nav a[aria-current="page"] { color: var(--reading-ink); text-decoration-thickness: 2px; }
 .reading-fixture { max-width: 54rem; margin: 2rem auto 0; padding: 1rem 1.25rem; border: 1px solid var(--reading-unresolved); background: var(--reading-panel); font-size: .85rem; line-height: 1.6; }
 .reading-fixture strong { color: var(--reading-unresolved); }
 .reading-fixture p { margin: .5rem 0 0; }

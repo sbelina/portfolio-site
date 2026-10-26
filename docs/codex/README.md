@@ -6,6 +6,8 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SEO/SEM audit](SEO-SEM-AUDIT.md), and [independent integration review](INTEGRATED-RELEASE-REVIEW.md). These distinguish production-safe public behavior, fixture-only reading demonstrations, local authenticated writing, and remaining hosted CMS dependencies. Earlier handoff/proposal and task records remain historical context.
 
+The [navigation release and copy-editing setup](NAVIGATION-AND-EDITING.md) records the shared menus, condensing index header, current article-publication blockers, and agent-confirmed editing direction. It does not claim universal CMS editing or new manuscript approval.
+
 ## Reading order
 
 | File | Purpose |

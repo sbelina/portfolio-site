@@ -3,6 +3,7 @@ import { Component, useCallback, useEffect, useRef, useState, type ReactNode } f
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
 import { ExperimentNote } from './components/ExperimentNote'
+import { PublicNavigation } from './components/PublicNavigation'
 import { archiveItems, graphTagIds, projects, writings } from './data'
 import { emptyHomeReading, type HomeReading } from './home-reading'
 
@@ -39,6 +40,43 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
   const [replayKey, setReplayKey] = useState(0)
   const [graphSelection, setGraphSelection] = useState<string | null>(null)
   const introInitialised = useRef(false)
+  const header = useRef<HTMLElement>(null)
+  const [compactHeader, setCompactHeader] = useState(false)
+  const [headerMeasured, setHeaderMeasured] = useState(false)
+  const [oversizedHeader, setOversizedHeader] = useState(false)
+
+  useEffect(() => {
+    // Hysteresis prevents the change in header height from toggling its own state.
+    const update = () => {
+      const index = document.getElementById('index')
+      const distance = window.scrollY - (index?.offsetTop ?? 0)
+      setCompactHeader(current => current ? distance > 48 : distance > 120)
+    }
+    update()
+    window.addEventListener('scroll', update, { passive: true })
+    return () => window.removeEventListener('scroll', update)
+  }, [])
+
+  useEffect(() => {
+    const element = header.current
+    if (!element) return
+    const measure = () => {
+      const height = element.getBoundingClientRect().height
+      const oversized = height > window.innerHeight * .45
+      document.documentElement.style.setProperty('--site-header-height', `${oversized ? 0 : height}px`)
+      setOversizedHeader(oversized)
+      setHeaderMeasured(true)
+    }
+    measure()
+    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null
+    observer?.observe(element)
+    window.addEventListener('resize', measure)
+    return () => {
+      observer?.disconnect()
+      window.removeEventListener('resize', measure)
+      document.documentElement.style.removeProperty('--site-header-height')
+    }
+  }, [])
 
   const completeIntro = useCallback(() => {
     try {
@@ -113,19 +151,12 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
       ) : null}
 
       <main id="index" className="site-main" tabIndex={-1}>
-        <header className="site-header">
+        <header ref={header} className="site-header" data-compact={compactHeader} data-measured={headerMeasured} data-oversized={oversizedHeader}>
           <a href="#index" className="wordmark" aria-label="Producing Curiosity home">
             <span className="wordmark-mark" aria-hidden="true">△</span>
             <span>Producing Curiosity</span>
           </a>
-          <nav aria-label="Primary navigation">
-            <a href="/investigations/">Investigations</a>
-            <a href="#work">Work</a>
-            <a href="#connections">Map</a>
-            <a href="#practice">Practice</a>
-            <a href="#field-notes">Field notes</a>
-            <a href="#contact">Contact</a>
-          </nav>
+          <PublicNavigation home />
         </header>
 
         <section className="index-hero" aria-labelledby="index-title">

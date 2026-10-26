@@ -1,5 +1,6 @@
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
+import { PublicNavigation } from '../components/PublicNavigation'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
@@ -179,7 +180,7 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
   return (
     <div className="reading-page">
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
-      <header className="reading-site-header"><a className="reading-wordmark" href="/">△ Producing Curiosity</a><nav aria-label="Primary navigation"><a href="/investigations/" aria-current={page.kind === 'collection' ? 'page' : undefined}>Investigations</a><a href="/#contact">Contact</a></nav></header>
+      <header className="reading-site-header"><a className="reading-wordmark" href="/">△ Producing Curiosity</a><PublicNavigation currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
       {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sam’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
       <footer className="reading-footer"><a href="/">Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
