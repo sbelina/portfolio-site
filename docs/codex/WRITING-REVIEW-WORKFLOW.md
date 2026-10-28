@@ -37,6 +37,8 @@ Any content-affecting change after approval requires approval of a new candidate
 
 ## Reviewer assistance
 
+Use the [validated review rubric](REVIEW-ROLE-VALIDATION.md) for source/rights uncertainty, reading integrity and complete public-surface coverage. Its synthetic trials supported stronger prepared Evidence, Experience and Release suggestions for future local-studio intake. Existing saved review records are preserved. This adds no seventh pass, autonomous reviewer or release authority; the local trial's implemented scope is recorded in [PRIVATE-WRITING-TRIAL.md](PRIVATE-WRITING-TRIAL.md).
+
 Codex may prepare an editorial report covering purpose, audience, argument, structure, voice, factual support, accessibility, and possible connections. Separate mechanical suggestions from substantive reframing. Link notes to passages and explain the change. Sam keeps final authority over voice, interpretation, and publication.
 
 For poems and creative prose, preserve ambiguity and formal choices unless Sam requests a change. Do not force creative writing into a professional case-study template. Decide archive versus Perspective placement after reading the complete piece.

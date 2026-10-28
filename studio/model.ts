@@ -65,10 +65,10 @@ export function applyAction(source: Workspace, action: Action, version: number, 
   const suggestions = [
    'Confirm manuscript completeness, authorship and conversion fidelity before choosing a structure.',
    'Read the argument or creative form intact; propose edits separately, without rewriting the original.',
-   'Inspect factual and causal claims. Attach sources, limitations and rights decisions; no claims have been verified automatically.',
+   'Inspect factual and causal claims, contribution, measurement scope and competing accounts. Record source support and rights separately; unknowns remain unresolved. Structural validity and rights clearance do not establish truth; no claim is verified automatically.',
    'Explain selected connections in words. Shared vocabulary alone does not establish a meaningful relation.',
-   'Preview the full reading, inline sources, keyboard navigation and narrow layout; keep essential limitations visible.',
-   'Check every source, proposed edit, relationship, URL and exact candidate before approval. Approval does not publish.',
+   'Preview the exact candidate and inline sources. Check relationship direction from both endpoints, reduced-motion and fallback behavior, keyboard/focus, no-JavaScript reading, narrow/enlarged text and correct review destinations. Record expected versus observed behavior; technical checks do not establish comprehension or accessibility conformance.',
+   'Inventory actual public outputs, including legacy homepage copy, metadata, HTML/JS/JSON, routes and assets outside the canonical projection. Bind the review to exact source and artifact revisions; flag missing source, rights, coverage or authenticated owner decisions. A digest or approved flag is not authorization. Approval does not publish.',
   ]
   w.manuscripts.push({id,title:action.title,format:action.format,poetry:action.poetry,filename:action.filename,bytes:action.bytes,original:result.text,digest,warnings:result.warnings,sections:action.poetry?[]:sections(result.text,digest),structure:'undecided',complete:false,reviews:passes.map((pass,i)=>({pass,suggestion:suggestions[i],uncertainty:'Prepared review prompt, not a completed editorial or factual review. Owner assessment required.',sources:[{start:0,end:result.text.length,sourceDigest:digest}],decision:'pending',note:''}))})
   break

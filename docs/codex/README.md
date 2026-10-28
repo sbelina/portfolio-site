@@ -34,6 +34,8 @@ Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hyp
 
 Open the [writing review folder](../../writing/README.md), [page review list](PAGE-REVIEW.md), and [workflow specification](WRITING-REVIEW-WORKFLOW.md). Eleven existing excerpts/descriptions have review records; full manuscripts remain to be supplied through private content storage. Approval and publication are separate, and the current documents do not implement CMS controls.
 
+The [review-role research and validation](REVIEW-ROLE-VALIDATION.md) records synthetic trials, known blind spots and the strengthened Evidence/Experience/Release rubrics. Future local-studio intake receives clearer pending prompts; existing saved records remain intact. The experimental proofs do not enforce publishing or authenticate approval.
+
 ## Current private writing trial
 
 See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE-WRITING-TRIAL.md). The isolated Worker now implements local authenticated durable saves and protected previews; hosted Pages CMS integration and production publication remain unimplemented. The source probe is not a full CMS trial.
