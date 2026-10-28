@@ -27,6 +27,12 @@ test('review candidate keeps legacy identities while removing misleading public 
     proposedRoute: null,
     oldLocation: '/#documentation-recovery',
   })
+  const review = JSON.parse(await readFile('docs/codex/page-review.json', 'utf8'))
+  expect(review.pages.filter((entry: { kind: string }) => entry.kind === 'investigation')
+    .map((entry: { id: string }) => entry.id).sort()).toEqual([
+    'accessibility-ai', 'brand-research', 'civic-service', 'claims-operations', 'enterprise-ai', 'telematics',
+  ])
+  for (const entry of review.pages) expect(entry.approval).toBeNull()
 })
 
 test('first reading gives thesis, work and connections without opening intro or graph', async ({ browser, baseURL }) => {

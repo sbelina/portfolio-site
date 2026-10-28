@@ -1,0 +1,11 @@
+# Accessibility + AI — page review candidate
+
+**Candidate route:** `/investigations/accessibility-ai/` · **Stable ID:** `36e61934-b32a-4b04-a9c2-d6f99b73b5a2` · **Legacy:** `/#accessibility-ai`. **Status:** owner correction received; experiment source/rights, exact manuscript and approval pending.
+
+**Question:** What did the automated code-recovery test establish, and what separate question did planned human review raise?
+
+**Proposed outline:** Sam originated the idea and worked with the team on an experiment that deliberately removed accessibility code. The agent detected and restored that code. A developer then conducted planned human review; under simulated deuteranopia the reviewer flagged potentially weak visual distinction between Focus and Break, while labels were present. Explain the shared agent and collaborative iteration separately from unverified uptake.
+
+**Evidence/limits:** Review test record, code diff, reviewer report, simulation setup and accessibility criteria. One simulation is not proof of user failure or a standards violation. Internal availability is not adoption. Keep any separate AI-literacy reach outside this experiment's outcome.
+
+**Connection proposal:** `Passing checks ≠ visually distinguishable` may illustrate [Related. Not equivalent.](related-not-equivalent.md) after review; it does not mean checks are worthless.

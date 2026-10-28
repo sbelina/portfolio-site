@@ -83,69 +83,91 @@
     },
     {
       "id": "claims-operations",
-      "title": "Move feedback points upstream.",
+      "title": "When “complete” still generated work.",
       "kind": "investigation",
       "proposedUrl": "/investigations/claims-operations/",
-      "contentAvailability": "prototype_summary",
+      "contentAvailability": "legacy_summary_and_review_outline",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/claims-operations.md"
     },
     {
       "id": "brand-research",
-      "title": "A survey has two users. I argued for the respondent.",
+      "title": "Agreement and trust were different questions.",
       "kind": "investigation",
       "proposedUrl": "/investigations/brand-research/",
-      "contentAvailability": "prototype_summary",
+      "contentAvailability": "legacy_summary_and_review_outline",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/brand-research.md"
     },
     {
       "id": "enterprise-ai",
       "title": "A decision model became the team structure.",
       "kind": "investigation",
       "proposedUrl": "/investigations/enterprise-ai/",
-      "contentAvailability": "prototype_summary",
+      "contentAvailability": "legacy_summary_and_review_outline",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/enterprise-ai.md"
     },
     {
       "id": "documentation-recovery",
-      "title": "Each revision absorbed a defect the last one missed.",
-      "kind": "investigation",
-      "proposedUrl": "/investigations/documentation-recovery/",
-      "contentAvailability": "prototype_summary",
+      "title": "Claims knowledge work · legacy reference",
+      "kind": "reference",
+      "proposedUrl": "/#documentation-recovery",
+      "contentAvailability": "legacy_summary_needs_claims_integration",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/claims-operations.md"
     },
     {
       "id": "civic-service",
-      "title": "What looked like apathy was administrative friction.",
+      "title": "Voting questions did not follow service categories.",
       "kind": "investigation",
       "proposedUrl": "/investigations/civic-service/",
-      "contentAvailability": "prototype_summary",
+      "contentAvailability": "legacy_summary_and_review_outline",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/civic-service.md"
     },
     {
       "id": "accessibility-ai",
-      "title": "Automated validation passed. Real-world use still failed.",
+      "title": "A person noticed a question the checks did not settle.",
       "kind": "investigation",
       "proposedUrl": "/investigations/accessibility-ai/",
-      "contentAvailability": "prototype_summary",
+      "contentAvailability": "legacy_summary_and_review_outline",
       "reviewStatus": "needs_source_review",
       "approval": null,
       "publicationStatus": "not_verified",
-      "reviewFile": null
+      "reviewFile": "review-candidates/accessibility-ai.md"
+    },
+    {
+      "id": "telematics",
+      "title": "Telematics and research recovery",
+      "kind": "investigation",
+      "proposedUrl": "/investigations/telematics/",
+      "contentAvailability": "review_outline_only",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "review-candidates/telematics.md"
+    },
+    {
+      "id": "pattern-related-not-equivalent",
+      "title": "Related. Not equivalent.",
+      "kind": "pattern",
+      "proposedUrl": "/patterns/related-not-equivalent/",
+      "contentAvailability": "review_outline_only",
+      "reviewStatus": "needs_source_review",
+      "approval": null,
+      "publicationStatus": "not_verified",
+      "reviewFile": "review-candidates/related-not-equivalent.md"
     },
     {
       "id": "pattern-delivered-not-complete",

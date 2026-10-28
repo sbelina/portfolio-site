@@ -8,6 +8,8 @@ See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SE
 
 The [navigation release and copy-editing setup](NAVIGATION-AND-EDITING.md) records the shared menus, condensing index header, current article-publication blockers, and agent-confirmed editing direction. It does not claim universal CMS editing or new manuscript approval.
 
+The [27 October editorial alignment](OCT-27-2026-EDITORIAL-ALIGNMENT.md), [claim corrections](OCT-27-2026-CLAIM-CORRECTIONS.md), and [review-branch status](OCT-27-2026-IMPLEMENTATION-STATUS.md) record the current owner-directed homepage/case proposal. They do not replace the existing release or approve new manuscripts. The separate Site copy trial remains unfinished in its own worktree and is not included in this review branch.
+
 ## Reading order
 
 | File | Purpose |
