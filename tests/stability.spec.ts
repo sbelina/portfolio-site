@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 const intro = 'Producing Curiosity introduction'
-const heading = 'I swim upstream toward the problem.'
+const heading = 'The visible problem is rarely the one producing the outcome.'
 
 test('first visit: mouse skip removes intro and focuses content; returning visit bypasses it', async ({ page }) => {
   await page.goto('/')
@@ -90,7 +90,7 @@ test('automated WCAG checks on intro and main content', async ({ page }) => {
 test('main navigation and graph work after skip', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Skip introduction' }).click()
-  await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Map' }).click()
+  await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Connections' }).click()
   await expect(page).toHaveURL(/#connections$/)
   await page.getByRole('button', { name: 'tag: #systems. Select to trace connections.', exact: true }).click()
   await expect(page.locator('.graph-explanation')).toContainText('systems')

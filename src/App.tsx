@@ -160,60 +160,23 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
         </header>
 
         <section className="index-hero" aria-labelledby="index-title">
-          <p className="eyebrow">Sami Belina · service design, research, and organizational systems</p>
-          <h1 id="index-title">I swim upstream toward the problem.</h1>
-          <p className="hero-copy">
-            I design research, decision structures, workflows, and operating systems for ambiguous problems — especially when the visible failure is downstream from its cause.
-          </p>
-          <p className="hero-thesis">Across environments, I keep finding the same thing: the problem people see is rarely the one creating the outcome.</p>
-          <div className="hero-study" aria-labelledby="study-label">
-            <p id="study-label">What I’m studying</p>
-            <ul>
-              <li>Structural causality</li>
-              <li>Information flow</li>
-              <li>Incentives</li>
-              <li>Feedback loops</li>
-              <li>Hidden work</li>
-              <li>Organizational learning</li>
-            </ul>
-          </div>
+          <p className="eyebrow">Producing Curiosity / Seeing What Systems Miss</p>
+          <h1 id="index-title">The visible problem is rarely the one producing the outcome.</h1>
           <div className="hero-actions">
-            <a className="primary-link" href="#work">See the work ↓</a>
-            <a className="secondary-link" href="#connections">Trace the system ↗</a>
+            <a className="primary-link" href="#work">Explore investigations ↓</a>
+            <a className="secondary-link" href="#connections">Explore connections →</a>
+            <a className="hero-method-link" href="#practice">How I investigate ↓</a>
           </div>
-          <div className="hero-route" aria-label="Practice sequence">
-            <span className="state-text state-text--unresolved">ambiguity</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--unresolved">evidence</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--pressure">decision</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--holds">structure</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--holds">transfer</span>
-          </div>
-          <div className="color-grammar" aria-label="Portfolio color system">
-            <span className="color-key color-key--unresolved"><i aria-hidden="true" /> <strong>Violet</strong> unresolved</span>
-            <span className="color-key color-key--pressure"><i aria-hidden="true" /> <strong>Coral</strong> pressure point</span>
-            <span className="color-key color-key--holds"><i aria-hidden="true" /> <strong>Teal</strong> what holds</span>
-          </div>
-        </section>
-
-        <section className="reading-gateway" aria-labelledby="reading-gateway-title">
-          <p className="eyebrow">Seeing What Systems Miss</p>
-          <h2 id="reading-gateway-title">Questions, evidence, and explained connections.</h2>
-          <p>Open an investigation at its own address, read its limitations, and follow the reasoning into a related pattern.</p>
-          {reading.fixture ? <p className="reading-fixture-note">Development fixtures — synthetic examples, not approved case studies. Excluded from production builds.</p> : null}
-          <a className="primary-link" href="/investigations/">Browse investigations →</a>
-          {reading.entries.map((entry) => <article key={entry.id}>
-            <h3><a href={entry.path}>{entry.title}</a></h3><p>{entry.summary}</p>
-          </article>)}
-          {Object.entries(reading.fragmentRedirects).map(([fragment, path]) => (
-            <p key={fragment} id={fragment}><a href={path}>Continue to the connected reading page →</a></p>
-          ))}
+          <p className="hero-copy">
+            I investigate how assumptions, information, human behavior, and operating conditions shape outcomes—then translate what I find into decisions and durable ways of working.
+          </p>
         </section>
 
         <section className="work" id="work" aria-labelledby="work-title">
-          <div className="section-kicker">Six cases</div>
+          <div className="section-kicker">Selected work</div>
           <div className="work-intro">
-            <h2 id="work-title">Each one left a structure still in use.</h2>
-            <p>Not a list of findings. A record of what changed, what was built, and what remained after the project moved on.</p>
+            <h2 id="work-title">Look beneath the visible problem.</h2>
+            <p>These existing summaries are a starting point for the work. Full investigations, sources, contribution details, and limitations require separate page review.</p>
           </div>
           <div className="work-spine" aria-hidden="true" />
           <div className="project-list">
@@ -224,7 +187,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
                   <p className="project-domain">{project.domain}</p>
                   <h3>{project.title}</h3>
                   <p className="project-strapline">{project.strapline}</p>
-                  <p className="project-metric">{project.metric}</p>
+                  <p className="project-focus">{project.focus}</p>
                   <p className="project-summary">{project.summary}</p>
 
                   <div className="case-logic" aria-label={`${project.domain} case logic`}>
@@ -242,22 +205,53 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           </div>
         </section>
 
+        <section className="reading-gateway" aria-labelledby="reading-gateway-title">
+          <p className="eyebrow">Seeing What Systems Miss</p>
+          <h2 id="reading-gateway-title">Questions, evidence, and explained connections.</h2>
+          <p>Open an investigation at its own address, read its limitations, and follow the reasoning into a related pattern.</p>
+          {reading.fixture ? <p className="reading-fixture-note">Development fixtures — synthetic examples, not approved case studies. Excluded from production builds.</p> : null}
+          <a className="primary-link" href="/investigations/">Browse investigations →</a>
+          {reading.entries.map((entry) => <article key={entry.id}>
+            <h3><a href={entry.path}>{entry.title}</a></h3><p>{entry.summary}</p>
+          </article>)}
+          {Object.entries(reading.fragmentRedirects).map(([fragment, path]) => (
+            <p key={fragment} id={fragment}><a href={path}>Continue to the connected reading page →</a></p>
+          ))}
+        </section>
+
         <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
 
         <section className="practice" id="practice" aria-labelledby="practice-title">
           <div className="section-kicker">Practice</div>
           <div className="practice-grid">
             <div>
-              <h2 id="practice-title">Seek to understand — then look beyond the question asked.</h2>
+              <h2 id="practice-title">Investigate. Translate. Implement.</h2>
               <p className="practice-lead">
-                Across industries and disciplines, I keep returning to the same orientation: understand what lies beyond the question asked so I can determine the answer actually needed.
+                These are recurring moves in my work, not a fixed sequence. I return to the evidence when a decision or intervention reveals a new question.
               </p>
+              <p className="hero-thesis">I swim upstream toward the problem.</p>
             </div>
             <aside className="fish-note" aria-label="Working orientation">
               <span className="aside-label">orientation</span>
               <p>When someone describes a problem as “like giving a fish legs,” my instinct is to swim with it.</p>
               <small>Movement over resistance. Possibility before prescription.</small>
             </aside>
+          </div>
+
+          <ol className="practice-moves" aria-label="Three professional moves">
+            <li><h3>Investigate</h3><p>Examine the assumptions and conditions behind the picture people already have.</p></li>
+            <li><h3>Translate</h3><p>Make evidence and relationships understandable enough to support a decision.</p></li>
+            <li><h3>Implement</h3><p>Help the decision hold through workflows, guidance, learning, and ownership.</p></li>
+          </ol>
+          <p className="practice-inquiry">The inquiry behind these moves asks: <strong>What way of looking at this makes it appear true?</strong> I use Notice → Frame → Model → Test → Interrogate → Revise to examine the explanation as well as the system.</p>
+          <div className="hero-study" aria-labelledby="study-label">
+            <p id="study-label">Areas of inquiry</p>
+            <ul><li>Structural causality</li><li>Information flow</li><li>Incentives</li><li>Feedback loops</li><li>Hidden work</li><li>Organizational learning</li></ul>
+          </div>
+          <div className="color-grammar" aria-label="Portfolio color system">
+            <span className="color-key color-key--unresolved"><i aria-hidden="true" /> <strong>Violet</strong> unresolved</span>
+            <span className="color-key color-key--pressure"><i aria-hidden="true" /> <strong>Coral</strong> pressure point</span>
+            <span className="color-key color-key--holds"><i aria-hidden="true" /> <strong>Teal</strong> what holds</span>
           </div>
 
           <div className="practice-statement">

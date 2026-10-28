@@ -1,8 +1,8 @@
 /** Build-only metadata for the same public documents visitors can read. */
 export const siteOrigin = 'https://producingcuriosity.com'
 export const siteName = 'Producing Curiosity'
-export const homeTitle = 'Sami Belina — Service Design & Systems Research'
-export const homeDescription = 'Explore Sami Belina’s work in service design, research, and organizational systems, plus connected ideas and interactive experiments.'
+export const homeTitle = 'Sami Belina — Seeing What Systems Miss'
+export const homeDescription = 'Explore Sam Belina’s investigations into organizational assumptions, information, human behavior, and operating conditions, with connected ideas and experiments.'
 const imageAlt = 'Producing Curiosity by Sami Belina: I swim upstream toward the problem.'
 export const escapeAttribute = (text: string) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 

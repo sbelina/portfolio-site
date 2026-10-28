@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "abaa9a9aa28dfc665f8b34816559209c797114b8",
-  "sourceReview": "No approved migration wording or separate Emergent source supplied; original public prototype remains unchanged.",
+  "sourceReview": "Review-branch legacy wording is corrected, but no canonical case manuscript, rights or migration wording is approved.",
   "content": [
     {
       "legacyId": "claims-operations",
@@ -39,10 +39,10 @@
     {
       "legacyId": "documentation-recovery",
       "originalFormat": "Case",
-      "classification": "proposed mapping; owner review required",
+      "classification": "legacy claims reference; standalone destination undecided",
       "contentId": "33e3550d-6b04-4a91-878c-0225b464914d",
       "oldLocation": "/#documentation-recovery",
-      "proposedRoute": "/investigations/documentation-recovery/",
+      "proposedRoute": null,
       "activeDestination": "retained legacy home fragment",
       "review": "unreviewed draft; not selected for publication",
       "dates": "unknown; no invented dates"
@@ -211,18 +211,6 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "study-label",
-      "destination": "/#study-label",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "reading-gateway-title",
-      "destination": "/#reading-gateway-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
       "id": "work",
       "destination": "/#work",
       "source": "legacy baseline",
@@ -271,6 +259,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "reading-gateway-title",
+      "destination": "/#reading-gateway-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "connections",
       "destination": "/#connections",
       "source": "legacy baseline",
@@ -292,6 +286,12 @@
       "id": "practice-title",
       "destination": "/#practice-title",
       "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "study-label",
+      "destination": "/#study-label",
+      "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
@@ -889,9 +889,9 @@
       "status": "retained; not promoted to approved canonical relationships"
     },
     {
-      "legacyId": "documentation-recovery::tag-research",
+      "legacyId": "documentation-recovery::tag-operations",
       "from": "documentation-recovery",
-      "to": "tag-research",
+      "to": "tag-operations",
       "label": null,
       "status": "retained; not promoted to approved canonical relationships"
     },

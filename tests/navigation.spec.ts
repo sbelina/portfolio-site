@@ -1,13 +1,11 @@
 import { expect, test } from '@playwright/test'
 
 const links = [
-  ['Investigations', '/investigations/'],
-  ['Work', '/#work'],
-  ['Map', '/#connections'],
-  ['Practice', '/#practice'],
+  ['Investigations', '/#work'],
+  ['Connections', '/#connections'],
+  ['Method', '/#practice'],
   ['Field notes', '/#field-notes'],
   ['Contact', '/#contact'],
-  ['Hidden-work experiment', '/experiments/reveal-hidden-work/'],
 ] as const
 
 for (const path of [
@@ -31,9 +29,7 @@ for (const path of [
         await expect(link).toBeVisible()
         await expect(link).toHaveAttribute('href', href)
       }
-      if (path === '/investigations/' || path === '/experiments/reveal-hidden-work/') {
-        await expect(nav.locator('[aria-current="page"]')).toHaveAttribute('href', path)
-      } else await expect(nav.locator('[aria-current]')).toHaveCount(0)
+      await expect(nav.locator('[aria-current]')).toHaveCount(0)
     } finally { await context.close() }
   })
 }
@@ -43,12 +39,12 @@ test('subpage menu supports keyboard navigation and visible focus', async ({ pag
   const nav = page.getByRole('navigation', { name: 'Primary navigation', exact: true })
   await nav.getByRole('link', { name: 'Investigations', exact: true }).focus()
   await page.keyboard.press('Tab')
-  const work = nav.getByRole('link', { name: 'Work', exact: true })
-  await expect(work).toBeFocused()
-  expect(await work.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe('none')
+  const connections = nav.getByRole('link', { name: 'Connections', exact: true })
+  await expect(connections).toBeFocused()
+  expect(await connections.evaluate(element => getComputedStyle(element).outlineStyle)).not.toBe('none')
   await page.keyboard.press('Shift+Tab')
   await page.keyboard.press('Enter')
-  await expect(page).toHaveURL(/\/investigations\/$/)
+  await expect(page).toHaveURL(/\/#work$/)
 })
 
 test('subpage menu reflows at narrow zoom and touch links work without JavaScript', async ({ browser, baseURL }) => {
@@ -70,6 +66,6 @@ test('subpage menu reflows at narrow zoom and touch links work without JavaScrip
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320)
     }
     await page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link', { name: 'Investigations', exact: true }).tap()
-    await expect(page).toHaveURL(/\/investigations\/$/)
+    await expect(page).toHaveURL(/\/#work$/)
   } finally { await context.close() }
 })

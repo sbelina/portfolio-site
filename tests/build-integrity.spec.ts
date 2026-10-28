@@ -58,7 +58,7 @@ test('unknown prototype-like fragments do not become redirect targets', async ({
   for (const fragment of ['toString', 'constructor', '__proto__']) {
     await page.goto(`/#${fragment}`)
     await expect(page).toHaveURL(new RegExp(`/#${fragment}$`))
-    await expect(page.getByRole('heading', { name: 'I swim upstream toward the problem.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'The visible problem is rarely the one producing the outcome.' })).toBeVisible()
   }
 })
 

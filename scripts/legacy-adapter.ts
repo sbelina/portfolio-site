@@ -8,7 +8,7 @@ const ids: Record<string, string> = stableIds
 const blockIds: Record<string, string> = stableBlockIds
 export function adaptLegacyContent(): Entry[] {
   const rows = [
-    ...projects.map(record => ({ legacyId: record.id, kind: 'investigation', format: 'case', title: record.title, summary: record.summary, text: `Observed: ${record.observed}\n\nDiagnosed: ${record.diagnosed}\n\nStructure: ${record.structure}\n\nWhat remains: ${record.remains}` })),
+    ...projects.map(record => ({ legacyId: record.id, kind: record.id === 'documentation-recovery' ? 'reference' : 'investigation', format: record.id === 'documentation-recovery' ? undefined : 'case', title: record.title, summary: record.summary, text: `Observed: ${record.observed}\n\nDiagnosed: ${record.diagnosed}\n\nStructure: ${record.structure}\n\nWhat remains: ${record.remains}` })),
     ...writings.map(record => ({ legacyId: record.id, kind: record.kind === 'Essay' ? 'perspective' : 'observation', format: record.kind === 'Field note' ? 'field_note' : record.kind === 'Essay' ? 'essay' : undefined, title: record.title, summary: record.context, text: record.excerpt })),
     ...archiveItems.map(record => ({ legacyId: record.id, kind: 'reference', title: record.title, summary: record.note, text: record.note })),
   ]
@@ -29,8 +29,8 @@ export function migrationLedger(homeHtml: string) {
   return {
     schemaVersion: 1,
     baseline: 'abaa9a9aa28dfc665f8b34816559209c797114b8',
-    sourceReview: 'No approved migration wording or separate Emergent source supplied; original public prototype remains unchanged.',
-    content: drafts.map(entry => ({ legacyId: entry.slug, originalFormat: writings.find(item => item.id === entry.slug)?.kind ?? archiveItems.find(item => item.id === entry.slug)?.type ?? 'Case', classification: 'proposed mapping; owner review required', contentId: entry.id, oldLocation: archiveItems.some(item => item.id === entry.slug) ? '/#archive' : `/#${entry.slug}`, proposedRoute: entryPath(entry), activeDestination: 'retained legacy home fragment', review: 'unreviewed draft; not selected for publication', dates: 'unknown; no invented dates' })),
+    sourceReview: 'Review-branch legacy wording is corrected, but no canonical case manuscript, rights or migration wording is approved.',
+    content: drafts.map(entry => ({ legacyId: entry.slug, originalFormat: writings.find(item => item.id === entry.slug)?.kind ?? archiveItems.find(item => item.id === entry.slug)?.type ?? 'Case', classification: entry.slug === 'documentation-recovery' ? 'legacy claims reference; standalone destination undecided' : 'proposed mapping; owner review required', contentId: entry.id, oldLocation: archiveItems.some(item => item.id === entry.slug) ? '/#archive' : `/#${entry.slug}`, proposedRoute: entry.slug === 'documentation-recovery' ? null : entryPath(entry), activeDestination: 'retained legacy home fragment', review: 'unreviewed draft; not selected for publication', dates: 'unknown; no invented dates' })),
     anchors: anchors.filter(id => !id.startsWith('fixture-')).map(id => ({ id, destination: `/#${id}`, source: legacyAnchors.includes(id) ? 'legacy baseline' : 'new reading gateway/bootstrap', verification: 'present in initial home HTML' })),
     graph: graphNodes.map(node => ({ id: node.id, kind: node.kind, href: node.href ?? null, status: 'retained in existing graph; canonical conversion awaits review' })),
     edges: graphEdges.map((edge) => ({ legacyId: `${edge.source}::${edge.target}`, from: edge.source, to: edge.target, label: edge.relation ?? null, status: 'retained; not promoted to approved canonical relationships' })),
