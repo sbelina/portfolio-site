@@ -37,7 +37,7 @@ All 17 original case/writing/archive identities remain in the existing generated
 
 Lead with the visible-problem thesis and explain Sam's work with organizational assumptions, information, human behavior and operating conditions. Keep `I swim upstream toward the problem.` as a secondary voice line. `Investigate → Translate → Implement` describes recurring professional moves and may loop through learning; it is distinct from `Notice → Frame → Model → Test → Interrogate → Revise`, the inquiry/review reasoning loop. Neither is a set of intro gates or proof of organizational adoption.
 
-The pattern candidate **Related. Not equivalent.** links six bounded distinctions to the six current legacy anchors in a readable list. Its rationales are interpretive proposals, not approved case findings. `Trust comes from not having to guess` is a retrospective, untested cross-study hypothesis spanning independent trust and telematics work. It does not establish a shared cause or adoption. The full Frame Laboratory remains out of scope.
+The pattern candidate **Related. Not equivalent.** presents six bounded distinctions with linked review outlines, five retained summary anchors and one telematics outline without a legacy case anchor. Its rationales are interpretive proposals, not approved case findings. `Trust comes from not having to guess` is a retrospective, untested cross-study hypothesis spanning independent trust and telematics work. It does not establish a shared cause or adoption. The full Frame Laboratory remains out of scope.
 
 ## Source and approval gate
 

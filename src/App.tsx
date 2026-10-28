@@ -123,14 +123,24 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
+  const scrollToConnections = () => {
+    let behavior: ScrollBehavior = 'instant'
+    try {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) behavior = 'smooth'
+    } catch {
+      // Navigation remains immediate if motion preferences cannot be read.
+    }
+    document.getElementById('connections')?.scrollIntoView({ behavior, block: 'start' })
+  }
+
   const selectTag = (tag: string) => {
     setGraphSelection(`tag-${tag}`)
-    document.getElementById('connections')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToConnections()
   }
 
   const traceNode = (nodeId: string) => {
     setGraphSelection(nodeId)
-    document.getElementById('connections')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToConnections()
   }
 
   const renderTags = (tags: string[]) => (

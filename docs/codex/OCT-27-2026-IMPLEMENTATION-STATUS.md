@@ -22,10 +22,25 @@ Manual visual review inspected no-JavaScript Chromium screenshots at 1440×900, 
 
 ## Privacy, approval and recovery
 
-The owner brief was read from the provided attachment and was not copied into Git. This branch contains only public-safe correction/outline records, not presentation notes, restricted originals, source locators, client survey items or private screenshots. `content/public-release.json` remains `no-approved-content`. A source correction, green test or review worksheet does not authenticate owner approval.
+The owner brief was read from the provided attachment and was not copied into Git. This branch contains only public-safe correction/outline records, not presentation notes, restricted originals, source locators, client survey items or private screenshots. `content/public-release.json` remains `no-approved-content`. A source correction, green test or review worksheet does not authenticate owner approval. The legacy homepage is compiled directly from `src/data.ts`, outside the canonical public projection. Its revised summaries appear in the local build even while canonical selection is empty. Approval of the exact whole-homepage summary diff is therefore required before any public branch preview or release; an empty canonical selection does not guard this legacy path.
 
 Rollback this review slice by dropping or reverting only this branch. The unchanged `origin/main` commit and current production Worker remain the source and deployment baseline; do not disturb the other checkout or its preserved stash. Any future live correction should use a separate authorized release with a recorded healthy Worker version and exact approved candidate.
 
 ## Next smallest slice
 
 Privately review one complete Claims manuscript and its source/rights/contribution record, including the distinct guide, deck and onboarding artifacts. Resolve the metric scope discrepancy before any numeric result appears. Rehearse an exact protected candidate with the existing local editor and selected public projection; obtain owner approval before a real article or pattern route is published. Keep telematics research recovery as a separate case draft.
+
+## Agent consultation — 28 October
+
+The owner requested consultation after reviewing `b867acc`. Independent editorial (`editorial_review`), architecture (`architecture_review`), and design/accessibility (`reading_accessibility_review`) agents inspected the branch read-only. No blocking issue for continued local review was found. This was not owner publication approval or source verification.
+
+| Finding | Severity / scope | Resolution |
+| --- | --- | --- |
+| Revised legacy summaries bypass canonical projection selection. | Release blocker: the exact homepage diff still needs approval. | Explicit boundary recorded above; no public preview, push or release performed. No new authentication claim. |
+| Pattern Markdown links resolve against the repository host; six-anchor description incorrectly includes telematics. | Medium link defect; low descriptive error. | All six rows now link to adjacent review outlines, with five retained site anchors shown as text. Telematics remains outline-only. |
+| Tag/trace actions force smooth scrolling under reduced motion. | Medium, inherited from baseline. | Shared helper uses immediate scrolling for reduced or unreadable motion preferences. Both action paths are tested. |
+| Legacy graph text drops relationship direction and can invert its apparent meaning. | Medium, inherited from baseline. | Selected and static text show original source–verb–target; unlabeled edges are explicitly topic associations. Edge data is unchanged. |
+
+Editorial and architecture agents reviewed source/diff/artifacts and inspected prior logs; they did not independently execute the full suites or inspect private evidence. The reading agent independently used an actual local Worker/Chromium to reproduce animated reduced-motion scrolling, inspect direction, verify 320px first-screen routes, keyboard/no-JavaScript footer disclosure, unpublished pattern 404 and absence of page errors. It source-reviewed both subsequent runtime fixes and requested the added enlarged/narrow graph check. Root runs the final integrated tests; their result is recorded below. Physical devices, real screen readers and comprehension remain unverified. At 320px the professional explanation follows the primary links below the first viewport; a short owner/recruiter reading task should assess that tradeoff before more layout changes.
+
+After these corrections, root's `npm test` passed **119/119**, including the three new regression cases for reduced/unavailable motion preferences, graph direction from either endpoint, static text direction and 320px enlarged reading. The command rebuilt/typechecked/prerendered and passed the public artifact audit. `npm run check:deploy` dry-run passed again. Three consultation documents passed local-link/fence validation and `git diff --check` passed. The editorial agent independently confirmed the repaired six outline links, corrected anchor count and explicit whole-homepage approval boundary. No studio code changed during consultation; its earlier 10-test/restart evidence was not represented as a new run.

@@ -11,6 +11,12 @@ type Layer = 'core' | 'thinking' | 'archive'
 
 const layerRank: Record<Layer, number> = { core: 0, thinking: 1, archive: 2 }
 
+function edgeStatement(edge: typeof graphEdges[number]) {
+  const source = graphNodes.find(node => node.id === edge.source)!.label
+  const target = graphNodes.find(node => node.id === edge.target)!.label
+  return edge.relation ? `${source} ${edge.relation} ${target}` : `Topic association: ${source} and ${target}`
+}
+
 export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
   const [layer, setLayer] = useState<Layer>('core')
@@ -52,9 +58,9 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
       .filter((edge) => edge.source === selected || edge.target === selected)
       .map((edge) => {
         const otherId = edge.source === selected ? edge.target : edge.source
-        return { node: nodeById.get(otherId), relation: edge.relation }
+        return { node: nodeById.get(otherId), statement: edgeStatement(edge) }
       })
-      .filter((item): item is { node: NonNullable<typeof item.node>; relation: string | undefined } => Boolean(item.node))
+      .filter((item): item is { node: NonNullable<typeof item.node>; statement: string } => Boolean(item.node))
   }, [nodeById, selected, visibleEdges])
 
   const select = (id: string) => setSelected((current) => (current === id ? null : id))
@@ -149,9 +155,9 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
           <p>{description}</p>
           {selectedNode && directConnections.length ? (
             <div className="trace-links" aria-label={`${selectedNode.label} direct connections`}>
-              {directConnections.map(({ node, relation }) => (
-                <button key={node.id} type="button" onClick={() => select(node.id)}>
-                  {relation ? <span className="trace-relation">{relation}</span> : null}{node.label}
+              {directConnections.map(({ node, statement }) => (
+                <button key={node.id} type="button" onClick={() => select(node.id)} aria-label={`Inspect ${node.label}. ${statement}.`}>
+                  {statement}
                 </button>
               ))}
             </div>
@@ -166,12 +172,11 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
           {visibleNodes.map((node) => {
             const neighbors = visibleEdges
               .filter((edge) => edge.source === node.id || edge.target === node.id)
-              .map((edge) => nodeById.get(edge.source === node.id ? edge.target : edge.source))
-              .filter(Boolean)
+              .map((edge) => ({ id: `${edge.source}:${edge.target}`, statement: edgeStatement(edge) }))
             return (
               <div key={node.id} className="connection-group">
                 <button type="button" onClick={() => select(node.id)}>{node.label}</button>
-                <span>{neighbors.map((neighbor, index) => <span key={neighbor!.id}>{neighbor!.label}{index < neighbors.length - 1 ? ' · ' : ''}</span>)}</span>
+                <span>{neighbors.map((neighbor, index) => <span key={neighbor.id}>{neighbor.statement}{index < neighbors.length - 1 ? ' · ' : ''}</span>)}</span>
               </div>
             )
           })}
