@@ -56,7 +56,7 @@ test('homepage portfolio and durable experiment link are readable with JavaScrip
   const page = await context.newPage()
   await page.goto('http://127.0.0.1:4174/')
   for (const project of projects) await expect(page.getByRole('heading', { name: project.title, exact: true })).toBeVisible()
-  await page.locator('.site-footer').getByRole('link', { name: 'Reveal the hidden work ↗', exact: true }).click()
+  await page.locator('.site-footer').getByRole('link', { name: 'Reveal the hidden work →', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Reveal the hidden work', exact: true })).toBeVisible()
   await context.close()
 })

@@ -63,3 +63,5 @@ Start small enough to prove that entire cycle. Do not replace it with an elabora
 ## Current owner-directed review
 
 The [30 October audit and implementation record](OCT-30-REVIEW.md) supersedes older positioning/triads for this review branch. Use Sami Belina and Find the gap. Trace the mechanism. Design what holds. Historical research records remain intact.
+
+The [link map placement and navigation review](LINK-MAP-PLACEMENT.md) records its current early-home position, internal-link repairs, arrow meanings and verification.

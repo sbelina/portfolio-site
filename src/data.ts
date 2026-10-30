@@ -281,10 +281,10 @@ export const graphNodes: GraphNode[] = [
   })),
   ...Object.entries(thinkingTagDetails).map(([tag, detail]) => ({ id: `tag-${tag}`, label: `#${tag}`, kind: 'tag' as const, x: positions[tag][0], y: positions[tag][1], detail, layer: 'thinking' as const })),
 
-  { id: 'origin-language', label: 'language is relational', kind: 'origin', x: 16, y: 12, detail: 'An early grammar course taught me to see meaning as something produced through position and relation.', layer: 'thinking' },
-  { id: 'origin-seek-understand', label: 'seek to understand', kind: 'origin', x: 58, y: 13, detail: 'A habit strengthened through work and training: listen for intention, context, and the system behind the request.', layer: 'thinking' },
-  { id: 'origin-multimodal', label: 'multimodal form', kind: 'origin', x: 87, y: 8, detail: 'Writing, photography, digital design, mixed media, drawing, painting, ceramics, and sculpture reinforced that form and medium shape understanding.', layer: 'thinking' },
-  { id: 'origin-delta', label: 'Delta Theory', kind: 'origin', x: 88, y: 41, detail: 'An emerging framework for examining the geometry of understanding — how structure, relation, signal, and movement affect what can be known.', layer: 'thinking', tone: 'unresolved' },
+  { id: 'origin-language', label: 'language is relational', kind: 'origin', x: 16, y: 12, detail: 'An early grammar course taught me to see meaning as something produced through position and relation.', href: '#practice-language', layer: 'thinking' },
+  { id: 'origin-seek-understand', label: 'seek to understand', kind: 'origin', x: 58, y: 13, detail: 'A habit strengthened through work and training: listen for intention, context, and the system behind the request.', href: '#practice', layer: 'thinking' },
+  { id: 'origin-multimodal', label: 'multimodal form', kind: 'origin', x: 87, y: 8, detail: 'Writing, photography, digital design, mixed media, drawing, painting, ceramics, and sculpture reinforced that form and medium shape understanding.', href: '#practice-form', layer: 'thinking' },
+  { id: 'origin-delta', label: 'Delta Theory', kind: 'origin', x: 88, y: 41, detail: 'An emerging framework for examining the geometry of understanding — how structure, relation, signal, and movement affect what can be known.', href: '#delta-theory', layer: 'thinking', tone: 'unresolved' },
   { id: 'origin-spiral', label: 'loops + spirals', kind: 'origin', x: 29, y: 96, detail: 'Loops return to the same point. Spirals return with a registered difference — a measure, method, or structure left behind.', layer: 'thinking' },
 
   { id: 'writing-the-bends', label: 'The Bends', kind: 'writing', x: 9, y: 72, detail: writings[0].context, href: '#the-bends', layer: 'thinking' },
@@ -293,12 +293,12 @@ export const graphNodes: GraphNode[] = [
   { id: 'writing-tool-vs-toy', label: 'Tool vs. Toy', kind: 'writing', x: 84, y: 18, detail: writings[3].context, href: '#tool-vs-toy', layer: 'thinking' },
   { id: 'writing-mundane-evidence', label: 'The mundane is evidence', kind: 'writing', x: 83, y: 34, detail: writings[4].context, href: '#mundane-evidence', layer: 'thinking' },
 
-  { id: 'archive-wage', label: 'Minimum wage study', kind: 'archive', x: 63, y: 83, detail: archiveItems[0].note, href: '#archive', layer: 'archive' },
-  { id: 'archive-dead-internet', label: 'Dead Internet', kind: 'archive', x: 93, y: 30, detail: archiveItems[1].note, href: '#archive', layer: 'archive' },
-  { id: 'archive-hive-mind', label: 'Hive Mind', kind: 'archive', x: 96, y: 20, detail: archiveItems[2].note, href: '#archive', layer: 'archive' },
-  { id: 'archive-mourning-coffee', label: 'Mourning Coffee', kind: 'archive', x: 8, y: 96, detail: archiveItems[3].note, href: '#archive', layer: 'archive' },
-  { id: 'archive-bridge', label: 'Ego eram, ultra pontem.', kind: 'archive', x: 17, y: 94, detail: archiveItems[4].note, href: '#archive', layer: 'archive' },
-  { id: 'archive-left', label: 'What’s left?', kind: 'archive', x: 6, y: 57, detail: archiveItems[5].note, href: '#archive', layer: 'archive' },
+  { id: 'archive-wage', label: 'Minimum wage study', kind: 'archive', x: 63, y: 83, detail: archiveItems[0].note, href: '#archive-wage', layer: 'archive' },
+  { id: 'archive-dead-internet', label: 'Dead Internet', kind: 'archive', x: 93, y: 30, detail: archiveItems[1].note, href: '#archive-dead-internet', layer: 'archive' },
+  { id: 'archive-hive-mind', label: 'Hive Mind', kind: 'archive', x: 96, y: 20, detail: archiveItems[2].note, href: '#archive-hive-mind', layer: 'archive' },
+  { id: 'archive-mourning-coffee', label: 'Mourning Coffee', kind: 'archive', x: 8, y: 96, detail: archiveItems[3].note, href: '#archive-mourning-coffee', layer: 'archive' },
+  { id: 'archive-bridge', label: 'Ego eram, ultra pontem.', kind: 'archive', x: 17, y: 94, detail: archiveItems[4].note, href: '#archive-bridge', layer: 'archive' },
+  { id: 'archive-left', label: 'What’s left?', kind: 'archive', x: 6, y: 57, detail: archiveItems[5].note, href: '#archive-left', layer: 'archive' },
 ]
 
 const link = (source: string, targets: string[], relation?: string, layer: GraphEdge['layer'] = 'core'): GraphEdge[] =>

@@ -252,6 +252,10 @@ test('three distinct wheel gestures complete the steps; inertia cannot skip step
   await page.clock.runFor(1000)
   await field.dispatchEvent('wheel', { deltaY: 100 })
   await page.clock.runFor(1000)
+  await expect(page.getByRole('button', { name: 'Dive into the portfolio' })).toBeVisible()
+  // Flush the phase and animation effects separately from their fake-clock timers.
+  await page.clock.runFor(200)
+  await page.clock.runFor(150)
   const first = await page.evaluate(() => scrollY)
   await page.clock.runFor(250)
   expect(await page.evaluate(() => scrollY)).toBeGreaterThan(first)

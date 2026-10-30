@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { graphEdges, graphNodes } from '../data'
 
 type Props = {
@@ -19,6 +19,8 @@ function edgeStatement(edge: typeof graphEdges[number]) {
 
 export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Props) {
   const [selected, setSelected] = useState<string | null>(null)
+  const frameRef = useRef<HTMLDivElement>(null)
+  const [focusTarget, setFocusTarget] = useState<string | null>(null)
   const [layer, setLayer] = useState<Layer>('core')
 
   const nodeById = useMemo(() => new Map(graphNodes.map((node) => [node.id, node])), [])
@@ -27,6 +29,7 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
     if (!externalSelection) return
     const node = nodeById.get(externalSelection)
     setSelected(externalSelection)
+    setFocusTarget(externalSelection)
     if (node?.layer && layerRank[node.layer] > layerRank[layer]) setLayer(node.layer)
     onSelectionConsumed()
   }, [externalSelection, layer, nodeById, onSelectionConsumed])
@@ -40,6 +43,12 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
     () => graphEdges.filter((edge) => visibleIds.has(edge.source) && visibleIds.has(edge.target) && layerRank[edge.layer ?? 'core'] <= layerRank[layer]),
     [layer, visibleIds],
   )
+
+  useEffect(() => {
+    if (!focusTarget) return
+    const node = Array.from(frameRef.current?.querySelectorAll<HTMLButtonElement>('[data-node-id]') ?? []).find(button => button.dataset.nodeId === focusTarget)
+    if (node) { node.focus(); setFocusTarget(null) }
+  }, [focusTarget, visibleNodes])
 
   const selectedNode = selected ? nodeById.get(selected) ?? null : null
   const connectedIds = useMemo(() => {
@@ -75,8 +84,9 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
         <div>
           <h2 id="connections-title">Follow the relationship, not the category.</h2>
           <p>
-            This map is another way into the portfolio. Hashtags are not decoration: each one is a navigable concept that reveals where the same question appears in work, writing, research, and older fragments.
+            Trace a case or question into the work. Links show editorial associations, not causal evidence. You can also browse every relationship as text.
           </p>
+          <div className="map-reading-choices"><a href="#work">Go directly to investigations ↓</a><a href="#map-text">Read map as text ↓</a></div>
         </div>
         <div className="graph-actions" aria-label="Graph controls">
           <div className="graph-layer-control" role="group" aria-label="Map depth">
@@ -110,7 +120,7 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
         </div>
       </div>
 
-      <div className="graph-frame" role="group" aria-label="Interactive portfolio connection graph">
+      <div ref={frameRef} className="graph-frame" role="group" aria-label="Interactive portfolio connection graph">
         <svg className="graph-lines" viewBox="0 0 100 100" aria-hidden="true" preserveAspectRatio="none">
           {visibleEdges.map((edge) => {
             const source = nodeById.get(edge.source)!
@@ -136,6 +146,7 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
           return (
             <button
               key={node.id}
+              data-node-id={node.id}
               type="button"
               className={`graph-node graph-node--${node.kind}${node.tone ? ` graph-node--tone-${node.tone}` : ''}${active ? ' is-active' : ''}${isSelected ? ' is-selected' : ''}`}
               style={{ left: `${node.x}%`, top: `${node.y}%` }}
@@ -162,20 +173,20 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
               ))}
             </div>
           ) : null}
-          {selectedNode?.href ? <a className="trace-jump" href={selectedNode.href}>Go to {selectedNode.kind === 'project' ? 'case' : selectedNode.kind === 'writing' ? 'field note' : 'source'} ↓</a> : null}
+          {selectedNode?.href ? <a className="trace-jump" href={selectedNode.href}>Go to {selectedNode.kind === 'project' ? 'case summary' : selectedNode.kind === 'writing' ? 'writing summary' : selectedNode.kind === 'archive' ? 'archive description' : 'method'} ↓</a> : null}
         </div>
       </div>
 
       <details className="connections-list">
         <summary>Browse the same system as text</summary>
-        <div className="connection-groups">
-          {visibleNodes.map((node) => {
-            const neighbors = visibleEdges
+        <div className="connection-groups" id="map-text">
+          {graphNodes.map((node) => {
+            const neighbors = graphEdges
               .filter((edge) => edge.source === node.id || edge.target === node.id)
               .map((edge) => ({ id: `${edge.source}:${edge.target}`, statement: edgeStatement(edge) }))
             return (
               <div key={node.id} className="connection-group">
-                <button type="button" onClick={() => select(node.id)}>{node.label}</button>
+                {node.href ? <a href={node.href}>{node.label} <span aria-hidden="true">↓</span></a> : <strong>{node.label}</strong>}
                 <span>{neighbors.map((neighbor, index) => <span key={neighbor.id}>{neighbor.statement}{index < neighbors.length - 1 ? ' · ' : ''}</span>)}</span>
               </div>
             )

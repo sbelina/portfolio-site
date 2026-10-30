@@ -178,13 +178,17 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           <h1 id="index-title">The visible problem is rarely the one producing the outcome.</h1>
           <div className="hero-actions">
             <a className="primary-link" href="#work">Explore investigations ↓</a>
-            <a className="secondary-link" href="#connections">Explore connections →</a>
+            <a className="secondary-link" href="#connections">Explore connections ↓</a>
             <a className="hero-method-link" href="#practice">How I investigate ↓</a>
           </div>
           <p className="hero-copy">
             I uncover the organizational, operational, and human factors driving outcomes, equipping leaders with evidence to decide what needs to change and helping teams put those changes into practice.
           </p>
         </section>
+
+        <div id="connections">
+          <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
+        </div>
 
         <section className="work" id="work" aria-labelledby="work-title">
           <div className="section-kicker">Selected work</div>
@@ -212,6 +216,10 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
                     <div className="logic-state logic-state--holds"><span>What remains</span><p>{project.remains}</p></div>
                   </div>
 
+                  <div className="case-reading-links">
+                    <button type="button" className="trace-note" onClick={() => traceNode(project.id)}>Trace this case in the map ↑</button>
+                    {caseComparisons[project.id] ? <a href={`#distinction-${project.id}`}>Examine this distinction ↓</a> : <a href="#claims-operations">Read the connected claims account ↑</a>}
+                  </div>
                   {renderTags(project.tags)}
                   <p className="capabilities"><span>Capabilities</span> {project.capabilities.join(' · ')}</p>
                 </div>
@@ -219,6 +227,8 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
             ))}
           </div>
         </section>
+
+        <ExplainedConnections />
 
         <section className="reading-gateway" aria-labelledby="reading-gateway-title">
           <p className="eyebrow">Seeing What Systems Miss</p>
@@ -234,11 +244,6 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           ))}
         </section>
 
-        <div id="connections">
-        <ExplainedConnections />
-
-        <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
-        </div>
 
         <section className="practice" id="practice" aria-labelledby="practice-title">
           <div className="section-kicker">Practice</div>
@@ -280,17 +285,17 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           </div>
 
           <div className="origin-line" aria-label="How the practice developed">
-            <div><span>Language</span><p>Meaning is relational. Position and context change what a thing can mean.</p></div>
-            <div><span>Multimodal form</span><p>Writing, image, object, interface, and environment each change how understanding becomes possible.</p></div>
+            <div id="practice-language"><span>Language</span><p>Meaning is relational. Position and context change what a thing can mean.</p></div>
+            <div id="practice-form"><span>Multimodal form</span><p>Writing, image, object, interface, and environment each change how understanding becomes possible.</p></div>
             <div><span>Information</span><p>Accessible communication and civic systems made equity, trust, and infrastructure difficult to separate.</p></div>
             <div><span>Sociotechnical systems</span><p>Research, operations, AI, and service work made hidden geometry visible: actors, constraints, signals, handoffs, and feedback.</p></div>
           </div>
 
-          <div className="delta-panel">
+          <div className="delta-panel" id="delta-theory">
             <p className="section-kicker">Emerging research</p>
             <h3>Delta Theory</h3>
             <p>An emerging framework for examining the geometry of understanding: the structures, signals, relationships, and unspoken forces that shape what can be perceived, communicated, and acted upon.</p>
-            <button type="button" className="text-link-button" onClick={() => traceNode('origin-delta')}>See where it connects in the system map ↗</button>
+            <button type="button" className="text-link-button" onClick={() => traceNode('origin-delta')}>See where it connects in the system map ↑</button>
           </div>
         </section>
 
@@ -313,7 +318,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
                   <blockquote>{writing.excerpt}</blockquote>
                   <p>{writing.context}</p>
                   {renderTags(writing.tags)}
-                  <button type="button" className="trace-note" onClick={() => traceNode(`writing-${writing.id}`)}>Trace this note in the map ↗</button>
+                  <button type="button" className="trace-note" onClick={() => traceNode(`writing-${writing.id}`)}>Trace this note in the map ↑</button>
                 </div>
               </article>
             ))}
@@ -324,12 +329,12 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
             <p className="archive-intro">The archive is intentionally secondary. It preserves the trail without asking a hiring manager to read every earlier version of the thinking.</p>
             <div className="archive-grid">
               {archiveItems.map((item) => (
-                <article className="archive-item" key={item.id}>
+                <article className="archive-item" id={item.id} key={item.id}>
                   <p className="archive-type">{item.type}</p>
                   <h3>{item.title}</h3>
                   <p>{item.note}</p>
                   {renderTags(item.tags)}
-                  <button type="button" className="trace-note" onClick={() => traceNode(item.id)}>Trace in the map ↗</button>
+                  <button type="button" className="trace-note" onClick={() => traceNode(item.id)}>Trace in the map ↑</button>
                 </article>
               ))}
             </div>
@@ -364,7 +369,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
         <span>© {new Date().getFullYear()} Sami Belina</span>
         <div>
           <a href="#index">Back to top ↑</a>
-          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work ↗</a>
+          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work →</a>
           <button type="button" className="footer-replay" onClick={replayIntro}>Replay introduction</button>
         </div>
         <ExperimentNote />

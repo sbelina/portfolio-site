@@ -825,3 +825,11 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 /* Each intro phrase is a native action; disabled final feedback remains readable. */
 button.step-prompt{cursor:pointer}button.step-prompt:disabled{cursor:default;opacity:1}
 .question .intro-hint{font-size:.9rem;line-height:1.5;letter-spacing:normal;max-width:30rem;margin:1rem auto;color:var(--muted)}
+
+/* Early map orientation and reciprocal reading links. */
+#connections{scroll-margin-top:7rem}.connections{padding-top:3rem;padding-bottom:4rem;scroll-margin-top:7rem}
+.case-reading-links{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin:1.25rem 0}.case-reading-links a{min-height:44px;display:inline-flex;align-items:center;text-underline-offset:.25em}
+.connection-group>a{padding:.65rem 0;min-height:44px;display:inline-flex;align-items:center;gap:.4rem;text-underline-offset:.25em}
+.archive-item,.explained-connections li,#practice-language,#practice-form,#delta-theory{scroll-margin-top:7rem}
+
+.connections h2{font-size:clamp(1.8rem,3.2vw,3rem);max-width:36rem}.map-reading-choices{display:flex;flex-wrap:wrap;gap:1rem}.map-reading-choices a{display:inline-flex;align-items:center;min-height:44px}#map-text{scroll-margin-top:7rem}
