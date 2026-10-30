@@ -1,5 +1,9 @@
 import React from 'react'
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { InquiryMethod } from './components/InquiryMethod'
+import { ExplainedConnections } from './components/ExplainedConnections'
+import { InvestigationVisual } from './visuals/InvestigationVisual'
+import { caseComparisons } from './content/connections'
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
 import { ExperimentNote } from './components/ExperimentNote'
@@ -123,14 +127,24 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
     window.scrollTo({ top: 0, behavior: 'instant' })
   }
 
+  const scrollToConnections = () => {
+    let behavior: ScrollBehavior = 'instant'
+    try {
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) behavior = 'smooth'
+    } catch {
+      // Navigation remains immediate if motion preferences cannot be read.
+    }
+    document.getElementById('system-map')?.scrollIntoView({ behavior, block: 'start' })
+  }
+
   const selectTag = (tag: string) => {
     setGraphSelection(`tag-${tag}`)
-    document.getElementById('connections')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToConnections()
   }
 
   const traceNode = (nodeId: string) => {
     setGraphSelection(nodeId)
-    document.getElementById('connections')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToConnections()
   }
 
   const renderTags = (tags: string[]) => (
@@ -160,40 +174,61 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
         </header>
 
         <section className="index-hero" aria-labelledby="index-title">
-          <p className="eyebrow">Sami Belina · service design, research, and organizational systems</p>
-          <h1 id="index-title">I swim upstream toward the problem.</h1>
-          <p className="hero-copy">
-            I design research, decision structures, workflows, and operating systems for ambiguous problems — especially when the visible failure is downstream from its cause.
-          </p>
-          <p className="hero-thesis">Across environments, I keep finding the same thing: the problem people see is rarely the one creating the outcome.</p>
-          <div className="hero-study" aria-labelledby="study-label">
-            <p id="study-label">What I’m studying</p>
-            <ul>
-              <li>Structural causality</li>
-              <li>Information flow</li>
-              <li>Incentives</li>
-              <li>Feedback loops</li>
-              <li>Hidden work</li>
-              <li>Organizational learning</li>
-            </ul>
-          </div>
+          <p className="eyebrow">Producing Curiosity / Seeing What Systems Miss</p>
+          <h1 id="index-title">The visible problem is rarely the one producing the outcome.</h1>
           <div className="hero-actions">
-            <a className="primary-link" href="#work">See the work ↓</a>
-            <a className="secondary-link" href="#connections">Trace the system ↗</a>
+            <a className="primary-link" href="#work">Explore investigations ↓</a>
+            <a className="secondary-link" href="#connections">Explore connections ↓</a>
+            <a className="hero-method-link" href="#practice">How I investigate ↓</a>
           </div>
-          <div className="hero-route" aria-label="Practice sequence">
-            <span className="state-text state-text--unresolved">ambiguity</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--unresolved">evidence</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--pressure">decision</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--holds">structure</span><span aria-hidden="true">→</span>
-            <span className="state-text state-text--holds">transfer</span>
+          <p className="hero-copy">
+            I uncover the organizational, operational, and human factors driving outcomes, equipping leaders with evidence to decide what needs to change and helping teams put those changes into practice.
+          </p>
+        </section>
+
+        <div id="connections">
+          <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
+        </div>
+
+        <section className="work" id="work" aria-labelledby="work-title">
+          <div className="section-kicker">Selected work</div>
+          <div className="work-intro">
+            <h2 id="work-title">Look beneath the visible problem.</h2>
+            <p>These existing summaries are a starting point for the work. Full investigations, sources, contribution details, and limitations require separate page review.</p>
           </div>
-          <div className="color-grammar" aria-label="Portfolio color system">
-            <span className="color-key color-key--unresolved"><i aria-hidden="true" /> <strong>Violet</strong> unresolved</span>
-            <span className="color-key color-key--pressure"><i aria-hidden="true" /> <strong>Coral</strong> pressure point</span>
-            <span className="color-key color-key--holds"><i aria-hidden="true" /> <strong>Teal</strong> what holds</span>
+          <div className="work-spine" aria-hidden="true" />
+          <div className="project-list">
+            {projects.map((project) => (
+              <article className="project-card" id={project.id} key={project.id}>
+                <div className="project-index" aria-hidden="true">{project.number}</div>
+                <div className="project-content">
+                  <p className="project-domain">{project.domain}</p>
+                  <h3>{project.title}</h3>
+                  <p className="project-strapline">{project.strapline}</p>
+                  <InvestigationVisual composition={caseComparisons[project.id]?.composition ?? "network"} left={caseComparisons[project.id]?.left ?? "Practical knowledge"} right={caseComparisons[project.id]?.right ?? "Shared guidance"} explanation={caseComparisons[project.id]?.meaning ?? "Practitioner knowledge informs guidance; the guide is not a mechanical translation of the error log."} />
+                  <p className="project-focus">{project.focus}</p>
+                  <p className="project-summary">{project.summary}</p>
+
+                  <div className="case-logic" aria-label={`${project.domain} case logic`}>
+                    <div className="logic-state logic-state--unresolved"><span>Observed</span><p>{project.observed}</p></div>
+                    <div className="logic-state logic-state--pressure"><span>Working explanation</span><p>{project.diagnosed}</p></div>
+                    <div className="logic-state logic-state--holds"><span>Structure</span><p>{project.structure}</p></div>
+                    <div className="logic-state logic-state--holds"><span>What remains</span><p>{project.remains}</p></div>
+                  </div>
+
+                  <div className="case-reading-links">
+                    <button type="button" className="trace-note" onClick={() => traceNode(project.id)}>Trace this case in the map ↑</button>
+                    {caseComparisons[project.id] ? <a href={`#distinction-${project.id}`}>Examine this distinction ↓</a> : <a href="#claims-operations">Read the connected claims account ↑</a>}
+                  </div>
+                  {renderTags(project.tags)}
+                  <p className="capabilities"><span>Capabilities</span> {project.capabilities.join(' · ')}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </section>
+
+        <ExplainedConnections />
 
         <section className="reading-gateway" aria-labelledby="reading-gateway-title">
           <p className="eyebrow">Seeing What Systems Miss</p>
@@ -209,49 +244,17 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           ))}
         </section>
 
-        <section className="work" id="work" aria-labelledby="work-title">
-          <div className="section-kicker">Six cases</div>
-          <div className="work-intro">
-            <h2 id="work-title">Each one left a structure still in use.</h2>
-            <p>Not a list of findings. A record of what changed, what was built, and what remained after the project moved on.</p>
-          </div>
-          <div className="work-spine" aria-hidden="true" />
-          <div className="project-list">
-            {projects.map((project) => (
-              <article className="project-card" id={project.id} key={project.id}>
-                <div className="project-index" aria-hidden="true">{project.number}</div>
-                <div className="project-content">
-                  <p className="project-domain">{project.domain}</p>
-                  <h3>{project.title}</h3>
-                  <p className="project-strapline">{project.strapline}</p>
-                  <p className="project-metric">{project.metric}</p>
-                  <p className="project-summary">{project.summary}</p>
-
-                  <div className="case-logic" aria-label={`${project.domain} case logic`}>
-                    <div className="logic-state logic-state--unresolved"><span>Observed</span><p>{project.observed}</p></div>
-                    <div className="logic-state logic-state--pressure"><span>Diagnosed</span><p>{project.diagnosed}</p></div>
-                    <div className="logic-state logic-state--holds"><span>Structure</span><p>{project.structure}</p></div>
-                    <div className="logic-state logic-state--holds"><span>What remains</span><p>{project.remains}</p></div>
-                  </div>
-
-                  {renderTags(project.tags)}
-                  <p className="capabilities"><span>Capabilities</span> {project.capabilities.join(' · ')}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
 
         <section className="practice" id="practice" aria-labelledby="practice-title">
           <div className="section-kicker">Practice</div>
           <div className="practice-grid">
             <div>
-              <h2 id="practice-title">Seek to understand — then look beyond the question asked.</h2>
+              <h2 id="practice-title">Find the gap. Trace the mechanism. Design what holds.</h2>
               <p className="practice-lead">
-                Across industries and disciplines, I keep returning to the same orientation: understand what lies beyond the question asked so I can determine the answer actually needed.
+                These are recurring moves in my work, not a fixed sequence. I return to the evidence when a decision or intervention reveals a new question.
               </p>
+              <p>My work connects organizational effectiveness, organizational development, systems strategy and human-centered design with organizational learning, responsible AI and organizational transformation. These are capabilities demonstrated through the work, rather than formal decision authority.</p>
+              <p className="hero-thesis">I swim upstream toward the problem.</p>
             </div>
             <aside className="fish-note" aria-label="Working orientation">
               <span className="aside-label">orientation</span>
@@ -260,23 +263,39 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
             </aside>
           </div>
 
+          <ol className="practice-moves" aria-label="Three professional moves">
+            <li><h3>Find the gap</h3><p>Notice where a status, measure or explanation diverges from how the work actually happens.</p></li>
+            <li><h3>Trace the mechanism</h3><p>Investigate relationships among information, operating conditions and human behavior; test alternative explanations.</p></li>
+            <li><h3>Design what holds</h3><p>Equip leaders to decide, and help teams turn that understanding into practical change and shared knowledge.</p></li>
+          </ol>
+          <InquiryMethod />
+          <div className="hero-study" aria-labelledby="study-label">
+            <p id="study-label">Areas of inquiry</p>
+            <ul><li>Structural causality</li><li>Information flow</li><li>Incentives</li><li>Feedback loops</li><li>Hidden work</li><li>Organizational learning</li></ul>
+          </div>
+          <div className="color-grammar" aria-label="Portfolio color system">
+            <span className="color-key color-key--unresolved"><i aria-hidden="true" /> <strong>Violet</strong> unresolved</span>
+            <span className="color-key color-key--pressure"><i aria-hidden="true" /> <strong>Coral</strong> pressure point</span>
+            <span className="color-key color-key--holds"><i aria-hidden="true" /> <strong>Teal</strong> what holds</span>
+          </div>
+
           <div className="practice-statement">
             <p>What I am moving toward</p>
             <blockquote>The structures, signals, and unspoken geometries that shape how understanding becomes possible.</blockquote>
           </div>
 
           <div className="origin-line" aria-label="How the practice developed">
-            <div><span>Language</span><p>Meaning is relational. Position and context change what a thing can mean.</p></div>
-            <div><span>Multimodal form</span><p>Writing, image, object, interface, and environment each change how understanding becomes possible.</p></div>
+            <div id="practice-language"><span>Language</span><p>Meaning is relational. Position and context change what a thing can mean.</p></div>
+            <div id="practice-form"><span>Multimodal form</span><p>Writing, image, object, interface, and environment each change how understanding becomes possible.</p></div>
             <div><span>Information</span><p>Accessible communication and civic systems made equity, trust, and infrastructure difficult to separate.</p></div>
             <div><span>Sociotechnical systems</span><p>Research, operations, AI, and service work made hidden geometry visible: actors, constraints, signals, handoffs, and feedback.</p></div>
           </div>
 
-          <div className="delta-panel">
+          <div className="delta-panel" id="delta-theory">
             <p className="section-kicker">Emerging research</p>
             <h3>Delta Theory</h3>
             <p>An emerging framework for examining the geometry of understanding: the structures, signals, relationships, and unspoken forces that shape what can be perceived, communicated, and acted upon.</p>
-            <button type="button" className="text-link-button" onClick={() => traceNode('origin-delta')}>See where it connects in the system map ↗</button>
+            <button type="button" className="text-link-button" onClick={() => traceNode('origin-delta')}>See where it connects in the system map ↑</button>
           </div>
         </section>
 
@@ -299,7 +318,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
                   <blockquote>{writing.excerpt}</blockquote>
                   <p>{writing.context}</p>
                   {renderTags(writing.tags)}
-                  <button type="button" className="trace-note" onClick={() => traceNode(`writing-${writing.id}`)}>Trace this note in the map ↗</button>
+                  <button type="button" className="trace-note" onClick={() => traceNode(`writing-${writing.id}`)}>Trace this note in the map ↑</button>
                 </div>
               </article>
             ))}
@@ -310,12 +329,12 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
             <p className="archive-intro">The archive is intentionally secondary. It preserves the trail without asking a hiring manager to read every earlier version of the thinking.</p>
             <div className="archive-grid">
               {archiveItems.map((item) => (
-                <article className="archive-item" key={item.id}>
+                <article className="archive-item" id={item.id} key={item.id}>
                   <p className="archive-type">{item.type}</p>
                   <h3>{item.title}</h3>
                   <p>{item.note}</p>
                   {renderTags(item.tags)}
-                  <button type="button" className="trace-note" onClick={() => traceNode(item.id)}>Trace in the map ↗</button>
+                  <button type="button" className="trace-note" onClick={() => traceNode(item.id)}>Trace in the map ↑</button>
                 </article>
               ))}
             </div>
@@ -324,8 +343,8 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
 
         <section className="closing" aria-labelledby="closing-title">
           <div className="section-kicker">In closing</div>
-          <h2 id="closing-title">Define upstream. Prevent downstream rework.</h2>
-          <p>Most organizations do not have a solution problem. They have a problem-definition problem — and a cycle that returns them to the same place because nothing was left behind to tell them they had moved.</p>
+          <h2 id="closing-title">How do systems shape what people understand, decide, and do?</h2>
+          <p>Information → Understanding → Decisions → Outcomes. I study the relationships between them through organizational diagnosis, strategic research and service design, helping teams develop explanations they can test and use.</p>
           <div className="closing-questions">
             <p><span>01</span> What decision is this meant to support?</p>
             <p><span>02</span> What would change your mind?</p>
@@ -350,7 +369,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
         <span>© {new Date().getFullYear()} Sami Belina</span>
         <div>
           <a href="#index">Back to top ↑</a>
-          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work ↗</a>
+          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work →</a>
           <button type="button" className="footer-replay" onClick={replayIntro}>Replay introduction</button>
         </div>
         <ExperimentNote />

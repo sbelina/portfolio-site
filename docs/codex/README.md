@@ -8,6 +8,8 @@ See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SE
 
 The [navigation release and copy-editing setup](NAVIGATION-AND-EDITING.md) records the shared menus, condensing index header, current article-publication blockers, and agent-confirmed editing direction. It does not claim universal CMS editing or new manuscript approval.
 
+The [27 October editorial alignment](OCT-27-2026-EDITORIAL-ALIGNMENT.md), [claim corrections](OCT-27-2026-CLAIM-CORRECTIONS.md), and [review-branch status](OCT-27-2026-IMPLEMENTATION-STATUS.md) record the current owner-directed homepage/case proposal. They do not replace the existing release or approve new manuscripts. The separate Site copy trial remains unfinished in its own worktree and is not included in this review branch.
+
 ## Reading order
 
 | File | Purpose |
@@ -32,6 +34,10 @@ Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hyp
 
 Open the [writing review folder](../../writing/README.md), [page review list](PAGE-REVIEW.md), and [workflow specification](WRITING-REVIEW-WORKFLOW.md). Eleven existing excerpts/descriptions have review records; full manuscripts remain to be supplied through private content storage. Approval and publication are separate, and the current documents do not implement CMS controls.
 
+The [review-role research and validation](REVIEW-ROLE-VALIDATION.md) records synthetic trials, known blind spots and the strengthened Evidence/Experience/Release rubrics. Future local-studio intake receives clearer pending prompts; existing saved records remain intact. The experimental proofs do not enforce publishing or authenticate approval.
+
+The [interpretive-collaboration trial](INTERPRETIVE-COLLABORATION-TRIAL.md) tests an optional collaborative perspective for evolving ideas/goals. Its two-condition synthetic rehearsal exposed leading-frame risks; the real right-and-left piece and owner usefulness have not been evaluated. It implements no new agent, studio pass or visitor interface.
+
 ## Current private writing trial
 
 See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE-WRITING-TRIAL.md). The isolated Worker now implements local authenticated durable saves and protected previews; hosted Pages CMS integration and production publication remain unimplemented. The source probe is not a full CMS trial.
@@ -53,3 +59,9 @@ The user's latest explicit request determines task scope. Root `AGENTS.md` provi
 A visitor opens a useful investigation at its own URL, understands Sam's contribution and evidence, and follows an explained connection to a pattern. Sam can create an Observation with three meaningful connections, save/reopen it, preview privately, publish an approved revision, and restore it without editing source code.
 
 Start small enough to prove that entire cycle. Do not replace it with an elaborate editor mockup or a static demonstration that only appears to save.
+
+## Current owner-directed review
+
+The [30 October audit and implementation record](OCT-30-REVIEW.md) supersedes older positioning/triads for this review branch. Use Sami Belina and Find the gap. Trace the mechanism. Design what holds. Historical research records remain intact.
+
+The [link map placement and navigation review](LINK-MAP-PLACEMENT.md) records its current early-home position, internal-link repairs, arrow meanings and verification.

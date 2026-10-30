@@ -2,7 +2,7 @@
 
 ## What the site should make legible
 
-Producing Curiosity presents Sam's work as an investigative observatory and field notebook. The organizing direction is **Seeing What Systems Miss**; **Things That Didn't Add Up** is a strong editorial framing. A visitor should come away thinking, “This person sees patterns I would have missed,” and understand how Sam helps institutions notice when assumptions, metrics, categories, and practices stop reflecting people's realities.
+Producing Curiosity presents Sami's work as an investigative observatory and field notebook. The organizing direction is **Seeing What Systems Miss**; **Things That Didn't Add Up** is a strong editorial framing. A visitor should come away thinking, “This person sees patterns I would have missed,” and understand how Sami helps institutions notice when assumptions, metrics, categories, and practices stop reflecting people's realities.
 
 Lead with questions and reasoning rather than a gallery of deliverables or a list of UX methods. Show the movement from curiosity through evidence to a decision or durable structure. Preserve work that remains exploratory without pretending it produced an implemented business outcome.
 
@@ -16,7 +16,7 @@ The mycelium metaphor means connected context: work, ideas, observations, and wr
 | Research/design peer | Inspect evidence, reasoning, uncertainty, and cross-case ideas. | Investigation → evidence → explained pattern → another case. |
 | Collaborator | Understand interests, approach, and a concrete way to engage. | Perspective or experiment → related work → contact. |
 | Returning reader | Find what changed or resume a known piece. | Stable URL, archive/filter state, updated material. |
-| Sam as author | Add and connect material without coding; know what is saved versus live. | Content studio → draft → private preview → controlled publication. |
+| Sami as author | Add and connect material without coding; know what is saved versus live. | Content studio → draft → private preview → controlled publication. |
 
 Test these as hypotheses with representative people. Avoid making every visitor choose an audience persona before entering.
 
@@ -74,6 +74,8 @@ The hexagonal keyboard investigation remains separately scoped by [its research 
 
 Homepage lead: “Across environments, I keep finding the same thing: the problem people see is rarely the one creating the outcome.”
 
-Areas of inquiry: structural causality, information flow, incentives, feedback loops, hidden work, and organizational learning. These describe what Sam studies; they are not claims of proven causal effects. Connect future investigations to these areas only where the material supports the connection.
+The owner's 27 October [editorial alignment](OCT-27-2026-EDITORIAL-ALIGNMENT.md) supersedes this earlier proposed lead for the current review branch: “The visible problem is rarely the one producing the outcome.” It retains “I swim upstream toward the problem” as a secondary voice line. Neither proposed wording is approval for production publication.
 
-The intro requires one deliberate action total. Its three teaching stages unfold automatically, followed by the dive. Do not restore repeated-input gates: the owner wants the same teaching with less frustration and waiting. Whether this improves comprehension remains a question for observation, not an established result.
+Areas of inquiry: structural causality, information flow, incentives, feedback loops, hidden work, and organizational learning. These describe what Sami studies; they are not claims of proven causal effects. Connect future investigations to these areas only where the material supports the connection.
+
+Owner correction,30October2026: the intro requires one deliberate interaction per step, three actions total. The initial question is the first action; the next two phrases each advance once. Only breakthrough/dive proceeds automatically after the third action. Keep skip/replay, keyboard/touch, reduced motion and direct reading. See [current states](../INTRO-STATES.md). No repeated attempts or timed advance between steps.

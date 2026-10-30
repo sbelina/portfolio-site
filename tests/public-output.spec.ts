@@ -16,5 +16,6 @@ test('default production output contains no local fixtures or private drafts', a
   await expect(access('dist/experiments/fixture-assumed-observed/index.html')).rejects.toThrow()
   await expect(access('dist/studio/index.html')).rejects.toThrow()
   await expect(access('dist/api/workspace')).rejects.toThrow()
+  expect(await readFile('dist/index.html', 'utf8')).toContain('The visible problem is rarely the one producing the outcome.')
   expect(await readFile('dist/index.html', 'utf8')).toContain('I swim upstream toward the problem.')
 })

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "baseline": "abaa9a9aa28dfc665f8b34816559209c797114b8",
-  "sourceReview": "No approved migration wording or separate Emergent source supplied; original public prototype remains unchanged.",
+  "sourceReview": "Review-branch legacy wording is corrected, but no canonical case manuscript, rights or migration wording is approved.",
   "content": [
     {
       "legacyId": "claims-operations",
@@ -39,10 +39,10 @@
     {
       "legacyId": "documentation-recovery",
       "originalFormat": "Case",
-      "classification": "proposed mapping; owner review required",
+      "classification": "legacy claims reference; standalone destination undecided",
       "contentId": "33e3550d-6b04-4a91-878c-0225b464914d",
       "oldLocation": "/#documentation-recovery",
-      "proposedRoute": "/investigations/documentation-recovery/",
+      "proposedRoute": null,
       "activeDestination": "retained legacy home fragment",
       "review": "unreviewed draft; not selected for publication",
       "dates": "unknown; no invented dates"
@@ -211,26 +211,20 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "study-label",
-      "destination": "/#study-label",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "reading-gateway-title",
-      "destination": "/#reading-gateway-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work",
-      "destination": "/#work",
+      "id": "connections",
+      "destination": "/#connections",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "work-title",
-      "destination": "/#work-title",
+      "id": "system-map",
+      "destination": "/#system-map",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "connections-title",
+      "destination": "/#connections-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
@@ -271,15 +265,159 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "connections",
-      "destination": "/#connections",
+      "id": "tag-curiosity",
+      "destination": "/#tag-curiosity",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-problem-definition",
+      "destination": "/#tag-problem-definition",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-evidence",
+      "destination": "/#tag-evidence",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-systems",
+      "destination": "/#tag-systems",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-decision",
+      "destination": "/#tag-decision",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-research",
+      "destination": "/#tag-research",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-upstream",
+      "destination": "/#tag-upstream",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-measurement",
+      "destination": "/#tag-measurement",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-structure",
+      "destination": "/#tag-structure",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-transfer",
+      "destination": "/#tag-transfer",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-ai",
+      "destination": "/#tag-ai",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-accessibility",
+      "destination": "/#tag-accessibility",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-service-design",
+      "destination": "/#tag-service-design",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-information-equity",
+      "destination": "/#tag-information-equity",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-operations",
+      "destination": "/#tag-operations",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "tag-knowledge",
+      "destination": "/#tag-knowledge",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "map-text",
+      "destination": "/#map-text",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work",
+      "destination": "/#work",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "connections-title",
-      "destination": "/#connections-title",
+      "id": "work-title",
+      "destination": "/#work-title",
       "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinctions-title",
+      "destination": "/#distinctions-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinction-claims-operations",
+      "destination": "/#distinction-claims-operations",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinction-brand-research",
+      "destination": "/#distinction-brand-research",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinction-enterprise-ai",
+      "destination": "/#distinction-enterprise-ai",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinction-accessibility-ai",
+      "destination": "/#distinction-accessibility-ai",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinction-civic-service",
+      "destination": "/#distinction-civic-service",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "reading-gateway-title",
+      "destination": "/#reading-gateway-title",
+      "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
@@ -292,6 +430,36 @@
       "id": "practice-title",
       "destination": "/#practice-title",
       "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "inquiry-title",
+      "destination": "/#inquiry-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "study-label",
+      "destination": "/#study-label",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice-language",
+      "destination": "/#practice-language",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice-form",
+      "destination": "/#practice-form",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "delta-theory",
+      "destination": "/#delta-theory",
+      "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
@@ -340,6 +508,42 @@
       "id": "archive",
       "destination": "/#archive",
       "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-wage",
+      "destination": "/#archive-wage",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-dead-internet",
+      "destination": "/#archive-dead-internet",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-hive-mind",
+      "destination": "/#archive-hive-mind",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-mourning-coffee",
+      "destination": "/#archive-mourning-coffee",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-bridge",
+      "destination": "/#archive-bridge",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "archive-left",
+      "destination": "/#archive-left",
+      "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
@@ -653,25 +857,25 @@
     {
       "id": "origin-language",
       "kind": "origin",
-      "href": null,
+      "href": "#practice-language",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "origin-seek-understand",
       "kind": "origin",
-      "href": null,
+      "href": "#practice",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "origin-multimodal",
       "kind": "origin",
-      "href": null,
+      "href": "#practice-form",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "origin-delta",
       "kind": "origin",
-      "href": null,
+      "href": "#delta-theory",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
@@ -713,37 +917,37 @@
     {
       "id": "archive-wage",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-wage",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "archive-dead-internet",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-dead-internet",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "archive-hive-mind",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-hive-mind",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "archive-mourning-coffee",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-mourning-coffee",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "archive-bridge",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-bridge",
       "status": "retained in existing graph; canonical conversion awaits review"
     },
     {
       "id": "archive-left",
       "kind": "archive",
-      "href": "#archive",
+      "href": "#archive-left",
       "status": "retained in existing graph; canonical conversion awaits review"
     }
   ],
@@ -889,9 +1093,9 @@
       "status": "retained; not promoted to approved canonical relationships"
     },
     {
-      "legacyId": "documentation-recovery::tag-research",
+      "legacyId": "documentation-recovery::tag-operations",
       "from": "documentation-recovery",
-      "to": "tag-research",
+      "to": "tag-operations",
       "label": null,
       "status": "retained; not promoted to approved canonical relationships"
     },

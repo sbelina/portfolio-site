@@ -76,6 +76,18 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
     if (occupiedRoutes.has(path)) throw new Error('Duplicate public route ownership')
     occupiedRoutes.add(path)
     assertReferences(entry.evidenceIds, evidenceIds, 'Entry references unselected evidence')
+    if (entry.investigation) {
+      if (entry.kind !== 'investigation' || entry.format === 'poetry') throw new Error('Investigation narratives belong only to non-poetry investigations')
+      for (const field of ['observedCondition', 'investigation', 'relationshipDiscovered', 'limitations'] as const) if (!entry.investigation[field]?.trim()) throw new Error('Selected investigation narrative is incomplete')
+      for (const statement of entry.investigation.statements) {
+        assertReferences(statement.evidenceIds, evidenceIds, 'Statement references unselected evidence')
+        if (statement.kind === 'unverified') throw new Error('Unverified statements cannot enter a selected investigation')
+        if (['direct_observation', 'measured_result', 'documented_outcome'].includes(statement.kind) && !statement.evidenceIds.length) throw new Error('Factual statements require selected evidence')
+        if (statement.kind === 'measured_result' || statement.contribution === 'measured_impact') {
+          if (statement.kind !== 'measured_result' || !statement.evidenceIds.some(id => evidence.some(e => e.id === id && e.kind === 'metric' && e.measurement))) throw new Error('Measured impact requires measurement provenance')
+        }
+      }
+    }
     for (const block of entry.blocks) {
       if (occupiedBlocks.has(block.id)) throw new Error('Duplicate public block identity')
       occupiedBlocks.add(block.id)
@@ -112,7 +124,7 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
   }
   const projection: PublicProjection = {
     schemaVersion: 1,
-    entries: entries.map(entry => ({ id: entry.id, revision: entry.revision, kind: entry.kind, ...(entry.format ? { format: entry.format } : {}), slug: entry.slug, path: entryPath(entry), title: entry.title, summary: entry.summary, contribution: entry.contribution ?? '', createdAt: entry.createdAt, updatedAt: entry.updatedAt, authorIds: [...entry.authorIds], topicIds: [...entry.topicIds], blocks: structuredClone(entry.blocks), evidenceIds: [...entry.evidenceIds] })),
+    entries: entries.map(entry => ({ id: entry.id, revision: entry.revision, kind: entry.kind, ...(entry.investigation ? { investigation: structuredClone(entry.investigation) } : {}), ...(entry.format ? { format: entry.format } : {}), slug: entry.slug, path: entryPath(entry), title: entry.title, summary: entry.summary, contribution: entry.contribution ?? '', createdAt: entry.createdAt, updatedAt: entry.updatedAt, authorIds: [...entry.authorIds], topicIds: [...entry.topicIds], blocks: structuredClone(entry.blocks), evidenceIds: [...entry.evidenceIds] })),
     relationships: relationships.map(record => ({ id: record.id, fromId: record.fromId, toId: record.toId, type: record.type, rationale: record.rationale, evidenceIds: [...record.evidenceIds] })),
     evidence: evidence.map(record => ({ id: record.id, title: record.title, source: record.source, locator: record.locator, observedAt: record.observedAt, role: record.role, limitations: record.limitations, assetIds: [...record.assetIds], kind: record.kind, ...(record.measurement ? { measurement: { ...record.measurement } } : {}) })),
     assets: assets.map(record => ({ id: record.id, url: record.url, mimeType: record.mimeType, ...(record.width ? { width: record.width } : {}), ...(record.height ? { height: record.height } : {}), alt: record.alt, decorative: record.decorative, credit: record.credit, checksum: record.checksum })),

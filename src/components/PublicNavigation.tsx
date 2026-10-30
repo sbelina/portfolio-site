@@ -1,13 +1,11 @@
 import React from 'react'
 
 const destinations = [
-  { href: '/investigations/', label: 'Investigations' },
-  { href: '/#work', label: 'Work' },
-  { href: '/#connections', label: 'Map' },
-  { href: '/#practice', label: 'Practice' },
+  { href: '/#work', label: 'Investigations' },
+  { href: '/#connections', label: 'Connections' },
+  { href: '/#practice', label: 'Method' },
   { href: '/#field-notes', label: 'Field notes' },
   { href: '/#contact', label: 'Contact' },
-  { href: '/experiments/reveal-hidden-work/', label: 'Hidden-work experiment' },
 ] as const
 
 /** Native links remain available without hydration, including on unavailable URLs. */

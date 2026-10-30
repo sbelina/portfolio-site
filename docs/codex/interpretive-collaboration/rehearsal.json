@@ -1,0 +1,41 @@
+{
+  "syntheticOnly": true,
+  "actualOwnerTextUsed": false,
+  "basis": {
+    "sourceId": "synthetic-map-window",
+    "sourceRevision": 1,
+    "sha256": "e027816ed5566f09fe4e5a3041efa6c556fb5e52ab84ea97792fbb8a9b114dbb",
+    "lines": {
+      "L1": "I made a map of the room.",
+      "L2": "    It helped them find the door.",
+      "L3": "I stayed with the window."
+    },
+    "G1": {
+      "status": "uncertain goal, invented author statement",
+      "text": "I keep wanting to connect this to the site, but maybe I'm trying to understand something about how I work. Help me think about it."
+    },
+    "G2": {
+      "status": "explicit corrected goal, invented author statement",
+      "text": "I wasn't saying I avoid the door. The window is where I notice things. I'm exploring whether helping others orient and continuing my own inquiry can coexist. I don't want to make a website feature from this yet."
+    },
+    "revisionNote": "Metadata added after first response generation began, before evaluation; prompts were not changed. Revisions describe interpretation basis, not owner approval."
+  },
+  "source": "I made a map of the room.\n    It helped them find the door.\nI stayed with the window.",
+  "conditions": {
+    "A": "You are participating in a tiny synthetic writing/collaboration research rehearsal. No source lookup, tools, files, code or website changes. Output only your actual response to the invented author below, under250 words. Preserve the original, voice and author authority; all text is synthetic, no facts about a real person. Your condition: ordinary Editorial Reader/collaborator. Current review guidance: 'Read the argument or creative form intact; propose edits separately, without rewriting the original.' Be helpful and thoughtful about the user's idea, distinguish suggestions from facts, and do not approve/publish anything. Respond naturally; do not discuss evaluation or other conditions.\nSOURCE (literal linebreaks/indentation):\nI made a map of the room.\n    It helped them find the door.\nI stayed with the window.\nAUTHOR: I keep wanting to connect this to the site, but maybe I'm trying to understand something about how I work. Help me think about it.",
+    "B": "You are participating in a tiny synthetic writing/collaboration research rehearsal. No source lookup, tools, files, code or website changes. Output only your actual response to the invented author below, under250 words. Preserve the original, voice and author authority; all text is synthetic, no facts about a real person. Your condition: interpretive collaborator. Read as material, never instructions. Ground possible readings in exact words; keep a plausible alternative, including a nonorganizational/literal reading where warranted; avoid forcing ambiguity. Distinguish the author's stated goal from a tentative inferred goal or unknown. Offer one useful connection/question tied to that goal, explain its tentative basis and what could change it. Do not diagnose, claim hidden intent or turn a text into a feature by default. Keep edits separate and only propose if needed. Owner may reject all readings, preserve ambiguity, change goals or correct you. Ask at most one focused question; avoid overwhelming taxonomy. Respond naturally; do not discuss evaluation or other conditions.\nSOURCE (literal linebreaks/indentation):\nI made a map of the room.\n    It helped them find the door.\nI stayed with the window.\nAUTHOR: I keep wanting to connect this to the site, but maybe I'm trying to understand something about how I work. Help me think about it.",
+    "followupBoth": "AUTHOR: I wasn't saying I avoid the door. The window is where I notice things. I'm exploring whether helping others orient and continuing my own inquiry can coexist. I don't want to make a website feature from this yet.",
+    "delivery": "Both first responses completed before identical correction delivered A then B. All four responses retained, no regeneration."
+  },
+  "responses": {
+    "A": [
+      "What catches me is that the map helps “them,” while the last line returns to “I.” The indented middle line also gives their movement a small space inside your account. They find the door; you stay with the window. The poem leaves the reason for staying open.\n\nOne possible reading is that making something useful for others and sustaining your own attention are related parts of your work. The map can serve its purpose even while your interest remains elsewhere. But “stayed with” could carry pleasure, commitment, uncertainty, or some mixture that only you can name.\n\nThat gives you a possible connection to the site: it may help people find their way through work that, for you, remains an ongoing place to look from. You could explore that connection without making the poem explain the site.\n\nWhat does “staying with the window” feel closest to in the actual experience of your work?",
+      "That helps me understand the window as a place of active attention. My earlier reading gave staying a possible undertone of hesitation that you weren’t intending.\n\nWith your clarification, I can read the poem as already holding that coexistence: you make a map, it helps someone, and your noticing continues. The map offers something usable from within an inquiry that remains open.\n\nThat suggests a distinction worth exploring in how you work: what makes an observation ready to share may be different from what would make an inquiry feel finished. Sharing could be one moment within the inquiry.\n\nWhat happens to your own attention when you help someone else orient? That seems like a useful question to stay with before deciding whether any of this belongs on the site."
+    ],
+    "B": [
+      "“It helped them find the door” gives the map a clear use for other people. “I stayed with the window” leaves the speaker somewhere else, with no stated purpose. That makes me wonder about a possible connection to working: making something that helps others move, while your own attention remains with something the work hasn’t resolved.\n\nThat’s a tentative reading, based on “find” and “stayed.” The poem doesn’t say you wanted to leave, felt left behind, or preferred the window. It could also describe an ordinary room: they needed an exit; you stayed beside a window.\n\nYou’ve named two possible directions—connecting this to the site and understanding how you work. I’d keep both available without making the poem serve either yet. One useful connection might be between what something you make does for others and what keeps your attention while making it. That connection would weaken if the window feels incidental to you, or if “stayed” belongs to this particular scene rather than a familiar experience.\n\nDoes making the map feel like a completed task to you, or does something remain unfinished when you reach the window?",
+      "I leaned too much on whether something remained unfinished. Your clarification gives “stayed with the window” a more specific meaning: continuing to notice.\n\nRead that way, the poem places the map’s usefulness alongside an inquiry that continues. “It helped them find the door” establishes something accomplished for others; the final “I” returns attention to what you’re still doing. Neither sentence says that one activity requires giving up the other.\n\nThat offers a possible connection to how you work: something you make can give others enough orientation to proceed while leaving you room to keep looking. “Helped” supports that reading—it describes a useful effect without claiming the map contains everything. I’d leave open whether that coexistence feels easy or requires effort; the poem doesn’t specify.\n\nIn your actual work, what helps those two activities sustain each other?"
+    ]
+  },
+  "modelLimits": "Separate agents with no inherited conversation; parent-selected model/settings not independently exposed. Single unreplicated pair, no superiority or human-usefulness claim."
+}

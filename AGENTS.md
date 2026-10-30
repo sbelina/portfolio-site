@@ -1,6 +1,6 @@
 # Working on Producing Curiosity
 
-Producing Curiosity is Sam Belina's investigative portfolio and field notebook. Its direction is **Seeing What Systems Miss**, with the editorial concept **Things That Didn't Add Up**. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
+Producing Curiosity is Sami Belina's investigative portfolio and field notebook. Its direction is **Seeing What Systems Miss**, with the editorial concept **Things That Didn't Add Up**. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
 
 ## Start here
 
@@ -26,7 +26,7 @@ Distinguish implemented behavior from proposals. This documentation package does
 ## Interface and accessibility
 
 - Preserve the calm editorial identity and violet/coral/teal semantic grammar. Pair color with text or shape. Use shimmer, depth, and temporal echoes to communicate meaningful states while maintaining a stable reading path.
-- Preserve intro invariants in `docs/INTRO-STATES.md`: one-action progression through three authored beats with resistance/echoes/breakthrough, skip/replay, keyboard/touch alternatives, reduced motion, recovery, and direct access to content. A direct article URL must not require replaying the intro.
+- Preserve intro invariants in `docs/INTRO-STATES.md`: one deliberate interaction per authored step (three actions total), followed by an automatic dive with resistance/echoes/breakthrough, skip/replay, keyboard/touch alternatives, reduced motion, recovery, and direct access to content. A direct article URL must not require replaying the intro.
 - Use links for navigation and buttons for actions. Support direct loads, refresh, modified clicks, meaningful focus, Back scroll restoration, and useful reading without graph interaction.
 - Give important graph relationships equivalent text navigation. Do not turn directed relationships into undirected claims. Test keyboard use, screen-reader behavior, zoom/reflow, and reduced motion; report manual and automated checks separately. Automated checks alone do not establish WCAG conformance.
 
@@ -47,3 +47,7 @@ Apply [Systems Inquiry Orchestrator v2](docs/codex/SYSTEMS-INQUIRY.md) as additi
 Use the repository-pinned Node version and lockfile. For runtime changes, the current checks are `npm ci`, `npm run build`, `npm run check:deploy`, and `npm test`; inspect the current scripts and CI before running. Install required Playwright browsers using the repository's documented procedure. Never disable TLS or dependency integrity checks to make installation pass.
 
 For documentation-only changes, validate paths, internal links, fences, factual claims, and scope; a full application test run is unnecessary unless the edit affects execution. Add focused tests for meaningful changed behavior. Inspect production artifacts, not only the dev server. State exactly what ran, what passed, what remains unverified, and how to roll back material changes.
+
+## Current owner positioning — 30 October 2026
+
+Use **Sami Belina**. The single professional triad is **Find the gap. Trace the mechanism. Design what holds.** Preserve the visible-problem thesis, and explain the professional value through organizational, operational and human factors, leadership decisions and practical team change. The site is both a portfolio and an evolving public inquiry. Retain useful reading for every audience while experimenting. The detailed inquiry loop elaborates these moves; it adds no compulsory interactions. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. See docs/codex/OCT-30-REVIEW.md for current branch implementation and limits.

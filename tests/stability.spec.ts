@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 const intro = 'Producing Curiosity introduction'
-const heading = 'I swim upstream toward the problem.'
+const heading = 'The visible problem is rarely the one producing the outcome.'
 
 test('first visit: mouse skip removes intro and focuses content; returning visit bypasses it', async ({ page }) => {
   await page.goto('/')
@@ -90,7 +90,7 @@ test('automated WCAG checks on intro and main content', async ({ page }) => {
 test('main navigation and graph work after skip', async ({ page }) => {
   await page.goto('/')
   await page.getByRole('button', { name: 'Skip introduction' }).click()
-  await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Map' }).click()
+  await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link', { name: 'Connections' }).click()
   await expect(page).toHaveURL(/#connections$/)
   await page.getByRole('button', { name: 'tag: #systems. Select to trace connections.', exact: true }).click()
   await expect(page.locator('.graph-explanation')).toContainText('systems')
@@ -120,20 +120,26 @@ test('intro render failure during replay cannot take down main content', async (
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
 })
 
-test('one keyboard action unfolds all three stages and opens main content', async ({ page }) => {
+test('exactly one keyboard activation per step; waiting never advances another step', async ({ page }) => {
   await page.clock.install()
   await page.goto('/')
-  await page.getByRole('button', { name: 'Begin exploring the question' }).focus()
+  const phrase = page.getByRole('button', { name: 'Begin exploring the question' })
+  await phrase.focus()
   await page.keyboard.press('Enter')
-  for (let step = 1; step <= 3; step++) {
-    await expect(page.locator('.step-prompt')).toContainText(`step ${step}:`)
-    await page.clock.runFor(1000)
-  }
-  await expect(page.locator('.step-prompt')).toHaveText('dive in')
-  await page.clock.runFor(1200)
+  await expect(page.getByRole('button', { name: 'step 2: test the limits' })).toBeFocused()
+  await page.clock.runFor(6000)
+  await expect(page.locator('.step-prompt')).toHaveText('step 2: test the limits')
+  await page.keyboard.press('Space')
+  await expect(page.getByRole('button', { name: 'step 3: recognize patterns' })).toBeFocused()
+  await page.clock.runFor(6000)
+  await expect(page.locator('.step-prompt')).toHaveText('step 3: recognize patterns')
+  await page.keyboard.press('Enter')
+  await expect(page.locator('.intro-field')).toHaveClass(/effect-breakthrough/)
+  await page.clock.runFor(1900)
   await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
   await expect(page.locator('main')).toBeFocused()
 })
+
 
 test('direct case links bypass intro and keep the existing fragment', async ({ page }) => {
   await page.goto('/#claims-operations')
@@ -163,7 +169,7 @@ test('interrupted automatic stages cannot advance a replay', async ({ page }) =>
   await expect(page.locator('.step-copy')).toHaveCount(0)
 })
 
-test('one touch swipe begins the automatic sequence', async ({ browser }) => {
+test('one touch swipe completes only the first step', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   const page = await context.newPage()
   await page.goto('http://127.0.0.1:4174/')
@@ -200,20 +206,20 @@ test('graph layer and selected-state accessibility', async ({ page }) => {
 })
 
 
-test('repeated clicks do not restart or accelerate the automatic stages', async ({ page }) => {
+test('each phrase click completes exactly one step without bubbling into the next', async ({ page }) => {
   await page.clock.install()
   await page.goto('/')
-  const phrase = page.getByRole('button', { name: 'Begin exploring the question' })
-  await expect(phrase).toContainText('how does one produce curiosity')
-  await phrase.click()
-  await page.locator('.intro-field').dispatchEvent('click')
-  await page.locator('.intro-field').dispatchEvent('click')
-  await expect(page.locator('.step-prompt')).toContainText('step 1:')
-  await page.clock.runFor(1000)
-  await expect(page.locator('.step-prompt')).toContainText('step 2:')
-  await page.clock.runFor(1000)
-  await expect(page.locator('.step-prompt')).toContainText('step 3:')
+  await page.getByRole('button', { name: 'Begin exploring the question' }).click()
+  await expect(page.locator('.intro-field')).toHaveClass(/effect-resist-one/)
+  await expect(page.locator('.step-prompt')).toHaveText('step 2: test the limits')
+  await page.getByRole('button', { name: 'step 2: test the limits' }).click()
+  await expect(page.locator('.intro-field')).toHaveClass(/effect-resist-two/)
+  await expect(page.locator('.step-prompt')).toHaveText('step 3: recognize patterns')
+  await page.getByRole('button', { name: 'step 3: recognize patterns' }).click()
+  await page.clock.runFor(1900)
+  await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
 })
+
 
 test('one desktop drag follows direction and begins the sequence', async ({ page }) => {
   await page.clock.install()
@@ -226,21 +232,30 @@ test('one desktop drag follows direction and begins the sequence', async ({ page
   await page.mouse.move(x + 100, y - 50, { steps: 8 })
   expect(await page.locator('.intro-field').evaluate(e => e.style.getPropertyValue('--drag-x'))).not.toBe('0px')
   await page.mouse.up()
-  await expect(page.locator('.step-prompt')).toContainText('step 1:')
+  await expect(page.locator('.step-prompt')).toContainText('step 2:')
   expect(await page.locator('.intro-field').evaluate(e => parseFloat(e.style.getPropertyValue('--dx')))).toBeGreaterThan(0)
   await page.clock.runFor(1000)
   await expect(page.locator('.step-prompt')).toContainText('step 2:')
 })
 
-test('one wheel gesture starts the sequence and dive moves continuously to content', async ({ page }) => {
+test('three distinct wheel gestures complete the steps; inertia cannot skip steps', async ({ page }) => {
   await page.clock.install()
   await page.goto('/')
-  await page.locator('.intro-field').hover()
-  await page.mouse.wheel(0, 100)
-  await expect(page.locator('.step-prompt')).toContainText('step 1:')
-  await page.clock.runFor(3000)
+  const field = page.locator('.intro-field')
+  await field.dispatchEvent('wheel', { deltaY: 100 })
+  await field.dispatchEvent('wheel', { deltaY: 60 })
+  await field.dispatchEvent('wheel', { deltaY: 20 })
+  await expect(page.locator('.step-prompt')).toHaveText('step 2: test the limits')
+  await page.clock.runFor(1000)
+  await field.dispatchEvent('wheel', { deltaY: 100 })
+  await expect(page.locator('.step-prompt')).toHaveText('step 3: recognize patterns')
+  await page.clock.runFor(1000)
+  await field.dispatchEvent('wheel', { deltaY: 100 })
+  await page.clock.runFor(1000)
   await expect(page.getByRole('button', { name: 'Dive into the portfolio' })).toBeVisible()
-  await page.clock.runFor(350)
+  // Flush the phase and animation effects separately from their fake-clock timers.
+  await page.clock.runFor(200)
+  await page.clock.runFor(150)
   const first = await page.evaluate(() => scrollY)
   await page.clock.runFor(250)
   expect(await page.evaluate(() => scrollY)).toBeGreaterThan(first)
@@ -248,6 +263,7 @@ test('one wheel gesture starts the sequence and dive moves continuously to conte
   await expect(page.getByRole('region', { name: intro })).toHaveCount(0)
   await expect(page.getByRole('heading', { name: heading })).toBeInViewport()
 })
+
 
 test('first presentation is remembered across new browser sessions; replay remains available', async ({ browser }) => {
   const first = await browser.newContext()
@@ -265,4 +281,27 @@ test('first presentation is remembered across new browser sessions; replay remai
   await next.getByRole('button', { name: 'Replay introduction' }).click()
   await expect(next.getByRole('region', { name: intro })).toBeInViewport()
   await returning.close()
+})
+
+test('three touch taps advance separate steps and automatically enter the portfolio', async ({ browser, baseURL }) => {
+ const context=await browser.newContext({baseURL,viewport:{width:390,height:844},hasTouch:true,isMobile:true})
+ try { const page=await context.newPage();await page.goto('/')
+  await page.getByRole('button',{name:'Begin exploring the question'}).tap()
+  await expect(page.locator('.step-prompt')).toHaveText('step 2: test the limits')
+  await page.getByRole('button',{name:'step 2: test the limits'}).tap()
+  await expect(page.locator('.step-prompt')).toHaveText('step 3: recognize patterns')
+  await page.getByRole('button',{name:'step 3: recognize patterns'}).tap()
+  await expect(page.getByRole('region',{name:intro})).toHaveCount(0)
+ } finally {await context.close()}
+})
+
+test('reduced-motion replay retains three actions without animated feedback or dive', async ({ page }) => {
+ await page.emulateMedia({reducedMotion:'reduce'});await page.goto('/')
+ await page.getByRole('button',{name:'Replay introduction'}).click()
+ await page.getByRole('button',{name:'Begin exploring the question'}).click()
+ await page.getByRole('button',{name:'step 2: test the limits'}).click()
+ await expect(page.getByRole('button',{name:'step 3: recognize patterns'})).toBeVisible()
+ await page.getByRole('button',{name:'step 3: recognize patterns'}).click()
+ await expect(page.getByRole('region',{name:intro})).toHaveCount(0)
+ await expect(page.locator('main')).toBeFocused()
 })

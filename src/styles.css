@@ -1,3 +1,4 @@
+@import "./visuals/investigation-visual.css";
 @import './components/experiment-note.css';
 @import './components/public-navigation.css';
 :root {
@@ -334,7 +335,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   color: var(--muted);
   font-weight: 740;
 }
-.index-hero { min-height: 82vh; padding: clamp(5rem, 10vw, 9.5rem) 0 5rem; display: grid; align-content: center; }
+.index-hero { min-height: 72vh; padding: clamp(3rem, 6vw, 5rem) 0 4rem; display: grid; align-content: center; }
 .index-hero h1,
 .work-intro h2,
 .connections h2,
@@ -346,10 +347,10 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   font-weight: 600;
   letter-spacing: -.038em;
 }
-.index-hero h1 { max-width: 1120px; margin: 0; font-size: clamp(3.1rem, 8vw, 8.5rem); line-height: .91; }
-.hero-copy { max-width: 850px; margin: 2.2rem 0 0; font-size: clamp(1.16rem, 2vw, 1.65rem); line-height: 1.52; }
-.hero-thesis { max-width: 780px; margin: 1.7rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
-.hero-actions { margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: .8rem; }
+.index-hero h1 { max-width: 1120px; margin: 0; font-size: clamp(2.85rem, 6.5vw, 6.5rem); line-height: .95; }
+.hero-copy { max-width: 850px; margin: 1.5rem 0 0; font-size: clamp(1.08rem, 1.7vw, 1.4rem); line-height: 1.52; }
+.hero-thesis { max-width: 780px; margin: 1rem 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
+.hero-actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: .8rem; }
 .primary-link, .secondary-link {
   min-height: 46px;
   display: inline-flex;
@@ -391,7 +392,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .project-domain { margin: 0 0 .8rem; color: var(--muted); text-transform: uppercase; letter-spacing: .11em; font-size: .73rem; font-weight: 760; }
 .project-card h3 { margin: 0; max-width: 1050px; font-family: var(--serif); font-size: clamp(2.35rem, 5.2vw, 5.7rem); line-height: .96; letter-spacing: -.045em; font-weight: 590; }
 .project-strapline { margin: 1rem 0 0; color: var(--muted); font-size: 1.05rem; }
-.project-metric { margin: 1.4rem 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(.95rem, 1.55vw, 1.12rem); color: var(--holds); }
+.project-focus { margin: 1.4rem 0 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(.95rem, 1.55vw, 1.12rem); color: var(--holds); }
 .project-summary { max-width: 780px; margin: 1.5rem 0 0; line-height: 1.67; }
 .case-logic { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin-top: 2.6rem; border-top: 1px solid var(--soft-line); border-bottom: 1px solid var(--soft-line); }
 .case-logic > div { min-width: 0; padding: 1.15rem 1.15rem 1.35rem 0; }
@@ -526,7 +527,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   .site-header[data-measured="false"] { position: static; }
   .site-header[data-compact="true"] { padding: .25rem 0; gap: .25rem; }
   .site-header nav { gap: .8rem 1.1rem; }
-  .index-hero { min-height: auto; padding: 5.5rem 0 4.5rem; }
+  .index-hero { min-height: auto; padding: 3rem 0 3.5rem; }
   .project-card { grid-template-columns: 3.65rem minmax(0, 1fr); padding: 2.7rem 0 3.3rem; }
   .work-spine { left: 1.35rem; top: 22rem; }
   .case-logic { grid-template-columns: 1fr; }
@@ -814,3 +815,21 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 .hero-study > p { margin: 0 0 .6rem; color: var(--muted); font-size: .78rem; }
 .hero-study ul { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 0; padding-left: 1.1rem; font-size: .88rem; line-height: 1.6; }
 .hero-study li { padding-right: .5rem; }
+.hero-method-link { min-height: 46px; display: inline-flex; align-items: center; padding: .65rem .3rem; text-underline-offset: .3em; }
+.practice-moves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2rem); margin: 2.5rem 0; padding: 0; list-style: none; }
+.practice-moves li { min-width: 0; padding: 1.2rem 0; border-top: 1px solid var(--line); }
+.practice-moves h3 { margin: 0 0 .7rem; font-family: var(--serif); font-size: clamp(1.4rem, 2vw, 2rem); }
+.practice-moves p, .practice-inquiry { max-width: 50rem; line-height: 1.6; }
+@media (max-width: 700px) { .practice-moves { grid-template-columns: 1fr; gap: .4rem; } }
+
+/* Each intro phrase is a native action; disabled final feedback remains readable. */
+button.step-prompt{cursor:pointer}button.step-prompt:disabled{cursor:default;opacity:1}
+.question .intro-hint{font-size:.9rem;line-height:1.5;letter-spacing:normal;max-width:30rem;margin:1rem auto;color:var(--muted)}
+
+/* Early map orientation and reciprocal reading links. */
+#connections{scroll-margin-top:7rem}.connections{padding-top:3rem;padding-bottom:4rem;scroll-margin-top:7rem}
+.case-reading-links{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin:1.25rem 0}.case-reading-links a{min-height:44px;display:inline-flex;align-items:center;text-underline-offset:.25em}
+.connection-group>a{padding:.65rem 0;min-height:44px;display:inline-flex;align-items:center;gap:.4rem;text-underline-offset:.25em}
+.archive-item,.explained-connections li,#practice-language,#practice-form,#delta-theory{scroll-margin-top:7rem}
+
+.connections h2{font-size:clamp(1.8rem,3.2vw,3rem);max-width:36rem}.map-reading-choices{display:flex;flex-wrap:wrap;gap:1rem}.map-reading-choices a{display:inline-flex;align-items:center;min-height:44px}#map-text{scroll-margin-top:7rem}

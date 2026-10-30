@@ -1,6 +1,6 @@
 # Pages for Sam to review
 
-This is the proposed editorial page inventory, including writing. The feature branch has a production-safe Home/Investigations shell and local-only synthetic reading templates; see [implementation status](IMPLEMENTATION-STATUS.md). That technical implementation does not approve the proposed real pages below. All approval fields begin empty. Current production state has not been reverified; existing single-page excerpts should not be confused with approved standalone pages.
+This is the proposed editorial page inventory, including writing. The feature branch has a production-safe Home/Investigations shell and local-only synthetic reading templates; see [implementation status](IMPLEMENTATION-STATUS.md). That technical implementation does not approve the proposed real pages below. All approval fields begin empty. The 27 October [editorial alignment](OCT-27-2026-EDITORIAL-ALIGNMENT.md) updates the six-area review grouping and [claim corrections](OCT-27-2026-CLAIM-CORRECTIONS.md); the older `documentation-recovery` fragment remains a claims reference. Existing single-page excerpts are not approved standalone pages.
 
 **Review → request changes or approve an exact revision → choose Publish → confirm live.**
 You may approve without publishing, or defer a piece.
@@ -25,16 +25,18 @@ The canonical structured inventory is [page-review.json](page-review.json). Keep
 
 ## Investigations: existing summaries need source and page review
 
-These records are in [src/data.ts](../../src/data.ts). Review each against the [evidence rules](EVIDENCE-RULES.md) before making a full page.
+Existing summaries are in [src/data.ts](../../src/data.ts). The linked outlines below are public-safe planning records, not full manuscripts or cleared evidence. Review each against the [evidence rules](EVIDENCE-RULES.md) before making a full page.
 
 | Proposed page | Proposed URL | Review | Approval | Publication |
 | --- | --- | --- | --- | --- |
-| Move feedback points upstream. | `/investigations/claims-operations/` | Needs source review and page draft | None | Not verified |
-| A survey has two users. I argued for the respondent. | `/investigations/brand-research/` | Needs source review and page draft | None | Not verified |
-| A decision model became the team structure. | `/investigations/enterprise-ai/` | Needs source review and page draft | None | Not verified |
-| Each revision absorbed a defect the last one missed. | `/investigations/documentation-recovery/` | Needs source review and page draft | None | Not verified |
-| What looked like apathy was administrative friction. | `/investigations/civic-service/` | Needs source review and page draft | None | Not verified |
-| Automated validation passed. Real-world use still failed. | `/investigations/accessibility-ai/` | Needs source review and page draft | None | Not verified |
+| [Claims operations](review-candidates/claims-operations.md) — diagnosis, earlier review, distinct learning artifacts | `/investigations/claims-operations/` | Needs source review and full manuscript | None | No canonical page |
+| [Enterprise AI](review-candidates/enterprise-ai.md) — proposals and needs | `/investigations/enterprise-ai/` | Needs source review and full manuscript | None | No canonical page |
+| [Civic services](review-candidates/civic-service.md) — residents' questions | `/investigations/civic-service/` | Needs source review and full manuscript | None | No canonical page |
+| [Trust research](review-candidates/brand-research.md) — agreement and influence | `/investigations/brand-research/` | Needs source review and full manuscript | None | No canonical page |
+| [Telematics](review-candidates/telematics.md) — program question and research recovery | `/investigations/telematics/` | Needs source review and full manuscript | None | No canonical page |
+| [Accessibility + AI](review-candidates/accessibility-ai.md) — code recovery and human review | `/investigations/accessibility-ai/` | Needs source review and full manuscript | None | No canonical page |
+
+`/#documentation-recovery` and its UUID remain a legacy claims-knowledge reference. Its research-recovery material belongs in the telematics draft. It is not a seventh independently measured investigation and has no approved standalone destination.
 
 ## Landing pages and patterns
 
@@ -48,6 +50,7 @@ These records are in [src/data.ts](../../src/data.ts). Review each against the [
 | Archive | `/archive/` | Needs page draft | None | Not verified |
 | Constellation map (optional) | `/map/` | Needs page draft | None | Not verified |
 | Delivered ≠ Complete | `/patterns/delivered-not-complete/` | Needs page draft | None | Not verified |
+| [Related. Not equivalent.](review-candidates/related-not-equivalent.md) | `/patterns/related-not-equivalent/` | Needs case-specific source and relation review | None | No canonical page |
 
 ## What you review before approving
 

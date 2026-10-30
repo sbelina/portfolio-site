@@ -12,6 +12,23 @@ function draft(){
 }
 function reviewed(w:Workspace){for(const pass of passes)w=act(w,{type:'review',manuscriptId:w.manuscripts[0].id,pass,decision:'accept',note:'Synthetic mechanical verification only.',complete:true});return w}
 
+test('new intake preserves saved reviews and originals while preparing six pending passes',()=>{
+ const saved=reviewed(draft())
+ // Represent a persisted record from an earlier prompt version, not current intake text.
+ saved.manuscripts[0].reviews[2].suggestion='Historical synthetic review wording: retain this saved record exactly.'
+ const before=structuredClone(saved)
+ const next=act(saved,{type:'intake',title:'Second synthetic manuscript',filename:'second.txt',format:'text',bytes:Buffer.from('A separate synthetic original, with no approved claims.').toString('base64'),poetry:false})
+ expect(saved).toEqual(before)
+ expect(next.manuscripts[0]).toEqual(before.manuscripts[0])
+ expect(next.store).toEqual(before.store)
+ expect(next.candidates).toEqual(before.candidates)
+ const incoming=next.manuscripts[1]
+ expect(incoming.reviews.map(r=>r.pass)).toEqual([...passes])
+ expect(incoming.reviews.every(r=>r.decision==='pending' && r.basis===undefined && r.note==='' && r.uncertainty.includes('not a completed'))).toBe(true)
+ expect(incoming.reviews.every(r=>r.sources.every(s=>s.sourceDigest===incoming.digest))).toBe(true)
+ expect(()=>act(next,{type:'candidate'})).toThrow('Choose a structure')
+})
+
 test('split suggestions never discard short opening or middle source sections',()=>{
  const long='This is an invented section used only to verify complete source coverage. '.repeat(4)
  for(const original of [`## Short opening?\n\nShort.\n\n## Longer second?\n\n${long}\n\n## Longer third?\n\n${long}`,`## Longer first?\n\n${long}\n\n## Short middle?\n\nShort.\n\n## Longer third?\n\n${long}`]){

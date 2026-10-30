@@ -29,7 +29,7 @@ test('direct HTML includes useful reading, no intro, real 404 and separate lazy 
   const requests: string[] = []
   page.on('request', r => { if (sketchRequest.test(r.url())) requests.push(r.url()) })
   await page.goto('/#index')
-  await expect(page.getByRole('heading', { name: 'I swim upstream toward the problem.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'The visible problem is rarely the one producing the outcome.' })).toBeVisible()
   expect(requests).toEqual([])
   await page.goto(url)
   await expect(page.getByRole('heading', { name: reveal, exact: true })).toBeVisible()
