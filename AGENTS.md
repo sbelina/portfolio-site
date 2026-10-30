@@ -1,6 +1,6 @@
 # Working on Producing Curiosity
 
-Producing Curiosity is Sam Belina's investigative portfolio and field notebook. Its direction is **Seeing What Systems Miss**, with the editorial concept **Things That Didn't Add Up**. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
+Producing Curiosity is Sami Belina's investigative portfolio and field notebook. Its direction is **Seeing What Systems Miss**, with the editorial concept **Things That Didn't Add Up**. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
 
 ## Start here
 
@@ -47,3 +47,7 @@ Apply [Systems Inquiry Orchestrator v2](docs/codex/SYSTEMS-INQUIRY.md) as additi
 Use the repository-pinned Node version and lockfile. For runtime changes, the current checks are `npm ci`, `npm run build`, `npm run check:deploy`, and `npm test`; inspect the current scripts and CI before running. Install required Playwright browsers using the repository's documented procedure. Never disable TLS or dependency integrity checks to make installation pass.
 
 For documentation-only changes, validate paths, internal links, fences, factual claims, and scope; a full application test run is unnecessary unless the edit affects execution. Add focused tests for meaningful changed behavior. Inspect production artifacts, not only the dev server. State exactly what ran, what passed, what remains unverified, and how to roll back material changes.
+
+## Current owner positioning — 30 October 2026
+
+Use **Sami Belina**. The single professional triad is **Find the gap. Trace the mechanism. Design what holds.** Preserve the visible-problem thesis, and explain the professional value through organizational, operational and human factors, leadership decisions and practical team change. The site is both a portfolio and an evolving public inquiry. Retain useful reading for every audience while experimenting. The detailed inquiry loop elaborates these moves; it adds no compulsory interactions. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. See docs/codex/OCT-30-REVIEW.md for current branch implementation and limits.

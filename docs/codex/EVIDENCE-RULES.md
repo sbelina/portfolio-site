@@ -5,7 +5,7 @@ This is an editorial guardrail derived from the project discussion. It does not 
 ## Preserve these distinctions
 
 - **Accessibility + AI:** the agent successfully identified and restored deliberately removed accessibility code. Separately, planned human review identified potentially weak visual differentiation between Focus and Break states under simulated deuteranopia. Both states had text labels. Do not describe the code-removal test as an AI failure, claim the states lacked labels, or imply human review was an accidental afterthought.
-- **Claims knowledge work:** the comprehensive paperwork guide, separate administrative onboarding/training program, and total-loss support training are distinct artifacts. Do not combine their reach or outcomes. Training used with seven hires does not establish that Sam personally delivered all seven sessions.
+- **Claims knowledge work:** the comprehensive paperwork guide, separate administrative onboarding/training program, and total-loss support training are distinct artifacts. Do not combine their reach or outcomes. Training used with seven hires does not establish that Sami personally delivered all seven sessions.
 - **Claims metrics:** existing prototype numbers are not automatic publication approval. Verify provenance, date range, definitions, denominator, comparison, and contribution before presenting a measured improvement or causal effect.
 - **Claims scope correction, 27 October:** the previously displayed 18% and later 7.6% figures had different scopes. Withdraw their direct before/after comparison and any inferred 10.4-point reduction. See the [claim correction queue](OCT-27-2026-CLAIM-CORRECTIONS.md); either figure requires its own verified scope and exact owner-approved wording before reuse.
 - **Trust research:** distinguish research delivery, stakeholder use, and downstream business outcomes. A stakeholder using statistics in briefs supports an application claim; it does not establish an unmeasured revenue or trust increase.
@@ -24,7 +24,7 @@ For a proposed public claim, record:
 | Kind | Fact, observation, interpretation, proposal, implementation, simulation, or measured outcome. |
 | Source locator | Exact document/page/section or other verifiable source. |
 | Provenance | Who observed/measured/reported it and when. |
-| Contribution | What Sam did and what collaborators did. |
+| Contribution | What Sami did and what collaborators did. |
 | Measurement | Unit, denominator, period, baseline, and method where applicable. |
 | Limits | Missing evidence, uncertainty, alternatives, or scope boundaries. |
 | Rights and visibility | Permission/redaction status and whether the source may be public. |
@@ -33,3 +33,17 @@ For a proposed public claim, record:
 Useful writing can be candidly incomplete. “I identified this mismatch and proposed a change” is valid when supported. Do not manufacture a completed transformation to fill a template.
 
 Separate content approval from source access: a source can support a public statement while remaining private. Publish only rights-cleared derivatives and approved wording. A public citation must not expose an internal-only URL or document title that itself reveals restricted information.
+
+## Owner corrections — 30 October 2026
+
+The owner is **Sami Belina**. Historical preserved writing/review originals are not retroactively rewritten; active copy uses Sami. One professional triad: **Find the gap. Trace the mechanism. Design what holds.** The inquiry cycle elaborates this work; it adds no interaction gates.
+
+Claims: the diverging representation was a delivered status, not a claim file. Sami began unassigned, built the evidence and led the change so payment waits for salvage review. IAA decides document sufficiency; adjusters release payment. Earlier verification and collaborative knowledge development are separate responses. Administrator meetings surfaced practical knowledge, examples and procedural differences; the error-log categories did not become the guide structure. Statewide guide use is owner-reported; never substitute four offices. Neither18% nor7.6% establishes a controlled causal reduction.
+
+Trust: designed live with two peers, vendor fielded. Agreement and reported influence on trust are different questions.800+ responses/nine days and framework use need source scope; no finding about what produces trust.
+
+Accessibility: Sami originated the idea; a colleague advocated it to the organizer. Invited co-facilitator, only participant outside the department. Front-end-only Pomodoro prototype, coding agent and accessibility agent. Deliberate removal was successfully restored; separately planned human simulation review flagged potentially weak distinction between labeled states. Prototype informed a separate initiative already under way; archived repository is not adoption. Earlier checking/reduced remediation is intended, unmeasured.
+
+Civic: co-founded2020, nonpartisan.16,000+ population/flyer estimate is not social reach; latest20,000+ resident reach needs separate provenance/definition. No turnout effect. AI38→8 synthesis, seven teams and largest-team leadership are distinct contributions, not enterprise strategy ownership. Telematics SUS≈70 and NPS≈−20 involved the same six participants; different instruments, no causal equation or retention outcome. Research recovery belongs to telematics.
+
+New narrative classifications distinguish direct observation, measured result, documented outcome, practitioner interpretation, hypothesis, conceptual illustration, intended benefit and unverified claims. Contribution levels are separate. Mechanical validation cannot verify the truth of prose, authenticate approval, or determine whether a source establishes causality.

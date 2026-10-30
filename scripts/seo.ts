@@ -2,7 +2,7 @@
 export const siteOrigin = 'https://producingcuriosity.com'
 export const siteName = 'Producing Curiosity'
 export const homeTitle = 'Sami Belina — Seeing What Systems Miss'
-export const homeDescription = 'Explore Sam Belina’s investigations into organizational assumptions, information, human behavior, and operating conditions, with connected ideas and experiments.'
+export const homeDescription = 'Sami Belina investigates organizational and human factors through organizational diagnosis, strategic research, systems strategy and service design, helping leaders decide and teams put change into practice.'
 const imageAlt = 'Producing Curiosity by Sami Belina: I swim upstream toward the problem.'
 export const escapeAttribute = (text: string) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 

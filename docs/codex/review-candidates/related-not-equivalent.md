@@ -13,6 +13,6 @@
 
 **Reader prompt:** What is your organization treating as the same? This static candidate collects no response or tracking.
 
-**Cross-study hypothesis:** “Trust comes from not having to guess” is Sam's retrospective, **untested interpretation** of independent trust and telematics studies. Neither study directly found this cross-study relationship. Alternative explanations, contrary cases, source permissions and scope must be reviewed before any public page or connection is approved.
+**Cross-study hypothesis:** “Trust comes from not having to guess” is Sami's retrospective, **untested interpretation** of independent trust and telematics studies. Neither study directly found this cross-study relationship. Alternative explanations, contrary cases, source permissions and scope must be reviewed before any public page or connection is approved.
 
 **Connection method:** Use the existing versioned relationship model with stable source/target IDs, type, direction, rationale, evidence IDs, visibility, provenance and `reviewState`. A candidate `shares_pattern` association may be symmetric; a directional `supports` or `illustrates` assertion must remain directional. Review each case-specific rationale and caveat against approved source revisions. Backlinks aid navigation and do not reverse a claim. No relationship is generated from shared tags or spatial proximity. The graph remains an optional representation, with this table as a text equivalent.
