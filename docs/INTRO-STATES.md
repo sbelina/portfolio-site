@@ -1,25 +1,24 @@
 # Authored introduction: states and recovery
 
-One deliberate action starts three automatic teaching stages: question the boundaries → test the limits → recognize patterns. Resistance, temporal echoes and breakthrough express those stages without requiring repeated input. Main content exists throughout.
+Current owner correction,30October2026: **one deliberate interaction per step**, three required actions total. This supersedes the earlier one-start/automatic-three-beats behavior. The initial question is the first step’s action; there is no separate start gate. Main content exists throughout.
 
 | State | Event | Next state / action |
 |---|---|---|
 | Initial routing | Existing fragment, remembered visit, reduced motion, unavailable preference/storage API | Main directly; preserve fragment. |
-| Question | Native Begin button, central field click/tap, directional drag/swipe, wheel intent, supported navigation key | Lock further starts; show step 1 and first resistance immediately. |
-| Step 1 | 1000 ms after start | Step 2, second resistance. |
-| Step 2 | 2000 ms after start | Step 3, breakthrough. |
-| Step 3 | 3000 ms after start | Dive; automatic motion starts after 150 ms. Optional dive button starts sooner. |
-| Dive | 900 ms animation completes, or manual scroll reaches progress > .985 | Remove intro, focus main and move viewport to content. |
-| Any intro state | Skip introduction / Skip to main content | Cancel timers and animation on unmount; move to main. Global skip retains native fragment semantics. |
-| Replay | Explicit replay control | Fresh question, clear old timers, scroll top. |
-| Reduced-motion replay | Begin | Complete immediately without staged animation. |
-| Intro render/lifecycle failure | React error boundary | Main and global skip survive. Async/browser failures outside React are not caught. |
+| Step1: question the boundaries | Activate the whole question phrase, field click/tap, directional drag/swipe, wheel gesture or supported key | First resistance/echo; step2 phrase becomes actionable immediately. |
+| Step2: test the limits | One new deliberate interaction | Second resistance/echo; step3 phrase becomes actionable immediately. |
+| Step3: recognize patterns | One new deliberate interaction | Breakthrough; lock further step actions. After650ms show Dive; motion starts150ms later. |
+| Dive |900ms animation completes, or manual scroll reaches progress>.985 | Remove intro, focus main, move viewport to content. No fourth action required; optional dive control starts motion sooner. |
+| Any intro state | Skip introduction / Skip to main content | Cancel timers and animation; move to main. |
+| Replay | Explicit replay control | Fresh step1; clear timers, gesture state and counters; scroll top. |
+| Reduced-motion replay | One action per step | Static progression; third action enters content immediately without animated dive. |
+| Intro failure | React error boundary | Main and global skip survive. Async/browser failures outside React are not caught. |
 | JavaScript unavailable | No React transition | Prerendered document remains readable. |
 
-Input after the initial accepted action cannot queue, restart or accelerate the stages. Directional drag provides visible feedback while held; release starts the sequence. Click suppression avoids double activation after a drag. Cancellation resets drag feedback. Native controls retain keyboard semantics; listeners are scoped to the intro. Stage labels are text, not repeated-action buttons. Decorative echoes are hidden from assistive technology; a polite status region announces progression.
+Waiting cannot complete step1 or step2. Click, tap, Enter or Space requires no cooldown or repeated attempt. Native phrase buttons retain keyboard focus across steps. Their clicks do not bubble into another advancement. Drag/swipe release suppresses its compatibility click. Held navigation keys ignore repeats. Wheel events within a continuous gesture are grouped using250ms of inactivity, preventing inertia from completing multiple steps.
 
-The full passage takes approximately 4.05 seconds after starting, without additional required actions. Skip remains available throughout. Reduced-motion visits bypass the intro. Preference changes mid-session are not subscribed to; skip remains available. The 680 ms reveal enhancement never starts with unreadable text. Timers cancel on reset/unmount, including StrictMode cleanup, and animation frames cancel on unmount.
+After the third action, breakthrough/dive lasts approximately1.7seconds. Skip remains available throughout. Reduced-motion visits bypass the intro; explicit replay retains three static actions. Preference changes mid-session remain unsubscribed; skip is always available. Initial reveal enhancement remains680ms with readable text. Timers cancel on reset/unmount including StrictMode; animation frames cancel on unmount.
 
-First presentation is remembered in localStorage even if interrupted; legacy sessionStorage markers are respected. Replay is explicit, and storage denial opens content directly. Memory is browser-local. Direct reading documents never load the intro.
+First presentation is remembered in localStorage even if interrupted; legacy sessionStorage markers are respected. Replay is explicit, storage denial opens content directly, and memory is browser-local. Direct reading documents never load the intro.
 
-Regression coverage includes a single keyboard action through all stages, repeated-input suppression, directional desktop drag, touch swipe, wheel-to-dive progression, interrupted replay timers, first/repeat visits, storage failures, reduced motion, native keyboard controls, render failure, blocked JavaScript, direct links, graph access and narrow reflow. Automated checks do not establish comprehension or perceived waiting; observe those with readers.
+Regression coverage includes three separate keyboard/click/touch actions; pauses between steps; retained phrase focus; gesture click suppression/inertia grouping; directional drag; automatic continuous dive; skip/replay cancellation; returning visits; denied storage; reduced motion; direct URLs; static reading; accessibility and reflow. Automated checks do not establish comprehension or perceived waiting.

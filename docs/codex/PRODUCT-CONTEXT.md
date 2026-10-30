@@ -78,4 +78,4 @@ The owner's 27 October [editorial alignment](OCT-27-2026-EDITORIAL-ALIGNMENT.md)
 
 Areas of inquiry: structural causality, information flow, incentives, feedback loops, hidden work, and organizational learning. These describe what Sami studies; they are not claims of proven causal effects. Connect future investigations to these areas only where the material supports the connection.
 
-The intro requires one deliberate action total. Its three teaching stages unfold automatically, followed by the dive. Do not restore repeated-input gates: the owner wants the same teaching with less frustration and waiting. Whether this improves comprehension remains a question for observation, not an established result.
+Owner correction,30October2026: the intro requires one deliberate interaction per step, three actions total. The initial question is the first action; the next two phrases each advance once. Only breakthrough/dive proceeds automatically after the third action. Keep skip/replay, keyboard/touch, reduced motion and direct reading. See [current states](../INTRO-STATES.md). No repeated attempts or timed advance between steps.

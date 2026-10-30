@@ -26,7 +26,7 @@ Distinguish implemented behavior from proposals. This documentation package does
 ## Interface and accessibility
 
 - Preserve the calm editorial identity and violet/coral/teal semantic grammar. Pair color with text or shape. Use shimmer, depth, and temporal echoes to communicate meaningful states while maintaining a stable reading path.
-- Preserve intro invariants in `docs/INTRO-STATES.md`: one-action progression through three authored beats with resistance/echoes/breakthrough, skip/replay, keyboard/touch alternatives, reduced motion, recovery, and direct access to content. A direct article URL must not require replaying the intro.
+- Preserve intro invariants in `docs/INTRO-STATES.md`: one deliberate interaction per authored step (three actions total), followed by an automatic dive with resistance/echoes/breakthrough, skip/replay, keyboard/touch alternatives, reduced motion, recovery, and direct access to content. A direct article URL must not require replaying the intro.
 - Use links for navigation and buttons for actions. Support direct loads, refresh, modified clicks, meaningful focus, Back scroll restoration, and useful reading without graph interaction.
 - Give important graph relationships equivalent text navigation. Do not turn directed relationships into undirected claims. Test keyboard use, screen-reader behavior, zoom/reflow, and reduced motion; report manual and automated checks separately. Automated checks alone do not establish WCAG conformance.
 
