@@ -1,5 +1,9 @@
 import React from 'react'
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { InquiryMethod } from './components/InquiryMethod'
+import { ExplainedConnections } from './components/ExplainedConnections'
+import { InvestigationVisual } from './visuals/InvestigationVisual'
+import { caseComparisons } from './content/connections'
 import { ConnectionGraph } from './components/ConnectionGraph'
 import { IntroExperience } from './components/IntroExperience'
 import { ExperimentNote } from './components/ExperimentNote'
@@ -130,7 +134,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
     } catch {
       // Navigation remains immediate if motion preferences cannot be read.
     }
-    document.getElementById('connections')?.scrollIntoView({ behavior, block: 'start' })
+    document.getElementById('system-map')?.scrollIntoView({ behavior, block: 'start' })
   }
 
   const selectTag = (tag: string) => {
@@ -178,7 +182,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
             <a className="hero-method-link" href="#practice">How I investigate ↓</a>
           </div>
           <p className="hero-copy">
-            I investigate how assumptions, information, human behavior, and operating conditions shape outcomes—then translate what I find into decisions and durable ways of working.
+            I uncover the organizational, operational, and human factors driving outcomes, equipping leaders with evidence to decide what needs to change and helping teams put those changes into practice.
           </p>
         </section>
 
@@ -197,12 +201,13 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
                   <p className="project-domain">{project.domain}</p>
                   <h3>{project.title}</h3>
                   <p className="project-strapline">{project.strapline}</p>
+                  <InvestigationVisual composition={caseComparisons[project.id]?.composition ?? "network"} left={caseComparisons[project.id]?.left ?? "Practical knowledge"} right={caseComparisons[project.id]?.right ?? "Shared guidance"} explanation={caseComparisons[project.id]?.meaning ?? "Practitioner knowledge informs guidance; the guide is not a mechanical translation of the error log."} />
                   <p className="project-focus">{project.focus}</p>
                   <p className="project-summary">{project.summary}</p>
 
                   <div className="case-logic" aria-label={`${project.domain} case logic`}>
                     <div className="logic-state logic-state--unresolved"><span>Observed</span><p>{project.observed}</p></div>
-                    <div className="logic-state logic-state--pressure"><span>Diagnosed</span><p>{project.diagnosed}</p></div>
+                    <div className="logic-state logic-state--pressure"><span>Working explanation</span><p>{project.diagnosed}</p></div>
                     <div className="logic-state logic-state--holds"><span>Structure</span><p>{project.structure}</p></div>
                     <div className="logic-state logic-state--holds"><span>What remains</span><p>{project.remains}</p></div>
                   </div>
@@ -229,16 +234,21 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           ))}
         </section>
 
+        <div id="connections">
+        <ExplainedConnections />
+
         <ConnectionGraph externalSelection={graphSelection} onSelectionConsumed={() => setGraphSelection(null)} />
+        </div>
 
         <section className="practice" id="practice" aria-labelledby="practice-title">
           <div className="section-kicker">Practice</div>
           <div className="practice-grid">
             <div>
-              <h2 id="practice-title">Investigate. Translate. Implement.</h2>
+              <h2 id="practice-title">Find the gap. Trace the mechanism. Design what holds.</h2>
               <p className="practice-lead">
                 These are recurring moves in my work, not a fixed sequence. I return to the evidence when a decision or intervention reveals a new question.
               </p>
+              <p>My work connects organizational effectiveness, organizational development, systems strategy and human-centered design with organizational learning, responsible AI and organizational transformation. These are capabilities demonstrated through the work, rather than formal decision authority.</p>
               <p className="hero-thesis">I swim upstream toward the problem.</p>
             </div>
             <aside className="fish-note" aria-label="Working orientation">
@@ -249,11 +259,11 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           </div>
 
           <ol className="practice-moves" aria-label="Three professional moves">
-            <li><h3>Investigate</h3><p>Examine the assumptions and conditions behind the picture people already have.</p></li>
-            <li><h3>Translate</h3><p>Make evidence and relationships understandable enough to support a decision.</p></li>
-            <li><h3>Implement</h3><p>Help the decision hold through workflows, guidance, learning, and ownership.</p></li>
+            <li><h3>Find the gap</h3><p>Notice where a status, measure or explanation diverges from how the work actually happens.</p></li>
+            <li><h3>Trace the mechanism</h3><p>Investigate relationships among information, operating conditions and human behavior; test alternative explanations.</p></li>
+            <li><h3>Design what holds</h3><p>Equip leaders to decide, and help teams turn that understanding into practical change and shared knowledge.</p></li>
           </ol>
-          <p className="practice-inquiry">The inquiry behind these moves asks: <strong>What way of looking at this makes it appear true?</strong> I use Notice → Frame → Model → Test → Interrogate → Revise to examine the explanation as well as the system.</p>
+          <InquiryMethod />
           <div className="hero-study" aria-labelledby="study-label">
             <p id="study-label">Areas of inquiry</p>
             <ul><li>Structural causality</li><li>Information flow</li><li>Incentives</li><li>Feedback loops</li><li>Hidden work</li><li>Organizational learning</li></ul>
@@ -328,8 +338,8 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
 
         <section className="closing" aria-labelledby="closing-title">
           <div className="section-kicker">In closing</div>
-          <h2 id="closing-title">Define upstream. Prevent downstream rework.</h2>
-          <p>Most organizations do not have a solution problem. They have a problem-definition problem — and a cycle that returns them to the same place because nothing was left behind to tell them they had moved.</p>
+          <h2 id="closing-title">How do systems shape what people understand, decide, and do?</h2>
+          <p>Information → Understanding → Decisions → Outcomes. I study the relationships between them through organizational diagnosis, strategic research and service design, helping teams develop explanations they can test and use.</p>
           <div className="closing-questions">
             <p><span>01</span> What decision is this meant to support?</p>
             <p><span>02</span> What would change your mind?</p>

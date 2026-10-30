@@ -1,3 +1,5 @@
+Current30October review branch: see [the audit, changes and verification record](OCT-30-REVIEW.md). This supersedes older positioning on this branch; no new case approval or deployment. Earlier records below remain historical.
+
 # First development slice: W0–W2
 
 Current integration: [Integrated development and SEO release](INTEGRATED-SEO-RELEASE.md) supersedes earlier “unreleased branch” status for the combined candidate. Historical verification below remains tied to its original commits. No full manuscript or hosted editor is declared live.

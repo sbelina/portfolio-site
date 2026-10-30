@@ -36,7 +36,7 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('approve'), digest: z.string().regex(/^[a-f0-9]{64}$/) }),
 ])
 export type Action = z.infer<typeof actionSchema>
-const authorId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' // Local owner identity; not Sam's authorship/approval.
+const authorId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' // Local owner identity; not Sami's authorship/approval.
 export const slugify = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100) || 'untitled'
 const blockText = (block: Entry['blocks'][number]) => block.type === 'verse' ? block.text : block.type === 'prose' || block.type === 'callout' ? block.markdown : ''
 export function manuscriptForEntry(w: Workspace, id: string) { return w.manuscripts.find(m => m.sections.some(s => s.id === id) || m.id === id)! }

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { investigationSchema } from './investigation'
 import { assumedObservedSchema } from './assumed-observed'
 
 export const uuidSchema = z.uuid().regex(/^[0-9a-f-]+$/, 'UUIDs use canonical lowercase spelling')
@@ -32,7 +33,7 @@ export const entrySchema = z.strictObject({
   title: z.string().max(300), summary: z.string().max(2000),
   editorialState: z.enum(['draft', 'review', 'approved', 'withdrawn']), visibility,
   authorIds: ids, topicIds: ids,
-  contribution: text.optional(), blocks: z.array(blockSchema), evidenceIds: ids,
+  contribution: text.optional(), investigation: investigationSchema.optional(), blocks: z.array(blockSchema), evidenceIds: ids,
   internalNotes: text.optional(),
 }).superRefine((entry, ctx) => {
   if (entry.editorialState !== 'draft' && (!entry.createdAt || !entry.updatedAt)) {
@@ -114,7 +115,7 @@ export type ReleaseManifest = z.infer<typeof manifestSchema>
 export const approvalSchema = z.strictObject({ candidateDigest: digestSchema, approvedBy: z.string().min(1), approvedAt: timestamp })
 export type CandidateApproval = z.infer<typeof approvalSchema>
 
-export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'format' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
+export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'format' | 'investigation' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
 export type PublicRelationship = Pick<Relationship, 'id' | 'fromId' | 'toId' | 'type' | 'rationale' | 'evidenceIds'>
 export type PublicEvidence = Pick<Evidence, 'id' | 'title' | 'source' | 'locator' | 'observedAt' | 'role' | 'limitations' | 'assetIds' | 'kind' | 'measurement'>
 export type PublicAsset = Pick<Asset, 'id' | 'url' | 'mimeType' | 'width' | 'height' | 'alt' | 'decorative' | 'credit' | 'checksum'>

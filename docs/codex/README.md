@@ -59,3 +59,7 @@ The user's latest explicit request determines task scope. Root `AGENTS.md` provi
 A visitor opens a useful investigation at its own URL, understands Sam's contribution and evidence, and follows an explained connection to a pattern. Sam can create an Observation with three meaningful connections, save/reopen it, preview privately, publish an approved revision, and restore it without editing source code.
 
 Start small enough to prove that entire cycle. Do not replace it with an elaborate editor mockup or a static demonstration that only appears to save.
+
+## Current owner-directed review
+
+The [30 October audit and implementation record](OCT-30-REVIEW.md) supersedes older positioning/triads for this review branch. Use Sami Belina and Find the gap. Trace the mechanism. Design what holds. Historical research records remain intact.

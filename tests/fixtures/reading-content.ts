@@ -53,6 +53,15 @@ const refs = <T extends { id: string; revision: number }>(records: T[]) => recor
 export function fixtureProjection() {
   const extra=visualFixture()
   const input=structuredClone(fixtureStore)
+  input.entries[0].investigation = {
+    schemaVersion: 1, composition: 'boundary',
+    visual: { left: 'Sent', right: 'Usable', explanation: 'A fictional receiving role may need clarification after an item is sent. Conceptual geometry carries no measured time.' },
+    observedCondition: 'In this invented scenario a sent item still requires clarification.',
+    investigation: 'Synthetic comparison of a sending status and a receiving need; no real records were examined.',
+    relationshipDiscovered: 'An illustrative distinction, not a documented organizational mechanism.',
+    limitations: 'No actual participants, operational measurements or project outcomes support this fixture.',
+    statements: [{ id: '99999999-1111-4111-8111-111111111111', text: 'Sending and usability are different questions in this fictional script.', kind: 'conceptual_illustration', contribution: 'identified', evidenceIds: [id.evidence], limitation: 'Invented to test rendering; no real-world inference follows.' }],
+  }
   input.entries.push(extra.entry);input.evidence.push(...extra.evidence)
   const manifest: ReleaseManifest = { schemaVersion: 1, releaseId: '77777777-7777-4777-8777-777777777777', applicationRevision: '0'.repeat(40), contentRevision: '0'.repeat(40), entries: refs(input.entries.filter(entry => entry.revision === 1)), relationships: refs(fixtureStore.relationships), evidence: refs(input.evidence), assets: [], aliases: refs(fixtureStore.aliases) }
   return buildPublicProjection(input, manifest, [{ candidateDigest: digestRecord(manifest), approvedBy: 'synthetic-test-approver-not-an-owner-approval', approvedAt: date }])

@@ -29,7 +29,7 @@ export function readingPageData(projection: PublicProjection, kind: ReadingPageD
   const relationships = projection.relationships.filter(item => item.fromId === entry.id || item.toId === entry.id)
   const linkedIds = new Set(relationships.flatMap(item => [item.fromId, item.toId]))
   linkedIds.add(entry.id)
-  const evidenceIds = new Set([...entry.evidenceIds, ...relationships.flatMap(item => item.evidenceIds), ...entry.blocks.flatMap(block => block.type === 'evidence' ? [block.evidenceId] : block.type === 'assumed_observed' ? diagramEvidenceIds(block) : [])])
+  const evidenceIds = new Set([...entry.evidenceIds, ...(entry.investigation?.statements.flatMap(statement => statement.evidenceIds) ?? []), ...relationships.flatMap(item => item.evidenceIds), ...entry.blocks.flatMap(block => block.type === 'evidence' ? [block.evidenceId] : block.type === 'assumed_observed' ? diagramEvidenceIds(block) : [])])
   const evidence = projection.evidence.filter(item => evidenceIds.has(item.id))
   const assetIds = new Set([...evidence.flatMap(item => item.assetIds), ...entry.blocks.flatMap(block => block.type === 'image' ? [block.assetId] : [])])
   return {

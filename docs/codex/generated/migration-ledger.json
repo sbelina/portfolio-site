@@ -271,6 +271,18 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "distinctions-title",
+      "destination": "/#distinctions-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "system-map",
+      "destination": "/#system-map",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "connections-title",
       "destination": "/#connections-title",
       "source": "legacy baseline",
@@ -286,6 +298,12 @@
       "id": "practice-title",
       "destination": "/#practice-title",
       "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "inquiry-title",
+      "destination": "/#inquiry-title",
+      "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {

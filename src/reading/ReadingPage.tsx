@@ -1,3 +1,5 @@
+import { InvestigationVisual } from '../visuals/InvestigationVisual'
+import { InvestigationNarrative } from './InvestigationNarrative'
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
@@ -130,6 +132,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <p className="reading-kicker">{poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : ''}</p>
         <h1 id="reading-title">{entry.title}</h1>
         <p className="reading-summary">{entry.summary}</p>
+        {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} /> : null}
         <dl className="reading-metadata">
           <div><dt>{page.fixture ? 'Fixture revision date' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
           {entry.updatedAt !== entry.createdAt ? <div><dt>Updated</dt><dd><time dateTime={entry.updatedAt ?? undefined}>{dateLabel(entry.updatedAt)}</time></dd></div> : null}
@@ -149,6 +152,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
           {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
         </ol>
       </nav>
+      {entry.investigation ? <InvestigationNarrative narrative={entry.investigation} evidence={page.projection.evidence} /> : null}
       <div className="reading-body">
         {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
       </div>
@@ -181,7 +185,7 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
     <div className="reading-page">
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
       <header className="reading-site-header"><a className="reading-wordmark" href="/">△ Producing Curiosity</a><PublicNavigation currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
-      {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sam’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
+      {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sami’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
       <footer className="reading-footer"><a href="/">Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
     </div>

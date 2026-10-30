@@ -69,7 +69,7 @@ export function ConnectionGraph({ externalSelection, onSelectionConsumed }: Prop
     : 'Select a case, hashtag, field note, origin, or archive fragment to trace its immediate relationships.'
 
   return (
-    <section className="connections" id="connections" aria-labelledby="connections-title">
+    <section className="connections" id="system-map" aria-labelledby="connections-title">
       <div className="section-kicker">System map</div>
       <div className="section-heading-row">
         <div>
