@@ -1,0 +1,2 @@
+# Frozen build checksums describe exact bytes; never normalize their line endings.
+build-archives/** -text
