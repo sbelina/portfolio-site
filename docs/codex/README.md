@@ -65,3 +65,7 @@ Start small enough to prove that entire cycle. Do not replace it with an elabora
 The [30 October audit and implementation record](OCT-30-REVIEW.md) supersedes older positioning/triads for this review branch. Use Sami Belina and Find the gap. Trace the mechanism. Design what holds. Historical research records remain intact.
 
 The [link map placement and navigation review](LINK-MAP-PLACEMENT.md) records its current early-home position, internal-link repairs, arrow meanings and verification.
+
+## Current index and preserved build — 4 November
+
+The owner requested a new homepage with the previous experience archived. See [the build archive and index record](BUILD-ARCHIVE-AND-INDEX.md) for current routes, byte-exact versus replay artifacts, agent preservation, authentication status and verification. Older intro/map instructions describe the retained previous experience, now reviewable under the versioned build path.

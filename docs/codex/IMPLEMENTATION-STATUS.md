@@ -1,3 +1,5 @@
+Current4November change: [new index and preserved build](BUILD-ARCHIVE-AND-INDEX.md). Reviewed on a feature branch; Cloudflare authentication and production deployment remain unavailable. Older status records follow.
+
 Current30October review branch: see [the audit, changes and verification record](OCT-30-REVIEW.md). This supersedes older positioning on this branch; no new case approval or deployment. Earlier records below remain historical.
 
 # First development slice: W0–W2
