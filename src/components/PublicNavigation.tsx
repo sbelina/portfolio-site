@@ -1,3 +1,4 @@
+import { publicPath } from '../public-path'
 import React from 'react'
 
 const destinations = [
@@ -12,7 +13,7 @@ const destinations = [
 export function PublicNavigation({ currentPath, home = false }: { currentPath?: string; home?: boolean }) {
   return <nav className="public-navigation" aria-label="Primary navigation">
     <ul>{destinations.map(({ href, label }) => <li key={href}>
-      <a href={home && href.startsWith('/#') ? href.slice(1) : href} aria-current={href === currentPath ? 'page' : undefined}>{label}</a>
+      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-current={href === currentPath ? 'page' : undefined}>{label}</a>
     </li>)}</ul>
   </nav>
 }

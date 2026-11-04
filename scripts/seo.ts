@@ -1,3 +1,4 @@
+import { publicPath, publicBase } from '../src/public-path'
 /** Build-only metadata for the same public documents visitors can read. */
 export const siteOrigin = 'https://producingcuriosity.com'
 export const siteName = 'Producing Curiosity'
@@ -8,11 +9,11 @@ export const escapeAttribute = (text: string) => text.replaceAll('&', '&amp;').r
 
 export function seoHead({ title, description, route, indexable, website = false }: { title: string; description: string; route?: string; indexable: boolean; website?: boolean }) {
   if (route && (!route.startsWith('/') || route.startsWith('//'))) throw new Error('Canonical route must be a local absolute path')
-  const canonical = route ? siteOrigin + route : undefined
+  const canonical = route ? siteOrigin + publicPath(route) : undefined
   const meta = (name: string, value: string, property = false) => `<meta ${property ? 'property' : 'name'}="${name}" content="${escapeAttribute(value)}" />`
   const head = [
     `<title>${escapeAttribute(title)}</title>`, meta('description', description),
-    meta('robots', indexable ? 'index, follow' : 'noindex, follow'),
+    meta('robots', indexable && publicBase() === '/' ? 'index, follow' : 'noindex, follow'),
     ...(canonical ? [`<link rel="canonical" href="${escapeAttribute(canonical)}" />`, meta('og:url', canonical, true)] : []),
     meta('og:type', 'website', true), meta('og:site_name', siteName, true), meta('og:title', title, true), meta('og:description', description, true),
     meta('og:image', `${siteOrigin}/social-preview.png`, true), meta('og:image:width', '1200', true), meta('og:image:height', '630', true), meta('og:image:alt', imageAlt, true),

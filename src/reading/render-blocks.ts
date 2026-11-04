@@ -1,3 +1,4 @@
+import { publicPath } from '../public-path'
 // Build-only Markdown rendering; never import this module into a browser entry.
 import { marked } from 'marked'
 import sanitizeHtml from 'sanitize-html'
@@ -9,6 +10,7 @@ export function renderBlocks(projection: PublicProjection): Record<string, strin
     for (const block of entry.blocks) {
       if (block.type !== 'prose' && block.type !== 'callout') continue
       output[block.id] = sanitizeHtml(marked.parse(block.markdown, { async: false }), {
+        transformTags: { a: (tagName, attribs) => ({ tagName, attribs: { ...attribs, ...(attribs.href ? { href: publicPath(attribs.href) } : {}) } }) },
         allowedTags: ['p', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'strong', 'em', 'blockquote', 'code', 'pre', 'a', 'br'],
         allowedAttributes: { a: ['href', 'title'] },
         allowedSchemes: ['https', 'http', 'mailto'],

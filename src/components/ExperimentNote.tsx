@@ -1,3 +1,4 @@
+import { publicPath } from '../public-path'
 import React from 'react'
 
 /** A native disclosure keeps the build note readable without JavaScript. */
@@ -20,7 +21,7 @@ export function ExperimentNote() {
         <h2>Reveal the hidden work</h2>
         <p>Does retaining a simple process while revealing the work beneath it help visitors inspect what the overview leaves out? This process is illustrative, not case evidence. Its lines encode relationships, not measured duration.</p>
         <p>Technical observations: one reveal opens the extra steps in place; the original track remains visible; HTML and SVG contain the explanation without animation. Optional p5.js motion pauses offscreen and supports pause/reset and reduced motion. These are interface checks, not evidence of improved comprehension. Reader evaluation remains to be done.</p>
-        <p><a href="/experiments/reveal-hidden-work/">Try the hidden-work experiment</a></p>
+        <p><a href={publicPath("/experiments/reveal-hidden-work/")}>Try the hidden-work experiment</a></p>
         <a href="https://github.com/sbelina/portfolio-site">Explore the source and development history</a>
       </div>
     </details>

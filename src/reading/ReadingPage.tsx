@@ -1,3 +1,4 @@
+import { publicPath } from '../public-path'
 import { InvestigationVisual } from '../visuals/InvestigationVisual'
 import { InvestigationNarrative } from './InvestigationNarrative'
 import { AssumedObserved } from '../visuals/AssumedObserved'
@@ -74,7 +75,7 @@ function ContentBlock({ block, page }: { block: Block; page: ReadingPageData }) 
       const asset = page.projection.assets.find(item => item.id === block.assetId)
       return asset ? (
         <figure className="reading-figure">
-          <img src={asset.url} alt={asset.decorative ? '' : asset.alt} width={asset.width} height={asset.height} loading="lazy" decoding="async" />
+          <img src={publicPath(asset.url)} alt={asset.decorative ? '' : asset.alt} width={asset.width} height={asset.height} loading="lazy" decoding="async" />
           {block.caption ? <figcaption>{block.caption}</figcaption> : null}
           <p className="reading-credit">Credit: {asset.credit}</p>
         </figure>
@@ -109,7 +110,7 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Re
               <p className="reading-relation-type">{direction}</p>
               <p className="reading-relation-statement"><strong>{source.title}</strong> {relationWords[relationship.type]} <strong>{target.title}</strong>.</p>
               <p>{relationship.rationale}</p>
-              <a className="reading-related-link" href={other.path}>{other.title} <span aria-hidden="true">→</span></a>
+              <a className="reading-related-link" href={publicPath(other.path)}>{other.title} <span aria-hidden="true">→</span></a>
             </li>
           )
         })}
@@ -124,8 +125,8 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
   return (
     <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}`}>
       <nav className="reading-breadcrumbs" aria-label="Breadcrumb">
-        <a href="/">Home</a><span aria-hidden="true">/</span>
-        {entry.kind === 'investigation' ? <><a href="/investigations/">Investigations</a><span aria-hidden="true">/</span></> : null}
+        <a href={publicPath("/")}>Home</a><span aria-hidden="true">/</span>
+        {entry.kind === 'investigation' ? <><a href={publicPath("/investigations/")}>Investigations</a><span aria-hidden="true">/</span></> : null}
         <span aria-current="page">{entry.title}</span>
       </nav>
       <header className="reading-entry-header">
@@ -158,7 +159,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
       </div>
       {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
-      <p className="reading-back"><a href="/investigations/">← All investigations</a></p>
+      <p className="reading-back"><a href={publicPath("/investigations/")}>← All investigations</a></p>
     </article>
   )
 }
@@ -169,8 +170,8 @@ function Collection({ projection }: { projection: ReadingContext }) {
   return (
     <>
       <header className="reading-collection-header"><p className="reading-kicker">Seeing What Systems Miss</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation</p><h2><a href={entry.path}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <p className="reading-empty">No reviewed investigation has been selected for this reading collection yet. <a href="/#work">Existing work remains available on the home page.</a></p>}
-      {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={entry.path}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <p className="reading-empty">No reviewed investigation has been selected for this reading collection yet. <a href={publicPath("/#work")}>Existing work remains available on the home page.</a></p>}
+      {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )
 }
@@ -180,14 +181,14 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
   let content: ReactNode
   if (page.kind === 'collection') content = <Collection projection={page.projection} />
   else if (entry) content = <EntryView entry={entry} page={page} />
-  else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href="/investigations/">Browse investigations</a> or <a href="/">return home</a>.</p></section>
+  else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
     <div className="reading-page">
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
-      <header className="reading-site-header"><a className="reading-wordmark" href="/">△ Producing Curiosity</a><PublicNavigation currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
+      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}>△ Producing Curiosity</a><PublicNavigation currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
       {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sami’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
-      <footer className="reading-footer"><a href="/">Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
+      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
     </div>
   )
 }

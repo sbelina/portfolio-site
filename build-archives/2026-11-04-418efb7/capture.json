@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "id": "2026-11-04-418efb7",
+  "sourceCommit": "418efb750fe89c754b890b99a605213fed5ffddc",
+  "sourceTree": "e10596cbf3922daa83334be7fdbf43f5962bc505",
+  "capturedAt": "2026-11-04T21:17:22.406654+00:00",
+  "source": "reviewed-production-build",
+  "deploymentStatus": "not-observed-live-at-capture",
+  "originalFiles": {
+    "404.html": {
+      "sha256": "b43abb9224c95b1699930cc12c7cb014be02f43613e4ebe82a93f060b33ab500",
+      "bytes": 6177
+    },
+    "_headers": {
+      "sha256": "f6fa592b93ba636c91230c32ded818f47b3cebc94432d5abc881fd3275bceac2",
+      "bytes": 349
+    },
+    "assets/InvestigationVisual-D1fcjV4p.js": {
+      "sha256": "7f700cd17c090638b9bd06f9a88c809e8d63d60a982c330aa5edc586bd2060d5",
+      "bytes": 1694
+    },
+    "assets/PublicNavigation-DZFecOta.js": {
+      "sha256": "9ced650c902de370aabe50ac824d9b6bd6b8cd7680c43f02784f71c587ebda07",
+      "bytes": 195850
+    },
+    "assets/hiddenWork-61NguZ4h.js": {
+      "sha256": "535a6fdcdefab5d235515247f3adc40cfc9f8d049036ba10d43b43f995bb1c90",
+      "bytes": 11835
+    },
+    "assets/hiddenWork-BBl3vnt3.css": {
+      "sha256": "7277a3b2123dfbeb7f25cbda742fb0ec494e03b282b1cf7e4973b77d0851ce53",
+      "bytes": 6306
+    },
+    "assets/home-BXcoslEA.js": {
+      "sha256": "ec8c18636afd102a50720bfaa41cfc329f5af396b6cbc33719c5ad0cbcd26634",
+      "bytes": 60090
+    },
+    "assets/reading-DOh_rZxS.css": {
+      "sha256": "62efa9140756d5ced8a5d88a4d8075cf6349eab23cb933d35afe92a58cc287a9",
+      "bytes": 16418
+    },
+    "assets/reading-KCJH_5hC.js": {
+      "sha256": "32a068643a3c5df47a4d39090e046b6c8264b70f97b6a1dbc530db2d257d0e03",
+      "bytes": 20260
+    },
+    "assets/sketch-Des3XKqk.js": {
+      "sha256": "b4ec1730c63ce81d0c13aa99e255653212577341ae7bb2d273ab0e9c1c36577a",
+      "bytes": 1048157
+    },
+    "assets/styles-D3ZrYV0C.css": {
+      "sha256": "cd3b56aa357f83310bdaaf0295226d500d339a7d6aef0730232d4764e9de37d0",
+      "bytes": 35962
+    },
+    "experiments/reveal-hidden-work/index.html": {
+      "sha256": "33c4d926ee63ec3452b11cfbd6bd7f5ba7b491a9f5afdb6931b1aea5460d2a48",
+      "bytes": 12551
+    },
+    "favicon.svg": {
+      "sha256": "4f9f910e7a59e880f9f2476dae033ff387ef6c6bd33bb53745727fbe64986125",
+      "bytes": 416
+    },
+    "graph-index.json": {
+      "sha256": "a461bf77bc4e4d732f7afc121c70e7f70ed8bf225a082a4e01951d1eb6b5c278",
+      "bytes": 23
+    },
+    "index.html": {
+      "sha256": "50671054365f81f5c11d67e3f3a0678ed340a864d1fcf9c1f4c1e21451ebadd8",
+      "bytes": 81614
+    },
+    "investigations/index.html": {
+      "sha256": "13b0f6d06525ded23805aba87b98b9efdb8c6d8df2cae6ff4dc5925ee8291d6c",
+      "bytes": 6663
+    },
+    "licenses/p5-LGPL-2.1.txt": {
+      "sha256": "eb2f25f8f165d5f20682c1ce7e99ce69144ecfd80fbed8c17dfd327ecd8b6cb6",
+      "bytes": 24480
+    },
+    "public-content.json": {
+      "sha256": "e262f99cb4622e44939d40b9b4ca2bebb98e828c8f2d18f469724861ff4b9d25",
+      "bytes": 90
+    },
+    "robots.txt": {
+      "sha256": "e3c7eae0f45421a05aa3477266f7acc7b41cdc11c881fe98048c289c6979b5b8",
+      "bytes": 76
+    },
+    "route-manifest.json": {
+      "sha256": "11806ad882bec75ca9189f185258b38c1893a155f5b81c66a653f87a129c8cbe",
+      "bytes": 119
+    },
+    "search-index.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "site.webmanifest": {
+      "sha256": "762c735560c15ae313d95cdb095a4ebc40b52d6389370e72f4cd1330ff080860",
+      "bytes": 307
+    },
+    "sitemap.xml": {
+      "sha256": "c986f8fa735d244d23ae43562ceeed830773414a0357eb1d6a9b7f6d9be47abf",
+      "bytes": 244
+    },
+    "social-preview.png": {
+      "sha256": "f41d8a5e0621de0008a538fc2b053e25e5554d0af8470e347d19488351127a43",
+      "bytes": 39056
+    }
+  }
+}

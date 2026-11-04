@@ -1,3 +1,4 @@
+import { publicPath } from '../../public-path'
 import React, { useEffect, useRef, useState } from 'react'
 import { ExperimentNote } from '../../components/ExperimentNote'
 import { PublicNavigation } from '../../components/PublicNavigation'
@@ -80,7 +81,7 @@ export function HiddenWorkPage() {
   return <>
     <a className="main-skip-link" href="#experiment">Skip to experiment</a>
     <main className="hidden-work-page" id="experiment" tabIndex={-1}>
-      <header className="experiment-header"><a href="/">△ Producing Curiosity</a><PublicNavigation currentPath="/experiments/reveal-hidden-work/" /></header>
+      <header className="experiment-header"><a href={publicPath("/")}>△ Producing Curiosity</a><PublicNavigation currentPath="/experiments/reveal-hidden-work/" /></header>
       <p className="eyebrow">An interaction experiment · illustrative content</p>
       <h1>{hiddenWork.title}</h1>
       <p className="experiment-question">{hiddenWork.question}</p>
@@ -135,6 +136,6 @@ export function HiddenWorkPage() {
         <p>The next question is whether readers can distinguish the simplified view, the extra work, and the limits of the explanation. No reader study or improved comprehension is claimed.</p>
       </section>
     </main>
-    <footer className="site-footer experiment-footer"><span>© {new Date().getFullYear()} Sami Belina</span><a href="/#index">Return to the portfolio</a><ExperimentNote/><p className="motion-license">Optional motion: <a href="https://p5js.org/">p5.js</a> 1.11.13 · <a href="/licenses/p5-LGPL-2.1.txt">LGPL-2.1</a> · <a href="https://github.com/processing/p5.js/tree/v1.11.13">library source</a></p></footer>
+    <footer className="site-footer experiment-footer"><span>© {new Date().getFullYear()} Sami Belina</span><a href={publicPath("/#index")}>Return to the portfolio</a><ExperimentNote/><p className="motion-license">Optional motion: <a href="https://p5js.org/">p5.js</a> 1.11.13 · <a href={publicPath("/licenses/p5-LGPL-2.1.txt")}>LGPL-2.1</a> · <a href="https://github.com/processing/p5.js/tree/v1.11.13">library source</a></p></footer>
   </>
 }
