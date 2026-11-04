@@ -40,10 +40,14 @@ export async function verifyBuildArchive(directory: string) {
   return capture
 }
 
+export function archiveSourceDirectory(id: string) {
+  return path.resolve('build-archives', captureSchema.shape.id.parse(id))
+}
+
 export async function mountBuildArchive(output: string) {
-  const source = path.resolve('build-archives', catalog.id)
+  const source = archiveSourceDirectory(catalog.id)
   const capture = await verifyBuildArchive(source)
-  if (catalog.reviewPath !== capture.reviewPrefix || catalog.sourceCommit !== capture.sourceCommit || JSON.stringify(catalog.homeAnchors) !== JSON.stringify(capture.homeAnchors)) throw new Error('Archive catalog disagrees with capture')
+  if (catalog.id !== capture.id || catalog.reviewPath !== capture.reviewPrefix || catalog.sourceCommit !== capture.sourceCommit || JSON.stringify(catalog.homeAnchors) !== JSON.stringify(capture.homeAnchors)) throw new Error('Archive catalog disagrees with capture')
   const target = path.join(output, 'builds', capture.id)
   await mkdir(path.dirname(target), { recursive: true })
   await cp(path.join(source, 'review'), target, { recursive: true, errorOnExist: true, force: false })

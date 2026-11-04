@@ -5,7 +5,7 @@ import { readFile, mkdtemp, cp, appendFile, rm, mkdir, writeFile } from 'node:fs
 import path from 'node:path'
 import os from 'node:os'
 import archive from '../content/build-archive.json' with { type: 'json' }
-import { verifyBuildArchive } from '../scripts/build-archives'
+import { verifyBuildArchive, archiveSourceDirectory } from '../scripts/build-archives'
 import { auditPublic } from '../scripts/audit-public'
 
 const origin='http://127.0.0.1:4175'
@@ -13,6 +13,7 @@ const previous=archive.reviewPath
 const source=path.resolve('build-archives',archive.id)
 
 test('original and review artifacts match frozen inventories; agent and writing records survive',async()=>{
+ for (const id of ['../private','/tmp/outside','2026-11-04-418efb7/../../private']) expect(()=>archiveSourceDirectory(id)).toThrow()
  const capture=await verifyBuildArchive(source)
  expect(capture.sourceCommit).toBe('418efb750fe89c754b890b99a605213fed5ffddc')
  const preserved=JSON.parse(await readFile(path.join(source,'preserved-agent-files.json'),'utf8')) as Record<string,string>
