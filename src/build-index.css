@@ -1,0 +1,6 @@
+.build-index .index-hero{padding-bottom:3rem}.build-index-voice{font-family:var(--serif);font-size:1.5rem;color:var(--unresolved)}
+.build-index-contact{border-top:1px solid var(--line);padding:2rem 0}.build-index-contact h2{font:inherit;font-size:1.25rem}.build-index-contact a{display:inline-flex;align-items:center;min-height:44px;margin-right:1.5rem;text-underline-offset:.25em}
+.build-index-legacy{margin:1rem 0 3rem}.build-index-legacy summary{min-height:44px;cursor:pointer;line-height:1.6}.build-index-legacy ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:.75rem;padding-left:1.25rem}.build-index-legacy li{overflow-wrap:anywhere;scroll-margin-top:8rem}.build-index-legacy a{display:inline-flex;align-items:center;min-height:44px}
+.build-index-footer .build-index-caption{max-width:42rem;font-size:.85rem;line-height:1.7;color:var(--muted)}.build-index-footer code{color:inherit}
+
+.build-index-contact svg{width:1em;height:1em;margin-left:.35em;fill:none;stroke:currentColor;stroke-width:1.5}

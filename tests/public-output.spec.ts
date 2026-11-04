@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
 import { readFile, access } from 'node:fs/promises'
+import archive from '../content/build-archive.json' with { type: 'json' }
 import { auditPublic } from '../scripts/audit-public'
 
 test('default production output contains no local fixtures or private drafts', async () => {
   await auditPublic('dist')
   const manifest = JSON.parse(await readFile('dist/route-manifest.json', 'utf8'))
-  expect(manifest).toEqual({ schemaVersion: 1, fixture: false, routes: ['/', '/investigations/', '/experiments/reveal-hidden-work/'], fragments: {} })
+  expect(manifest).toEqual({ schemaVersion: 1, fixture: false, routes: ['/', '/investigations/', '/experiments/reveal-hidden-work/', archive.reviewPath, `${archive.reviewPath}investigations/`, `${archive.reviewPath}experiments/reveal-hidden-work/`], fragments: {} })
   const content = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
   expect(content.entries).toEqual([])
   expect(content.relationships).toEqual([])

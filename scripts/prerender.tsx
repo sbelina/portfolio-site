@@ -1,3 +1,5 @@
+import BuildIndex from '../src/BuildIndex'
+import { mountBuildArchive } from './build-archives'
 import { setPublicBase, publicPath, publicBase } from '../src/public-path'
 import React from 'react'
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
@@ -34,7 +36,7 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
 const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary }) => ({ id, path, title, summary })), fragmentRedirects }
-const homeMarkup = renderToString(<App reading={reading} />)
+const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex />)
 if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--app-end-->')) throw new Error('Home prerender markers missing')
 const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () => homeMarkup)
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !fixture, website: true }))
@@ -63,14 +65,15 @@ for (const asset of verifyPublicAssets(projection, id => {
   const target = path.join(output, asset.url.slice(1)); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, asset.bytes)
 }
 await writeFile(path.join(output, 'public-content.json'), JSON.stringify(projection))
-await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes: routes.map(publicPath), fragments: fragmentRedirects }))
+if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
+const historicalRoutes = await mountBuildArchive(output)
+await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
 await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title }) => ({ id, path, title })), edges: projection.relationships }))
 const indexableRoutes = fixture || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
-if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
 await mkdir('docs/codex/generated', { recursive: true })
 if (publicBase() === '/') await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
 // No generic Vite shell may turn an unknown URL into a soft 200.
 await rm(path.join(output, 'reading.html'))
-console.log(`Prerendered ${routes.length} routes (${fixture ? 'explicit local synthetic fixtures' : 'production-safe; no approved canonical content'}).`)
+console.log(`Prerendered ${routes.length + historicalRoutes.length} routes (${fixture ? 'explicit local synthetic fixtures' : 'production-safe; no approved canonical content'}).`)
