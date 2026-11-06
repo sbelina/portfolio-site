@@ -1,5 +1,7 @@
 # Start the next Codex task
 
+Current 6 November direction: start with [design-system adoption](../design-system/ADOPTION.md) and [verification](../design-system/VERIFICATION.md). The W0–W2 prompt below is historical, not an instruction to redo completed foundations or change schemas/CMS. Test. Show. Enable. and the adopted new presentation supersede earlier copy. Choose the next bounded task from the adoption record; real case work requires exact source/wording/rights approval.
+
 Select the repository branch containing this handoff. If it has not been merged, use that branch or explicitly bring its documentation into the working branch before starting.
 
 Paste this message:

@@ -1,4 +1,4 @@
-Current4November change: [new index and preserved build](BUILD-ARCHIVE-AND-INDEX.md). Reviewed on a feature branch; Cloudflare authentication and production deployment remain unavailable. Older status records follow.
+Current 6 November review branch: see [design-system adoption](../design-system/ADOPTION.md) and [verification](../design-system/VERIFICATION.md). Test. Show. Enable. and the new current presentation supersede the earlier edition; no new case approval or production deployment. Older status records follow.
 
 Current30October review branch: see [the audit, changes and verification record](OCT-30-REVIEW.md). This supersedes older positioning on this branch; no new case approval or deployment. Earlier records below remain historical.
 

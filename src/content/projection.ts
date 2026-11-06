@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { diagramEvidenceIds } from './assumed-observed'
 import { approvalSchema, entryPath, manifestSchema, storeSchema, type CandidateApproval, type ContentStore, type PublicAlias, type PublicProjection, type RecordRef, type ReleaseManifest } from './model'
+import { publicStaticRoutes } from '../public-routes'
 export type { PublicEntry, PublicRelationship, PublicEvidence, PublicAsset, PublicAlias, PublicProjection } from './model'
 
 /** Stable canonical JSON for exact-revision integrity. Not an authentication mechanism. */
@@ -66,7 +67,7 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
   const assertReferences = (ids: string[], allowed: Set<string>, message: string) => {
     if (ids.some(id => !allowed.has(id))) throw new Error(message)
   }
-  const occupiedRoutes = new Set(['/', '/investigations/', '/patterns/'])
+  const occupiedRoutes = new Set<string>(publicStaticRoutes)
   const occupiedSlugs = new Set<string>()
   const occupiedBlocks = new Set<string>()
   for (const entry of entries) {

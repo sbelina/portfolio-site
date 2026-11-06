@@ -5,6 +5,9 @@ https://:version.:subdomain.workers.dev/*
 /404.html
   X-Robots-Tag: noindex
 
+/system/*
+  X-Robots-Tag: noindex
+
 /public-content.json
   X-Robots-Tag: noindex
 /route-manifest.json

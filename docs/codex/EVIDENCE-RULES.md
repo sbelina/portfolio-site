@@ -36,7 +36,7 @@ Separate content approval from source access: a source can support a public stat
 
 ## Owner corrections — 30 October 2026
 
-The owner is **Sami Belina**. Historical preserved writing/review originals are not retroactively rewritten; active copy uses Sami. One professional triad: **Find the gap. Trace the mechanism. Design what holds.** The inquiry cycle elaborates this work; it adds no interaction gates.
+The owner is **Sami Belina**. Historical preserved writing/review originals are not retroactively rewritten; active copy uses Sami. The earlier professional triad was superseded by owner-adopted **Test. Show. Enable.** on 6 November; see [the adoption record](../design-system/ADOPTION.md). The separate inquiry cycle adds no interaction gates.
 
 Claims: the diverging representation was a delivered status, not a claim file. Sami began unassigned, built the evidence and led the change so payment waits for salvage review. IAA decides document sufficiency; adjusters release payment. Earlier verification and collaborative knowledge development are separate responses. Administrator meetings surfaced practical knowledge, examples and procedural differences; the error-log categories did not become the guide structure. Statewide guide use is owner-reported; never substitute four offices. Neither18% nor7.6% establishes a controlled causal reduction.
 
@@ -47,3 +47,7 @@ Accessibility: Sami originated the idea; a colleague advocated it to the organiz
 Civic: co-founded2020, nonpartisan.16,000+ population/flyer estimate is not social reach; latest20,000+ resident reach needs separate provenance/definition. No turnout effect. AI38→8 synthesis, seven teams and largest-team leadership are distinct contributions, not enterprise strategy ownership. Telematics SUS≈70 and NPS≈−20 involved the same six participants; different instruments, no causal equation or retention outcome. Research recovery belongs to telematics.
 
 New narrative classifications distinguish direct observation, measured result, documented outcome, practitioner interpretation, hypothesis, conceptual illustration, intended benefit and unverified claims. Contribution levels are separate. Mechanical validation cannot verify the truth of prose, authenticate approval, or determine whether a source establishes causality.
+
+## Design-kit reconciliation — 6 November 2026
+
+The owner agreed that the incoming design examples must retain these stronger rules: the approximately 18% and 7.6% observations have different scopes, are not a before/after series, and cannot share an assumed unit or denominator. Each needs its own definition, period, method, source and exact approved wording. Earlier review before payment is owner-reported; increased elapsed payment waiting has not been established. Neither an agent recommendation nor a conceptual readiness field authenticates approval. Only an authenticated owner action bound to the exact application/content/relationship/alias/asset candidate can authorize publication. Design adoption alone approves no real case manuscript.

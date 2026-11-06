@@ -2,9 +2,9 @@ import { publicPath, publicBase } from '../src/public-path'
 /** Build-only metadata for the same public documents visitors can read. */
 export const siteOrigin = 'https://producingcuriosity.com'
 export const siteName = 'Producing Curiosity'
-export const homeTitle = 'Sami Belina — Seeing What Systems Miss'
-export const homeDescription = 'Sami Belina investigates organizational and human factors through organizational diagnosis, strategic research, systems strategy and service design, helping leaders decide and teams put change into practice.'
-const imageAlt = 'Producing Curiosity by Sami Belina: I swim upstream toward the problem.'
+export const homeTitle = 'Sami Belina — Applied Human Systems Research & Strategy'
+export const homeDescription = 'Sami Belina investigates visible outcomes and unclear explanations through applied human systems research, organizational diagnosis and strategy. Test. Show. Enable.'
+const imageAlt = 'Producing Curiosity by Sami Belina. Applied human systems research and strategy. Test. Show. Enable.'
 export const escapeAttribute = (text: string) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
 export function seoHead({ title, description, route, indexable, website = false }: { title: string; description: string; route?: string; indexable: boolean; website?: boolean }) {

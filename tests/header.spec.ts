@@ -19,8 +19,15 @@ test('home header stays available and condenses without removing menu links', as
 test('keyboard menu activation leaves the destination clear of the sticky header', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#index')
+  // Wait for the retained fixture's initial reading-focus effect.
+  await expect(page.locator('.site-header')).toHaveAttribute('data-measured', 'true')
+  await expect(page.locator('main')).toBeFocused()
   const link = page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link', { name: 'Investigations', exact: true })
   await link.focus()
+  // Establish actual keyboard modality before asserting :focus-visible.
+  await page.keyboard.press('Tab')
+  await page.keyboard.press('Shift+Tab')
+  await expect(link).toBeFocused()
   expect(await link.evaluate(el => getComputedStyle(el).outlineStyle)).not.toBe('none')
   await page.keyboard.press('Enter')
   await expect(page).toHaveURL(/#work$/)

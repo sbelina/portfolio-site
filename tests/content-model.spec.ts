@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { assetSchema, blockSchema, entrySchema, evidenceSchema, type Asset, type ContentStore, type Entry, type ReleaseManifest } from '../src/content/model'
 import { buildPublicProjection, digestRecord } from '../src/content/projection'
+import { publicStaticRoutes } from '../src/public-routes'
 
 // Synthetic, public-safe test records. These are not actual content approvals.
 const id = (n: number) => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`
@@ -97,6 +98,14 @@ test('aliases follow stable identity across an editable slug change', () => {
   expect(output.entries[0].id).toBe(id(1))
   expect(output.entries[0].path).toBe('/investigations/renamed-synthetic/')
   expect(output.aliases[0].targetId).toBe(id(1))
+})
+
+test('authored aliases cannot replace any current static destination', () => {
+  for (const reserved of publicStaticRoutes) {
+    const input = store()
+    input.aliases = [{ schemaVersion: 1, id: id(71), revision: 1, visibility: 'public', reviewState: 'approved', kind: 'path', path: reserved, targetId: id(1) }]
+    expect(() => project(input), reserved).toThrow()
+  }
 })
 
 test('directional assertions retain direction; symmetric assertions normalize duplicates', () => {

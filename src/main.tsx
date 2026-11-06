@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './styles.css'
 import './build-index.css'
+import './design/foundation.css'
 import { emptyHomeReading, type HomeReading } from './home-reading'
 
 const root = document.getElementById('root')!

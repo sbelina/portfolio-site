@@ -10,7 +10,8 @@ export async function prerenderHiddenWork(output: string, fixture: boolean) {
   if (!template.includes('<!--experiment-html-->')) throw new Error('Experiment prerender marker missing')
   await mkdir(`${output}/experiments/reveal-hidden-work`, { recursive: true })
   const html = template.replace('<!--seo-head-->', () => seoHead({ title: 'Reveal the hidden work — Producing Curiosity', description: 'An illustrative interaction experiment: reveal the work beneath a simplified process. Read with or without animation.', route: '/experiments/reveal-hidden-work/', indexable: !fixture }))
-    .replace('<!--experiment-html-->', () => renderToString(<HiddenWorkPage/>))
+    .replace('<!--experiment-html-->', () => renderToString(<HiddenWorkPage legacy={fixture}/>))
+    .replace('<div id="root">', `<div id="root" data-legacy="${fixture}">`)
   await writeFile(`${output}/experiments/reveal-hidden-work/index.html`, html)
   await rm(`${output}/hidden-work.html`)
 }

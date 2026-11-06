@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    rolldownOptions: { input: { home: 'index.html', reading: 'reading.html', hiddenWork: 'hidden-work.html' } },
+    rolldownOptions: { input: { home: 'index.html', reading: 'reading.html', hiddenWork: 'hidden-work.html', foundation: 'foundation.html' } },
     sourcemap: false,
   },
 })

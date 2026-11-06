@@ -2,6 +2,10 @@
 
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
+## Current direction — 6 November 2026
+
+The owner adopted the [new blueprint and system kit](../design-system/ADOPTION.md): **Test. Show. Enable.**, applied human systems research and strategy, asterisk identity (final artwork pending), and paper/ink/orange presentation replace the previous current-edition design. The immutable previous build remains archived. Start with that adoption record, then [design architecture](../design-system/DESIGN_SYSTEM_ARCHITECTURE.md), [content](../design-system/CONTENT_CONTRACT.md), [interaction](../design-system/INTERACTION_CONTRACTS.md), and [agent contracts](../design-system/AGENT_ORCHESTRATION.md). Older dates/triads below are historical; source/evidence, exact-candidate approval, protected drafts and accessibility rules remain active. The existing React/TypeScript/Vite/Worker implementation is retained.
+
 ## Current integrated release
 
 See [the integrated development and SEO release](INTEGRATED-SEO-RELEASE.md), [SEO/SEM audit](SEO-SEM-AUDIT.md), and [independent integration review](INTEGRATED-RELEASE-REVIEW.md). These distinguish production-safe public behavior, fixture-only reading demonstrations, local authenticated writing, and remaining hosted CMS dependencies. Earlier handoff/proposal and task records remain historical context.
@@ -56,13 +60,13 @@ The user's latest explicit request determines task scope. Root `AGENTS.md` provi
 
 ## Target outcome (not a completed editor workflow)
 
-A visitor opens a useful investigation at its own URL, understands Sam's contribution and evidence, and follows an explained connection to a pattern. Sam can create an Observation with three meaningful connections, save/reopen it, preview privately, publish an approved revision, and restore it without editing source code.
+A visitor opens a useful investigation at its own URL, understands Sami's contribution and evidence, and follows an explained connection to a pattern. Sami can create an Observation with three meaningful connections, save/reopen it, preview privately, publish an approved revision, and restore it without editing source code.
 
 Start small enough to prove that entire cycle. Do not replace it with an elaborate editor mockup or a static demonstration that only appears to save.
 
 ## Current owner-directed review
 
-The [30 October audit and implementation record](OCT-30-REVIEW.md) supersedes older positioning/triads for this review branch. Use Sami Belina and Find the gap. Trace the mechanism. Design what holds. Historical research records remain intact.
+The [30 October audit and implementation record](OCT-30-REVIEW.md) records the preceding edition. The 6 November adoption above now supersedes its positioning/triad; historical research records remain intact.
 
 The [link map placement and navigation review](LINK-MAP-PLACEMENT.md) records its current early-home position, internal-link repairs, arrow meanings and verification.
 

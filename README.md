@@ -1,10 +1,10 @@
 # Producing Curiosity
 
-React, TypeScript and Vite on the existing Cloudflare Worker. The integrated build prerenders the portfolio and finite reading pages, with an optional p5.js experiment. See [current release scope and verification](docs/codex/INTEGRATED-SEO-RELEASE.md) and [deployment](DEPLOY.md).
+React, TypeScript and Vite on the existing Cloudflare Worker. The current review edition adopts **Test. Show. Enable.**, applied human systems research and strategy, and paper/ink/orange presentation. See [design-system adoption](docs/design-system/ADOPTION.md), [verification](docs/design-system/VERIFICATION.md), and [deployment](DEPLOY.md).
 
-The public build contains the existing portfolio, the illustrative hidden-work experiment and a truthfully empty investigation collection. Reading/poetry/diagram fixtures are local-only; the authenticated D1 writing trial is a separate loopback-only Worker. Hosted CMS integration and new manuscript publication remain incomplete.
+The build prerenders the new homepage, Practice, conceptual Connections overview, design specimen, illustrative hidden-work experiment and a truthfully empty investigation collection. The prior portfolio remains in its frozen archive with a footer review link. Reading/poetry/manuscript fixtures remain local-only; the authenticated D1 writing trial is a separate loopback-only Worker. Hosted CMS integration and publication of full new case manuscripts remain incomplete. Final asterisk artwork and candidate font files/licenses are pending; current marks and fonts are explicitly provisional.
 
-The sections below preserve the original v0.5 baseline notes; the current intro uses one action followed by three automatic authored beats, skip/replay and an automatic dive. See [intro states](docs/INTRO-STATES.md).
+The sections below preserve original v0.5 baseline notes. The new homepage has no mandatory intro. The archived experience retains one deliberate action per authored step, three total, followed by an automatic dive, with skip/replay and accessible alternatives. See [intro states](docs/INTRO-STATES.md).
 
 ## Codex development context
 

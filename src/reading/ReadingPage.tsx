@@ -4,6 +4,7 @@ import { InvestigationNarrative } from './InvestigationNarrative'
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
+import archive from '../../content/build-archive.json'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
@@ -164,13 +165,13 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
   )
 }
 
-function Collection({ projection }: { projection: ReadingContext }) {
+function Collection({ projection, fixture }: { projection: ReadingContext; fixture: boolean }) {
   const investigations = projection.entries.filter(entry => entry.kind === 'investigation')
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
   return (
     <>
-      <header className="reading-collection-header"><p className="reading-kicker">Seeing What Systems Miss</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <p className="reading-empty">No reviewed investigation has been selected for this reading collection yet. <a href={publicPath("/#work")}>Existing work remains available on the home page.</a></p>}
+      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : 'Applied human systems research & strategy'}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <div className="reading-empty"><p>No reviewed investigation has been selected for this edition yet. Full case manuscripts remain subject to source and publication review.</p><p><a href={publicPath(`${archive.reviewPath}#work`)}>Review the previous edition’s investigation summaries →</a></p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )
@@ -179,13 +180,13 @@ function Collection({ projection }: { projection: ReadingContext }) {
 export function ReadingPage({ page }: { page: ReadingPageData }) {
   const entry = page.kind === 'entry' ? page.entry : undefined
   let content: ReactNode
-  if (page.kind === 'collection') content = <Collection projection={page.projection} />
+  if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} />
   else if (entry) content = <EntryView entry={entry} page={page} />
   else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
-    <div className="reading-page">
+    <div className={`reading-page${page.fixture ? '' : ' pc-site pc-reading'}`}>
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
-      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}>△ Producing Curiosity</a><PublicNavigation currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
+      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}><span aria-hidden="true">{page.fixture ? '△' : '*'}</span> Producing Curiosity</a><PublicNavigation legacy={page.fixture} currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
       {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sami’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
       <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>

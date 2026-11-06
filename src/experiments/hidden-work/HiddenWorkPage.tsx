@@ -7,7 +7,7 @@ import type { MotionLayer } from './sketch'
 
 type MotionState = 'idle' | 'loading' | 'playing' | 'complete' | 'unavailable'
 
-export function HiddenWorkPage() {
+export function HiddenWorkPage({ legacy = false }: { legacy?: boolean }) {
   const [enhanced, setEnhanced] = useState(false)
   const [open, setOpen] = useState(false)
   const [paused, setPaused] = useState(false)
@@ -78,10 +78,10 @@ export function HiddenWorkPage() {
     : motion === 'loading' ? 'Loading optional motion · the explanation is ready'
     : 'Tracing illustrative relationships'
 
-  return <>
+  return <div className={legacy ? undefined : 'pc-site'} data-surface={legacy ? undefined : 'observatory'}>
     <a className="main-skip-link" href="#experiment">Skip to experiment</a>
     <main className="hidden-work-page" id="experiment" tabIndex={-1}>
-      <header className="experiment-header"><a href={publicPath("/")}>△ Producing Curiosity</a><PublicNavigation currentPath="/experiments/reveal-hidden-work/" /></header>
+      <header className="experiment-header"><a href={publicPath("/")}><span aria-hidden="true">{legacy ? '△' : '*'}</span> Producing Curiosity</a><PublicNavigation legacy={legacy} currentPath="/experiments/reveal-hidden-work/" /></header>
       <p className="eyebrow">An interaction experiment · illustrative content</p>
       <h1>{hiddenWork.title}</h1>
       <p className="experiment-question">{hiddenWork.question}</p>
@@ -137,5 +137,5 @@ export function HiddenWorkPage() {
       </section>
     </main>
     <footer className="site-footer experiment-footer"><span>© {new Date().getFullYear()} Sami Belina</span><a href={publicPath("/#index")}>Return to the portfolio</a><ExperimentNote/><p className="motion-license">Optional motion: <a href="https://p5js.org/">p5.js</a> 1.11.13 · <a href={publicPath("/licenses/p5-LGPL-2.1.txt")}>LGPL-2.1</a> · <a href="https://github.com/processing/p5.js/tree/v1.11.13">library source</a></p></footer>
-  </>
+  </div>
 }

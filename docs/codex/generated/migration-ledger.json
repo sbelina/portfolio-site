@@ -211,6 +211,30 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-practice-title",
+      "destination": "/#pc-practice-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-know-title",
+      "destination": "/#pc-know-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "contact",
+      "destination": "/#contact",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "contact-title",
+      "destination": "/#contact-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "connections",
       "destination": "/#connections",
       "source": "legacy baseline",
@@ -225,6 +249,24 @@
     {
       "id": "connections-title",
       "destination": "/#connections-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "map-text",
+      "destination": "/#map-text",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work",
+      "destination": "/#work",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work-title",
+      "destination": "/#work-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
@@ -261,120 +303,6 @@
     {
       "id": "accessibility-ai",
       "destination": "/#accessibility-ai",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-curiosity",
-      "destination": "/#tag-curiosity",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-problem-definition",
-      "destination": "/#tag-problem-definition",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-evidence",
-      "destination": "/#tag-evidence",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-systems",
-      "destination": "/#tag-systems",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-decision",
-      "destination": "/#tag-decision",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-research",
-      "destination": "/#tag-research",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-upstream",
-      "destination": "/#tag-upstream",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-measurement",
-      "destination": "/#tag-measurement",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-structure",
-      "destination": "/#tag-structure",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-transfer",
-      "destination": "/#tag-transfer",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-ai",
-      "destination": "/#tag-ai",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-accessibility",
-      "destination": "/#tag-accessibility",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-service-design",
-      "destination": "/#tag-service-design",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-information-equity",
-      "destination": "/#tag-information-equity",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-operations",
-      "destination": "/#tag-operations",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tag-knowledge",
-      "destination": "/#tag-knowledge",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "map-text",
-      "destination": "/#map-text",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work",
-      "destination": "/#work",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work-title",
-      "destination": "/#work-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
@@ -549,18 +477,6 @@
     {
       "id": "closing-title",
       "destination": "/#closing-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "contact",
-      "destination": "/#contact",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "contact-title",
-      "destination": "/#contact-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },

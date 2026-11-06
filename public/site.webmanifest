@@ -3,8 +3,8 @@
   "short_name": "Producing Curiosity",
   "start_url": "/",
   "display": "browser",
-  "background_color": "#151614",
-  "theme_color": "#151614",
+  "background_color": "#f3efe7",
+  "theme_color": "#f3efe7",
   "icons": [
     {
       "src": "/favicon.svg",
