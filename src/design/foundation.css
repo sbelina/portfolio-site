@@ -111,7 +111,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-main { padding-inline: 5vw; }
   .pc-main h1 { font-size: 2rem; }
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
-  .pc-surface-control label { gap: .4rem; }
+  /* Give enlarged option words the full measure across system-font metrics. */
+  .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
   .pc-journeys { grid-template-columns: 1fr; }
   .pc-journeys a + a { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .pc-inquiry-list > div { grid-template-columns: 1fr; gap: .5rem; }
