@@ -16,6 +16,9 @@ test('production documents have one consistent metadata set and factual site sch
     ['index.html', '/', true],
     ['investigations/index.html', '/investigations/', false],
     ['experiments/reveal-hidden-work/index.html', '/experiments/reveal-hidden-work/', true],
+    ['practice/index.html', '/practice/', true],
+    ['patterns/index.html', '/patterns/', true],
+    ['system/index.html', '/system/', false],
     ['404.html', undefined, false],
   ] as const) {
     const html = await readFile(`dist/${file}`, 'utf8')
@@ -40,7 +43,7 @@ test('production documents have one consistent metadata set and factual site sch
 
 test('sitemap lists only indexable canonical public documents and fixtures never contribute', async () => {
   const sitemap = await readFile('dist/sitemap.xml', 'utf8')
-  expect([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1])).toEqual([`${siteOrigin}/`, `${siteOrigin}/experiments/reveal-hidden-work/`])
+  expect([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1])).toEqual([`${siteOrigin}/`, `${siteOrigin}/experiments/reveal-hidden-work/`, `${siteOrigin}/practice/`, `${siteOrigin}/patterns/`])
   expect(await readFile('dist-fixtures/sitemap.xml', 'utf8')).not.toContain('<loc>')
   const manifest = JSON.parse(await readFile('dist-fixtures/route-manifest.json', 'utf8'))
   for (const route of manifest.routes) {

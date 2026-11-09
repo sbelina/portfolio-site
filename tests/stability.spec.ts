@@ -173,6 +173,9 @@ test('one touch swipe completes only the first step', async ({ browser }) => {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   const page = await context.newPage()
   await page.goto('http://127.0.0.1:4174/')
+  // Raw CDP input does not auto-wait for the browser-only intro to mount.
+  await expect(page.getByRole('button', { name: 'Begin exploring the question' })).toBeVisible()
+  await expect(page.locator('.intro-field--draggable')).toBeVisible()
   const client = await context.newCDPSession(page)
   await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: 195, y: 550 }] })
   await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: 195, y: 350 }] })

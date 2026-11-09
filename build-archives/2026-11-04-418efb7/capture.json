@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "id": "2026-11-04-418efb7",
+  "sourceCommit": "418efb750fe89c754b890b99a605213fed5ffddc",
+  "sourceTree": "e10596cbf3922daa83334be7fdbf43f5962bc505",
+  "capturedAt": "2026-11-04T21:17:22.406654+00:00",
+  "source": "reviewed-production-build",
+  "deploymentStatus": "not-observed-live-at-capture",
+  "originalFiles": {
+    "404.html": {
+      "sha256": "b43abb9224c95b1699930cc12c7cb014be02f43613e4ebe82a93f060b33ab500",
+      "bytes": 6177
+    },
+    "_headers": {
+      "sha256": "f6fa592b93ba636c91230c32ded818f47b3cebc94432d5abc881fd3275bceac2",
+      "bytes": 349
+    },
+    "assets/InvestigationVisual-D1fcjV4p.js": {
+      "sha256": "7f700cd17c090638b9bd06f9a88c809e8d63d60a982c330aa5edc586bd2060d5",
+      "bytes": 1694
+    },
+    "assets/PublicNavigation-DZFecOta.js": {
+      "sha256": "9ced650c902de370aabe50ac824d9b6bd6b8cd7680c43f02784f71c587ebda07",
+      "bytes": 195850
+    },
+    "assets/hiddenWork-61NguZ4h.js": {
+      "sha256": "535a6fdcdefab5d235515247f3adc40cfc9f8d049036ba10d43b43f995bb1c90",
+      "bytes": 11835
+    },
+    "assets/hiddenWork-BBl3vnt3.css": {
+      "sha256": "7277a3b2123dfbeb7f25cbda742fb0ec494e03b282b1cf7e4973b77d0851ce53",
+      "bytes": 6306
+    },
+    "assets/home-BXcoslEA.js": {
+      "sha256": "ec8c18636afd102a50720bfaa41cfc329f5af396b6cbc33719c5ad0cbcd26634",
+      "bytes": 60090
+    },
+    "assets/reading-DOh_rZxS.css": {
+      "sha256": "62efa9140756d5ced8a5d88a4d8075cf6349eab23cb933d35afe92a58cc287a9",
+      "bytes": 16418
+    },
+    "assets/reading-KCJH_5hC.js": {
+      "sha256": "32a068643a3c5df47a4d39090e046b6c8264b70f97b6a1dbc530db2d257d0e03",
+      "bytes": 20260
+    },
+    "assets/sketch-Des3XKqk.js": {
+      "sha256": "b4ec1730c63ce81d0c13aa99e255653212577341ae7bb2d273ab0e9c1c36577a",
+      "bytes": 1048157
+    },
+    "assets/styles-D3ZrYV0C.css": {
+      "sha256": "cd3b56aa357f83310bdaaf0295226d500d339a7d6aef0730232d4764e9de37d0",
+      "bytes": 35962
+    },
+    "experiments/reveal-hidden-work/index.html": {
+      "sha256": "33c4d926ee63ec3452b11cfbd6bd7f5ba7b491a9f5afdb6931b1aea5460d2a48",
+      "bytes": 12551
+    },
+    "favicon.svg": {
+      "sha256": "4f9f910e7a59e880f9f2476dae033ff387ef6c6bd33bb53745727fbe64986125",
+      "bytes": 416
+    },
+    "graph-index.json": {
+      "sha256": "a461bf77bc4e4d732f7afc121c70e7f70ed8bf225a082a4e01951d1eb6b5c278",
+      "bytes": 23
+    },
+    "index.html": {
+      "sha256": "50671054365f81f5c11d67e3f3a0678ed340a864d1fcf9c1f4c1e21451ebadd8",
+      "bytes": 81614
+    },
+    "investigations/index.html": {
+      "sha256": "13b0f6d06525ded23805aba87b98b9efdb8c6d8df2cae6ff4dc5925ee8291d6c",
+      "bytes": 6663
+    },
+    "licenses/p5-LGPL-2.1.txt": {
+      "sha256": "eb2f25f8f165d5f20682c1ce7e99ce69144ecfd80fbed8c17dfd327ecd8b6cb6",
+      "bytes": 24480
+    },
+    "public-content.json": {
+      "sha256": "e262f99cb4622e44939d40b9b4ca2bebb98e828c8f2d18f469724861ff4b9d25",
+      "bytes": 90
+    },
+    "robots.txt": {
+      "sha256": "e3c7eae0f45421a05aa3477266f7acc7b41cdc11c881fe98048c289c6979b5b8",
+      "bytes": 76
+    },
+    "route-manifest.json": {
+      "sha256": "11806ad882bec75ca9189f185258b38c1893a155f5b81c66a653f87a129c8cbe",
+      "bytes": 119
+    },
+    "search-index.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "site.webmanifest": {
+      "sha256": "762c735560c15ae313d95cdb095a4ebc40b52d6389370e72f4cd1330ff080860",
+      "bytes": 307
+    },
+    "sitemap.xml": {
+      "sha256": "c986f8fa735d244d23ae43562ceeed830773414a0357eb1d6a9b7f6d9be47abf",
+      "bytes": 244
+    },
+    "social-preview.png": {
+      "sha256": "f41d8a5e0621de0008a538fc2b053e25e5554d0af8470e347d19488351127a43",
+      "bytes": 39056
+    }
+  },
+  "reviewPrefix": "/builds/2026-11-04-418efb7/",
+  "reviewAdapterCommit": "ed3d83cfff418d4d7b99931db94bf7b14c1bc3d2",
+  "reviewFiles": {
+    "404.html": {
+      "sha256": "6fd41908fae1b7e60e7d270f6d59aed64687fd40e685056e979df4b5bc16ad69",
+      "bytes": 6807
+    },
+    "_headers": {
+      "sha256": "f6fa592b93ba636c91230c32ded818f47b3cebc94432d5abc881fd3275bceac2",
+      "bytes": 349
+    },
+    "archive-review.css": {
+      "sha256": "bacc4ddd9807ea6f1a5fbe81e66956eab61c93d8d4421aeca0e52b92bd1472ac",
+      "bytes": 525
+    },
+    "assets/InvestigationVisual-ONVD-jp0.js": {
+      "sha256": "5bc91b0826fe7e9a54545f3ca2751c1840c6578f6e1659a2cc84bb79d3483597",
+      "bytes": 1694
+    },
+    "assets/PublicNavigation-Db5sFUMs.js": {
+      "sha256": "af9c58f5af9318d2f8e281c710b5fab77bfa22e75ac2b8f3e34623bbf85d6ee5",
+      "bytes": 196007
+    },
+    "assets/hiddenWork-BBl3vnt3.css": {
+      "sha256": "7277a3b2123dfbeb7f25cbda742fb0ec494e03b282b1cf7e4973b77d0851ce53",
+      "bytes": 6306
+    },
+    "assets/hiddenWork-DZM8IiuP.js": {
+      "sha256": "80321cb0f5fc3c7eca449baeae2d8fa1ccec0b7b273f98987e3d24dd920bac4a",
+      "bytes": 11877
+    },
+    "assets/home-DBgvqd17.js": {
+      "sha256": "9499d3cac549201189c9052dbf30af1ef07bc149db5512a95d5e16d6d571cd83",
+      "bytes": 60115
+    },
+    "assets/reading--8Ogofkt.js": {
+      "sha256": "2a746e0b3f286ff355a8dc17a01dbbbc1df3d3570172d54bdb7952169cccc91d",
+      "bytes": 20303
+    },
+    "assets/reading-DOh_rZxS.css": {
+      "sha256": "62efa9140756d5ced8a5d88a4d8075cf6349eab23cb933d35afe92a58cc287a9",
+      "bytes": 16418
+    },
+    "assets/sketch-Xmlx_aCZ.js": {
+      "sha256": "23828f953fc89ae088179287ce7ef5bf0fb8f63a37d7902740755e703ae5552d",
+      "bytes": 1048157
+    },
+    "assets/styles-D3ZrYV0C.css": {
+      "sha256": "cd3b56aa357f83310bdaaf0295226d500d339a7d6aef0730232d4764e9de37d0",
+      "bytes": 35962
+    },
+    "experiments/reveal-hidden-work/index.html": {
+      "sha256": "13091f4a5da14f871f2e9ce7ba95e2c6f88fe7e5acddaccd0e0c8872d08f17e6",
+      "bytes": 13209
+    },
+    "favicon.svg": {
+      "sha256": "4f9f910e7a59e880f9f2476dae033ff387ef6c6bd33bb53745727fbe64986125",
+      "bytes": 416
+    },
+    "graph-index.json": {
+      "sha256": "a461bf77bc4e4d732f7afc121c70e7f70ed8bf225a082a4e01951d1eb6b5c278",
+      "bytes": 23
+    },
+    "index.html": {
+      "sha256": "d7d82b3034986f4f69ac38e4e831fc092267d22d53dcf216ef3e36c4ef681a6e",
+      "bytes": 82272
+    },
+    "investigations/index.html": {
+      "sha256": "4bb060d66ff285080cdbc4db8eecb0b9b84cd752e6995f915e51ee88113745a7",
+      "bytes": 7319
+    },
+    "licenses/p5-LGPL-2.1.txt": {
+      "sha256": "eb2f25f8f165d5f20682c1ce7e99ce69144ecfd80fbed8c17dfd327ecd8b6cb6",
+      "bytes": 24480
+    },
+    "public-content.json": {
+      "sha256": "e262f99cb4622e44939d40b9b4ca2bebb98e828c8f2d18f469724861ff4b9d25",
+      "bytes": 90
+    },
+    "robots.txt": {
+      "sha256": "e3c7eae0f45421a05aa3477266f7acc7b41cdc11c881fe98048c289c6979b5b8",
+      "bytes": 76
+    },
+    "route-manifest.json": {
+      "sha256": "7f41ed53b9a0bf83cb73627f9e12dfdeb88366b081df573dcb6aa5813e155027",
+      "bytes": 197
+    },
+    "search-index.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "site.webmanifest": {
+      "sha256": "762c735560c15ae313d95cdb095a4ebc40b52d6389370e72f4cd1330ff080860",
+      "bytes": 307
+    },
+    "sitemap.xml": {
+      "sha256": "68ab08991efaca902bcb8a6518106d8b29964c5651f39abbb7eb7c9713ca2770",
+      "bytes": 107
+    },
+    "social-preview.png": {
+      "sha256": "f41d8a5e0621de0008a538fc2b053e25e5554d0af8470e347d19488351127a43",
+      "bytes": 39056
+    }
+  },
+  "homeAnchors": [
+    "root",
+    "index",
+    "index-title",
+    "connections",
+    "system-map",
+    "connections-title",
+    "map-text",
+    "work",
+    "work-title",
+    "claims-operations",
+    "brand-research",
+    "enterprise-ai",
+    "documentation-recovery",
+    "civic-service",
+    "accessibility-ai",
+    "distinctions-title",
+    "distinction-claims-operations",
+    "distinction-brand-research",
+    "distinction-enterprise-ai",
+    "distinction-accessibility-ai",
+    "distinction-civic-service",
+    "reading-gateway-title",
+    "practice",
+    "practice-title",
+    "inquiry-title",
+    "study-label",
+    "practice-language",
+    "practice-form",
+    "delta-theory",
+    "field-notes",
+    "field-notes-title",
+    "the-bends",
+    "calculus-of-syntax",
+    "conjunction-conjecture",
+    "tool-vs-toy",
+    "mundane-evidence",
+    "archive",
+    "archive-wage",
+    "archive-dead-internet",
+    "archive-hive-mind",
+    "archive-mourning-coffee",
+    "archive-bridge",
+    "archive-left",
+    "closing-title",
+    "contact",
+    "contact-title",
+    "home-reading"
+  ],
+  "reviewNote": "Original artifact is byte-for-byte preserved. Review copy adapts local URL base/noindex metadata and adds a separate archive notice; original interface/content retained. Source was not observed deployed at capture."
+}

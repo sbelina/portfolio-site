@@ -1,0 +1,15 @@
+# Alternate Worker/version hosts stay crawlable so noindex can be read.
+https://:version.:subdomain.workers.dev/*
+  X-Robots-Tag: noindex
+
+/404.html
+  X-Robots-Tag: noindex
+
+/public-content.json
+  X-Robots-Tag: noindex
+/route-manifest.json
+  X-Robots-Tag: noindex
+/search-index.json
+  X-Robots-Tag: noindex
+/graph-index.json
+  X-Robots-Tag: noindex

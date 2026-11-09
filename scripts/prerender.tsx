@@ -1,3 +1,8 @@
+import BuildIndex from '../src/BuildIndex'
+import { FoundationPage, foundationPages, type FoundationKind } from '../src/design/FoundationPage'
+import { publicStaticRoutes } from '../src/public-routes'
+import { mountBuildArchive } from './build-archives'
+import { setPublicBase, publicPath, publicBase } from '../src/public-path'
 import React from 'react'
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
 import { readFileSync } from 'node:fs'
@@ -14,7 +19,9 @@ import { prerenderHiddenWork } from './build-experiment'
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
 
 const fixture = process.argv.includes('--fixtures')
-const output = path.resolve(fixture ? 'dist-fixtures' : 'dist')
+const outputArgument = process.argv.indexOf('--output')
+const output = path.resolve(outputArgument >= 0 ? process.argv[outputArgument + 1] : fixture ? 'dist-fixtures' : 'dist')
+setPublicBase(process.env.PUBLIC_BASE_PATH ?? '/')
 const origin = siteOrigin
 const empty: PublicProjection = { schemaVersion: 1, entries: [], relationships: [], evidence: [], assets: [], aliases: [] }
 // No production selection/owner approval exists. Never invent one for empty content.
@@ -22,7 +29,7 @@ const release = JSON.parse(await readFile('content/public-release.json', 'utf8')
 if (release.schemaVersion !== 1 || release.status !== 'no-approved-content') throw new Error('A trusted release loader is required before adding approved production content')
 const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : empty
 const escapeJson = (value: unknown) => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029')
-const [homeTemplate, readingTemplate] = await Promise.all([readFile(path.join(output, 'index.html'), 'utf8'), readFile(path.join(output, 'reading.html'), 'utf8')])
+const [homeTemplate, readingTemplate, foundationTemplate] = await Promise.all([readFile(path.join(output, 'index.html'), 'utf8'), readFile(path.join(output, 'reading.html'), 'utf8'), readFile(path.join(output, 'foundation.html'), 'utf8')])
 const legacyIds = new Set([...renderToString(<App />).matchAll(/\bid="([^"]+)"/g)].map(match => match[1]))
 baselineAnchors.forEach(id => legacyIds.add(id))
 const fragmentRedirects: Record<string, string> = {}
@@ -31,18 +38,21 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
 const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary }) => ({ id, path, title, summary })), fragmentRedirects }
-const homeMarkup = renderToString(<App reading={reading} />)
+const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex />)
 if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--app-end-->')) throw new Error('Home prerender markers missing')
 const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () => homeMarkup)
+  .replace('data-edition="current"', fixture ? 'data-edition="legacy"' : 'data-edition="current"')
+  .replace('name="color-scheme" content="light"', fixture ? 'name="color-scheme" content="dark"' : 'name="color-scheme" content="light"')
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !fixture, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
-const routes = ['/', '/investigations/', '/experiments/reveal-hidden-work/', ...projection.entries.map(entry => entry.path)]
+const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path)]
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
+    .replace('<html lang="en">', fixture ? '<html lang="en">' : '<html lang="en" data-edition="current">')
     .replace('<!--reading-html-->', () => renderToString(<ReadingPage page={data} />))
     .replace('<!--reading-data-->', () => `<script id="reading-data" type="application/json">${escapeJson(data)}</script>`)
   const target = path.join(output, file)
@@ -51,6 +61,13 @@ async function page(file: string, data: ReadingPageData, title: string, descript
 await page('investigations/index.html', readingPageData(projection, 'collection', fixture), 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
 for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, readingPageData(projection, 'entry', fixture, entry.id), `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
+for (const [kind, metadata] of Object.entries(foundationPages)) {
+  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !fixture }))
+    .replace('data-page=""', `data-page="${kind}"`)
+    .replace('<!--foundation-html-->', () => renderToString(<FoundationPage kind={kind as FoundationKind}/>))
+  const target = path.join(output, metadata.path.slice(1), 'index.html')
+  await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
+}
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
 if (redirects.length) await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {
@@ -60,14 +77,16 @@ for (const asset of verifyPublicAssets(projection, id => {
   const target = path.join(output, asset.url.slice(1)); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, asset.bytes)
 }
 await writeFile(path.join(output, 'public-content.json'), JSON.stringify(projection))
-await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes, fragments: fragmentRedirects }))
+if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
+const historicalRoutes = await mountBuildArchive(output)
+await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
 await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title }) => ({ id, path, title })), edges: projection.relationships }))
-const indexableRoutes = fixture ? [] : ['/', '/experiments/reveal-hidden-work/', ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
+const indexableRoutes = fixture || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
-if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
 await mkdir('docs/codex/generated', { recursive: true })
-await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
+if (publicBase() === '/' && !fixture) await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
 // No generic Vite shell may turn an unknown URL into a soft 200.
 await rm(path.join(output, 'reading.html'))
-console.log(`Prerendered ${routes.length} routes (${fixture ? 'explicit local synthetic fixtures' : 'production-safe; no approved canonical content'}).`)
+await rm(path.join(output, 'foundation.html'))
+console.log(`Prerendered ${routes.length + historicalRoutes.length} routes (${fixture ? 'explicit local synthetic fixtures' : 'production-safe; no approved canonical content'}).`)

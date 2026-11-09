@@ -1,3 +1,4 @@
+import { publicPath } from '../public-path'
 import React from 'react'
 import { caseComparisons } from '../content/connections'
 
@@ -8,7 +9,7 @@ export function ExplainedConnections() {
     <ul>{Object.entries(caseComparisons).map(([id,pair])=><li key={id} id={`distinction-${id}`}>
       <h3>{pair.left} ≠ {pair.right}</h3><p>{pair.meaning}</p>
       <details><summary>Why distinguish them?</summary><p>{pair.distinction}</p></details>
-      <a href={`/#${id}`}>Read the supporting case summary ↑</a>
+      <a href={publicPath(`/#${id}`)}>Read the supporting case summary ↑</a>
     </li>)}</ul>
     <p>Usability ≠ retention and Compliance ≠ comprehension remain additional editorial questions. A telematics manuscript and supporting source review are pending; no causal connection is asserted here.</p>
   </section>

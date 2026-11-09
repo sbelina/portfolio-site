@@ -1,3 +1,5 @@
+import { usePublicHeader } from './components/usePublicHeader'
+import { publicPath } from './public-path'
 import React from 'react'
 import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { InquiryMethod } from './components/InquiryMethod'
@@ -44,43 +46,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
   const [replayKey, setReplayKey] = useState(0)
   const [graphSelection, setGraphSelection] = useState<string | null>(null)
   const introInitialised = useRef(false)
-  const header = useRef<HTMLElement>(null)
-  const [compactHeader, setCompactHeader] = useState(false)
-  const [headerMeasured, setHeaderMeasured] = useState(false)
-  const [oversizedHeader, setOversizedHeader] = useState(false)
-
-  useEffect(() => {
-    // Hysteresis prevents the change in header height from toggling its own state.
-    const update = () => {
-      const index = document.getElementById('index')
-      const distance = window.scrollY - (index?.offsetTop ?? 0)
-      setCompactHeader(current => current ? distance > 48 : distance > 120)
-    }
-    update()
-    window.addEventListener('scroll', update, { passive: true })
-    return () => window.removeEventListener('scroll', update)
-  }, [])
-
-  useEffect(() => {
-    const element = header.current
-    if (!element) return
-    const measure = () => {
-      const height = element.getBoundingClientRect().height
-      const oversized = height > window.innerHeight * .45
-      document.documentElement.style.setProperty('--site-header-height', `${oversized ? 0 : height}px`)
-      setOversizedHeader(oversized)
-      setHeaderMeasured(true)
-    }
-    measure()
-    const observer = typeof ResizeObserver === 'function' ? new ResizeObserver(measure) : null
-    observer?.observe(element)
-    window.addEventListener('resize', measure)
-    return () => {
-      observer?.disconnect()
-      window.removeEventListener('resize', measure)
-      document.documentElement.style.removeProperty('--site-header-height')
-    }
-  }, [])
+  const { header, compactHeader, headerMeasured, oversizedHeader } = usePublicHeader()
 
   const completeIntro = useCallback(() => {
     try {
@@ -96,7 +62,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
     introInitialised.current = true
     const fragment = window.location.hash.slice(1)
     if (Object.hasOwn(reading.fragmentRedirects, fragment)) {
-      window.location.replace(reading.fragmentRedirects[fragment])
+      window.location.replace(publicPath(reading.fragmentRedirects[fragment]))
       return
     }
     setShowIntro(shouldShowIntro())
@@ -235,12 +201,12 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
           <h2 id="reading-gateway-title">Questions, evidence, and explained connections.</h2>
           <p>Open an investigation at its own address, read its limitations, and follow the reasoning into a related pattern.</p>
           {reading.fixture ? <p className="reading-fixture-note">Development fixtures — synthetic examples, not approved case studies. Excluded from production builds.</p> : null}
-          <a className="primary-link" href="/investigations/">Browse investigations →</a>
+          <a className="primary-link" href={publicPath("/investigations/")}>Browse investigations →</a>
           {reading.entries.map((entry) => <article key={entry.id}>
-            <h3><a href={entry.path}>{entry.title}</a></h3><p>{entry.summary}</p>
+            <h3><a href={publicPath(entry.path)}>{entry.title}</a></h3><p>{entry.summary}</p>
           </article>)}
           {Object.entries(reading.fragmentRedirects).map(([fragment, path]) => (
-            <p key={fragment} id={fragment}><a href={path}>Continue to the connected reading page →</a></p>
+            <p key={fragment} id={fragment}><a href={publicPath(path)}>Continue to the connected reading page →</a></p>
           ))}
         </section>
 
@@ -369,7 +335,7 @@ export default function App({ reading = emptyHomeReading }: { reading?: HomeRead
         <span>© {new Date().getFullYear()} Sami Belina</span>
         <div>
           <a href="#index">Back to top ↑</a>
-          <a href="/experiments/reveal-hidden-work/">Reveal the hidden work →</a>
+          <a href={publicPath("/experiments/reveal-hidden-work/")}>Reveal the hidden work →</a>
           <button type="button" className="footer-replay" onClick={replayIntro}>Replay introduction</button>
         </div>
         <ExperimentNote />

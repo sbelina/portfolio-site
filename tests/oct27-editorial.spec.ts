@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { readFile, access } from 'node:fs/promises'
 import { projects, graphNodes } from '../src/data'
+import archive from '../content/build-archive.json' with { type: 'json' }
 
 const thesis = 'The visible problem is rarely the one producing the outcome.'
 const legacyCases = ['claims-operations', 'brand-research', 'enterprise-ai', 'documentation-recovery', 'civic-service', 'accessibility-ai']
@@ -8,9 +9,12 @@ const legacyCases = ['claims-operations', 'brand-research', 'enterprise-ai', 'do
 test('review candidate keeps legacy identities while removing misleading public claims', async () => {
   expect(projects.map(project => project.id)).toEqual(legacyCases)
   for (const id of legacyCases) expect(graphNodes.find(node => node.id === id)?.href).toBe(`#${id}`)
-  const html = await readFile('dist/index.html', 'utf8')
+  const html = await readFile(`dist${archive.reviewPath}index.html`, 'utf8')
   expect(html).toContain(thesis)
   expect(html).toContain('I swim upstream toward the problem.')
+  const current = await readFile('dist/index.html', 'utf8')
+  expect(current).toContain('I investigate situations where outcomes are visible')
+  expect(current).toContain('Test. Show. Enable.')
   expect(html).not.toContain('18% → 7.6%')
   expect(html).not.toContain('PASS → FAIL')
   expect(html).not.toContain('agent was adopted')

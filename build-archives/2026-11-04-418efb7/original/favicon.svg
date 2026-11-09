@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Producing Curiosity">
+  <rect width="64" height="64" rx="12" fill="#151614"/>
+  <path d="M32 10 54 49H10Z" fill="none" stroke="#F1EEE5" stroke-width="4" stroke-linejoin="round"/>
+  <circle cx="32" cy="10" r="4" fill="#B9A3ED"/>
+  <circle cx="54" cy="49" r="4" fill="#F39185"/>
+  <circle cx="10" cy="49" r="4" fill="#56C7CE"/>
+</svg>

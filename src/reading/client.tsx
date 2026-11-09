@@ -1,6 +1,7 @@
 import { hydrateRoot } from 'react-dom/client'
 import { ReadingPage, type ReadingPageData } from './ReadingPage'
 import './reading.css'
+import '../design/foundation.css'
 
 const root = document.getElementById('reading-root')
 const bootstrap = document.getElementById('reading-data')

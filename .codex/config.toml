@@ -1,0 +1,3 @@
+# Project-scoped cap, documented by Codex; does not alter sandbox/approval policy.
+[agents]
+max_concurrent_threads_per_session = 4

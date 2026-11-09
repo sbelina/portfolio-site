@@ -1,0 +1,22 @@
+/* Current edition: surface-specific roles. Orange is emphasis, never evidence strength. */
+html[data-edition="current"], .pc-site, .pc-sample {
+  color-scheme: light;
+  --paper: #f3efe7; --panel: #e9e4da; --panel-2: #e4ddd0;
+  --ink: #111716; --muted: #555d58; --line: #8b918a; --soft-line: #d2d1c8;
+  --signal: #a33a0c; --signal-art: #ff641c; --focus: #734295;
+  --unresolved: #714491; --pressure: #9c3e35; --holds: #21675f;
+  --inverse: #f3efe7;
+  --serif: Georgia, 'Times New Roman', serif;
+  --reading-paper: var(--paper); --reading-panel: var(--panel); --reading-ink: var(--ink);
+  --reading-muted: var(--muted); --reading-line: var(--line); --reading-focus: var(--focus);
+  --reading-unresolved: var(--unresolved); --reading-pressure: var(--pressure); --reading-holds: var(--holds);
+}
+html[data-edition="current"] { background: var(--paper); color: var(--ink); }
+.pc-site[data-surface="observatory"], .pc-sample[data-surface="observatory"] {
+  color-scheme: dark;
+  --paper: #111716; --panel: #202925; --panel-2: #28332c;
+  --ink: #f3efe7; --muted: #b9c0b6; --line: #87978a; --soft-line: #344039;
+  --signal: #ffab7d; --signal-art: #ff641c; --focus: #e5ba72;
+  --unresolved: #c9b0ed; --pressure: #ffa89b; --holds: #8bd4c4;
+  --inverse: #111716;
+}

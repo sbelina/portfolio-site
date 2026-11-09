@@ -1,10 +1,12 @@
 # Working on Producing Curiosity
 
-Producing Curiosity is Sami Belina's investigative portfolio and field notebook. Its direction is **Seeing What Systems Miss**, with the editorial concept **Things That Didn't Add Up**. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
+Producing Curiosity is Sami Belina's applied human systems research and strategy portfolio and field journal. **Test → Show → Enable** is the professional practice; **Related. Not equivalent.** is the intellectual signature; **How I Know** is the evidence commitment. Help visitors understand the questions, evidence, decisions, contributions, and limits behind the work.
 
 ## Start here
 
 Read [the Codex context index](docs/codex/README.md), then the documents relevant to the requested task. For page architecture or content editing, read the full [IA and backend brief](docs/codex/IA-AND-BACKEND-BRIEF.md), [product context](docs/codex/PRODUCT-CONTEXT.md), and [implementation plan](docs/codex/IMPLEMENTATION-PLAN.md).
+
+The owner adopted the new [design-system blueprint](docs/design-system/BLUEPRINT.md) on 6 November 2026. Read its [adoption and implementation record](docs/design-system/ADOPTION.md), [architecture](docs/design-system/DESIGN_SYSTEM_ARCHITECTURE.md), and relevant [content](docs/design-system/CONTENT_CONTRACT.md) or [interaction contracts](docs/design-system/INTERACTION_CONTRACTS.md). The new presentation replaces the previous edition; keep the historical archive immutable. Existing evidence, authentication, stable IDs/revisions, accessibility and publication safeguards remain in force. The incoming illustrative schema does not replace the implemented model.
 
 Distinguish implemented behavior from proposals. This documentation package does not install routing, a CMS, a database, or a new publishing workflow. The current user task determines which implementation phase is authorized. A later explicit request to implement a phase authorizes its necessary reversible development and testing; do not ask again for every routine step.
 
@@ -25,8 +27,8 @@ Distinguish implemented behavior from proposals. This documentation package does
 
 ## Interface and accessibility
 
-- Preserve the calm editorial identity and violet/coral/teal semantic grammar. Pair color with text or shape. Use shimmer, depth, and temporal echoes to communicate meaningful states while maintaining a stable reading path.
-- Preserve intro invariants in `docs/INTRO-STATES.md`: one deliberate interaction per authored step (three actions total), followed by an automatic dive with resistance/echoes/breakthrough, skip/replay, keyboard/touch alternatives, reduced motion, recovery, and direct access to content. A direct article URL must not require replaying the intro.
+- Use the adopted paper/ink/orange scientific/editorial direction for the current edition. Keep semantic violet/unresolved, coral/friction, teal/learning distinct from orange emphasis; recalculate contrast for each surface and pair color with labels or shape. Final asterisk artwork is owner-supplied and pending; a typographic asterisk is a temporary placeholder, not a finalized logo. Candidate fonts require verified files/licenses before use.
+- Owner correction, 9 November: the current first-visit/replay intro requires one deliberate activation per authored step, then a separate **Dive in** activation: three steps plus Dive, four total. Waiting, key repeat, compatibility clicks or generic background input must not trigger Dive. Keep skip, replay, readable no-JavaScript HTML, reduced motion, storage failure recovery and direct-content bypass. Optional nested context never adds mandatory intro actions. See `docs/INTRO-STATES.md`. The immutable archive retains its historical three-action/automatic-dive behavior; do not rewrite its bytes.
 - Use links for navigation and buttons for actions. Support direct loads, refresh, modified clicks, meaningful focus, Back scroll restoration, and useful reading without graph interaction.
 - Give important graph relationships equivalent text navigation. Do not turn directed relationships into undirected claims. Test keyboard use, screen-reader behavior, zoom/reflow, and reduced motion; report manual and automated checks separately. Automated checks alone do not establish WCAG conformance.
 
@@ -48,6 +50,10 @@ Use the repository-pinned Node version and lockfile. For runtime changes, the cu
 
 For documentation-only changes, validate paths, internal links, fences, factual claims, and scope; a full application test run is unnecessary unless the edit affects execution. Add focused tests for meaningful changed behavior. Inspect production artifacts, not only the dev server. State exactly what ran, what passed, what remains unverified, and how to roll back material changes.
 
-## Current owner positioning — 30 October 2026
+## Current owner positioning — 6 November 2026
 
-Use **Sami Belina**. The single professional triad is **Find the gap. Trace the mechanism. Design what holds.** Preserve the visible-problem thesis, and explain the professional value through organizational, operational and human factors, leadership decisions and practical team change. The site is both a portfolio and an evolving public inquiry. Retain useful reading for every audience while experimenting. The detailed inquiry loop elaborates these moves; it adds no compulsory interactions. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. See docs/codex/OCT-30-REVIEW.md for current branch implementation and limits.
+Use **Sami Belina**. The single professional practice is **Test. Show. Enable.** This supersedes earlier public triads and presentation. Lead with **“I investigate situations where outcomes are visible, but the explanations behind them remain unclear.”** Return useful knowledge to affected people, communities and decision-makers. Keep the separate Systems Inquiry reasoning loop; neither it nor the three professional moves is an interaction gate. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. Design adoption is not publication approval for case manuscripts, metrics, assets or inferred relationships.
+
+## Bounded specialist collaboration
+
+Use independent read-only specialists for architecture, evidence and interaction audits before substantial design work; the parent integrates. [Agent orchestration](docs/design-system/AGENT_ORCHESTRATION.md) and `.codex/agents/` define bounded roles. Preserve existing writing-review records, six-pass workflow and private studio. Assign one owner per edit surface. Role restrictions are instructions, not sandbox enforcement; validate client configuration before claiming registered agents or concurrency controls work. Agent review is not authenticated owner approval or deployment authorization.

@@ -1,5 +1,7 @@
 # Product and interaction context
 
+Current direction: the owner-adopted [6 November design system](../design-system/ADOPTION.md) supersedes this document's historical positioning and presentation. Use Test. Show. Enable., the adopted applied human systems research positioning, and paper/ink/orange current surfaces. Keep evidence, accessibility, source and publication safeguards; retain the previous experience in its immutable archive. The visual semantics below remain meaningful where used, with surface-appropriate contrast rather than unchanged historic color values.
+
 ## What the site should make legible
 
 Producing Curiosity presents Sami's work as an investigative observatory and field notebook. The organizing direction is **Seeing What Systems Miss**; **Things That Didn't Add Up** is a strong editorial framing. A visitor should come away thinking, “This person sees patterns I would have missed,” and understand how Sami helps institutions notice when assumptions, metrics, categories, and practices stop reflecting people's realities.
