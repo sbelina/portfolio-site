@@ -4,7 +4,7 @@ React, TypeScript and Vite on the existing Cloudflare Worker. The current review
 
 The build prerenders the new homepage, Practice, conceptual Connections overview, design specimen, illustrative hidden-work experiment and a truthfully empty investigation collection. The prior portfolio remains in its frozen archive with a footer review link. Reading/poetry/manuscript fixtures remain local-only; the authenticated D1 writing trial is a separate loopback-only Worker. Hosted CMS integration and publication of full new case manuscripts remain incomplete. Final asterisk artwork and candidate font files/licenses are pending; current marks and fonts are explicitly provisional.
 
-The sections below preserve original v0.5 baseline notes. The new homepage has no mandatory intro. The archived experience retains one deliberate action per authored step, three total, followed by an automatic dive, with skip/replay and accessible alternatives. See [intro states](docs/INTRO-STATES.md).
+The sections below preserve original v0.5 baseline notes. The current first-visit intro requires one action per step, three total, then a separate **Dive in** action. Returning visitors use Replay introduction near the homepage statement; skip, direct links, reduced motion and no-JavaScript reading remain available. The archived experience retains its historical three-action/automatic-dive behavior. See [intro states](docs/INTRO-STATES.md) and [the 9 November release record](docs/codex/NOV-09-INTRO-RELEASE.md).
 
 ## Codex development context
 

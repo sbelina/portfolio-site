@@ -57,6 +57,28 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-moves h3 { font-size: 2rem; margin-bottom: 1rem; }
 .pc-moves h3 span { color: var(--signal); }
 .pc-moves p { max-width: 34ch; }
+.pc-layer { margin-block: 1rem; border-top: 1px solid var(--line); padding-top: .5rem; }
+.pc-layer > summary { min-height: 44px; padding-block: .5rem; cursor: pointer; font-weight: 550; }
+.pc-layer > :not(summary) { margin-top: 1rem; }
+.pc-layer ul { padding-left: 1.2rem; }
+.pc-inquiry-figure .pc-layer p { font-size: 1rem; max-width: none; }
+.pc-replay { max-width: 100%; overflow-wrap: anywhere; color: inherit; font: inherit; background: transparent; border: 1px solid var(--line); min-height: 44px; padding: .5rem .75rem; cursor: pointer; }
+/* Current intro keeps its observatory contrast and remains readable when enlarged. */
+.pc-site.pc-intro { min-height: 0; }
+.pc-intro .intro-shell, .pc-intro .intro-stage { background: var(--paper); color: var(--ink); }
+.pc-intro .intro-shell--locked { height: auto; min-height: 100svh; overflow: visible; }
+.pc-intro .intro-stage { min-height: 100svh; height: auto; overflow-x: clip; overflow-y: visible; padding: 5rem 5vw 2rem; grid-template-columns: minmax(0,1fr); }
+.pc-intro .intro-field { width: 100%; min-width: 0; min-height: 65svh; max-width: 100%; touch-action: none; }
+.pc-intro .intro-source-wrap, .pc-intro .intro-source, .pc-intro .question, .pc-intro .step-copy { min-width: 0; max-width: 100%; }
+.pc-intro .question-trigger { max-width: 100%; min-height: 44px; overflow-wrap: anywhere; }
+.pc-intro .intro-hint { color: var(--muted); padding: .25rem; }
+.pc-intro .skip-link { position: fixed; top: .75rem; left: 5vw; z-index: 50; padding: .5rem .75rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
+.pc-intro :is(.effect-resist-one,.effect-resist-two,.effect-breakthrough) .intro-source-wrap { animation: none; }
+.pc-intro .effect-resist-one .mirror-stack { animation: yieldOne 720ms ease; }
+.pc-intro .effect-resist-two .mirror-stack { animation: yieldTwo 720ms ease; }
+.pc-intro .effect-breakthrough .mirror-stack { animation: breakThrough 820ms ease; }
+.pc-intro .question-mark::before, .pc-intro .question-mark::after { animation: none; }
+.pc-intro .intro-shell[data-intro-phase="ready"] .step-prompt { text-decoration: underline; text-underline-offset: .2em; }
 .pc-text-link, .pc-contact a, .pc-breadcrumb { display: inline-flex; align-items: center; min-height: 44px; gap: .4rem; }
 .pc-contact a + a { margin-left: 2rem; }
 .pc-external-arrow { display: inline-block; width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.5; flex-shrink: 0; }
@@ -110,6 +132,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(max-width:540px) {
   .pc-main { padding-inline: 5vw; }
   .pc-main h1 { font-size: 2rem; }
+  .pc-intro :is(.question,.step-prompt,.mirror) { font-size: 1.25rem; }
+  .pc-intro .intro-field { touch-action: pan-y; }
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
   /* Give enlarged option words the full measure across system-font metrics. */
   .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
@@ -119,6 +143,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-contact a + a { margin-left: 0; }
   .pc-contact { display: flex; flex-direction: column; align-items: flex-start; }
 }
+@media(max-height:540px) { .pc-intro .intro-field { touch-action: pan-y; } }
 @media(prefers-reduced-motion:reduce) { .pc-site *, .pc-site *::before, .pc-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media(forced-colors:active) { .pc-site :is(a,summary,input):focus-visible { outline-color: Highlight; } .pc-state { border-color: CanvasText; } }
 @media print { .pc-header,.pc-footer,.pc-skip { display: none; } .pc-site { background: white; color: black; } .pc-main { width: 100%; } }

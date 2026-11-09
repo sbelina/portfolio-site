@@ -1,6 +1,25 @@
 # Authored introduction: states and recovery
 
-Current owner correction,30October2026: **one deliberate interaction per step**, three required actions total. This supersedes the earlier one-start/automatic-three-beats behavior. The initial question is the first step’s action; there is no separate start gate. Main content exists throughout.
+Current owner correction, 9 November 2026: **three step actions plus a separate Dive action**, four total. The initial question is step1; there is no extra Start gate. Each next phrase becomes actionable immediately. After step3 the intro waits indefinitely at **Dive in**. Only activating Dive starts the transition; waiting, wheel inertia, a held key or a generic field click cannot supply that fourth action. Skip remains available. The historical variant below remains in the immutable archive and legacy fixtures.
+
+## Current edition — explicit Dive
+
+| State | One action | Result |
+| --- | --- | --- |
+| Question / step1 | Activate the whole phrase, native keyboard action, click/tap or supported gesture | Step2; no timer advances it |
+| Step2 | One new activation | Step3; no timer advances it |
+| Step3 | One new activation | Immediately enable Dive in; retain focus on the same native button |
+| Ready | Activate Dive in | Run the900ms transition; reduced motion goes directly to main |
+| Any intro state, including animation | Skip | Cancel pending work and focus main |
+| Returning visitor | Replay introduction near homepage statement | Restart at step1 with all four actions required |
+
+The first presentation uses the existing browser-local visit marker; fragments, direct reading routes, Back/Forward restoration, denied storage and reduced-motion first visits bypass it. Replay remains available. Server/first-client markup is deterministic and keeps useful reading in the HTML. An error boundary recovers to main. Intro colors inherit the current observatory surface; paper tokens are not used on a dark stage.
+
+On narrow/short screens, vertical touch panning reads enlarged content rather than advancing it; sideways swipes, phrase taps and keyboard controls remain alternatives. Primary controls stay still while decorative echoes communicate resistance/breakthrough. Skip stays fixed and reachable. Optional practice/illustration disclosures have native semantics, require no JavaScript and never change intro progress.
+
+## Historical variant — 30 October
+
+One deliberate interaction per step, three total, followed by an automatic dive. This is retained only for legacy fixtures and the immutable archived experience. It superseded the earlier one-start/automatic-three-beats behavior at that time. Main content exists throughout.
 
 | State | Event | Next state / action |
 |---|---|---|

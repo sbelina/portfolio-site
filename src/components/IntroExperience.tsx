@@ -8,17 +8,19 @@ const STEPS = [
   'dive in',
 ]
 
-type Phase = 'question' | 'steps' | 'dive'
+type Phase = 'question' | 'steps' | 'ready' | 'dive'
 type Effect = 'idle' | 'resist-one' | 'resist-two' | 'breakthrough'
 
 type Props = {
   forceReplayKey: number
   onComplete: () => void
+  diveMode?: 'automatic' | 'explicit'
 }
 
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-export function IntroExperience({ forceReplayKey, onComplete }: Props) {
+export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automatic' }: Props) {
+  const explicitDive = diveMode === 'explicit'
   const shellRef = useRef<HTMLElement>(null)
   const lockRef = useRef(false)
   const completedRef = useRef(0)
@@ -78,7 +80,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     return clearTimers
   }, [forceReplayKey, reset, clearTimers])
 
-  // Each accepted action completes one authored step. Only the final dive is automatic.
+  // One activation per authored step. Current edition waits for a separate Dive action.
   const begin = useCallback((nextVector = { x: 0.12, y: -1 }) => {
     if (lockRef.current || completedRef.current >= 3) return
     const completed = ++completedRef.current
@@ -91,6 +93,12 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     setStatus(completed === 1 ? 'Question the boundaries. Step 2: test the limits. Activate to continue.' : completed === 2 ? 'Test the limits. Step 3: recognize patterns. Activate to continue.' : 'Recognize patterns. The page opens automatically.')
     if (completed === 3) {
       lockRef.current = true
+      if (explicitDive) {
+        setStep(3)
+        setPhase('ready')
+        setStatus('Three steps complete. Activate Dive in when you are ready.')
+        return
+      }
       if (reducedMotion) { onComplete(); return }
       schedule(() => {
         setStep(3)
@@ -99,7 +107,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
         setStatus('The page opens.')
       }, 650)
     }
-  }, [clearTimers, reducedMotion, onComplete, schedule])
+  }, [clearTimers, reducedMotion, onComplete, schedule, explicitDive])
 
   useEffect(() => {
     if (phase === 'dive') return
@@ -108,7 +116,9 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
 
     const onWheel = (event: WheelEvent) => {
       if (Math.abs(event.deltaY) < 8 && Math.abs(event.deltaX) < 8) return
+      if (explicitDive && shell.scrollHeight > window.innerHeight + 1) return
       event.preventDefault()
+      if (phase === 'ready') return
       const now = performance.now()
       const ready = now >= wheelReadyAtRef.current
       wheelReadyAtRef.current = now + 250
@@ -124,8 +134,10 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       if (!['ArrowDown', 'PageDown', ' ', 'End'].includes(event.key)) return
       const target = event.target as HTMLElement | null
       if (event.repeat || event.altKey || event.ctrlKey || event.metaKey ||
-        target?.closest('a, button, input, textarea, select, [contenteditable="true"]')) return
+        target?.closest('a, button, summary, input, textarea, select, [contenteditable="true"]')) return
+      if (explicitDive && shell.scrollHeight > window.innerHeight + 1) return
       event.preventDefault()
+      if (phase === 'ready') return
       begin({ x: 0.16, y: -1 })
     }
 
@@ -136,7 +148,7 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       shell.removeEventListener('wheel', onWheel)
       shell.removeEventListener('keydown', onKeyDown)
     }
-  }, [begin, phase])
+  }, [begin, phase, explicitDive])
 
   useEffect(() => {
     if (phase !== 'dive' || diving) return
@@ -157,9 +169,9 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
   }, [onComplete, phase, diving])
 
   useEffect(() => {
-    if (phase !== 'dive') return
+    if (phase !== 'dive' || explicitDive) return
     schedule(() => setDiving(true), reducedMotion ? 0 : 150)
-  }, [phase, reducedMotion, schedule])
+  }, [phase, reducedMotion, schedule, explicitDive])
 
   useEffect(() => {
     if (!diving) return
@@ -191,7 +203,17 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
     onComplete()
   }
 
-  const dive = () => setDiving(true)
+  const dive = () => {
+    if (explicitDive) {
+      if (phase !== 'ready') return
+      clearTimers()
+      if (reducedMotion) { onComplete(); return }
+      setPhase('dive')
+      setEffect('idle')
+      setStatus('Diving into the portfolio.')
+    }
+    setDiving(true)
+  }
 
   const yieldDistance = effect === 'resist-one' ? 14 : effect === 'resist-two' ? 28 : effect === 'breakthrough' ? 44 : 0
   const dx = yieldDistance * vector.x
@@ -216,6 +238,8 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
       className={`intro-shell ${phase === 'dive' ? 'intro-shell--dive' : 'intro-shell--locked'}`}
       style={{ '--dive-progress': diveProgress } as React.CSSProperties}
       aria-label="Producing Curiosity introduction"
+      data-dive-mode={diveMode}
+      data-intro-phase={phase}
     >
       <div className="intro-stage">
         <button className="skip-link" type="button" onClick={skip} onPointerUp={(event) => {
@@ -297,15 +321,15 @@ export function IntroExperience({ forceReplayKey, onComplete }: Props) {
                 <button
                   type="button"
                   className={phase === 'question' ? 'question-trigger' : 'question-trigger step-prompt'}
-                  aria-label={phase === 'question' ? 'Begin exploring the question' : STEPS[step]}
-                  disabled={effect === 'breakthrough' || phase === 'dive'}
+                  aria-label={phase === 'ready' ? 'Dive in to the portfolio' : phase === 'question' ? explicitDive ? 'Begin exploring the question: how does one produce curiosity?' : 'Begin exploring the question' : STEPS[step]}
+                  disabled={(effect === 'breakthrough' && phase !== 'ready') || phase === 'dive'}
                   onKeyDown={event => { if (event.repeat) event.preventDefault() }}
-                  onClick={event => { event.stopPropagation(); begin() }}
+                  onClick={event => { event.stopPropagation(); phase === 'ready' ? dive() : begin() }}
                 >
-                  {phase === 'question' ? <>how does one produce curiosity<span className="question-mark" aria-hidden="true">?</span></> : STEPS[step]}
+                  {phase === 'question' ? <>how does one produce curiosity<span className="question-mark" aria-hidden="true">?</span></> : phase === 'ready' ? 'Dive in' : STEPS[step]}
                 </button>
-                {phase !== 'dive' && effect !== 'breakthrough' ? <p className="intro-hint">One action per step. Activate the phrase, drag, or swipe. Keyboard: Enter or Space. Skip at any time.</p> : null}
-                {phase === 'dive' ? <button type="button" className="dive-arrow" aria-label="Dive into the portfolio" onClick={event => { event.stopPropagation(); dive() }}><span aria-hidden="true">↓</span></button> : null}
+                {phase === 'ready' ? <p className="intro-hint">Three steps complete. One final action to dive in. Waiting will not advance the introduction.</p> : phase !== 'dive' && effect !== 'breakthrough' ? <p className="intro-hint">{explicitDive ? 'One action per step. Activate the phrase, or swipe sideways. Keyboard: Enter or Space. Skip at any time.' : 'One action per step. Activate the phrase, drag, or swipe. Keyboard: Enter or Space. Skip at any time.'}</p> : null}
+                {phase === 'dive' && !explicitDive ? <button type="button" className="dive-arrow" aria-label="Dive into the portfolio" onClick={event => { event.stopPropagation(); dive() }}><span aria-hidden="true">↓</span></button> : null}
               </div>
             </div>
           </div>

@@ -6,11 +6,11 @@ import { usePublicHeader } from '../components/usePublicHeader'
 import { publicPath } from '../public-path'
 
 /** Current-edition chrome; historical replay bytes never import this component. */
-export function CurrentShell({ route, children, surface = 'paper' }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory' }) {
+export function CurrentShell({ route, children, surface = 'paper', onSkipIntro }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory'; onSkipIntro?: () => void }) {
   const { header, compactHeader, headerMeasured, oversizedHeader } = usePublicHeader()
   const mainId = route === '/' ? 'index' : 'content'
   return <div className="pc-site" data-surface={surface}>
-    <a className="pc-skip" href={`#${mainId}`}>Skip to main content</a>
+    <a className="pc-skip" href={`#${mainId}`} onClick={onSkipIntro}>Skip to main content</a>
     <header ref={header} className="pc-header" data-compact={compactHeader} data-measured={headerMeasured} data-oversized={oversizedHeader}>
       <a className="pc-wordmark" href={publicPath('/')}><span aria-hidden="true">*</span> Producing Curiosity</a>
       <PublicNavigation currentPath={route}/>

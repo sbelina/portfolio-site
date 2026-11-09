@@ -109,7 +109,7 @@ test('new routes reserve claims for reviewed selections, preserve real 404s and 
 })
 
 test('new homepage header condenses without obstructing the reading path', async ({ browser }) => {
-  const context = await browser.newContext({ viewport: { width: 1440, height: 950 } })
+  const context = await browser.newContext({ viewport: { width: 1440, height: 950 }, reducedMotion: 'reduce' })
   try {
     const page = await context.newPage(); await page.goto(origin + '/')
     const header = page.locator('.pc-header')

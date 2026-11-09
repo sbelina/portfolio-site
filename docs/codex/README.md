@@ -4,6 +4,8 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 ## Current direction — 6 November 2026
 
+Current interaction/release update, 9 November: [three deliberate intro steps plus a separate Dive action, optional nested context and publication record](NOV-09-INTRO-RELEASE.md). The owner explicitly requested the correction and publication. The new edition's positioning/design remain adopted; historical archive bytes, private drafts and exact-candidate content boundaries remain intact.
+
 The owner adopted the [new blueprint and system kit](../design-system/ADOPTION.md): **Test. Show. Enable.**, applied human systems research and strategy, asterisk identity (final artwork pending), and paper/ink/orange presentation replace the previous current-edition design. The immutable previous build remains archived. Start with that adoption record, then [design architecture](../design-system/DESIGN_SYSTEM_ARCHITECTURE.md), [content](../design-system/CONTENT_CONTRACT.md), [interaction](../design-system/INTERACTION_CONTRACTS.md), and [agent contracts](../design-system/AGENT_ORCHESTRATION.md). Older dates/triads below are historical; source/evidence, exact-candidate approval, protected drafts and accessibility rules remain active. The existing React/TypeScript/Vite/Worker implementation is retained.
 
 ## Current integrated release

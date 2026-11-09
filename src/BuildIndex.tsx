@@ -5,6 +5,7 @@ import { PracticeMoves } from './design/PracticeMoves'
 import { InquiryIllustration } from './design/InquiryIllustration'
 import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
+import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 
 const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
 export const archivedAnchors = archive.homeAnchors.filter(id => !currentAnchors.has(id))
@@ -12,6 +13,7 @@ const labels: Record<string, string> = { work: 'Investigations', connections: 'C
 
 /** A new entry point; previous work and its interactions live in the frozen build. */
 export default function BuildIndex() {
+  const introduction = useHomeIntroduction()
   useEffect(() => {
     const followLegacyFragment = () => {
       let fragment: string
@@ -22,7 +24,7 @@ export default function BuildIndex() {
     window.addEventListener('hashchange', followLegacyFragment)
     return () => window.removeEventListener('hashchange', followLegacyFragment)
   }, [])
-  return <CurrentShell route="/">
+  return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined}>
     <div className="build-index">
       <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
@@ -30,6 +32,7 @@ export default function BuildIndex() {
           <h1 id="index-title">I investigate situations where outcomes are visible, but the explanations behind them remain unclear.</h1>
           <p className="pc-lead">I study how people understand, decide, and act within organizational, technological, and civic systems—and help make that understanding useful to the people who need it.</p>
           <p className="pc-byline">An evolving portfolio and field journal by Sami Belina.</p>
+          {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
         <InquiryIllustration/>
       </section>
@@ -52,5 +55,5 @@ export default function BuildIndex() {
         <ul>{archivedAnchors.map(id => <li key={id} id={id}><a href={`${archive.reviewPath}#${id}`}>{labels[id] ?? id.replaceAll('-', ' ')} →</a></li>)}</ul>
       </details>
     </div>
-  </CurrentShell>
+  </CurrentShell></>
 }

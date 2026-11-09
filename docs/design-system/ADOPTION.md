@@ -1,5 +1,7 @@
 # Design-system adoption — 6 November 2026
 
+Subsequent owner direction, 9 November: restore the current first-visit intro with three deliberate step actions plus a separate Dive action, add optional nested context and publish. See [the release record](../codex/NOV-09-INTRO-RELEASE.md). This supersedes only the no-intro decision below; it does not authorize new case manuscripts or changes to frozen archive bytes.
+
 The owner explicitly adopted **Test → Show → Enable**, the new design direction replacing previous current-site presentation, and an asterisk identity with final artwork still to come. The owner agreed to retain the stronger Claims and exact-candidate approval safeguards. This authorizes reversible implementation on a review branch, not production deployment or publication of full case manuscripts.
 
 ## Authority and provenance

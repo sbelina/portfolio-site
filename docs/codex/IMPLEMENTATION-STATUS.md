@@ -1,4 +1,4 @@
-Current 6 November review branch: see [design-system adoption](../design-system/ADOPTION.md) and [verification](../design-system/VERIFICATION.md). Test. Show. Enable. and the new current presentation supersede the earlier edition; no new case approval or production deployment. Older status records follow.
+Current 9 November task: [explicit four-action intro, nested-context layers and release record](NOV-09-INTRO-RELEASE.md). The owner authorized correction and publication. See that record and the release PR for actual checks and hosted status; approval for canonical case manuscripts remains absent. Earlier design/slice records below are historical.
 
 Current30October review branch: see [the audit, changes and verification record](OCT-30-REVIEW.md). This supersedes older positioning on this branch; no new case approval or deployment. Earlier records below remain historical.
 

@@ -12,6 +12,8 @@ export function InquiryIllustration() {
         <circle className="pc-open-question" cx="210" cy="241" r="8"/>
       </svg>
     </div>
-    <figcaption><span className="pc-kicker">A way of looking</span><p>An outcome and its explanation are related. They are not the same thing.</p><small>Conceptual illustration · not measured data</small></figcaption>
+    <figcaption><span className="pc-kicker">A way of looking</span><p>An outcome and its explanation are related. They are not the same thing.</p><small>Conceptual illustration · not measured data</small>
+      <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dashed line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
+    </figcaption>
   </figure>
 }
