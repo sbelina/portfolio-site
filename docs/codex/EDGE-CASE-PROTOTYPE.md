@@ -28,6 +28,7 @@ A private claude.ai artifact, readable only by the owner: https://claude.ai/arti
 | Conflicts | Fixed order of operations (§2); hazards after shifts (H3); same-place outcomes (H4); target ties go to gates (A1) |
 | System index | Known operations 03/07 with clues; ten discoveries in binary (`0000 / 1010`); an uncounted, permanent UNKNOWN entry |
 | Hints | 000: at 15, 30 and 45 s of play without a shift (pauses excluded): observation → structure → named control. 001 and 010 have two gentler hints. All persist on screen, are announced, and can be requested from Pause. Counted in run records (§11) |
+| Touch controls | Settings → Movement control: **Pad** (default, four labelled buttons) or **Joystick that follows your finger**. The joystick is floating: the base appears where the finger lands and trails a finger that passes the rim. Direction snaps to eight ways; distance sets speed. Settings → **Control sides**: movement left with Shift right, or mirrored. Keyboard works with both (spec §12a) |
 | Run records | Every ended attempt is logged with a thumbnail. The snapshot view shows a full field record (route, end point, summary) with Save image; press and hold also works. Field log: personal, local standings (best time, fewest actions, ways found `n / ?`), recent outcomes, rank by time (§12) |
 | Isolation | Built only by `npm run build:fixtures`; absent from `dist/`; production audit rejects the marker and route |
 
@@ -52,7 +53,9 @@ A private claude.ai artifact, readable only by the owner: https://claude.ai/arti
 - Engine: 28 tests, each citing spec rule IDs. They cover determinism; structures; every SHIFT rule (rotation of offset and velocity, clamping, centre membership, tracer turning and stranding, hazards after shift, coexisting tracers, prediction updates); target ties; all seven scripted solutions; and every discovery trigger with negative cases.
 - Records: 2 pure tests (methods; standings, ties and rank).
 - Browser (Chromium, desktop WebKit, iPhone WebKit, Firefox): the game page suite (11), plus hints and records (5): unaided start with escalating hints under a fake clock; pause excluded; on-demand hint; a failure logged; snapshot view and PNG save; standings `n / ?`.
+- Controls: 5 pure tests (dead zone, exact axis snapping, magnitude, base trailing, proportional speed), plus browser tests for side swapping with persistence and the joystick driving the player, in all four setups.
 - Icons: 6 tests.
+- Full suite after the controls change: 579 passed, 0 failed, 11 skipped (Chromium, desktop WebKit, iPhone WebKit, Firefox).
 - Full-suite totals, packaging and studio results: see the commit and the owner report for this date.
 
 **Not verified:** real iPhone/Android hardware, Safari's dynamic toolbar, VoiceOver, saving inside the artifact viewer (requires a person to accept the prompt), and anything about fun, comprehension or fairness. Those need people.

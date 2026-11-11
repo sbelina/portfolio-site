@@ -11,7 +11,7 @@ Status: prototype, slice 1 (levels 000–010). Units: one tile = 1.0. Time is in
 - **T1** The simulation advances in fixed steps of 1/60 s. Rendering never changes simulation results.
 - **T2** There is no randomness. The same level and the same sequence of per-step inputs always produce the same states and events.
 - **T3** The interface may run 0–6 steps per animation frame (accumulated real time × game speed setting). Game speed scales time fed to the simulation, never rule constants.
-- **T4** Input per step is `{ dx, dy, action }` with dx, dy ∈ {−1, 0, 1}. `action` is true for exactly one step per key press or button activation (key repeat is ignored).
+- **T4** Input per step is `{ dx, dy, action }`. Keys and the pad give dx, dy ∈ {−1, 0, 1}; the joystick (I1) gives a snapped direction scaled by a magnitude in [0, 1]. Simultaneous sources are summed and each axis clamped to [−1, 1]. `action` is true for exactly one step per key press or button activation (key repeat is ignored).
 
 ## 2. Order of operations within one step
 
@@ -29,7 +29,7 @@ Each step applies these phases in order. Later phases see the results of earlier
 ## 3. Player movement
 
 - **P1** The player is a circle for drawing and an axis-aligned square of half-size 0.30 for collision.
-- **P2** Target velocity is the input direction normalised to length 1, times 4.0 tiles/s. Each axis approaches its target at 34 tiles/s² when accelerating and 46 tiles/s² when the axis target is 0 (braking).
+- **P2** Target velocity is the input vector times 4.0 tiles/s, normalised to length 1 only when longer than 1 (keyboard diagonals). Shorter input, from a partly pushed joystick, gives proportionally lower speed. Each axis approaches its target at 34 tiles/s² when accelerating and 46 tiles/s² when the axis target is 0 (braking).
 - **P3** Movement resolves the x axis, then the y axis. Overlap with any solid pushes the player out along that axis and zeroes that axis's velocity.
 - **P4** Solids: wall tiles; junction arms (§4, J2); the two edge bars of each channel gate (§5, G1).
 - **P5** Corner assist: when input is purely horizontal (or vertical), the player was blocked on that axis, and the tile ahead in the player's current lane is not a wall, the player slides toward the lane centre at up to 3.2 tiles/s. This prevents pixel-perfect doorway alignment and never moves the player through a solid.
@@ -112,6 +112,12 @@ Outside the count: the permanent **UNKNOWN** entry. It is never awarded and is l
 - **N2** Hint 1 is an observation. Hint 2 points at the structure. Hint 3 names the control and all of its inputs.
 - **N3** Hints persist on screen until the player progresses, are announced once to assistive technology, and can be requested early from the pause menu ("Show a hint"). Requests are counted in the run record.
 - **N4** Controls are never hidden. The Shift button, its keys (Shift, Space, Enter) and all settings are visible from the start; only what SHIFT does is left to discover.
+
+## 12a. Touch controls (interface rules)
+
+- **I1** **Joystick** (Settings → Movement control). A floating stick: the base appears where the finger first lands in the movement zone, and the knob follows the finger. If the finger travels past the rim (44 px), the base trails it at rim distance, so the stick stays under the finger. Direction is the finger's offset from the base, snapped to the nearest of eight directions (axis directions have exactly zero cross-component, so P5 applies). Magnitude is 0 within the dead zone (18% of the radius), then rises linearly to 1 at the rim. Lifting, cancelling or losing the pointer releases to zero. Only the first finger is tracked.
+- **I2** **Control sides** (Settings → Control sides). Movement (pad or joystick) on the left with Shift on the right, or mirrored. Layout only; inputs are identical.
+- **I3** Keyboard input (arrows/WASD, Shift/Space/Enter) works with either touch layout. The pad remains the default because its buttons are individually labelled for assistive technology.
 
 ## 12. Run records, snapshots and ranking (interface rules)
 

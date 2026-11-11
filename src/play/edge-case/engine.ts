@@ -360,9 +360,11 @@ export function step(s: GameState, input: Input, dt = STEP) {
   if (s.status !== 'playing') return s
   const p = s.player
   if (input.dx || input.dy) s.moved = true
-  // Movement: predictable acceleration and braking, diagonal input normalised.
-  const length = Math.hypot(input.dx, input.dy) || 1
-  const tx = (input.dx / length) * PLAYER_MAX_SPEED, ty = (input.dy / length) * PLAYER_MAX_SPEED
+  // Movement (P2): input longer than 1 is normalised (keyboard diagonals); shorter
+  // input from the joystick is partial speed. Predictable acceleration and braking.
+  const length = Math.hypot(input.dx, input.dy)
+  const scale = length > 1 ? 1 / length : 1
+  const tx = input.dx * scale * PLAYER_MAX_SPEED, ty = input.dy * scale * PLAYER_MAX_SPEED
   p.vx = approach(p.vx, tx, (tx === 0 ? PLAYER_BRAKE : PLAYER_ACCEL) * dt)
   p.vy = approach(p.vy, ty, (ty === 0 ? PLAYER_BRAKE : PLAYER_ACCEL) * dt)
   const blockedX = moveAxis(s, 'x', p.vx * dt)

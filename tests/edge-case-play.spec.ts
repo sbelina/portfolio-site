@@ -82,3 +82,63 @@ test('L4: standings show best time, fewest actions and ways found out of an unkn
   await expect(row).toContainText('2 / ?')
   await expect(page.getByText('Carried exit + Exception · rank #1 of 2')).toBeVisible()
 })
+
+test('I2: control sides can be swapped in settings and persist', async ({ page }) => {
+  await page.goto(route)
+  const pad = page.locator('.ps-pad'), shift = page.locator('.ps-action')
+  expect((await pad.boundingBox())!.x).toBeLessThan((await shift.boundingBox())!.x)
+  await page.getByRole('button', { name: 'Settings' }).click()
+  await page.getByLabel('Movement right, Shift left').check()
+  await page.getByRole('button', { name: 'Done' }).click()
+  expect((await pad.boundingBox())!.x).toBeGreaterThan((await shift.boundingBox())!.x)
+  await page.reload()
+  expect((await pad.boundingBox())!.x).toBeGreaterThan((await shift.boundingBox())!.x)
+})
+
+test('I1: the joystick follows the finger and moves the player; lifting stops it', async ({ browser, baseURL }) => {
+  // Reduced motion makes the scroll-into-view on Play instant, so measured positions are stable.
+  const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 664 }, hasTouch: true, reducedMotion: 'reduce' })
+  try {
+    const page = await context.newPage()
+    await page.goto(route)
+    await page.getByRole('button', { name: 'Settings' }).click()
+    await page.getByLabel('Joystick that follows your finger').check()
+    await page.getByRole('button', { name: 'Done' }).click()
+    await expect(page.locator('.ps-pad')).toHaveCount(0)
+    await page.getByRole('button', { name: 'Play' }).click()
+    await page.getByRole('button', { name: 'Shift' }).click()
+    const zone = page.locator('.ps-stick')
+    const box = (await zone.boundingBox())!
+    const at = (x: number, y: number, buttons: number) => ({ clientX: box.x + x, clientY: box.y + y, pointerId: 11, pointerType: 'touch', isPrimary: true, buttons, bubbles: true })
+    // Land anywhere: the base appears under the finger.
+    await zone.dispatchEvent('pointerdown', at(40, 60, 1))
+    await expect(zone).toHaveAttribute('data-held', 'true')
+    const base = await page.locator('.ps-stick-base').evaluate(el => new DOMMatrix(getComputedStyle(el).transform))
+    expect(base.m41).toBeCloseTo(40, 0)
+    expect(base.m42).toBeCloseTo(60, 0)
+    const section = page.locator('.ps')
+    // Drive the finger from inside the page, checked every frame: drag far up (the base
+    // trails the finger) until the player enters row 4, then drag right until the sample is collected.
+    await page.evaluate(({ x, y }) => new Promise<void>((resolve, reject) => {
+      const zone = document.querySelector('.ps-stick')!, root = document.querySelector('.ps')!
+      const move = (dx: number, dy: number) => zone.dispatchEvent(new PointerEvent('pointermove', { clientX: x + dx, clientY: y + dy, pointerId: 11, pointerType: 'touch', isPrimary: true, buttons: 1, bubbles: true }))
+      move(40, 10)
+      let turned = false
+      const deadline = performance.now() + 8000
+      const frame = () => {
+        if (!turned && /,4$/.test(root.getAttribute('data-player-tile') ?? '')) { turned = true; move(90, 60) }
+        if (document.querySelector('.ps-samples')?.textContent?.includes('1/2')) return resolve()
+        if (performance.now() > deadline) return reject(new Error(`stuck at ${root.getAttribute('data-player-tile')}`))
+        requestAnimationFrame(frame)
+      }
+      requestAnimationFrame(frame)
+    }), { x: box.x, y: box.y })
+    await zone.dispatchEvent('pointerup', at(90, 60, 0))
+    await expect(zone).not.toHaveAttribute('data-held', 'true')
+    // Released: the player brakes to a stop (P2).
+    const stopped = await section.getAttribute('data-player-tile')
+    await page.waitForTimeout(400)
+    await expect(section).toHaveAttribute('data-player-tile', stopped!)
+    await expect(page.locator('.ps-samples')).toContainText('1/2')
+  } finally { await context.close() }
+})

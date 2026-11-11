@@ -5,10 +5,11 @@ import { createMemory, draw, noteGateTurn, noteShift, readPalette, type View } f
 import { load, prefersReducedMotion, save, type Saved, type Settings } from './settings'
 import { binary, discoveries, operations } from './system-index'
 import { Sound } from './audio'
+import { followBase, stickInput } from './stick'
 import { appendLog, loadLog, methodOf, rankOf, saveSnapshot, snapshot, standing, thumbnail, type RunRecord } from './records'
 
 type Screen = 'title' | 'levels' | 'settings' | 'index' | 'log' | 'snapshot' | 'playing' | 'paused' | 'failed' | 'won'
-interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate' }
+interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate'; tile: string }
 interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[] }
 
 const MOVE: Record<string, [number, number]> = {
@@ -22,7 +23,7 @@ const discoveryOf = (id: string) => discoveries.find(d => d.id === id)!
 
 function hudOf(s: GameState): Hud {
   const target = reachable(s)
-  return { taken: collected(s), total: s.samples.length, reach: target ? target.kind : '' }
+  return { taken: collected(s), total: s.samples.length, reach: target ? target.kind : '', tile: `${s.tile.x},${s.tile.y}` }
 }
 
 export function EdgeCaseGame() {
@@ -31,7 +32,7 @@ export function EdgeCaseGame() {
   const [screen, setScreen] = useState<Screen>('title')
   const [returnTo, setReturnTo] = useState<Screen>('title')
   const [levelIndex, setLevelIndex] = useState(0)
-  const [hud, setHud] = useState<Hud>({ taken: 0, total: 0, reach: '' })
+  const [hud, setHud] = useState<Hud>({ taken: 0, total: 0, reach: '', tile: '' })
   const [announcement, setAnnouncement] = useState('')
   const [hint, setHint] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -118,6 +119,8 @@ export function EdgeCaseGame() {
   }, [paint])
 
   const syncHud = useCallback(() => {
+    // Written directly each frame (not through React state) so it never lags the simulation.
+    rootRef.current?.setAttribute('data-player-tile', `${game.current.tile.x},${game.current.tile.y}`)
     const next = hudOf(game.current)
     const key = JSON.stringify(next)
     if (key !== hudCache.current) { hudCache.current = key; setHud(next) }
@@ -504,13 +507,17 @@ export function EdgeCaseGame() {
         )}
       </div>
 
-      <div className="ps-controls" ref={controlsRef}>
+      <div className="ps-controls" ref={controlsRef} data-side={settings.movementSide} data-movement={settings.movement}>
+        {settings.movement === 'joystick' ? (
+          <Joystick active={screen === 'playing'} onStart={() => sound.current.unlock()} onMove={(dx, dy) => { pad.current = { dx, dy } }}/>
+        ) : (
         <div className="ps-pad" role="group" aria-label="Movement pad" onPointerDown={padDown} onPointerMove={event => { if (event.buttons || event.pointerType === 'touch') padMove(event) }} onPointerUp={padEnd} onPointerCancel={padEnd} onLostPointerCapture={padEnd}>
           <button type="button" className="ps-pad-up" aria-label="Move up" disabled={screen !== 'playing'} {...padButtonKey(0, -1)}><span aria-hidden="true">▲</span></button>
           <button type="button" className="ps-pad-left" aria-label="Move left" disabled={screen !== 'playing'} {...padButtonKey(-1, 0)}><span aria-hidden="true">◀</span></button>
           <button type="button" className="ps-pad-right" aria-label="Move right" disabled={screen !== 'playing'} {...padButtonKey(1, 0)}><span aria-hidden="true">▶</span></button>
           <button type="button" className="ps-pad-down" aria-label="Move down" disabled={screen !== 'playing'} {...padButtonKey(0, 1)}><span aria-hidden="true">▼</span></button>
         </div>
+        )}
         <button type="button" className="ps-action" aria-disabled={!ready} data-ready={ready ? 'true' : 'false'} onClick={shift}>
           <span className="ps-action-icon" aria-hidden="true">⇧</span>
           <span>Shift</span>
@@ -518,6 +525,69 @@ export function EdgeCaseGame() {
       </div>
       <p className="ps-visually-hidden" aria-live="polite" role="status">{announcement}</p>
     </section>
+  )
+}
+
+/**
+ * Floating joystick (MECHANICS.md I1): the base appears where the finger lands in
+ * the zone, the knob follows the finger, and the base trails a finger that moves
+ * past the rim. Arrow keys and WASD keep working; the pad remains in Settings.
+ */
+const STICK_RADIUS = 44
+function Joystick({ active, onMove, onStart }: { active: boolean; onMove: (dx: number, dy: number) => void; onStart: () => void }) {
+  const zone = useRef<HTMLDivElement>(null)
+  const base = useRef<HTMLDivElement>(null)
+  const knob = useRef<HTMLDivElement>(null)
+  const origin = useRef<{ x: number; y: number } | null>(null)
+  const pointer = useRef<number | null>(null)
+  const captured = useRef(false)
+  // A stable reference: re-renders (HUD updates) must never reset a held stick.
+  const move = useRef(onMove)
+  move.current = onMove
+  const place = (x: number, y: number, kx: number, ky: number) => {
+    if (base.current) base.current.style.transform = `translate(${x}px, ${y}px)`
+    if (knob.current) knob.current.style.transform = `translate(${kx}px, ${ky}px)`
+  }
+  const rest = useCallback(() => {
+    const rect = zone.current?.getBoundingClientRect()
+    origin.current = null
+    pointer.current = null
+    zone.current?.removeAttribute('data-held')
+    if (rect) place(rect.width / 2, rect.height / 2, rect.width / 2, rect.height / 2)
+    move.current(0, 0)
+  }, [])
+  useEffect(() => { rest() }, [rest])
+  useEffect(() => { if (!active) rest() }, [active, rest])
+  const local = (event: ReactPointerEvent<HTMLDivElement>) => { const rect = event.currentTarget.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
+  const track = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (pointer.current !== event.pointerId || !origin.current) return
+    const finger = local(event)
+    origin.current = followBase(origin.current, finger, STICK_RADIUS)
+    place(origin.current.x, origin.current.y, finger.x, finger.y)
+    move.current(...stickInput(finger.x - origin.current.x, finger.y - origin.current.y, STICK_RADIUS))
+  }
+  return (
+    <div ref={zone} className="ps-stick" role="group" aria-label="Movement joystick: touch and drag anywhere here. Arrow keys also move." aria-disabled={!active}
+      onPointerDown={event => {
+        if (!active || pointer.current !== null) return
+        event.preventDefault()
+        onStart()
+        try { event.currentTarget.setPointerCapture(event.pointerId) } catch { /* synthetic pointer */ }
+        // Only a capture actually held can be lost; without one, pointerup/cancel end the drag.
+        captured.current = event.currentTarget.hasPointerCapture?.(event.pointerId) ?? false
+        pointer.current = event.pointerId
+        origin.current = local(event)
+        event.currentTarget.setAttribute('data-held', 'true')
+        place(origin.current.x, origin.current.y, origin.current.x, origin.current.y)
+      }}
+      onPointerMove={track}
+      onPointerUp={event => { if (pointer.current === event.pointerId) rest() }}
+      onPointerCancel={event => { if (pointer.current === event.pointerId) rest() }}
+      onLostPointerCapture={event => { if (pointer.current === event.pointerId && captured.current) rest() }}>
+      <div ref={base} className="ps-stick-base" aria-hidden="true"/>
+      <div ref={knob} className="ps-stick-knob" aria-hidden="true"/>
+      <span className="ps-stick-label" aria-hidden="true">Touch and drag</span>
+    </div>
   )
 }
 
@@ -684,6 +754,16 @@ function SettingsForm({ settings, update }: { settings: Settings; update: (patch
           <option value={1}>100%</option><option value={0.75}>75%</option><option value={0.5}>50%</option>
         </select>
       </label>
+      <fieldset className="ps-field">
+        <legend>Movement control</legend>
+        <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'pad'} onChange={() => update({ movement: 'pad' })}/> Pad (four buttons)</label>
+        <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'joystick'} onChange={() => update({ movement: 'joystick' })}/> Joystick that follows your finger</label>
+      </fieldset>
+      <fieldset className="ps-field">
+        <legend>Control sides</legend>
+        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'left'} onChange={() => update({ movementSide: 'left' })}/> Movement left, Shift right</label>
+        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'right'} onChange={() => update({ movementSide: 'right' })}/> Movement right, Shift left</label>
+      </fieldset>
       <label className="ps-check"><input type="checkbox" checked={settings.previews} onChange={e => update({ previews: e.target.checked })}/> Show where tracers go next</label>
       <label className="ps-check"><input type="checkbox" checked={settings.highContrast} onChange={e => update({ highContrast: e.target.checked })}/> Bolder lines</label>
       {vibration && <label className="ps-check"><input type="checkbox" checked={settings.haptics} onChange={e => update({ haptics: e.target.checked })}/> Vibration</label>}
