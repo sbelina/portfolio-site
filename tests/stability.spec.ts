@@ -169,7 +169,8 @@ test('interrupted automatic stages cannot advance a replay', async ({ page }) =>
   await expect(page.locator('.step-copy')).toHaveCount(0)
 })
 
-test('one touch swipe completes only the first step', async ({ browser }) => {
+test('one touch swipe completes only the first step', async ({ browser, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Raw touch input via CDP is Chromium-only; WebKit touch is covered by the Pattern Shift touch tests')
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
   const page = await context.newPage()
   await page.goto('http://127.0.0.1:4174/')

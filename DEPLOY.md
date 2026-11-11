@@ -23,11 +23,11 @@ npx wrangler dev --local --ip 127.0.0.1 --port 4175
 In another terminal, request the root and its referenced JS/CSS. Expect HTTP 200, JS with a JavaScript MIME type, and compiled `/assets/` references, not `/src/main.tsx`. Then verify mounting and interaction in a browser; status codes alone are insufficient.
 
 ```sh
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium webkit
 npm test
 ```
 
-Tests build production output and start the isolated fixture Worker on port 4174, run Chromium and axe checks, and retain traces on failure. When using an already installed compatible Chromium in this cloud environment:
+Tests build production output and start the isolated fixture Worker on port 4174, run Chromium, desktop WebKit (Safari engine) and iPhone-emulated WebKit projects with axe checks, and retain traces on failure. When using an already installed compatible Chromium in this cloud environment:
 
 ```sh
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test

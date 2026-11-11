@@ -16,6 +16,7 @@ import { migrationLedger } from './legacy-adapter'
 import { verifyPublicAssets } from './public-assets'
 import baselineAnchors from '../content/legacy-anchors.json' with { type: 'json' }
 import { prerenderHiddenWork } from './build-experiment'
+import { prerenderPatternShift } from './build-play'
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
 
 const fixture = process.argv.includes('--fixtures')
@@ -49,7 +50,8 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
-const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path)]
+const prototypeRoutes = await prerenderPatternShift(output, fixture)
+const routes = [...publicStaticRoutes, ...prototypeRoutes, ...projection.entries.map(entry => entry.path)]
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
     .replace('<html lang="en">', fixture ? '<html lang="en">' : '<html lang="en" data-edition="current">')

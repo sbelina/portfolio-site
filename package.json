@@ -13,7 +13,7 @@
     "test": "npm run build && playwright test",
     "test:ui": "playwright test --ui",
     "check:deploy": "wrangler deploy --dry-run",
-    "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
+    "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --mode fixtures --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
     "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc",
     "studio:setup": "tsx scripts/studio-setup.ts",
     "studio:build": "tsc -p tsconfig.studio.json && vite build --config vite.studio.config.ts && tsx scripts/studio-assets.ts",

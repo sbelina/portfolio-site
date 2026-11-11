@@ -28,7 +28,8 @@ test('tag and trace navigation is immediate with reduced or unavailable motion p
   }
 })
 
-test('graph selection preserves edge direction from either endpoint', async ({ page }) => {
+test('graph selection preserves edge direction from either endpoint', async ({ page, browserName }) => {
+  test.fixme(browserName === 'webkit', 'Known WebKit finding on the legacy edition (fixture home); see docs/codex/PATTERN-SHIFT-PROTOTYPE.md')
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#connections')
   await page.getByRole('button', { name: 'tag: #decision. Select to trace connections.', exact: true }).click()
