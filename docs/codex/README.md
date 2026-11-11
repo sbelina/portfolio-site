@@ -34,6 +34,8 @@ Existing context remains important: [content architecture proposal](../CONTENT-A
 
 Read [the development experiment](DEVELOPMENT-EXPERIMENT.md) for the owner's hypothesis, adapted research practices, comparison design, and evidence record. The shared footer describes the idea, process, and current implementation.
 
+The [creative technologist](../design-system/CREATIVE-TECHNOLOGIST.md) adds a scoped specialist for interactive HTML, the adopted visual language and optional creative coding. Its [first concept record](../design-system/CREATIVE-EXPERIMENT-IDEAS.md) distinguishes existing components from proposed experiments. Creating the role does not implement or publish those proposals.
+
 [Systems Inquiry Orchestrator v2](SYSTEMS-INQUIRY.md) supplies the recurring dual-system inquiry method. Read [the implementation assessment](SYSTEMS-INQUIRY-ASSESSMENT.md) before proposing frame switching, model histories, behavioral models, or a principle atlas. It separates current contracts from missing capabilities and specifies a bounded Frame Laboratory comparison; no laboratory implementation is authorized by that proposal.
 
 ## Writing and page review
