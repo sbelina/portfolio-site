@@ -52,6 +52,11 @@ export interface LevelDef {
   junctions?: { x: number; y: number }[]
   /** Samples needed to open the exit. Defaults to all of them. */
   required?: number
+  /**
+   * Interface-only stuck hints (MECHANICS.md §11). Shown in order once playing time
+   * passes `after` seconds without the level's progress condition being met.
+   */
+  hints?: { progress: 'shift' | 'sample' | 'exit-open'; steps: { after: number; text: string }[] }
   field?: { period: number; on: number; warn: number; offset?: number }
 }
 
@@ -95,7 +100,8 @@ export interface GameState {
   gateTurns: number
   shifts: number
   moved: boolean
-  carriedThisStep: boolean
+  /** The tile the player's centre occupies, and how it was entered (MECHANICS.md §6). */
+  tile: { x: number; y: number; enteredBy: 'start' | 'move' | 'shift' }
   discovered: DiscoveryId[]
   trail: [number, number][]
   events: GameEvent[]
@@ -137,9 +143,12 @@ export function createGame(level: LevelDef): GameState {
   const enclosed = tiles.every((row, y) => y === 0 || y === height - 1 ? row.every(t => t === 'wall') : row[0] === 'wall' && row[width - 1] === 'wall')
   if (!enclosed) throw new Error(`Level ${level.id} must be enclosed`)
   const junctions: Junction[] = (level.junctions ?? []).map(j => ({ ...j, turns: 0 }))
+  const claimed = new Set<string>()
   for (const j of junctions) for (const p of pockets(j)) {
     const t = tiles[p.y]?.[p.x]
     if (t === undefined || t === 'wall' || t === 'gate') throw new Error(`Junction pockets in ${level.id} must be open tiles`)
+    if (claimed.has(`${p.x},${p.y}`)) throw new Error(`Junctions in ${level.id} cannot share a pocket`)
+    claimed.add(`${p.x},${p.y}`)
   }
   const start = player as { x: number; y: number }
   const required = level.required ?? samples.length
@@ -148,7 +157,7 @@ export function createGame(level: LevelDef): GameState {
     level, width, height, tiles, tick: 0, time: 0,
     player: { x: start.x + 0.5, y: start.y + 0.5, vx: 0, vy: 0 },
     exit: exit as { x: number; y: number }, required, samples, gates, junctions, tracers: [], status: 'playing', failCause: null,
-    gateTurns: 0, shifts: 0, moved: false, carriedThisStep: false, discovered: [], trail: [], events: [],
+    gateTurns: 0, shifts: 0, moved: false, tile: { x: start.x, y: start.y, enteredBy: 'start' }, discovered: [], trail: [], events: [],
   }
   for (const def of level.tracers) {
     if (!rides(state, def.x, def.y)) throw new Error(`Tracer in ${level.id} must start on track`)
@@ -295,10 +304,17 @@ function discover(s: GameState, id: DiscoveryId) {
   s.events.push({ type: 'discovery', id })
 }
 
+/** Margin that keeps a carried body fully inside its new pocket, clear of the arms. */
+const POCKET_MARGIN = PLAYER_HALF + ARM_HALF + 0.01
+
 /**
- * Shift a junction: anything whose centre lies in one of its pockets moves to the
- * centre of the next pocket clockwise. Tracers turn with it. The exit, fields and
- * track stay where they are.
+ * Shift a junction (MECHANICS.md §4). Membership is decided by centre point only.
+ * - Player: position offset from the corner and velocity both rotate 90° clockwise;
+ *   the body is then clamped fully inside the arrival pocket.
+ * - Tracers (tile-bound): snap to the arrival pocket's centre, turn right, restart
+ *   from progress 0 and choose their next tile by the normal rule.
+ * - Samples: move to the arrival pocket.
+ * The exit, track, fields and channel gates never move.
  */
 function shift(s: GameState, j: Junction) {
   const ring = pockets(j)
@@ -308,8 +324,12 @@ function shift(s: GameState, j: Junction) {
   const playerPocket = pocketOf(p.x, p.y)
   if (playerPocket >= 0) {
     const to = ring[(playerPocket + 1) % 4]
-    p.x = to.x + 0.5; p.y = to.y + 0.5; p.vx = 0; p.vy = 0
-    s.carriedThisStep = true
+    const ox = p.x - j.x, oy = p.y - j.y
+    const clamp = (value: number, low: number) => Math.min(low + 1 - POCKET_MARGIN, Math.max(low + POCKET_MARGIN, value))
+    p.x = clamp(j.x - oy, to.x); p.y = clamp(j.y + ox, to.y)
+    const vx = p.vx
+    p.vx = -p.vy; p.vy = vx
+    s.tile = { x: Math.floor(p.x), y: Math.floor(p.y), enteredBy: 'shift' }
     carried++
   }
   for (const t of s.tracers) {
@@ -339,7 +359,6 @@ function shift(s: GameState, j: Junction) {
 export function step(s: GameState, input: Input, dt = STEP) {
   if (s.status !== 'playing') return s
   const p = s.player
-  s.carriedThisStep = false
   if (input.dx || input.dy) s.moved = true
   // Movement: predictable acceleration and braking, diagonal input normalised.
   const length = Math.hypot(input.dx, input.dy) || 1
@@ -350,6 +369,7 @@ export function step(s: GameState, input: Input, dt = STEP) {
   const blockedY = moveAxis(s, 'y', p.vy * dt)
   if (input.dx !== 0 && input.dy === 0 && blockedX) assist(s, 'x', Math.sign(input.dx), dt)
   if (input.dy !== 0 && input.dx === 0 && blockedY) assist(s, 'y', Math.sign(input.dy), dt)
+  if (Math.floor(p.x) !== s.tile.x || Math.floor(p.y) !== s.tile.y) s.tile = { x: Math.floor(p.x), y: Math.floor(p.y), enteredBy: 'move' }
 
   if (input.action) {
     const target = reachable(s)
@@ -403,7 +423,7 @@ export function step(s: GameState, input: Input, dt = STEP) {
   if (exitOpen(s) && Math.hypot(s.exit.x + 0.5 - p.x, s.exit.y + 0.5 - p.y) < EXIT_REACH) {
     s.status = 'won'
     if (s.level.code === '000') discover(s, 'false-start')
-    if (s.carriedThisStep) discover(s, 'technically-correct')
+    if (s.tile.enteredBy === 'shift' && s.tile.x === s.exit.x && s.tile.y === s.exit.y) discover(s, 'technically-correct')
     if (collected(s) < s.samples.length) discover(s, 'exception')
     // One more step and a tracer would have arrived.
     if (s.tracers.some(t => { const at = tracerPosition(t, t.speed * STEP); return Math.hypot(at.x - p.x, at.y - p.y) < TRACER_HIT })) discover(s, 'off-by-one')

@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
-import { collected, createGame, drainEvents, reachable, step, STEP, type DiscoveryId, type GameEvent, type GameState } from './engine'
+import { collected, createGame, drainEvents, exitOpen, reachable, step, STEP, type DiscoveryId, type GameEvent, type GameState } from './engine'
 import { levels } from './levels'
 import { createMemory, draw, noteGateTurn, noteShift, readPalette, type View } from './render'
 import { load, prefersReducedMotion, save, type Saved, type Settings } from './settings'
 import { binary, discoveries, operations } from './system-index'
 import { Sound } from './audio'
+import { appendLog, loadLog, methodOf, rankOf, saveSnapshot, snapshot, standing, thumbnail, type RunRecord } from './records'
 
-type Screen = 'title' | 'levels' | 'settings' | 'index' | 'playing' | 'paused' | 'failed' | 'won'
+type Screen = 'title' | 'levels' | 'settings' | 'index' | 'log' | 'snapshot' | 'playing' | 'paused' | 'failed' | 'won'
 interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate' }
 interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[] }
 
@@ -36,6 +37,13 @@ export function EdgeCaseGame() {
   const [notice, setNotice] = useState<string | null>(null)
   const [summary, setSummary] = useState<Summary>({ seconds: 0, attempts: 1, shifts: 0, found: [] })
   const [failCause, setFailCause] = useState<'tracer' | 'field'>('tracer')
+  const [log, setLog] = useState<RunRecord[]>(() => loadLog())
+  const [lastRecord, setLastRecord] = useState<RunRecord | null>(null)
+  const [hintLevel, setHintLevel] = useState(0)
+  const [tipVisible, setTipVisible] = useState(false)
+  const [saveStatus, setSaveStatus] = useState('')
+  const [snapshotUrl, setSnapshotUrl] = useState<string | null>(null)
+  const snapshotCanvas = useRef<HTMLCanvasElement | null>(null)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
@@ -56,6 +64,9 @@ export function EdgeCaseGame() {
   const settingsRef = useRef(saved.settings)
   const screenRef = useRef(screen)
   const hudCache = useRef('')
+  const hintRef = useRef(0)
+  const hintsRequested = useRef(0)
+  const logRef = useRef(log)
   const settings = saved.settings
   settingsRef.current = settings
   screenRef.current = screen
@@ -118,6 +129,9 @@ export function EdgeCaseGame() {
     if (!keepGhost) { ghost.current = null; attempts.current = 1 }
     else { ghost.current = previous.trail.length ? [...previous.trail, [previous.player.x, previous.player.y]] : ghost.current; attempts.current++ }
     runFound.current = keepGhost ? runFound.current : []
+    if (!keepGhost) { hintRef.current = 0; hintsRequested.current = 0; setHintLevel(0) }
+    setTipVisible(hintRef.current > 0)
+    setSaveStatus('')
     game.current = createGame(levels[index])
     memory.current = createMemory()
     keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }; action.current = false
@@ -139,6 +153,22 @@ export function EdgeCaseGame() {
   }, [layout, syncHud])
 
   const restart = useCallback(() => begin(levelIndex, true), [begin, levelIndex])
+
+  /** L1: every ended attempt becomes a run record with a thumbnail snapshot. */
+  const recordRun = useCallback((outcome: 'won' | 'failed', cause?: 'tracer' | 'field') => {
+    const s = game.current, level = levels[levelIndex], root = rootRef.current
+    const found = [...s.discovered]
+    const record: RunRecord = {
+      id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+      level: level.id, code: level.code, title: level.title, outcome, cause,
+      seconds: Math.round(s.time * 10) / 10, shifts: s.shifts, gateTurns: s.gateTurns, attempt: attempts.current,
+      hints: hintRef.current, discoveries: found, method: outcome === 'won' ? methodOf(found) : '', at: new Date().toISOString(),
+      thumb: root ? thumbnail(s, readPalette(root)) : '',
+    }
+    logRef.current = appendLog(logRef.current, record)
+    setLog(logRef.current)
+    setLastRecord(record)
+  }, [levelIndex])
 
   const handleEvents = useCallback((events: GameEvent[]) => {
     const s = settingsRef.current
@@ -168,6 +198,7 @@ export function EdgeCaseGame() {
       if (event.type === 'fail') {
         sound.current.play('fail'); buzz(90)
         setFailCause(event.cause)
+        recordRun('failed', event.cause)
         setScreen('failed')
         setAnnouncement(event.cause === 'tracer' ? 'Caught by a tracer.' : 'Caught in an active field.')
       }
@@ -176,11 +207,38 @@ export function EdgeCaseGame() {
         const id = levels[levelIndex].id
         setSummary({ seconds: game.current.time, attempts: attempts.current, shifts: game.current.shifts + game.current.gateTurns, found: [...runFound.current] })
         persist(current => ({ ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }))
+        recordRun('won')
         setScreen('won')
         setAnnouncement(`Level ${levels[levelIndex].code} complete.`)
       }
     }
-  }, [levelIndex, persist, record])
+  }, [levelIndex, persist, record, recordRun])
+
+  /** N1–N3: stuck hints escalate by playing time until the level's progress condition is met. */
+  const progressed = (s: GameState) => {
+    const rule = levels[levelIndex].hints?.progress
+    return rule === 'shift' ? s.shifts > 0 : rule === 'sample' ? collected(s) > 0 : rule === 'exit-open' ? exitOpen(s) : true
+  }
+  const progressHints = useCallback(() => {
+    const steps = levels[levelIndex].hints?.steps ?? []
+    if (progressed(game.current)) { setTipVisible(false); return }
+    const due = steps.filter(item => item.after <= game.current.time).length
+    if (due > hintRef.current) showHint(due)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelIndex])
+  const showHint = (level: number) => {
+    const steps = levels[levelIndex].hints?.steps ?? []
+    hintRef.current = Math.min(level, steps.length)
+    setHintLevel(hintRef.current)
+    setTipVisible(true)
+    setAnnouncement(`Hint: ${steps[hintRef.current - 1].text}`)
+  }
+  const requestHint = () => {
+    const steps = levels[levelIndex].hints?.steps ?? []
+    if (hintRef.current >= steps.length) { setAnnouncement('No more hints for this level.'); return }
+    hintsRequested.current++
+    showHint(hintRef.current + 1)
+  }
 
   // Fixed-step simulation: movement speed never depends on frame rate.
   useEffect(() => {
@@ -203,12 +261,13 @@ export function EdgeCaseGame() {
         if (game.current.status !== 'playing') break
       }
       syncHud()
+      progressHints()
       paint()
       if (game.current.status === 'playing' && screenRef.current === 'playing') frame = requestAnimationFrame(loop)
     }
     frame = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(frame)
-  }, [screen, paint, handleEvents, syncHud])
+  }, [screen, paint, handleEvents, syncHud, progressHints])
 
   useEffect(() => {
     syncHud()
@@ -285,6 +344,28 @@ export function EdgeCaseGame() {
     if (savedRef.current.indexOpens === 2) record('ten-types')
   }
   const openSettings = (from: Screen) => { setReturnTo(from); setScreen('settings') }
+  const openLog = (from: Screen) => { setReturnTo(from); setScreen('log') }
+  /** L2: show the full field record; saving is attempted only from there (§12). */
+  const openSnapshot = () => {
+    const root = rootRef.current
+    if (!root || !lastRecord) return
+    const canvas = snapshot(game.current, lastRecord, readPalette(root))
+    snapshotCanvas.current = canvas
+    setSnapshotUrl(canvas.toDataURL('image/png'))
+    setSaveStatus('')
+    setReturnTo(screenRef.current)
+    setScreen('snapshot')
+  }
+  const saveRecord = async () => {
+    if (!snapshotCanvas.current || !lastRecord) return
+    setSaveStatus('Preparing…')
+    const result = await saveSnapshot(snapshotCanvas.current, `edge-case-${lastRecord.code}-${lastRecord.outcome}-${lastRecord.at.slice(0, 19).replace(/[:T]/g, '-')}.png`)
+    const message = result === 'shared' ? 'Snapshot shared.' : result === 'downloaded' ? 'Snapshot saved.' : result === 'cancelled' ? 'Not saved.' : 'Could not save the snapshot.'
+    setSaveStatus(message)
+    setAnnouncement(message)
+  }
+  const hintText = (levels[levelIndex].hints?.steps ?? [])[hintLevel - 1]?.text
+  const hintsLeft = (levels[levelIndex].hints?.steps.length ?? 0) - hintLevel
 
   const level = levels[levelIndex]
   const open = hud.total > 0 && game.current.status !== 'failed' && hud.taken >= game.current.required
@@ -316,6 +397,7 @@ export function EdgeCaseGame() {
         </div>
       </div>
 
+      {tipVisible && hintText && screen === 'playing' && <p className="ps-tip"><span>Hint {hintLevel}</span>{hintText}</p>}
       <div className="ps-stage" ref={stageRef} tabIndex={-1}>
         <canvas ref={canvasRef} className="ps-canvas" role="img" aria-label={stateLabel}/>
         {hint && screen === 'playing' && !notice && <p className="ps-hint" aria-hidden="true">{hint}</p>}
@@ -328,6 +410,7 @@ export function EdgeCaseGame() {
               <button type="button" className="ps-primary" onClick={() => begin(nextIncomplete)}>{saved.completed.length && saved.completed.length < levels.length ? `Continue: ${levels[nextIncomplete].code}` : 'Play'}</button>
               <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
               <button type="button" onClick={() => openIndex('title')}>System index</button>
+              <button type="button" onClick={() => openLog('title')}>Field log</button>
               <button type="button" onClick={() => openSettings('title')}>Settings</button>
             </div>
             <Legend/>
@@ -361,15 +444,38 @@ export function EdgeCaseGame() {
               <button type="button" className="ps-primary" onClick={() => { setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }}>Resume</button>
               <button type="button" onClick={restart}>Restart level</button>
               <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
+              <button type="button" onClick={() => { requestHint(); setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }} disabled={hintsLeft <= 0}>{hintsLeft > 0 ? 'Show a hint' : 'No more hints'}</button>
               <button type="button" onClick={() => openIndex('paused')}>System index</button>
+              <button type="button" onClick={() => openLog('paused')}>Field log</button>
               <button type="button" onClick={() => openSettings('paused')}>Settings</button>
             </div>
+          </Card>
+        )}
+        {screen === 'snapshot' && snapshotUrl && lastRecord && (
+          <Card title="Field record" kicker={`${lastRecord.code} · ${lastRecord.title}`} focus wide>
+            <img className="ps-snapshot" src={snapshotUrl} alt={`Field record for ${lastRecord.code} ${lastRecord.title}: ${lastRecord.outcome === 'won' ? `complete in ${lastRecord.seconds.toFixed(1)} seconds` : `caught after ${lastRecord.seconds.toFixed(1)} seconds`}, ${lastRecord.shifts} shifts, attempt ${lastRecord.attempt}. Your route is drawn on the arena.`}/>
+            <p className="ps-small">If Save image does nothing in this browser, press and hold the image (or right-click it) to save it.</p>
+            <div className="ps-card-actions">
+              <button type="button" className="ps-primary" onClick={saveRecord}>Save image</button>
+              <button type="button" onClick={() => setScreen(returnTo)}>Back</button>
+            </div>
+            {saveStatus && <p className="ps-small" role="status">{saveStatus}</p>}
+          </Card>
+        )}
+        {screen === 'log' && (
+          <Card title="Field log" kicker="EDGE CASE" focus wide>
+            <FieldLog log={log}/>
+            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
           </Card>
         )}
         {screen === 'failed' && (
           <Card title={failCause === 'tracer' ? 'Caught by a tracer' : 'Caught in an active field'} focus compact>
             <p>{failCause === 'tracer' ? 'Tracers repeat their route. The dotted line shows where they go next.' : 'Fields switch on in a steady rhythm. The hatching appears just before.'}</p>
-            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={restart}>Try again <kbd>R</kbd></button></div>
+            <div className="ps-card-actions">
+              <button type="button" className="ps-primary" onClick={restart}>Try again <kbd>R</kbd></button>
+              <button type="button" onClick={openSnapshot}>Snapshot</button>
+            </div>
+            {saveStatus && <p className="ps-small">{saveStatus}</p>}
           </Card>
         )}
         {screen === 'won' && (
@@ -379,6 +485,7 @@ export function EdgeCaseGame() {
               <div><dt>Attempts</dt><dd>{summary.attempts}</dd></div>
               <div><dt>Shifts</dt><dd>{summary.shifts}</dd></div>
             </dl>
+            {lastRecord && lastRecord.outcome === 'won' && <Standing record={lastRecord} log={log}/>}
             {summary.found.length > 0 && (
               <ul className="ps-found" aria-label="Discovered this level">
                 {summary.found.map(id => { const d = discoveryOf(id); return <li key={id}><span className="ps-code">{d.code}</span> {d.name}</li> })}
@@ -388,8 +495,11 @@ export function EdgeCaseGame() {
             <div className="ps-card-actions">
               {levelIndex < levels.length - 1 && <button type="button" className="ps-primary" onClick={() => begin(levelIndex + 1)}>Next level</button>}
               <button type="button" className={levelIndex === levels.length - 1 ? 'ps-primary' : undefined} onClick={() => begin(levelIndex)}>Replay</button>
+              <button type="button" onClick={openSnapshot}>Snapshot</button>
+              <button type="button" onClick={() => openLog('won')}>Field log</button>
               <button type="button" onClick={() => openIndex('won')}>System index</button>
             </div>
+            {saveStatus && <p className="ps-small">{saveStatus}</p>}
           </Card>
         )}
       </div>
@@ -423,6 +533,67 @@ function Card({ title, kicker, children, focus, compact, wide }: { title: string
       {kicker && <p className="ps-kicker">{kicker}</p>}
       <h3 id={id}>{title}</h3>
       {children}
+    </div>
+  )
+}
+
+function Standing({ record, log }: { record: RunRecord; log: RunRecord[] }) {
+  const { rank, of } = rankOf(log, record)
+  const level = standing(log, record.level)
+  return (
+    <div className="ps-standing">
+      {record.thumb && <img className="ps-thumb" src={record.thumb} alt={`Snapshot of ${record.code} ${record.title}: your route to the exit, ${record.seconds.toFixed(1)} seconds.`}/>}
+      <dl>
+        <div><dt>Rank by time</dt><dd>#{rank} of {of}{rank === 1 && of > 1 ? ' · new best' : ''}</dd></div>
+        <div><dt>Method</dt><dd>{record.method}</dd></div>
+        <div><dt>Ways through found</dt><dd>{level.ways.length} / ?</dd></div>
+      </dl>
+    </div>
+  )
+}
+
+function FieldLog({ log }: { log: RunRecord[] }) {
+  return (
+    <div className="ps-index">
+      <section aria-labelledby="ec-rank">
+        <div className="ps-index-head"><h4 id="ec-rank">Standings</h4><p className="ps-register">personal · local</p></div>
+        <table className="ps-table">
+          <thead><tr><th scope="col">Level</th><th scope="col">Best</th><th scope="col">Fewest actions</th><th scope="col">Ways</th></tr></thead>
+          <tbody>
+            {levels.map(level => {
+              const s = standing(log, level.id)
+              return (
+                <tr key={level.id}>
+                  <th scope="row"><span className="ps-code">{level.code}</span></th>
+                  <td>{s.bestSeconds === null ? '—' : `${s.bestSeconds.toFixed(1)} s`}</td>
+                  <td>{s.fewestActions ?? '—'}</td>
+                  <td>{s.ways.length} / ?</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+        <p className="ps-small">Ways counts distinct methods you have won with. The game does not claim to know them all.</p>
+      </section>
+      <section aria-labelledby="ec-log">
+        <div className="ps-index-head"><h4 id="ec-log">Recent outcomes</h4><p className="ps-register">{log.length} / 40</p></div>
+        {log.length === 0 ? <p className="ps-small">No outcomes yet. Every attempt is recorded here, including the ones that end early.</p> : (
+          <ol className="ps-log">
+            {log.slice(0, 12).map(record => {
+              const { rank, of } = record.outcome === 'won' ? rankOf(log, record) : { rank: 0, of: 0 }
+              return (
+                <li key={record.id}>
+                  {record.thumb ? <img className="ps-thumb ps-thumb--small" src={record.thumb} alt=""/> : <span className="ps-thumb ps-thumb--small" aria-hidden="true"/>}
+                  <span className="ps-op-body">
+                    <strong><span className="ps-code">{record.code}</span> {record.outcome === 'won' ? `complete · ${record.seconds.toFixed(1)} s` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}</strong>
+                    <span>{record.outcome === 'won' ? `${record.method} · rank #${rank} of ${of}` : `after ${record.seconds.toFixed(1)} s`} · attempt {record.attempt}{record.hints ? ` · ${record.hints} hint${record.hints > 1 ? 's' : ''}` : ''}</span>
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+        )}
+      </section>
     </div>
   )
 }

@@ -2,12 +2,12 @@ import { publicPath } from '../../public-path'
 import { UNPUBLISHED_MARKER } from './engine'
 
 /** Static, readable page. The playable game mounts into #edge-case-game. */
-export function EdgeCasePage() {
+export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string }) {
   return (
     <div className="pc-site ps-page" data-prototype={UNPUBLISHED_MARKER}>
       <a className="ps-skip" href="#how-to-play">Skip to how to play</a>
       <header className="ps-page-header">
-        <a className="ps-wordmark" href={publicPath('/')}><span aria-hidden="true">*</span> Producing Curiosity</a>
+        <a className="ps-wordmark" href={homeHref}><span aria-hidden="true">*</span> Producing Curiosity</a>
         <p className="ps-status-tag">Unpublished prototype</p>
       </header>
       <main className="ps-main">
@@ -37,6 +37,7 @@ export function EdgeCasePage() {
             <li><strong>Exit</strong>: a broken circle that closes when it opens.</li>
           </ul>
           <p>Some things are not explained here. Every one of them follows the same rules, and none is needed to finish a level. The System index records operations and discoveries as you find them.</p>
+          <p>If you are stuck, hints appear after a while, or ask for one from the pause menu. The Field log keeps a snapshot of every outcome, including the ones that end early, and your personal standings: best time, fewest actions, and how many different ways through you have found. Records stay on your device.</p>
           <p>Settings include sound and volume, reduced motion, game speed, path previews and bolder lines.</p>
         </section>
         <section className="ps-about" aria-labelledby="about-heading">

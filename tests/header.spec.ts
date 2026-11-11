@@ -16,7 +16,8 @@ test('home header stays available and condenses without removing menu links', as
   await expect(header).toHaveAttribute('data-compact', 'false')
 })
 
-test('keyboard menu activation leaves the destination clear of the sticky header', async ({ page }) => {
+test('keyboard menu activation leaves the destination clear of the sticky header', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', "Safari's default keyboard preference leaves links out of the Tab order, so this test's Tab/Shift+Tab modality setup does not apply")
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#index')
   // Wait for the retained fixture's initial reading-focus effect.

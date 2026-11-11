@@ -26,6 +26,15 @@ export const levels: LevelDef[] = [
     ],
     junctions: [{ x: 4, y: 6 }],
     tracers: [{ x: 1, y: 2, dir: 1, speed: 2 }],
+    // Tests whether SHIFT is found unaided; hints escalate only while stuck.
+    hints: {
+      progress: 'shift',
+      steps: [
+        { after: 15, text: 'Walls are not the only structure here.' },
+        { after: 30, text: 'The orange pivot belongs to something that turns.' },
+        { after: 45, text: 'Shift turns it: press Shift, Space or Enter, or the Shift button.' },
+      ],
+    },
   },
   {
     id: 'expected-behavior',
@@ -48,6 +57,13 @@ export const levels: LevelDef[] = [
     ],
     junctions: [{ x: 4, y: 6 }],
     tracers: [{ x: 1, y: 5, dir: 1, speed: 2.2 }],
+    hints: {
+      progress: 'sample',
+      steps: [
+        { after: 30, text: 'Watch the tracer for one full cycle.' },
+        { after: 50, text: 'Its track runs through a pocket. Pockets turn.' },
+      ],
+    },
   },
   {
     id: 'shift-happens',
@@ -71,5 +87,12 @@ export const levels: LevelDef[] = [
     junctions: [{ x: 4, y: 3 }],
     tracers: [{ x: 7, y: 5, dir: 3, speed: 2.4 }],
     required: 2,
+    hints: {
+      progress: 'exit-open',
+      steps: [
+        { after: 40, text: 'More than one structure here can change.' },
+        { after: 70, text: 'A sealed room can still be entered.' },
+      ],
+    },
   },
 ]

@@ -160,3 +160,6 @@ dist-studio/
 .studio-local/
 .studio-password
 studio-test-results/
+
+# Private artifact test builds
+dist-artifact/

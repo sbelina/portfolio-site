@@ -31,8 +31,8 @@ jobs:
     - name: Validate Worker deployment packaging
       run: npm run check:deploy
 
-    - name: Install Chromium and WebKit
-      run: npx playwright install --with-deps chromium webkit
+    - name: Install Chromium, WebKit and Firefox
+      run: npx playwright install --with-deps chromium webkit firefox
 
     - name: Run browser and accessibility checks
       run: npm test
