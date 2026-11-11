@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { existsSync } from 'node:fs'
 
-const route = '/play/pattern-shift/'
+const route = '/play/edge-case/'
 const samples = (page: Page) => page.locator('.ps-samples')
 const status = (page: Page) => page.getByRole('status')
 
@@ -21,10 +21,10 @@ async function start(page: Page, level?: string) {
   await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
 }
 
-test.describe('Pattern Shift prototype page', () => {
+test.describe('Edge Case prototype page', () => {
   test('is absent from production output and the production Worker', async ({ request }) => {
-    expect(existsSync('dist/play/pattern-shift/index.html')).toBe(false)
-    expect(existsSync('dist/pattern-shift.html')).toBe(false)
+    expect(existsSync('dist/play/edge-case/index.html')).toBe(false)
+    expect(existsSync('dist/edge-case.html')).toBe(false)
     const response = await request.get(`http://127.0.0.1:4175${route}`)
     expect(response.status()).toBe(404)
   })
@@ -34,7 +34,7 @@ test.describe('Pattern Shift prototype page', () => {
     try {
       const page = await context.newPage()
       await page.goto(route)
-      await expect(page.getByRole('heading', { level: 1, name: 'Pattern Shift' })).toBeVisible()
+      await expect(page.getByRole('heading', { level: 1, name: 'Edge Case' })).toBeVisible()
       await expect(page.getByText('The playable game needs JavaScript.')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible()
       await expect(page.getByText('Unpublished prototype')).toBeVisible()
@@ -44,9 +44,14 @@ test.describe('Pattern Shift prototype page', () => {
 
   test('keyboard: play, move to collect a sample, pause, resume and restart', async ({ page }) => {
     await start(page)
-    await expect(status(page)).toContainText('Level 1, Rhythm')
+    await expect(status(page)).toContainText('Level 000, False Start')
     await expect(samples(page)).toContainText('0/2')
-    await hold(page, 'ArrowLeft', 700)
+    // Sealed in a pocket: movement goes nowhere until a shift.
+    await hold(page, 'ArrowLeft', 300)
+    await page.keyboard.press('Shift')
+    await expect(status(page)).toContainText('Shifted. One thing moved')
+    await hold(page, 'ArrowUp', 260)
+    await hold(page, 'ArrowRight', 600)
     await expect(samples(page)).toContainText('1/2')
     await expect(status(page)).toContainText('Sample collected')
     await page.keyboard.press('Escape')
@@ -59,13 +64,35 @@ test.describe('Pattern Shift prototype page', () => {
     await expect(samples(page)).toContainText('0/2')
   })
 
-  test('keyboard: the gate is reachable and Space turns it (or reports it jammed)', async ({ page }) => {
-    await start(page, '2\\. The gate')
-    await hold(page, 'ArrowRight', 230)
-    await hold(page, 'ArrowUp', 1400)
+  test('keyboard: Space and Enter shift a junction within reach; the Shift button reports readiness', async ({ page }) => {
+    await start(page, '001')
+    await expect(page.locator('.ps-action')).toHaveAttribute('data-ready', 'false')
+    await hold(page, 'ArrowUp', 900)
     await expect(page.locator('.ps-action')).toHaveAttribute('data-ready', 'true')
     await page.keyboard.press('Space')
-    await expect(status(page)).toContainText(/Gate turned|jammed/)
+    await expect(status(page)).toContainText('Shifted')
+  })
+
+  test('the system index shows known and unknown operations, a binary counter, and an uncounted UNKNOWN entry', async ({ page }) => {
+    await page.goto(route)
+    await page.getByRole('button', { name: 'System index' }).click()
+    const index = page.getByRole('dialog', { name: 'System index' })
+    await expect(index.getByText('03 / 07')).toBeVisible()
+    await expect(index.getByText('3 of 7 known')).toBeAttached()
+    await expect(index.getByText('Undiscovered operation')).toHaveCount(4)
+    await expect(index.getByText('0000 / 1010')).toBeVisible()
+    await expect(index.getByText('Not counted. This list may not describe everything.')).toBeVisible()
+    await index.getByLabel('Show unavailable operations').uncheck()
+    await expect(index.getByText('Undiscovered operation')).toHaveCount(0)
+    await index.getByRole('button', { name: 'Done' }).click()
+    // The second visit is a discovery: 0b10.
+    await page.getByRole('button', { name: 'System index' }).click()
+    await expect(page.getByText('0001 / 1010')).toBeVisible()
+    await expect(page.getByRole('dialog', { name: 'System index' }).getByText('There Are 10 Types of Players')).toBeVisible()
+    await expect(status(page)).toContainText('Discovery 0x07')
+    await page.reload()
+    await page.getByRole('button', { name: 'System index' }).click()
+    await expect(page.getByText('0001 / 1010')).toBeVisible()
   })
 
   test('Space on a focused control activates that control, not the game', async ({ page }) => {
@@ -91,8 +118,11 @@ test.describe('Pattern Shift prototype page', () => {
       await blocked.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked') } }) })
       const other = await blocked.newPage()
       await start(other)
-      await hold(other, 'ArrowLeft', 700)
-      await expect(samples(other)).toContainText('1/2')
+      await other.keyboard.press('Shift')
+      await expect(status(other)).toContainText('Shifted')
+      await other.getByRole('button', { name: 'Pause' }).click()
+      await other.getByRole('button', { name: 'System index' }).click()
+      await expect(other.getByText('03 / 07')).toBeVisible()
     } finally { await blocked.close() }
   })
 
@@ -113,6 +143,9 @@ test.describe('Pattern Shift prototype page', () => {
     }
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
     await page.getByRole('button', { name: 'Settings' }).click()
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
+    await page.getByRole('button', { name: 'Done' }).click()
+    await page.getByRole('button', { name: 'System index' }).click()
     expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
   })
 
@@ -135,7 +168,7 @@ test.describe('Pattern Shift prototype page', () => {
   })
 })
 
-test.describe('Pattern Shift on touch screens', () => {
+test.describe('Edge Case on touch screens', () => {
   test('holding the movement pad moves the player; lifting stops it', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 664 }, hasTouch: true, isMobile: browser.browserType().name() !== 'firefox' })
     try {
@@ -143,12 +176,18 @@ test.describe('Pattern Shift on touch screens', () => {
       await page.goto(route)
       await page.getByRole('button', { name: 'Play' }).tap()
       await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
-      const left = await page.getByRole('button', { name: 'Move left' }).boundingBox()
+      await page.getByRole('button', { name: 'Shift' }).tap()
+      await expect(status(page)).toContainText('Shifted')
       const pad = page.locator('.ps-pad')
-      const at = { clientX: left!.x + left!.width / 2, clientY: left!.y + left!.height / 2, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true }
-      await pad.dispatchEvent('pointerdown', { ...at, buttons: 1 })
-      await page.waitForTimeout(700)
-      await pad.dispatchEvent('pointerup', { ...at, buttons: 0 })
+      const press = async (name: string, ms: number) => {
+        const box = await page.getByRole('button', { name }).boundingBox()
+        const at = { clientX: box!.x + box!.width / 2, clientY: box!.y + box!.height / 2, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true }
+        await pad.dispatchEvent('pointerdown', { ...at, buttons: 1 })
+        await page.waitForTimeout(ms)
+        await pad.dispatchEvent('pointerup', { ...at, buttons: 0 })
+      }
+      await press('Move up', 260)
+      await press('Move right', 600)
       await expect(samples(page)).toContainText('1/2')
     } finally { await context.close() }
   })

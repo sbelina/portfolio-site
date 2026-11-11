@@ -4,7 +4,7 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 ## Current direction — 6 November 2026
 
-Prototype in development, 11 November: [Pattern Shift](PATTERN-SHIFT-PROTOTYPE.md), an original browser game at `/play/pattern-shift/`. It is built only by the local fixtures build and is excluded from production until the owner approves publication. The same change adds WebKit (Safari) browser testing.
+Prototype in development, 11 November: [Edge Case](EDGE-CASE-PROTOTYPE.md), an original browser game at `/play/edge-case/`. It is built only by the local fixtures build and is excluded from production until the owner approves publication. The same change adds WebKit (Safari) browser testing.
 
 Current interaction/release update, 9 November: [three deliberate intro steps plus a separate Dive action, optional nested context and publication record](NOV-09-INTRO-RELEASE.md). The owner explicitly requested the correction and publication. The new edition's positioning/design remain adopted; historical archive bytes, private drafts and exact-candidate content boundaries remain intact.
 

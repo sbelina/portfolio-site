@@ -1,14 +1,14 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { PatternShiftGame } from './PatternShiftGame'
+import { EdgeCaseGame } from './EdgeCaseGame'
 import '../../design/tokens.css'
-import './pattern-shift.css'
+import './edge-case.css'
 
-const mount = document.getElementById('pattern-shift-game')
+const mount = document.getElementById('edge-case-game')
 if (mount) {
   try {
     mount.replaceChildren()
-    createRoot(mount).render(<StrictMode><PatternShiftGame/></StrictMode>)
+    createRoot(mount).render(<StrictMode><EdgeCaseGame/></StrictMode>)
   } catch {
     mount.innerHTML = '<p class="ps-fallback">The game could not start in this browser. How it works is described below.</p>'
   }

@@ -7,16 +7,16 @@ export interface Settings {
   speed: 1 | 0.75 | 0.5
   haptics: boolean
 }
-export interface Saved { settings: Settings; completed: string[] }
+export interface Saved { settings: Settings; completed: string[]; discovered: string[]; indexOpens: number }
 
 export const defaultSettings: Settings = { sound: true, volume: 0.6, motion: 'system', previews: true, highContrast: false, speed: 1, haptics: true }
-const KEY = 'pattern-shift:v1'
+const KEY = 'edge-case:v1'
 
 /** Storage is a convenience: any failure falls back to defaults and play continues. */
 export function load(): Saved {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null')
-    if (!raw || typeof raw !== 'object') return { settings: { ...defaultSettings }, completed: [] }
+    if (!raw || typeof raw !== 'object') return empty()
     const s = { ...defaultSettings, ...(raw.settings ?? {}) }
     const settings: Settings = {
       sound: !!s.sound,
@@ -27,10 +27,13 @@ export function load(): Saved {
       speed: ([1, 0.75, 0.5] as const).find(v => v === s.speed) ?? 1,
       haptics: !!s.haptics,
     }
-    const completed = Array.isArray(raw.completed) ? raw.completed.filter((id: unknown): id is string => typeof id === 'string') : []
-    return { settings, completed }
-  } catch { return { settings: { ...defaultSettings }, completed: [] } }
+    const strings = (value: unknown) => Array.isArray(value) ? value.filter((id: unknown): id is string => typeof id === 'string') : []
+    const indexOpens = Number.isInteger(raw.indexOpens) && raw.indexOpens >= 0 ? raw.indexOpens : 0
+    return { settings, completed: strings(raw.completed), discovered: strings(raw.discovered), indexOpens }
+  } catch { return empty() }
 }
+
+const empty = (): Saved => ({ settings: { ...defaultSettings }, completed: [], discovered: [], indexOpens: 0 })
 
 export function save(saved: Saved) {
   try { localStorage.setItem(KEY, JSON.stringify(saved)) } catch { /* private mode or blocked storage */ }

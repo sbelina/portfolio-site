@@ -1,35 +1,40 @@
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
-import { createGame, drainEvents, reachableGate, step, STEP, type GameEvent, type GameState } from './engine'
+import { collected, createGame, drainEvents, reachable, step, STEP, type DiscoveryId, type GameEvent, type GameState } from './engine'
 import { levels } from './levels'
-import { createMemory, draw, noteGateTurn, readPalette, type View } from './render'
+import { createMemory, draw, noteGateTurn, noteShift, readPalette, type View } from './render'
 import { load, prefersReducedMotion, save, type Saved, type Settings } from './settings'
+import { binary, discoveries, operations } from './system-index'
 import { Sound } from './audio'
 
-type Screen = 'title' | 'levels' | 'settings' | 'playing' | 'paused' | 'failed' | 'won'
-interface Hud { remaining: number; total: number; reach: boolean; axis: string }
-interface Summary { seconds: number; attempts: number; turns: number }
+type Screen = 'title' | 'levels' | 'settings' | 'index' | 'playing' | 'paused' | 'failed' | 'won'
+interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate' }
+interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[] }
 
 const MOVE: Record<string, [number, number]> = {
   ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
 }
+const ACTION = new Set(['Space', 'Enter', 'ShiftLeft', 'ShiftRight'])
 const isControl = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('button, a, input, select, textarea, summary')
 const isTextEntry = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('input, select, textarea')
 const axisWords = (axis: string) => axis === 'ns' ? 'north–south' : 'east–west'
+const discoveryOf = (id: string) => discoveries.find(d => d.id === id)!
 
 function hudOf(s: GameState): Hud {
-  return { remaining: s.samples.filter(x => !x.taken).length, total: s.samples.length, reach: !!reachableGate(s), axis: s.gates.map(g => g.axis).join(',') }
+  const target = reachable(s)
+  return { taken: collected(s), total: s.samples.length, reach: target ? target.kind : '' }
 }
 
-export function PatternShiftGame() {
+export function EdgeCaseGame() {
   const headingId = useId()
   const [saved, setSaved] = useState<Saved>(() => load())
   const [screen, setScreen] = useState<Screen>('title')
   const [returnTo, setReturnTo] = useState<Screen>('title')
   const [levelIndex, setLevelIndex] = useState(0)
-  const [hud, setHud] = useState<Hud>({ remaining: 0, total: 0, reach: false, axis: '' })
+  const [hud, setHud] = useState<Hud>({ taken: 0, total: 0, reach: '' })
   const [announcement, setAnnouncement] = useState('')
   const [hint, setHint] = useState<string | null>(null)
-  const [summary, setSummary] = useState<Summary>({ seconds: 0, attempts: 1, turns: 0 })
+  const [notice, setNotice] = useState<string | null>(null)
+  const [summary, setSummary] = useState<Summary>({ seconds: 0, attempts: 1, shifts: 0, found: [] })
   const [failCause, setFailCause] = useState<'tracer' | 'field'>('tracer')
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -41,6 +46,7 @@ export function PatternShiftGame() {
   const memory = useRef<View['memory']>(createMemory())
   const ghost = useRef<[number, number][] | null>(null)
   const attempts = useRef(1)
+  const runFound = useRef<DiscoveryId[]>([])
   const tile = useRef(36)
   const keys = useRef(new Set<string>())
   const pad = useRef({ dx: 0, dy: 0 })
@@ -56,8 +62,22 @@ export function PatternShiftGame() {
   sound.current.enabled = settings.sound
   sound.current.volume = settings.volume
 
-  const persist = useCallback((next: Saved) => { setSaved(next); save(next) }, [])
-  const updateSettings = (patch: Partial<Settings>) => persist({ ...saved, settings: { ...settings, ...patch } })
+  const savedRef = useRef(saved)
+  // Persist synchronously so discovery checks always read the latest record.
+  const persist = useCallback((update: (current: Saved) => Saved) => { const next = update(savedRef.current); savedRef.current = next; setSaved(next); save(next) }, [])
+  const updateSettings = (patch: Partial<Settings>) => persist(current => ({ ...current, settings: { ...current.settings, ...patch } }))
+
+  const record = useCallback((id: DiscoveryId) => {
+    if (!savedRef.current.discovered.includes(id)) persist(current => ({ ...current, discovered: [...current.discovered, id] }))
+    const d = discoveryOf(id)
+    // Announce once per level run, including rediscoveries.
+    if (!runFound.current.includes(id)) {
+      runFound.current.push(id)
+      setNotice(`Discovery ${d.code} · ${d.name}`)
+      setAnnouncement(`Discovery ${d.code}: ${d.name}. ${d.text}`)
+      sound.current.play('discovery')
+    }
+  }, [persist])
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current, root = rootRef.current
@@ -97,6 +117,7 @@ export function PatternShiftGame() {
     const previous = game.current
     if (!keepGhost) { ghost.current = null; attempts.current = 1 }
     else { ghost.current = previous.trail.length ? [...previous.trail, [previous.player.x, previous.player.y]] : ghost.current; attempts.current++ }
+    runFound.current = keepGhost ? runFound.current : []
     game.current = createGame(levels[index])
     memory.current = createMemory()
     keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }; action.current = false
@@ -105,8 +126,8 @@ export function PatternShiftGame() {
     syncHud()
     const level = levels[index]
     if (!keepGhost) {
-      setHint(level.hint)
-      setAnnouncement(`Level ${index + 1}, ${level.title}. ${level.hint} Collect ${game.current.samples.length} samples, then reach the exit.`)
+      setHint(`${level.code} · ${level.hint}`)
+      setAnnouncement(`Level ${level.code}, ${level.title}. ${level.hint} Find the samples, then reach the exit.`)
       sound.current.play('start')
     } else setAnnouncement(`Attempt ${attempts.current}. Your previous route is drawn on the map.`)
     requestAnimationFrame(() => {
@@ -123,20 +144,27 @@ export function PatternShiftGame() {
     const s = settingsRef.current
     const buzz = (ms: number) => { if (s.haptics) try { navigator.vibrate?.(ms) } catch { /* unsupported */ } }
     for (const event of events) {
-      if (event.type === 'sample') { sound.current.play('sample'); setAnnouncement(event.remaining ? `Sample collected. ${event.remaining} left.` : 'Sample collected.') }
-      if (event.type === 'exit-open') { sound.current.play('exit-open'); setAnnouncement('All samples collected. The exit is open.') }
+      if (event.type === 'sample') { sound.current.play('sample'); setAnnouncement(`Sample collected. ${event.remaining} left.`) }
+      if (event.type === 'exit-open') { sound.current.play('exit-open'); setAnnouncement('The exit is open.') }
+      if (event.type === 'shift') {
+        sound.current.play('shift'); buzz(20)
+        noteShift(memory.current, event.x, event.y, performance.now())
+        setAnnouncement(event.carried ? `Shifted. ${event.carried === 1 ? 'One thing' : `${event.carried} things`} moved one pocket clockwise.` : 'Shifted. Nothing was inside.')
+      }
       if (event.type === 'gate') {
         sound.current.play('gate'); buzz(20)
-        const g = reachableGate(game.current) ?? game.current.gates[0]
+        const target = reachable(game.current)
+        const g = target?.kind === 'gate' ? target.gate : game.current.gates[0]
         noteGateTurn(memory.current, g.x, g.y, event.axis, performance.now())
-        setAnnouncement(`Gate turned. It now opens ${axisWords(event.axis)}.`)
+        setAnnouncement(`Turned. It now opens ${axisWords(event.axis)}.`)
       }
       if (event.type === 'jammed') {
         sound.current.play('jammed'); buzz(40)
-        const g = reachableGate(game.current)
-        if (g) memory.current.jam = { x: g.x, y: g.y, until: performance.now() + 450 }
-        setAnnouncement('The gate is jammed. Something is inside it.')
+        const target = reachable(game.current)
+        if (target?.kind === 'gate') memory.current.jam = { x: target.gate.x, y: target.gate.y, until: performance.now() + 450 }
+        setAnnouncement('Jammed. Something is inside it.')
       }
+      if (event.type === 'discovery') record(event.id)
       if (event.type === 'fail') {
         sound.current.play('fail'); buzz(90)
         setFailCause(event.cause)
@@ -146,13 +174,13 @@ export function PatternShiftGame() {
       if (event.type === 'won') {
         sound.current.play('won')
         const id = levels[levelIndex].id
-        setSummary({ seconds: game.current.time, attempts: attempts.current, turns: game.current.gateTurns })
-        setSaved(current => { const next = { ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }; save(next); return next })
+        setSummary({ seconds: game.current.time, attempts: attempts.current, shifts: game.current.shifts + game.current.gateTurns, found: [...runFound.current] })
+        persist(current => ({ ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }))
         setScreen('won')
-        setAnnouncement(`Level ${levelIndex + 1} complete.`)
+        setAnnouncement(`Level ${levels[levelIndex].code} complete.`)
       }
     }
-  }, [levelIndex])
+  }, [levelIndex, persist, record])
 
   // Fixed-step simulation: movement speed never depends on frame rate.
   useEffect(() => {
@@ -163,9 +191,8 @@ export function PatternShiftGame() {
       last = now
       let steps = 0
       while (accumulator >= STEP && steps < 6 && screenRef.current === 'playing') {
-        const k = keys.current
         let dx = 0, dy = 0
-        for (const code of k) { const m = MOVE[code]; if (m) { dx += m[0]; dy += m[1] } }
+        for (const code of keys.current) { const m = MOVE[code]; if (m) { dx += m[0]; dy += m[1] } }
         dx += pad.current.dx + padKey.current.dx; dy += pad.current.dy + padKey.current.dy
         step(game.current, { dx: Math.max(-1, Math.min(1, dx)), dy: Math.max(-1, Math.min(1, dy)), action: action.current })
         action.current = false
@@ -195,21 +222,17 @@ export function PatternShiftGame() {
   }, [layout, syncHud])
 
   useEffect(() => { paint() }, [settings, paint])
+  useEffect(() => { if (!hint) return; const timer = window.setTimeout(() => setHint(null), 3200); return () => window.clearTimeout(timer) }, [hint])
+  useEffect(() => { if (!notice) return; const timer = window.setTimeout(() => setNotice(null), 3600); return () => window.clearTimeout(timer) }, [notice])
 
-  useEffect(() => {
-    if (!hint) return
-    const timer = window.setTimeout(() => setHint(null), 3200)
-    return () => window.clearTimeout(timer)
-  }, [hint])
-
-  // Keyboard: arrows/WASD move, Space/Enter turns, Escape pauses, R restarts.
+  // Keyboard: arrows/WASD move; Shift, Space or Enter shifts; Escape pauses; R restarts.
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
       const current = screenRef.current
       if (event.metaKey || event.ctrlKey || event.altKey) return
       if (current === 'playing') {
         if (MOVE[event.code] && !isTextEntry(event.target)) { event.preventDefault(); keys.current.add(event.code); return }
-        if ((event.code === 'Space' || event.code === 'Enter') && !isControl(event.target)) { event.preventDefault(); if (!event.repeat) action.current = true; return }
+        if (ACTION.has(event.code) && !isControl(event.target)) { event.preventDefault(); if (!event.repeat) action.current = true; return }
         if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); setScreen('paused'); setAnnouncement('Paused.'); return }
         if (event.code === 'KeyR' && !isTextEntry(event.target)) { event.preventDefault(); restart() }
       } else if (current === 'paused' && event.code === 'Escape') { event.preventDefault(); setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }
@@ -230,8 +253,7 @@ export function PatternShiftGame() {
   const padMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
     const ox = event.clientX - (rect.left + rect.width / 2), oy = event.clientY - (rect.top + rect.height / 2)
-    const dead = rect.width * 0.12
-    if (Math.hypot(ox, oy) < dead) { pad.current = { dx: 0, dy: 0 }; return }
+    if (Math.hypot(ox, oy) < rect.width * 0.12) { pad.current = { dx: 0, dy: 0 }; return }
     pad.current = { dx: Math.abs(ox) > Math.abs(oy) * 0.414 ? Math.sign(ox) : 0, dy: Math.abs(oy) > Math.abs(ox) * 0.414 ? Math.sign(oy) : 0 }
   }
   const padDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -248,30 +270,38 @@ export function PatternShiftGame() {
     onBlur: () => { padKey.current = { dx: 0, dy: 0 } },
   })
 
-  const turn = () => {
+  const shift = () => {
     sound.current.unlock()
     if (screenRef.current !== 'playing') return
-    if (!reachableGate(game.current)) { setAnnouncement('Nothing within reach can be turned.'); return }
+    if (!reachable(game.current)) { setAnnouncement('Nothing within reach shifts.'); return }
     action.current = true
     stageRef.current?.focus({ preventScroll: true })
   }
 
-  const level = levels[levelIndex]
-  const open = hud.total > 0 && hud.remaining === 0
-  const stateLabel = `Level ${levelIndex + 1}, ${level.title}. ${hud.remaining} of ${hud.total} samples left. Exit ${open ? 'open' : 'closed'}.${hud.axis ? ` Gate opens ${hud.axis.split(',').map(axisWords).join(', ')}.` : ''}${hud.reach ? ' A gate is within reach.' : ''}`
-  const nextIncomplete = Math.max(0, levels.findIndex(item => !saved.completed.includes(item.id)))
+  const openIndex = (from: Screen) => {
+    setReturnTo(from)
+    setScreen('index')
+    persist(current => ({ ...current, indexOpens: current.indexOpens + 1 }))
+    if (savedRef.current.indexOpens === 2) record('ten-types')
+  }
   const openSettings = (from: Screen) => { setReturnTo(from); setScreen('settings') }
+
+  const level = levels[levelIndex]
+  const open = hud.total > 0 && game.current.status !== 'failed' && hud.taken >= game.current.required
+  const stateLabel = `Level ${level.code}, ${level.title}. ${hud.taken} of ${hud.total} samples collected. Exit ${open ? 'open' : 'closed'}.${hud.reach === 'junction' ? ' A junction is within reach.' : hud.reach === 'gate' ? ' Something within reach can turn.' : ''}`
+  const nextIncomplete = Math.max(0, levels.findIndex(item => !saved.completed.includes(item.id)))
   const reduced = prefersReducedMotion(settings)
+  const ready = hud.reach !== '' && screen === 'playing'
 
   return (
     <section ref={rootRef} className="ps" aria-labelledby={headingId} data-screen={screen} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
-      <h2 id={headingId} className="ps-visually-hidden">Pattern Shift game</h2>
+      <h2 id={headingId} className="ps-visually-hidden">Edge Case game</h2>
       <div className="ps-hud" ref={hudRef}>
-        <p className="ps-level"><span className="ps-level-number">{levelIndex + 1}</span> {level.title}</p>
+        <p className="ps-level"><span className="ps-level-code">{level.code}</span> {level.title}</p>
         <p className="ps-samples">
-          {Array.from({ length: hud.total }, (_, i) => <span key={i} className={i < hud.total - hud.remaining ? 'ps-diamond is-taken' : 'ps-diamond'} aria-hidden="true"/>)}
+          {Array.from({ length: hud.total }, (_, i) => <span key={i} className={i < hud.taken ? 'ps-diamond is-taken' : 'ps-diamond'} aria-hidden="true"/>)}
           <span className="ps-visually-hidden">Samples collected: </span>
-          <span>{hud.total - hud.remaining}/{hud.total}</span>
+          <span>{hud.taken}/{hud.total}</span>
         </p>
         <div className="ps-hud-actions">
           <button type="button" className="ps-icon-button" aria-pressed={settings.sound} onClick={() => { sound.current.unlock(); updateSettings({ sound: !settings.sound }) }}>
@@ -288,62 +318,77 @@ export function PatternShiftGame() {
 
       <div className="ps-stage" ref={stageRef} tabIndex={-1}>
         <canvas ref={canvasRef} className="ps-canvas" role="img" aria-label={stateLabel}/>
-        {hint && screen === 'playing' && <p className="ps-hint" aria-hidden="true">{hint}</p>}
+        {hint && screen === 'playing' && !notice && <p className="ps-hint" aria-hidden="true">{hint}</p>}
+        {notice && <p className="ps-notice" aria-hidden="true"><span>Discovery</span>{notice.replace(/^Discovery /, '')}</p>}
         {screen === 'title' && (
-          <Card title="Pattern Shift" onFocus>
-            <p>Three short levels. Watch what repeats. Find what you can change. Get out.</p>
+          <Card title="EDGE CASE" kicker="Producing Curiosity / ARCADE_01" focus>
+            <p className="ps-tagline">Every rule has an exception.</p>
+            <p>Watch what repeats. Change what you can. There is usually more than one way through.</p>
             <div className="ps-card-actions">
-              <button type="button" className="ps-primary" onClick={() => begin(nextIncomplete)}>{saved.completed.length && saved.completed.length < levels.length ? `Continue: level ${nextIncomplete + 1}` : 'Play'}</button>
+              <button type="button" className="ps-primary" onClick={() => begin(nextIncomplete)}>{saved.completed.length && saved.completed.length < levels.length ? `Continue: ${levels[nextIncomplete].code}` : 'Play'}</button>
               <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
+              <button type="button" onClick={() => openIndex('title')}>System index</button>
               <button type="button" onClick={() => openSettings('title')}>Settings</button>
             </div>
             <Legend/>
           </Card>
         )}
         {screen === 'levels' && (
-          <Card title="Choose a level" onFocus>
+          <Card title="Choose a level" focus>
             <ol className="ps-level-list">
               {levels.map((item, i) => (
-                <li key={item.id}><button type="button" onClick={() => begin(i)}><span>{i + 1}. {item.title}</span>{saved.completed.includes(item.id) && <span className="ps-done"> ✓ <span className="ps-visually-hidden">completed</span></span>}</button></li>
+                <li key={item.id}><button type="button" onClick={() => begin(i)}><span><span className="ps-level-code">{item.code}</span> {item.title}</span>{saved.completed.includes(item.id) && <span className="ps-done"> ✓ <span className="ps-visually-hidden">completed</span></span>}</button></li>
               ))}
             </ol>
             <div className="ps-card-actions"><button type="button" onClick={() => setScreen('title')}>Back</button></div>
           </Card>
         )}
+        {screen === 'index' && (
+          <Card title="System index" kicker="EDGE CASE" focus wide>
+            <SystemIndex discovered={saved.discovered}/>
+            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
+          </Card>
+        )}
         {screen === 'settings' && (
-          <Card title="Settings" onFocus>
+          <Card title="Settings" focus>
             <SettingsForm settings={settings} update={updateSettings}/>
             <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
           </Card>
         )}
         {screen === 'paused' && (
-          <Card title="Paused" onFocus>
+          <Card title="Paused" focus>
             <div className="ps-card-actions">
               <button type="button" className="ps-primary" onClick={() => { setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }}>Resume</button>
               <button type="button" onClick={restart}>Restart level</button>
               <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
+              <button type="button" onClick={() => openIndex('paused')}>System index</button>
               <button type="button" onClick={() => openSettings('paused')}>Settings</button>
             </div>
           </Card>
         )}
         {screen === 'failed' && (
-          <Card title={failCause === 'tracer' ? 'Caught by a tracer' : 'Caught in an active field'} onFocus compact>
+          <Card title={failCause === 'tracer' ? 'Caught by a tracer' : 'Caught in an active field'} focus compact>
             <p>{failCause === 'tracer' ? 'Tracers repeat their route. The dotted line shows where they go next.' : 'Fields switch on in a steady rhythm. The hatching appears just before.'}</p>
             <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={restart}>Try again <kbd>R</kbd></button></div>
           </Card>
         )}
         {screen === 'won' && (
-          <Card title={levelIndex === levels.length - 1 ? 'All three levels complete' : 'Level complete'} onFocus>
+          <Card title={levelIndex === levels.length - 1 ? 'Chapter complete' : 'Level complete'} kicker={`${level.code} · ${level.title}`} focus>
             <dl className="ps-summary">
               <div><dt>Time</dt><dd>{summary.seconds.toFixed(1)} s</dd></div>
               <div><dt>Attempts</dt><dd>{summary.attempts}</dd></div>
-              <div><dt>Gate turns</dt><dd>{summary.turns}</dd></div>
+              <div><dt>Shifts</dt><dd>{summary.shifts}</dd></div>
             </dl>
-            {levelIndex === levels.length - 1 && <p>That is the whole prototype for now.</p>}
+            {summary.found.length > 0 && (
+              <ul className="ps-found" aria-label="Discovered this level">
+                {summary.found.map(id => { const d = discoveryOf(id); return <li key={id}><span className="ps-code">{d.code}</span> {d.name}</li> })}
+              </ul>
+            )}
+            {levelIndex === levels.length - 1 && <p>That is all of chapter 000–010 for now.</p>}
             <div className="ps-card-actions">
               {levelIndex < levels.length - 1 && <button type="button" className="ps-primary" onClick={() => begin(levelIndex + 1)}>Next level</button>}
               <button type="button" className={levelIndex === levels.length - 1 ? 'ps-primary' : undefined} onClick={() => begin(levelIndex)}>Replay</button>
-              <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
+              <button type="button" onClick={() => openIndex('won')}>System index</button>
             </div>
           </Card>
         )}
@@ -356,9 +401,9 @@ export function PatternShiftGame() {
           <button type="button" className="ps-pad-right" aria-label="Move right" disabled={screen !== 'playing'} {...padButtonKey(1, 0)}><span aria-hidden="true">▶</span></button>
           <button type="button" className="ps-pad-down" aria-label="Move down" disabled={screen !== 'playing'} {...padButtonKey(0, 1)}><span aria-hidden="true">▼</span></button>
         </div>
-        <button type="button" className="ps-action" aria-disabled={!hud.reach || screen !== 'playing'} data-ready={hud.reach && screen === 'playing' ? 'true' : 'false'} onClick={turn}>
-          <span className="ps-action-icon" aria-hidden="true"/>
-          <span>Turn gate</span>
+        <button type="button" className="ps-action" aria-disabled={!ready} data-ready={ready ? 'true' : 'false'} onClick={shift}>
+          <span className="ps-action-icon" aria-hidden="true">⇧</span>
+          <span>Shift</span>
         </button>
       </div>
       <p className="ps-visually-hidden" aria-live="polite" role="status">{announcement}</p>
@@ -366,18 +411,73 @@ export function PatternShiftGame() {
   )
 }
 
-function Card({ title, children, onFocus, compact }: { title: string; children: ReactNode; onFocus?: boolean; compact?: boolean }) {
+function Card({ title, kicker, children, focus, compact, wide }: { title: string; kicker?: string; children: ReactNode; focus?: boolean; compact?: boolean; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
   useEffect(() => {
-    if (!onFocus) return
-    const target = ref.current?.querySelector<HTMLElement>('.ps-primary, button, input, select')
-    target?.focus({ preventScroll: true })
-  }, [onFocus, title])
+    if (!focus) return
+    ref.current?.querySelector<HTMLElement>('.ps-primary, button, input, select')?.focus({ preventScroll: true })
+  }, [focus, title])
   return (
-    <div ref={ref} className={compact ? 'ps-card ps-card--compact' : 'ps-card'} role="dialog" aria-modal="false" aria-labelledby={id}>
+    <div ref={ref} className={['ps-card', compact && 'ps-card--compact', wide && 'ps-card--wide'].filter(Boolean).join(' ')} role="dialog" aria-modal="false" aria-labelledby={id}>
+      {kicker && <p className="ps-kicker">{kicker}</p>}
       <h3 id={id}>{title}</h3>
       {children}
+    </div>
+  )
+}
+
+function SystemIndex({ discovered }: { discovered: string[] }) {
+  const [showUnavailable, setShowUnavailable] = useState(true)
+  const known = operations.filter(op => !op.discovery || discovered.includes(op.discovery))
+  const count = discoveries.filter(d => discovered.includes(d.id)).length
+  return (
+    <div className="ps-index">
+      <section aria-labelledby="ec-ops">
+        <div className="ps-index-head">
+          <h4 id="ec-ops">Known operations<span className="ps-cursor" aria-hidden="true">_</span></h4>
+          <p className="ps-register"><span aria-hidden="true">{String(known.length).padStart(2, '0')} / {String(operations.length).padStart(2, '0')}</span><span className="ps-visually-hidden">{known.length} of {operations.length} known</span></p>
+        </div>
+        <label className="ps-check"><input type="checkbox" checked={showUnavailable} onChange={e => setShowUnavailable(e.target.checked)}/> Show unavailable operations</label>
+        <ul className="ps-ops">
+          {operations.map(op => {
+            const isKnown = known.includes(op)
+            if (!isKnown && !showUnavailable) return null
+            return (
+              <li key={op.id} className={isKnown ? 'is-known' : 'is-unknown'}>
+                <span className="ps-op-symbol" aria-hidden="true">{isKnown ? op.symbol : '?'}</span>
+                <span className="ps-op-body">
+                  <strong>{isKnown ? op.name : <><span aria-hidden="true">???</span><span className="ps-visually-hidden">Undiscovered operation</span></>}</strong>
+                  <span>{isKnown ? op.text : op.clue ?? 'Unknown operation.'}</span>
+                </span>
+              </li>
+            )
+          })}
+        </ul>
+        <p className="ps-small">Some operations may be discovered through unintended interactions. All of them follow the rules.</p>
+      </section>
+      <section aria-labelledby="ec-disc">
+        <div className="ps-index-head">
+          <h4 id="ec-disc">Discoveries</h4>
+          <p className="ps-register"><span aria-hidden="true">{binary(count)} / {binary(discoveries.length)}</span><span className="ps-visually-hidden">{count} of {discoveries.length} discovered</span></p>
+        </div>
+        <p className="ps-small" aria-hidden="true">{count} of {discoveries.length}. Yes, the counter is in binary.</p>
+        <ol className="ps-discoveries">
+          {discoveries.map(d => {
+            const found = discovered.includes(d.id)
+            return (
+              <li key={d.id} className={found ? 'is-known' : 'is-unknown'}>
+                <span className="ps-code">{d.code}</span>
+                <span className="ps-op-body">
+                  <strong>{found ? d.name : <><span aria-hidden="true">???</span><span className="ps-visually-hidden">Undiscovered</span></>}</strong>
+                  <span>{found ? d.text : d.clue ?? 'No record.'}</span>
+                </span>
+              </li>
+            )
+          })}
+        </ol>
+        <p className="ps-unknown-entry"><span className="ps-code">0x??</span> <strong>UNKNOWN</strong> <span>Not counted. This list may not describe everything.</span></p>
+      </section>
     </div>
   )
 }
@@ -387,10 +487,10 @@ function Legend() {
     <ul className="ps-legend" aria-label="What you will see">
       <li><span className="ps-key ps-key--player" aria-hidden="true"/>You</li>
       <li><span className="ps-key ps-key--tracer" aria-hidden="true"/>Tracer: repeats a route</li>
-      <li><span className="ps-key ps-key--gate" aria-hidden="true"/>Gate: can be turned</li>
-      <li><span className="ps-key ps-key--sample" aria-hidden="true"/>Sample: collect all</li>
+      <li><span className="ps-key ps-key--junction" aria-hidden="true"/>Junction: shift it to turn its pockets</li>
+      <li><span className="ps-key ps-key--sample" aria-hidden="true"/>Sample</li>
       <li><span className="ps-key ps-key--field" aria-hidden="true"/>Field: switches on and off</li>
-      <li><span className="ps-key ps-key--exit" aria-hidden="true"/>Exit: closes when complete</li>
+      <li><span className="ps-key ps-key--exit" aria-hidden="true"/>Exit: closes the circle when open</li>
     </ul>
   )
 }

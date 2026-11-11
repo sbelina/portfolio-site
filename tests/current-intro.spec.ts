@@ -121,7 +121,7 @@ test('skip during a Dive cancels its animation and a replay starts at the first 
 })
 
 test('enlarged touch readers can pan vertically without accidentally completing an intro step', async ({ browser, browserName }) => {
-  test.skip(browserName !== 'chromium', 'Raw touch input via CDP is Chromium-only; WebKit touch is covered by the Pattern Shift touch tests')
+  test.skip(browserName !== 'chromium', 'Raw touch input via CDP is Chromium-only; WebKit touch is covered by the Edge Case touch tests')
   const context = await browser.newContext({ viewport: { width: 320, height: 740 }, hasTouch: true, isMobile: true, reducedMotion: 'reduce' })
   try {
     const page = await context.newPage(); await page.goto(origin + '/')

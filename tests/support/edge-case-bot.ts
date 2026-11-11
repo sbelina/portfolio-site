@@ -1,4 +1,4 @@
-import { createGame, drainEvents, step, tracerPosition, type GameEvent, type GameState, type LevelDef } from '../../src/play/pattern-shift/engine'
+import { createGame, drainEvents, step, tracerPosition, type GameEvent, type GameState, type LevelDef } from '../../src/play/edge-case/engine'
 
 /** Deterministic scripted player for engine tests. No timing depends on rendering. */
 export class Bot {

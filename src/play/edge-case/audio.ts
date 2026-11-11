@@ -1,5 +1,5 @@
 /** Small procedural cues. Sound reinforces events; nothing depends on hearing it. */
-export type Cue = 'sample' | 'exit-open' | 'gate' | 'jammed' | 'fail' | 'won' | 'start'
+export type Cue = 'sample' | 'exit-open' | 'gate' | 'shift' | 'jammed' | 'fail' | 'won' | 'start' | 'discovery'
 
 export class Sound {
   private context: AudioContext | null = null
@@ -44,6 +44,8 @@ export class Sound {
       case 'sample': this.tone(660, 0, 0.09, 'triangle'); this.tone(990, 0.07, 0.14, 'triangle'); break
       case 'exit-open': [523, 659, 784].forEach((f, i) => this.tone(f, i * 0.06, 0.25, 'sine', 0.18)); break
       case 'gate': this.tone(180, 0, 0.06, 'square', 0.12); this.tone(240, 0.05, 0.08, 'triangle', 0.2); break
+      case 'shift': this.tone(150, 0, 0.05, 'square', 0.1); this.tone(300, 0.04, 0.12, 'triangle', 0.18, 220); break
+      case 'discovery': [784, 988, 1175, 1568].forEach((f, i) => this.tone(f, i * 0.05, 0.18, 'triangle', 0.14)); break
       case 'jammed': this.tone(110, 0, 0.18, 'sawtooth', 0.1); break
       case 'fail': this.tone(330, 0, 0.32, 'triangle', 0.25, 110); break
       case 'won': [523, 659, 784, 1047].forEach((f, i) => this.tone(f, i * 0.09, 0.35, 'sine', 0.2)); break

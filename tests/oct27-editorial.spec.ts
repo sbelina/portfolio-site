@@ -63,7 +63,7 @@ test('first reading gives thesis, work and connections without opening intro or 
 })
 
 test('primary routes remain in the first screen at desktop and narrow width', async ({ browser, baseURL, browserName }) => {
-  test.fixme(browserName === 'webkit', 'Known WebKit finding on the legacy edition (fixture home); see docs/codex/PATTERN-SHIFT-PROTOTYPE.md')
+  test.fixme(browserName === 'webkit', 'Linux WebKit renders the legacy hero in a wider fallback serif (Iowan/Palatino absent); not a Safari defect. See docs/codex/EDGE-CASE-PROTOTYPE.md')
   for (const viewport of [{ width: 1440, height: 900 }, { width: 320, height: 740 }]) {
     const context = await browser.newContext({ baseURL, viewport, javaScriptEnabled: false, reducedMotion: 'reduce' })
     try {

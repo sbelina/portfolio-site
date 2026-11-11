@@ -1,4 +1,5 @@
-/* Pattern Shift: a research instrument that became a game. Uses the current-edition tokens. */
+/* EDGE CASE: a research instrument that became a game. Uses the current-edition tokens. */
+.ps-page { --mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; }
 html, body { margin: 0; background: var(--paper, #f3efe7); }
 .ps-page { min-height: 100vh; min-height: 100dvh; background: var(--paper); color: var(--ink); font: 1rem/1.6 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-wrap: anywhere; }
 .ps-page :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -29,7 +30,9 @@ html, body { margin: 0; background: var(--paper, #f3efe7); }
 
 .ps-hud { display: flex; align-items: center; gap: .4rem; min-width: 0; border-top: 1.5px solid var(--ink); border-bottom: 1px solid var(--soft-line); padding: .25rem 0; }
 .ps-level { margin: 0; flex: 1; min-width: 0; font-weight: 650; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ps-level-number { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border: 1.5px solid var(--ink); border-radius: 50%; font-size: .8rem; margin-right: .2rem; }
+.ps-level-code, .ps-code { font: 600 .8rem/1 var(--mono); letter-spacing: .04em; padding: .2rem .3rem; border: 1.5px solid var(--ink); margin-right: .2rem; }
+.ps-kicker { margin: 0 0 .15rem; font: 600 .72rem/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.ps-tagline { font: 600 1.05rem/1.3 var(--mono); letter-spacing: -.01em; }
 .ps-samples { margin: 0; display: flex; align-items: center; gap: .3rem; font-variant-numeric: tabular-nums; font-size: .9rem; }
 .ps-diamond { width: .65rem; height: .65rem; border: 2px solid var(--holds); transform: rotate(45deg); }
 .ps-diamond.is-taken { background: var(--holds); }
@@ -68,7 +71,7 @@ html, body { margin: 0; background: var(--paper, #f3efe7); }
 .ps-key { flex: none; width: 1rem; height: 1rem; }
 .ps-key--player { border-radius: 50%; background: var(--ink); box-shadow: inset 0 0 0 2px var(--signal-art); }
 .ps-key--tracer { background: var(--pressure); clip-path: polygon(100% 50%, 0 0, 30% 50%, 0 100%); }
-.ps-key--gate { border-top: 3px solid var(--ink); border-bottom: 3px solid var(--ink); }
+.ps-key--junction { background: linear-gradient(var(--ink), var(--ink)) center / 3px 100% no-repeat, linear-gradient(var(--ink), var(--ink)) center / 100% 3px no-repeat; }
 .ps-key--sample { width: .7rem; height: .7rem; margin: 0 .15rem; border: 2px solid var(--holds); transform: rotate(45deg); }
 .ps-key--field { border: 1.5px dashed var(--pressure); background: repeating-linear-gradient(45deg, transparent 0 3px, var(--pressure) 3px 4.5px); }
 .ps-key--exit { border-radius: 50%; border: 2.5px dashed var(--ink); }
@@ -81,8 +84,7 @@ html, body { margin: 0; background: var(--paper, #f3efe7); }
 .ps .ps-action { flex: 0 1 7.5rem; min-width: 5.5rem; min-height: 5.5rem; padding-inline: .4rem; display: grid; justify-items: center; gap: .35rem; font-weight: 650; }
 .ps .ps-action[data-ready="true"] { background: var(--ink); color: var(--paper); box-shadow: 0 0 0 3px var(--paper), 0 0 0 6px var(--signal-art); }
 .ps .ps-action[aria-disabled="true"] { opacity: .55; }
-.ps-action-icon { position: relative; width: 1.6rem; height: 1.6rem; border-top: 4px solid currentColor; border-bottom: 4px solid currentColor; }
-.ps-action-icon::after { content: ''; position: absolute; inset: 50% auto auto 50%; width: .45rem; height: .45rem; margin: -.225rem; border-radius: 50%; background: var(--signal-art); }
+.ps-action-icon { font-size: 1.6rem; line-height: 1; }
 .ps[data-contrast="high"] button { border-width: 2.5px; }
 
 @media (min-width: 700px) and (hover: hover) and (pointer: fine) {
@@ -94,3 +96,30 @@ html, body { margin: 0; background: var(--paper, #f3efe7); }
   .ps-canvas, .ps-card, .ps button { border-color: CanvasText; }
   .ps .ps-action[data-ready="true"] { outline: 3px solid Highlight; }
 }
+
+.ps-card--wide { inset: auto .35rem; }
+.ps-notice { position: absolute; top: .75rem; left: 50%; transform: translateX(-50%); z-index: 2; margin: 0; display: grid; gap: .1rem; max-width: calc(100% - 2rem); padding: .45rem .8rem; background: var(--paper); color: var(--ink); border: 1.5px solid var(--ink); box-shadow: 4px 4px 0 var(--signal-art); font: 600 .9rem/1.3 var(--mono); pointer-events: none; animation: ps-hint 3.6s ease both; }
+.ps-notice > span { font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.ps[data-reduced-motion="true"] .ps-notice { animation: none; }
+.ps-found { list-style: none; padding: 0; margin: 0 0 .75rem; display: grid; gap: .3rem; }
+.ps-index { display: grid; gap: 1.1rem; margin-bottom: .9rem; }
+.ps-index h4 { margin: 0; font: 700 .85rem/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.ps-cursor { animation: ps-blink 1s steps(1) infinite; }
+@keyframes ps-blink { 50% { opacity: 0; } }
+.ps[data-reduced-motion="true"] .ps-cursor { animation: none; }
+.ps-index-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; border-bottom: 1.5px solid var(--ink); padding-bottom: .25rem; margin-bottom: .4rem; }
+.ps-register { margin: 0; font: 600 .95rem/1 var(--mono); font-variant-numeric: tabular-nums; }
+.ps-small { margin: .4rem 0 0; font-size: .8rem; color: var(--muted); }
+.ps-ops, .ps-discoveries { list-style: none; padding: 0; margin: 0; display: grid; gap: .1rem; }
+.ps-ops li, .ps-discoveries li, .ps-unknown-entry { display: grid; grid-template-columns: 3.4rem 1fr; gap: .6rem; align-items: start; padding: .35rem 0; border-bottom: 1px solid var(--soft-line); }
+.ps-op-symbol { font: 600 1rem/1.4 var(--mono); text-align: center; }
+.ps-op-body { display: grid; gap: .05rem; font-size: .88rem; }
+.ps-op-body strong { font: 700 .82rem/1.4 var(--mono); letter-spacing: .06em; }
+.ps-ops .is-unknown, .ps-discoveries .is-unknown { color: var(--muted); }
+.ps-ops .is-unknown .ps-op-symbol { border: 1.5px dashed var(--line); }
+.ps-discoveries .ps-code { justify-self: start; }
+.ps-discoveries .is-unknown .ps-code { border-style: dashed; border-color: var(--line); }
+.ps-unknown-entry { margin: .5rem 0 0; grid-template-columns: 3.4rem auto 1fr; font-size: .85rem; color: var(--muted); border-bottom: 0; }
+.ps-unknown-entry strong { font: 700 .82rem/1.4 var(--mono); letter-spacing: .06em; color: var(--ink); }
+/* Narrow phones: the count carries the meaning; the level name stays readable. */
+@media (max-width: 420px) { .ps-diamond { display: none; } }

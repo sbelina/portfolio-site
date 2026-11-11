@@ -1,4 +1,4 @@
-import { exitOpen, fieldPhase, predictPath, reachableGate, tracerPosition, type Axis, type GameState } from './engine'
+import { exitOpen, fieldPhase, predictPath, reachable, tracerPosition, type Axis, type GameState } from './engine'
 
 export interface Palette { paper: string; panel: string; ink: string; muted: string; line: string; soft: string; accent: string; hazard: string; learning: string; predicted: string }
 export interface View {
@@ -8,7 +8,7 @@ export interface View {
   highContrast: boolean
   ghost: [number, number][] | null
   /** Render-only memory: recent tracer positions and gate rotation animation. */
-  memory: { trails: [number, number][][]; gateTurn: Map<string, { from: number; started: number }>; jam: { x: number; y: number; until: number } | null }
+  memory: { trails: [number, number][][]; gateTurn: Map<string, { from: number; started: number }>; shiftTurn: Map<string, number>; jam: { x: number; y: number; until: number } | null }
   now: number
 }
 
@@ -22,9 +22,16 @@ export function readPalette(element: Element): Palette {
   }
 }
 
-export const createMemory = (): View['memory'] => ({ trails: [], gateTurn: new Map(), jam: null })
+export const createMemory = (): View['memory'] => ({ trails: [], gateTurn: new Map(), shiftTurn: new Map(), jam: null })
 const angleOf = (axis: Axis) => (axis === 'ew' ? 0 : Math.PI / 2)
 const GATE_TURN_MS = 160
+const SHIFT_TURN_MS = 220
+
+export function noteShift(memory: View['memory'], x: number, y: number, now: number) {
+  memory.shiftTurn.set(`${x},${y}`, now)
+  // Carried tracers jump; old trail points would draw a misleading line.
+  memory.trails = []
+}
 
 export function noteGateTurn(memory: View['memory'], x: number, y: number, axis: Axis, now: number) {
   memory.gateTurn.set(`${x},${y}`, { from: angleOf(axis === 'ew' ? 'ns' : 'ew'), started: now })
@@ -119,7 +126,8 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
   }
 
   // Gates: a channel of two bars around a pivot; it lets movement through along its bars.
-  const reach = s.status === 'playing' ? reachableGate(s) : null
+  const target = s.status === 'playing' ? reachable(s) : null
+  const reach = target?.kind === 'gate' ? target.gate : null
   for (const gate of s.gates) {
     const cx = px(gate.x + 0.5), cy = px(gate.y + 0.5)
     let angle = angleOf(gate.axis)
@@ -154,6 +162,47 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
     ctx.strokeStyle = c.ink
     ctx.lineWidth = 1.5
     ctx.beginPath(); ctx.arc(cx, cy, T * 0.07, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+  }
+  // Junctions: a + on a grid corner. Its arms seal four pockets; a shift turns them clockwise.
+  for (const j of s.junctions) {
+    const cx = px(j.x), cy = px(j.y)
+    ctx.strokeStyle = c.line
+    ctx.lineWidth = 1.25 * k
+    ctx.setLineDash([T * 0.05, T * 0.09])
+    ctx.beginPath(); ctx.arc(cx, cy, T * 0.707, 0, Math.PI * 2); ctx.stroke()
+    ctx.setLineDash([])
+    // Clockwise arrowhead on the rotation circle.
+    const a = -Math.PI / 4
+    const ax = cx + Math.cos(a) * T * 0.707, ay = cy + Math.sin(a) * T * 0.707
+    ctx.fillStyle = c.line
+    ctx.beginPath(); ctx.moveTo(ax + T * 0.09, ay + T * 0.02); ctx.lineTo(ax - T * 0.05, ay - T * 0.07); ctx.lineTo(ax - T * 0.03, ay + T * 0.09); ctx.closePath(); ctx.fill()
+    if (target?.kind === 'junction' && target.junction === j) {
+      ctx.strokeStyle = c.accent
+      ctx.lineWidth = 3 * k
+      ctx.setLineDash([T * 0.1, T * 0.07])
+      ctx.beginPath(); ctx.arc(cx, cy, T * 1.08, 0, Math.PI * 2); ctx.stroke()
+      ctx.setLineDash([])
+    }
+    let angle = 0
+    const started = view.memory.shiftTurn.get(`${j.x},${j.y}`)
+    if (started !== undefined && !view.reducedMotion) {
+      const t = Math.min(1, (view.now - started) / SHIFT_TURN_MS)
+      // Arms arrive from a quarter-turn behind: clockwise, easing out.
+      if (t < 1) angle = -(Math.PI / 2) * (1 - t) ** 3
+      else view.memory.shiftTurn.delete(`${j.x},${j.y}`)
+    }
+    ctx.save()
+    ctx.translate(cx, cy)
+    ctx.rotate(angle)
+    ctx.fillStyle = c.ink
+    const arm = T * 0.12 * (view.highContrast ? 1.3 : 1)
+    ctx.fillRect(-arm / 2, -T, arm, T * 2)
+    ctx.fillRect(-T, -arm / 2, T * 2, arm)
+    ctx.restore()
+    ctx.fillStyle = c.accent
+    ctx.strokeStyle = c.ink
+    ctx.lineWidth = 2
+    ctx.beginPath(); ctx.arc(cx, cy, T * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
   }
   if (view.memory.jam && view.now < view.memory.jam.until) cross(ctx, px(view.memory.jam.x + 0.5), px(view.memory.jam.y + 0.5), T * 0.22, c.hazard, 3 * k)
 

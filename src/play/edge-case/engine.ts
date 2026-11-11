@@ -1,9 +1,10 @@
 /**
- * Pattern Shift simulation. Pure, deterministic and independent of rendering:
- * the same inputs at the same fixed step always produce the same state.
- * Unpublished prototype; the marker below keeps it out of production output.
+ * EDGE CASE simulation. Pure and deterministic: the same inputs at the same
+ * fixed step always produce the same state. Discoveries are consequences of
+ * the rules below, never of software defects. Unpublished prototype; the
+ * marker keeps it out of production output.
  */
-export const UNPUBLISHED_MARKER = 'PATTERN_SHIFT_UNPUBLISHED_PROTOTYPE_7d3e'
+export const UNPUBLISHED_MARKER = 'EDGE_CASE_UNPUBLISHED_PROTOTYPE_7d3e'
 
 export const STEP = 1 / 60
 export const PLAYER_HALF = 0.3
@@ -12,8 +13,10 @@ const PLAYER_ACCEL = 34
 const PLAYER_BRAKE = 46
 const CORNER_ASSIST = 3.2
 const GATE_THICKNESS = 0.12
+const ARM_HALF = 0.06
 export const GATE_REACH = 1.3
-const TRACER_HIT = 0.55
+export const JUNCTION_REACH = 1.6
+export const TRACER_HIT = 0.55
 const SAMPLE_REACH = 0.5
 const EXIT_REACH = 0.45
 const FIELD_HALF = 0.2
@@ -27,34 +30,49 @@ export const DY = [-1, 0, 1, 0] as const
 const right = (d: Dir) => ((d + 1) % 4) as Dir
 const left = (d: Dir) => ((d + 3) % 4) as Dir
 const back = (d: Dir) => ((d + 2) % 4) as Dir
-/** A gate channel lets movement through along one axis only. */
+/** A channel gate lets movement through along one axis only. */
 export type Axis = 'ns' | 'ew'
 const axisOf = (d: Dir): Axis => (d % 2 === 0 ? 'ns' : 'ew')
 
 /**
  * Map legend: # wall · . floor · = tracer track · * sample on track · o sample
- * · P start · E exit · H gate open east–west · V gate open north–south · ~ timed field.
+ * · P start · E exit · H/V channel gate (open east–west / north–south) · ~ timed field.
+ * Junctions sit on grid corners, listed separately: corner (x, y) touches the
+ * four tiles (x-1, y-1), (x, y-1), (x, y) and (x-1, y).
  */
 export interface LevelDef {
   id: string
+  /** Three-bit index shown with the title, e.g. 010. */
+  code: string
   title: string
   /** One short line; levels teach through play, not instructions. */
   hint: string
   map: string[]
   tracers: { x: number; y: number; dir: Dir; speed: number }[]
+  junctions?: { x: number; y: number }[]
+  /** Samples needed to open the exit. Defaults to all of them. */
+  required?: number
   field?: { period: number; on: number; warn: number; offset?: number }
 }
 
+export type DiscoveryId = 'false-start' | 'expected-behavior' | 'reroute' | 'not-a-bug' | 'pivot' | 'technically-correct' | 'exception' | 'ten-types' | 'off-by-one' | 'full-circle'
+
 export type Tile = 'wall' | 'floor' | 'track' | 'gate' | 'field'
 export interface Gate { x: number; y: number; axis: Axis }
-export interface Tracer { x: number; y: number; dir: Dir; next: { x: number; y: number } | null; progress: number; speed: number }
+export interface Junction { x: number; y: number; turns: number }
+export interface Tracer {
+  x: number; y: number; dir: Dir; next: { x: number; y: number } | null; progress: number; speed: number
+  start: { x: number; y: number; dir: Dir }; departed: boolean
+}
 export interface Sample { x: number; y: number; taken: boolean }
 export type FailCause = 'tracer' | 'field'
 export type GameEvent =
   | { type: 'sample'; remaining: number }
   | { type: 'exit-open' }
   | { type: 'gate'; axis: Axis }
+  | { type: 'shift'; x: number; y: number; carried: number }
   | { type: 'jammed' }
+  | { type: 'discovery'; id: DiscoveryId }
   | { type: 'fail'; cause: FailCause }
   | { type: 'won' }
 
@@ -67,12 +85,18 @@ export interface GameState {
   time: number
   player: { x: number; y: number; vx: number; vy: number }
   exit: { x: number; y: number }
+  required: number
   samples: Sample[]
   gates: Gate[]
+  junctions: Junction[]
   tracers: Tracer[]
   status: 'playing' | 'failed' | 'won'
   failCause: FailCause | null
   gateTurns: number
+  shifts: number
+  moved: boolean
+  carriedThisStep: boolean
+  discovered: DiscoveryId[]
   trail: [number, number][]
   events: GameEvent[]
 }
@@ -80,7 +104,13 @@ export interface GameState {
 export interface Input { dx: number; dy: number; action: boolean }
 export const idle: Input = { dx: 0, dy: 0, action: false }
 
-export function parseLevel(level: LevelDef): Omit<GameState, 'tracers'> & { tracers: Tracer[] } {
+/** The four pocket tiles of a junction, clockwise from north-west. */
+export const pockets = (j: { x: number; y: number }) => [
+  { x: j.x - 1, y: j.y - 1 }, { x: j.x, y: j.y - 1 }, { x: j.x, y: j.y }, { x: j.x - 1, y: j.y },
+]
+const pocketIndex = (j: { x: number; y: number }, x: number, y: number) => pockets(j).findIndex(p => p.x === x && p.y === y)
+
+export function createGame(level: LevelDef): GameState {
   const height = level.map.length
   const width = level.map[0].length
   if (level.map.some(row => row.length !== width)) throw new Error(`Level ${level.id} rows must share one width`)
@@ -106,19 +136,23 @@ export function parseLevel(level: LevelDef): Omit<GameState, 'tracers'> & { trac
   if (!player || !exit) throw new Error(`Level ${level.id} needs a start and an exit`)
   const enclosed = tiles.every((row, y) => y === 0 || y === height - 1 ? row.every(t => t === 'wall') : row[0] === 'wall' && row[width - 1] === 'wall')
   if (!enclosed) throw new Error(`Level ${level.id} must be enclosed`)
+  const junctions: Junction[] = (level.junctions ?? []).map(j => ({ ...j, turns: 0 }))
+  for (const j of junctions) for (const p of pockets(j)) {
+    const t = tiles[p.y]?.[p.x]
+    if (t === undefined || t === 'wall' || t === 'gate') throw new Error(`Junction pockets in ${level.id} must be open tiles`)
+  }
   const start = player as { x: number; y: number }
-  return {
+  const required = level.required ?? samples.length
+  if (required > samples.length) throw new Error(`Level ${level.id} requires more samples than it has`)
+  const state: GameState = {
     level, width, height, tiles, tick: 0, time: 0,
     player: { x: start.x + 0.5, y: start.y + 0.5, vx: 0, vy: 0 },
-    exit: exit as { x: number; y: number }, samples, gates, tracers: [], status: 'playing', failCause: null, gateTurns: 0, trail: [], events: [],
+    exit: exit as { x: number; y: number }, required, samples, gates, junctions, tracers: [], status: 'playing', failCause: null,
+    gateTurns: 0, shifts: 0, moved: false, carriedThisStep: false, discovered: [], trail: [], events: [],
   }
-}
-
-export function createGame(level: LevelDef): GameState {
-  const state = parseLevel(level)
   for (const def of level.tracers) {
     if (!rides(state, def.x, def.y)) throw new Error(`Tracer in ${level.id} must start on track`)
-    const tracer: Tracer = { x: def.x, y: def.y, dir: def.dir, next: null, progress: 0, speed: def.speed }
+    const tracer: Tracer = { x: def.x, y: def.y, dir: def.dir, next: null, progress: 0, speed: def.speed, start: { x: def.x, y: def.y, dir: def.dir }, departed: false }
     chooseNext(state, tracer)
     state.tracers.push(tracer)
   }
@@ -129,11 +163,14 @@ const tileAt = (s: Pick<GameState, 'tiles' | 'width' | 'height'>, x: number, y: 
   x < 0 || y < 0 || x >= s.width || y >= s.height ? 'wall' : s.tiles[y][x]
 export const gateAt = (s: Pick<GameState, 'gates'>, x: number, y: number) => s.gates.find(g => g.x === x && g.y === y)
 const rides = (s: GameState, x: number, y: number) => { const t = tileAt(s, x, y); return t === 'track' || t === 'gate' }
+/** Junction arms separate every pair of its pockets. */
+const armsBetween = (s: GameState, ax: number, ay: number, bx: number, by: number) =>
+  s.junctions.some(j => pocketIndex(j, ax, ay) >= 0 && pocketIndex(j, bx, by) >= 0)
 
-/** The same channel rule constrains tracers that constrains the player. */
+/** The same structures constrain tracers that constrain the player. */
 export function tracerCanMove(s: GameState, x: number, y: number, d: Dir) {
   const nx = x + DX[d], ny = y + DY[d]
-  if (!rides(s, nx, ny)) return false
+  if (!rides(s, x, y) || !rides(s, nx, ny) || armsBetween(s, x, y, nx, ny)) return false
   const here = gateAt(s, x, y), there = gateAt(s, nx, ny)
   return (!here || here.axis === axisOf(d)) && (!there || there.axis === axisOf(d))
 }
@@ -151,9 +188,10 @@ function chooseNext(s: GameState, tracer: Tracer) {
   tracer.next = { x: tracer.x + DX[d], y: tracer.y + DY[d] }
 }
 
-export function tracerPosition(t: Tracer) {
+export function tracerPosition(t: Tracer, extra = 0) {
   const nx = t.next ? t.next.x : t.x, ny = t.next ? t.next.y : t.y
-  return { x: t.x + 0.5 + (nx - t.x) * t.progress, y: t.y + 0.5 + (ny - t.y) * t.progress }
+  const p = Math.min(1, t.progress + (t.next ? extra : 0))
+  return { x: t.x + 0.5 + (nx - t.x) * p, y: t.y + 0.5 + (ny - t.y) * p }
 }
 
 /** Tile centres a tracer will visit next under the current configuration. */
@@ -181,6 +219,10 @@ function solids(s: GameState, cx: number, cy: number): Rect[] {
     if (!gate) continue
     if (gate.axis === 'ew') rects.push({ x0: x, y0: y, x1: x + 1, y1: y + GATE_THICKNESS }, { x0: x, y0: y + 1 - GATE_THICKNESS, x1: x + 1, y1: y + 1 })
     else rects.push({ x0: x, y0: y, x1: x + GATE_THICKNESS, y1: y + 1 }, { x0: x + 1 - GATE_THICKNESS, y0: y, x1: x + 1, y1: y + 1 })
+  }
+  for (const j of s.junctions) {
+    if (Math.abs(j.x - cx) > 3 || Math.abs(j.y - cy) > 3) continue
+    rects.push({ x0: j.x - ARM_HALF, y0: j.y - 1, x1: j.x + ARM_HALF, y1: j.y + 1 }, { x0: j.x - 1, y0: j.y - ARM_HALF, x1: j.x + 1, y1: j.y + ARM_HALF })
   }
   return rects
 }
@@ -229,20 +271,76 @@ export function gateOccupied(s: GameState, g: Gate) {
   return overlaps(s.player.x, s.player.y, PLAYER_HALF, { x0: g.x + m, y0: g.y + m, x1: g.x + 1 - m, y1: g.y + 1 - m })
 }
 
-export function reachableGate(s: GameState) {
-  let best: Gate | null = null, distance = GATE_REACH
-  for (const g of s.gates) {
-    const d = Math.hypot(g.x + 0.5 - s.player.x, g.y + 0.5 - s.player.y)
-    if (d <= distance) { best = g; distance = d }
+export type Reachable = { kind: 'gate'; gate: Gate } | { kind: 'junction'; junction: Junction }
+/** The nearest thing within reach that the player's action would turn. */
+export function reachable(s: GameState): Reachable | null {
+  let best: Reachable | null = null, distance = Infinity
+  for (const gate of s.gates) {
+    const d = Math.hypot(gate.x + 0.5 - s.player.x, gate.y + 0.5 - s.player.y)
+    if (d <= GATE_REACH && d < distance) { best = { kind: 'gate', gate }; distance = d }
+  }
+  for (const junction of s.junctions) {
+    const d = Math.hypot(junction.x - s.player.x, junction.y - s.player.y)
+    if (d <= JUNCTION_REACH && d < distance) { best = { kind: 'junction', junction }; distance = d }
   }
   return best
 }
 
-export const exitOpen = (s: GameState) => s.samples.every(sample => sample.taken)
+export const collected = (s: GameState) => s.samples.filter(sample => sample.taken).length
+export const exitOpen = (s: GameState) => collected(s) >= s.required
+
+function discover(s: GameState, id: DiscoveryId) {
+  if (s.discovered.includes(id)) return
+  s.discovered.push(id)
+  s.events.push({ type: 'discovery', id })
+}
+
+/**
+ * Shift a junction: anything whose centre lies in one of its pockets moves to the
+ * centre of the next pocket clockwise. Tracers turn with it. The exit, fields and
+ * track stay where they are.
+ */
+function shift(s: GameState, j: Junction) {
+  const ring = pockets(j)
+  const pocketOf = (x: number, y: number) => ring.findIndex(p => p.x === Math.floor(x) && p.y === Math.floor(y))
+  let carried = 0
+  const p = s.player
+  const playerPocket = pocketOf(p.x, p.y)
+  if (playerPocket >= 0) {
+    const to = ring[(playerPocket + 1) % 4]
+    p.x = to.x + 0.5; p.y = to.y + 0.5; p.vx = 0; p.vy = 0
+    s.carriedThisStep = true
+    carried++
+  }
+  for (const t of s.tracers) {
+    const at = tracerPosition(t)
+    const from = pocketOf(at.x, at.y)
+    if (from < 0) continue
+    const to = ring[(from + 1) % 4]
+    t.x = to.x; t.y = to.y; t.progress = 0; t.dir = right(t.dir); t.departed = true
+    chooseNext(s, t)
+    discover(s, rides(s, t.x, t.y) && t.next ? 'reroute' : 'not-a-bug')
+    carried++
+  }
+  for (const sample of s.samples) {
+    if (sample.taken) continue
+    const from = pocketOf(sample.x + 0.5, sample.y + 0.5)
+    if (from < 0) continue
+    const to = ring[(from + 1) % 4]
+    sample.x = to.x; sample.y = to.y
+    carried++
+  }
+  j.turns++
+  s.shifts++
+  s.events.push({ type: 'shift', x: j.x, y: j.y, carried })
+  if (j.turns % 4 === 0) discover(s, 'full-circle')
+}
 
 export function step(s: GameState, input: Input, dt = STEP) {
   if (s.status !== 'playing') return s
   const p = s.player
+  s.carriedThisStep = false
+  if (input.dx || input.dy) s.moved = true
   // Movement: predictable acceleration and braking, diagonal input normalised.
   const length = Math.hypot(input.dx, input.dy) || 1
   const tx = (input.dx / length) * PLAYER_MAX_SPEED, ty = (input.dy / length) * PLAYER_MAX_SPEED
@@ -254,13 +352,15 @@ export function step(s: GameState, input: Input, dt = STEP) {
   if (input.dy !== 0 && input.dx === 0 && blockedY) assist(s, 'y', Math.sign(input.dy), dt)
 
   if (input.action) {
-    const gate = reachableGate(s)
-    if (gate && gateOccupied(s, gate)) s.events.push({ type: 'jammed' })
-    else if (gate) {
+    const target = reachable(s)
+    if (target?.kind === 'junction') shift(s, target.junction)
+    else if (target?.kind === 'gate' && gateOccupied(s, target.gate)) s.events.push({ type: 'jammed' })
+    else if (target?.kind === 'gate') {
+      const gate = target.gate
       gate.axis = gate.axis === 'ew' ? 'ns' : 'ew'
       s.gateTurns++
       s.events.push({ type: 'gate', axis: gate.axis })
-      // A turned gate can strand a tracer mid-route; it re-chooses from its tile.
+      discover(s, 'pivot')
       for (const t of s.tracers) if (t.progress === 0) chooseNext(s, t)
     }
   }
@@ -271,18 +371,21 @@ export function step(s: GameState, input: Input, dt = STEP) {
     while (t.progress >= 1 && t.next) {
       t.x = t.next.x; t.y = t.next.y
       t.progress -= 1
+      if (t.x !== t.start.x || t.y !== t.start.y) t.departed = true
       chooseNext(s, t)
       if (!t.next) t.progress = 0
+      // Watching one complete cycle before touching anything.
+      if (t.departed && t.x === t.start.x && t.y === t.start.y && t.dir === t.start.dir && !s.moved) discover(s, 'expected-behavior')
     }
   }
 
+  const wasOpen = exitOpen(s)
   for (const sample of s.samples) {
     if (sample.taken || Math.hypot(sample.x + 0.5 - p.x, sample.y + 0.5 - p.y) > SAMPLE_REACH) continue
     sample.taken = true
-    const remaining = s.samples.filter(item => !item.taken).length
-    s.events.push({ type: 'sample', remaining })
-    if (remaining === 0) s.events.push({ type: 'exit-open' })
+    s.events.push({ type: 'sample', remaining: s.samples.length - collected(s) })
   }
+  if (!wasOpen && exitOpen(s)) s.events.push({ type: 'exit-open' })
 
   s.time += dt
   s.tick++
@@ -299,6 +402,11 @@ export function step(s: GameState, input: Input, dt = STEP) {
   }
   if (exitOpen(s) && Math.hypot(s.exit.x + 0.5 - p.x, s.exit.y + 0.5 - p.y) < EXIT_REACH) {
     s.status = 'won'
+    if (s.level.code === '000') discover(s, 'false-start')
+    if (s.carriedThisStep) discover(s, 'technically-correct')
+    if (collected(s) < s.samples.length) discover(s, 'exception')
+    // One more step and a tracer would have arrived.
+    if (s.tracers.some(t => { const at = tracerPosition(t, t.speed * STEP); return Math.hypot(at.x - p.x, at.y - p.y) < TRACER_HIT })) discover(s, 'off-by-one')
     s.events.push({ type: 'won' })
   }
   return s
