@@ -209,3 +209,12 @@ html.ec-open, html.ec-open body { overflow: hidden; overscroll-behavior: none; }
 .ec-shell .ps-card { background: var(--panel); box-shadow: 6px 6px 0 var(--shadow); }
 .ec-shell .ec-rail-line.is-hint { background: var(--panel-2); }
 .ec-shell[data-surface="observatory"] .ps .ps-icon-button, .ec-shell[data-surface="observatory"] button:disabled { border-color: var(--line); }
+
+/* Touch surface (§12b): floating pad under the thumb, taps inspect, pinch reveals. */
+.ec-touch { position: absolute; inset: 0; z-index: 1; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.ec-pad-base, .ec-pad-knob { position: absolute; left: 0; top: 0; border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .12s ease; }
+.ec-touch[data-held="true"] .ec-pad-base, .ec-touch[data-held="true"] .ec-pad-knob { opacity: 1; }
+.ec-pad-base { width: 96px; height: 96px; margin: -48px 0 0 -48px; display: grid; grid-template-areas: ". up ." "left . right" ". down ."; grid-template-columns: repeat(3, 1fr); place-items: center; border: 2px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); color: var(--muted); font-size: .7rem; }
+.ec-pad-base > :nth-child(1) { grid-area: up; } .ec-pad-base > :nth-child(2) { grid-area: right; } .ec-pad-base > :nth-child(3) { grid-area: down; } .ec-pad-base > :nth-child(4) { grid-area: left; }
+.ec-pad-knob { width: 42px; height: 42px; margin: -21px 0 0 -21px; background: var(--ink); box-shadow: inset 0 0 0 4px var(--signal-art); }
+.ps[data-reduced-motion="true"] .ec-pad-base, .ps[data-reduced-motion="true"] .ec-pad-knob { transition: none; }

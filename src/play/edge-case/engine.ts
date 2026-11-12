@@ -101,6 +101,8 @@ export interface GameState {
   junctions: Junction[]
   tracers: Tracer[]
   status: 'playing' | 'failed' | 'won'
+  /** How a won attempt ended (§9, S4): complete with the required samples, or partial. */
+  outcome: 'complete' | 'partial' | null
   failCause: FailCause | null
   gateTurns: number
   shifts: number
@@ -164,7 +166,7 @@ export function createGame(level: LevelDef): GameState {
   const state: GameState = {
     level, width, height, tiles, tick: 0, time: 0,
     player: { x: start.x + 0.5, y: start.y + 0.5, vx: 0, vy: 0 },
-    exit: exit as { x: number; y: number }, required, samples, gates, junctions, tracers: [], status: 'playing', failCause: null,
+    exit: exit as { x: number; y: number }, required, samples, gates, junctions, tracers: [], status: 'playing', outcome: null, failCause: null,
     gateTurns: 0, shifts: 0, moved: false, tile: { x: start.x, y: start.y, enteredBy: 'start' }, push: null, discovered: [], trail: [], events: [],
   }
   for (const def of level.tracers) {
@@ -212,6 +214,28 @@ export function tracerPosition(t: Tracer, extra = 0) {
 }
 
 /** Tile centres a tracer will visit next under the current configuration. */
+/**
+ * A tracer's whole repeating route under the current configuration (R8): tile centres
+ * from its position until its (tile, direction) state repeats. Used by Reveal and Inspect.
+ */
+export function tracerCycle(s: GameState, t: Tracer, limit = 400) {
+  const at = tracerPosition(t)
+  const points: { x: number; y: number }[] = [at]
+  if (!t.next) return points
+  const seen = new Set<string>()
+  let x = t.next.x, y = t.next.y, d = t.dir
+  for (let i = 0; i < limit; i++) {
+    points.push({ x: x + 0.5, y: y + 0.5 })
+    const nd = nextDirection(s, x, y, d)
+    if (nd === null) break
+    const key = `${x},${y},${nd}`
+    if (seen.has(key)) break
+    seen.add(key)
+    d = nd; x += DX[d]; y += DY[d]
+  }
+  return points
+}
+
 export function predictPath(s: GameState, t: Tracer, count: number) {
   const points: { x: number; y: number }[] = []
   let x = t.x, y = t.y, d = t.dir
@@ -308,6 +332,7 @@ export function reachable(s: GameState): Reachable | null {
 }
 
 export const collected = (s: GameState) => s.samples.filter(sample => sample.taken).length
+/** Complete is available: enough samples are collected (§9, S2). The exit itself is always open. */
 export const exitOpen = (s: GameState) => collected(s) >= s.required
 
 function discover(s: GameState, id: DiscoveryId) {
@@ -471,11 +496,13 @@ export function step(s: GameState, input: Input, dt = STEP) {
       if (tileAt(s, x, y) === 'field' && overlaps(p.x, p.y, FIELD_HALF, { x0: x, y0: y, x1: x + 1, y1: y + 1 })) return fail(s, 'field')
     }
   }
-  if (exitOpen(s) && Math.hypot(s.exit.x + 0.5 - p.x, s.exit.y + 0.5 - p.y) < EXIT_REACH) {
+  // S3–S4: the exit always lets you leave; enough samples make it complete, fewer partial.
+  if (Math.hypot(s.exit.x + 0.5 - p.x, s.exit.y + 0.5 - p.y) < EXIT_REACH) {
     s.status = 'won'
-    if (s.level.code === '000') discover(s, 'false-start')
+    s.outcome = exitOpen(s) ? 'complete' : 'partial'
+    if (s.level.code === '000' && s.outcome === 'complete') discover(s, 'false-start')
     if (s.tile.enteredBy === 'shift' && s.tile.x === s.exit.x && s.tile.y === s.exit.y) discover(s, 'technically-correct')
-    if (collected(s) < s.samples.length) discover(s, 'exception')
+    if (s.outcome === 'complete' && collected(s) < s.samples.length) discover(s, 'exception')
     // One more step and a tracer would have arrived.
     if (s.tracers.some(t => { const at = tracerPosition(t, t.speed * STEP); return Math.hypot(at.x - p.x, at.y - p.y) < TRACER_HIT })) discover(s, 'off-by-one')
     s.events.push({ type: 'won' })

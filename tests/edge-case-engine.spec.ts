@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { createGame, fieldPhase, nextDirection, predictPath, PUSH_STEPS, step, idle, tracerPosition, turnJunction, TURN_COOLDOWN, type GameState, type LevelDef } from '../src/play/edge-case/engine'
+import { createGame, fieldPhase, nextDirection, predictPath, PUSH_STEPS, step, idle, tracerCycle, tracerPosition, turnJunction, TURN_COOLDOWN, type GameState, type LevelDef } from '../src/play/edge-case/engine'
 import { levels } from '../src/play/edge-case/levels'
 import { Bot } from './support/edge-case-bot'
 
@@ -42,8 +42,10 @@ test.describe('Edge Case engine: time, movement and structures', () => {
     bot.hold(-1, 0, PUSH_STEPS + 4)
     expect(bot.state.gates[0].axis).toBe('ew')
     expect(bot.events).toContainEqual({ type: 'gate', axis: 'ew' })
-    bot.hold(-1, 0, 40)
-    expect(bot.state.player.x).toBeLessThan(5.5)
+    // Now open east–west: the player passes the bar into the gate tile (stopping short of the exit).
+    bot.hold(-1, 0, 12)
+    expect(bot.state.player.x).toBeLessThan(5.88)
+    expect(bot.state.status).toBe('playing')
     // Standing inside the gate and pushing across it: it cannot turn.
     bot.state.player.x = 5.5; bot.state.player.y = 2.5; bot.state.player.vx = 0
     bot.hold(0, -1, PUSH_STEPS + TURN_COOLDOWN + 4)
@@ -276,6 +278,43 @@ test.describe('Edge Case engine: every level has more than one way through', () 
     bot.path([5, 2], [4, 2])
     expect(bot.state.status).toBe('won')
     expect(discovered(bot)).not.toContain('technically-correct')
+  })
+})
+
+test.describe('Edge Case engine: leaving and seeing the system', () => {
+  test('S3 S4: the exit always lets you leave; fewer samples than required is partial and awards no 0x00', () => {
+    const s = createGame(level('000'))
+    s.player.x = s.exit.x + 0.5; s.player.y = s.exit.y + 0.5
+    step(s, idle)
+    expect(s.status).toBe('won')
+    expect(s.outcome).toBe('partial')
+    expect(s.discovered).not.toContain('false-start')
+    expect(s.discovered).not.toContain('exception')
+  })
+
+  test('S4: enough samples is complete, even with some left (0x06 Exception)', () => {
+    const s = createGame(level('010'))
+    s.samples[0].taken = true; s.samples[1].taken = true
+    s.player.x = 4.5; s.player.y = 2.5
+    step(s, idle)
+    expect(s.outcome).toBe('complete')
+    expect(s.discovered).toContain('exception')
+  })
+
+  test('R8: a tracer\'s whole route closes its loop and follows the current configuration', () => {
+    const s = createGame(level('000'))
+    const route = tracerCycle(s, s.tracers[0])
+    const xs = route.map(p => p.x)
+    expect(Math.min(...xs)).toBeCloseTo(1.5, 6)
+    expect(Math.max(...xs)).toBeCloseTo(7.5, 6)
+    expect(route.length).toBeGreaterThan(12)
+    // After a turn carries it onto other track, the route is the new one.
+    const t = createGame(level('001'))
+    const tr = t.tracers[0]
+    tr.x = 3; tr.y = 5; tr.progress = 0; tr.dir = 1; tr.next = null
+    t.player.x = 3.5; t.player.y = 6.5
+    turnJunction(t, t.junctions[0], 'cw')
+    expect(tracerCycle(t, tr).every(p => p.x >= 4)).toBe(true)
   })
 })
 

@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { enter, escapeTo, holdUntil, menu, menuCard, route, shell, start, status } from './support/edge-case-ui'
+import { enter, escapeTo, holdUntil, keyUntil, menu, menuCard, presetSettings, route, shell, start, status } from './support/edge-case-ui'
 
 // Interface rules: hints (§11), run records (§12) and controls (§12a) in tests/EDGE-CASE-MECHANICS.md.
 const tip = (page: import('@playwright/test').Page) => page.locator('.ec-rail-line.is-hint')
@@ -89,6 +89,7 @@ test('L4: standings show best time, fewest actions and ways found out of an unkn
 })
 
 test('I2: the movement control can sit on either side, and the choice persists', async ({ page }) => {
+  await presetSettings(page, { movement: 'pad' })
   await page.goto(route)
   await enter(page)
   const pad = page.locator('.ps-pad'), controls = page.locator('.ec-controls')
@@ -148,4 +149,93 @@ test('I1: the joystick follows the finger and moves the player; lifting stops it
     await page.waitForTimeout(400)
     await expect(shell(page)).toHaveAttribute('data-player-tile', stopped!)
   } finally { await context.close() }
+})
+
+/** Dispatch touch-like pointer events on the touch surface, in arena tile units. */
+async function touchAt(page: import('@playwright/test').Page) {
+  const surface = page.locator('.ec-touch')
+  const canvas = (await page.locator('.ps-canvas').boundingBox())!
+  const tileSize = canvas.width / 9
+  const at = (id: number, tx: number, ty: number, buttons = 1) => ({ clientX: canvas.x + tx * tileSize, clientY: canvas.y + ty * tileSize, pointerId: id, pointerType: 'touch', isPrimary: id === 1, buttons, bubbles: true })
+  return { surface, at, tileSize }
+}
+
+test('V1 V2: routes are hidden in play; holding Space reveals the system without stopping time', async ({ page }) => {
+  await start(page, '010')
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'false')
+  await page.keyboard.down('Space')
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'true')
+  await expect(page.locator('.ec-rail')).toContainText('Complete: 0 of 2 samples')
+  await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
+  await page.keyboard.up('Space')
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'false')
+})
+
+test('V2 I5: two fingers pinching in reveal the system until a finger lifts', async ({ page }) => {
+  await start(page, '010')
+  const { surface, at } = await touchAt(page)
+  await surface.dispatchEvent('pointerdown', at(1, 2, 7))
+  await surface.dispatchEvent('pointerdown', at(2, 7, 7))
+  await surface.dispatchEvent('pointermove', at(1, 3, 7))
+  await surface.dispatchEvent('pointermove', at(2, 6, 7))
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'true')
+  await surface.dispatchEvent('pointerup', at(2, 6, 7, 0))
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'false')
+  await surface.dispatchEvent('pointerup', at(1, 3, 7, 0))
+  // A pinch is never also a tap.
+  await expect(page.locator('.ec-rail')).not.toContainText('Inspect')
+})
+
+test('V3: a tap inspects what is under it and never moves you', async ({ page }) => {
+  await start(page, '010')
+  const { surface, at } = await touchAt(page)
+  const before = await shell(page).getAttribute('data-player-tile')
+  await surface.dispatchEvent('pointerdown', at(1, 4, 3))
+  await surface.dispatchEvent('pointerup', at(1, 4, 3, 0))
+  await expect(page.locator('.ec-rail')).toContainText('Junction: push one of its arms to turn it, either way.')
+  await surface.dispatchEvent('pointerdown', at(1, 4.5, 2.5))
+  await surface.dispatchEvent('pointerup', at(1, 4.5, 2.5, 0))
+  await expect(page.locator('.ec-rail')).toContainText('Exit: leave any time. Complete needs 2 of 3 samples; you have 0.')
+  await expect(shell(page)).toHaveAttribute('data-player-tile', before!)
+})
+
+test('I4: on touch screens the floating pad is the default and appears under the thumb', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 664 }, hasTouch: true, isMobile: browser.browserType().name() !== 'firefox', reducedMotion: 'reduce' })
+  try {
+    const page = await context.newPage()
+    // Version-1 settings that chose the fixed pad move to the device default once.
+    await page.addInitScript(() => localStorage.setItem('edge-case:v1', JSON.stringify({ settings: { movement: 'pad' }, completed: [], discovered: [], indexOpens: 0 })))
+    await start(page)
+    const coarse = await page.evaluate(() => matchMedia('(pointer: coarse)').matches)
+    test.skip(!coarse, 'This engine does not report a coarse pointer for emulated touch')
+    await expect(page.locator('.ps-pad')).toHaveCount(0)
+    await expect(page.locator('.ec-controls')).toHaveCount(0)
+    await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned'))
+    const { surface, at } = await touchAt(page)
+    // Land anywhere, then drag: the pad appears where the thumb landed.
+    await surface.dispatchEvent('pointerdown', at(1, 6, 8))
+    await surface.dispatchEvent('pointermove', at(1, 6, 7.5))
+    await expect(surface).toHaveAttribute('data-held', 'true')
+    // The drag moves the player north out of the pocket (row 5).
+    await expect(shell(page)).toHaveAttribute('data-player-tile', /^\d+,[0-4]$/)
+    await surface.dispatchEvent('pointerup', at(1, 6, 7.5, 0)).catch(() => {})
+    await expect(page.locator('.ec-touch[data-held="true"]')).toHaveCount(0)
+  } finally { await context.close() }
+})
+
+test('S4: leaving through the exit without enough samples is logged as partial', async ({ page }) => {
+  await start(page)
+  // Out of the sealed pocket, up to the floor below the tracer's lane (row 3).
+  await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned clockwise'))
+  await keyUntil(page, 'ArrowUp', 'data-player-tile', /^4,3$/)
+  // Cross only while the tracer is at the far east end of its lane.
+  await expect(shell(page)).toHaveAttribute('data-tracer-tiles', /^7,2$/, { timeout: 10_000 })
+  await keyUntil(page, 'ArrowUp', 'data-screen', /^won$/)
+  const card = page.getByRole('dialog', { name: 'Left early' })
+  await expect(card).toContainText('Partial: 0 of 2 samples.')
+  await card.getByRole('button', { name: 'Menu' }).click()
+  await menu(page, 'Field log')
+  await expect(menuCard(page).getByText(/left early · partial/)).toBeVisible()
+  // Partial runs are logged but never ranked: the 000 standing stays empty.
+  await expect(menuCard(page).getByRole('row', { name: /000/ })).toContainText('—')
 })

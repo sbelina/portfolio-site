@@ -44,6 +44,16 @@ Owner direction: think layers, interactive design, an immersive puzzle experienc
 - Bolder lines now thicken edges instead of flooding walls with ink, which works in both themes.
 - Found while testing in WebKit: Escape in true full screen is swallowed, the standard and prefixed change events both fire, and after a reload made in full screen the enter notification can be missing. Exit handling now treats each full-screen exit once (spec M2). An Escape pressed while full screen is still being entered (about 0.4 s) is a known limit.
 
+## Touch, tap, pinch and optional samples (12 November)
+
+Owner choices: samples are optional but counted; a pad appears wherever the thumb touches; a tap inspects; a pinch reveals the system, like Eagle Vision, so routes are not visible otherwise.
+
+- **Leaving (S3, S4):** the exit always lets you leave. Enough samples is *complete*; fewer is *partial*. That is logged as "left early · partial", never ranked, and does not mark the level complete. The exit circle closes when complete is available. Exception now means complete with samples left over.
+- **Floating pad (I4):** default on touch screens. Hold (150 ms) or drag anywhere on the arena and a pad appears under the thumb; it then works like the joystick. Fixed pad and joystick remain options. Version-1 saved settings that chose the fixed pad move to the device default once.
+- **Inspect (V3):** a quick tap or a click describes what is under it in the message rail and highlights it. It never moves you.
+- **Reveal (V1, V2):** routes are hidden in play. Pinching in (or holding Space) dims the world and shows every tracer's whole route, each junction's turn directions, gate axes, field timing and the exit's collected/required badge. Time keeps running. "Always show the system's paths" in Settings › Display is the accessibility alternative.
+- REVEAL and INSPECT are known operations (index `05 / 09`). Two-finger gestures never zoom the page while the game is entered.
+
 ## Private play-test link
 
 A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.

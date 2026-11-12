@@ -8,7 +8,8 @@ export interface RunRecord {
   level: string
   code: string
   title: string
-  outcome: 'won' | 'failed'
+  /** won = complete; partial = left through the exit without the required samples (§9, S4). */
+  outcome: 'won' | 'partial' | 'failed'
   cause?: 'tracer' | 'field'
   seconds: number
   shifts: number
@@ -70,7 +71,7 @@ function renderState(state: GameState, palette: Palette, tile: number, route: [n
   canvas.width = state.width * tile
   canvas.height = state.height * tile
   const ctx = canvas.getContext('2d')!
-  draw(ctx, state, { tile, previews: false, reducedMotion: true, highContrast: tile < 20, ghost: route, memory: createMemory(), now: 0 }, palette)
+  draw(ctx, state, { tile, previews: false, reveal: false, inspect: null, reducedMotion: true, highContrast: tile < 20, ghost: route, memory: createMemory(), now: 0 }, palette)
   return canvas
 }
 
@@ -101,7 +102,7 @@ export function snapshot(state: GameState, record: RunRecord, palette: Palette) 
   ctx.fillText(`EDGE CASE · FIELD RECORD · ${record.at.slice(0, 16).replace('T', ' ')}`, 14, arena.height + 14)
   ctx.font = '700 22px ui-sans-serif, system-ui, sans-serif'
   ctx.fillStyle = palette.ink
-  ctx.fillText(`${record.code} ${record.title} — ${record.outcome === 'won' ? 'complete' : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}`, 14, arena.height + 36)
+  ctx.fillText(`${record.code} ${record.title} — ${record.outcome === 'won' ? 'complete' : record.outcome === 'partial' ? 'left early (partial)' : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}`, 14, arena.height + 36)
   ctx.font = '500 15px ui-monospace, Menlo, Consolas, monospace'
   ctx.fillText(`${record.seconds.toFixed(1)} s · ${record.shifts} junction turns · ${record.gateTurns} gate turns · attempt ${record.attempt} · hints ${record.hints}`, 14, arena.height + 70)
   const found = record.discoveries.map(discoveryName).join(' · ')

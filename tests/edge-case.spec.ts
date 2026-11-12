@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { existsSync } from 'node:fs'
-import { enter, escapeTo, holdUntil, menu, menuCard, route, samples, shell, start, status } from './support/edge-case-ui'
+import { enter, escapeTo, holdUntil, menu, menuCard, presetSettings, route, samples, shell, start, status } from './support/edge-case-ui'
 
 test.describe('Edge Case prototype page', () => {
   test('is absent from production output and the production Worker', async ({ request }) => {
@@ -104,7 +104,7 @@ test.describe('Edge Case prototype page', () => {
     await page.goto(route)
     await enter(page)
     await menu(page, 'Settings')
-    for (const [group, label] of [['Controls', 'Joystick that follows your finger'], ['Sound', 'Sound'], ['Display', 'Show where tracers go next'], ['Gameplay', 'Offer hints when I seem stuck']]) {
+    for (const [group, label] of [['Controls', 'Joystick that follows your finger'], ['Sound', 'Sound'], ['Display', 'Always show the system’s paths (otherwise pinch or hold Space to reveal)'], ['Gameplay', 'Offer hints when I seem stuck']]) {
       await menu(page, group)
       await expect(menuCard(page).getByLabel(label, { exact: true })).toBeVisible()
       await menuCard(page).getByRole('button', { name: 'Back', exact: true }).click()
@@ -142,8 +142,8 @@ test.describe('Edge Case prototype page', () => {
     await enter(page)
     await menu(page, 'System index')
     const index = menuCard(page)
-    await expect(index.getByText('03 / 07')).toBeVisible()
-    await expect(index.getByText('3 of 7 known')).toBeAttached()
+    await expect(index.getByText('05 / 09')).toBeVisible()
+    await expect(index.getByText('5 of 9 known')).toBeAttached()
     await expect(index.getByText('Undiscovered operation')).toHaveCount(4)
     await expect(index.getByText('0000 / 1010')).toBeVisible()
     await expect(index.getByText('Not counted. This list may not describe everything.')).toBeVisible()
@@ -170,12 +170,13 @@ test.describe('Edge Case prototype page', () => {
     await page.goto(route)
     await enter(page)
     await menu(page, 'Settings', 'Display')
-    await menuCard(page).getByLabel('Show where tracers go next').uncheck()
+    await expect(menuCard(page).getByLabel('Always show the system’s paths (otherwise pinch or hold Space to reveal)')).not.toBeChecked()
+    await menuCard(page).getByLabel('Always show the system’s paths (otherwise pinch or hold Space to reveal)').check()
     await menuCard(page).getByLabel('Reduced').check()
     await page.reload()
     await enter(page)
     await menu(page, 'Settings', 'Display')
-    await expect(menuCard(page).getByLabel('Show where tracers go next')).not.toBeChecked()
+    await expect(menuCard(page).getByLabel('Always show the system’s paths (otherwise pinch or hold Space to reveal)')).toBeChecked()
     await expect(shell(page)).toHaveAttribute('data-reduced-motion', 'true')
 
     const blocked = await browser.newContext({ baseURL })
@@ -186,7 +187,7 @@ test.describe('Edge Case prototype page', () => {
       await holdUntil(other, 'ArrowRight', () => expect(status(other)).toContainText('The junction turned'))
       await other.keyboard.press('Escape')
       await menu(other, 'System index')
-      await expect(menuCard(other).getByText('03 / 07')).toBeVisible()
+      await expect(menuCard(other).getByText('05 / 09')).toBeVisible()
     } finally { await blocked.close() }
   })
 
@@ -225,7 +226,9 @@ test.describe('Edge Case prototype page', () => {
       await page.waitForTimeout(300)
       const fit = await page.evaluate(() => {
         const r = (s: string) => document.querySelector(s)!.getBoundingClientRect()
-        return { overflow: document.documentElement.scrollWidth > innerWidth, frame: r('.ec-frame'), rail: r('.ec-rail'), canvas: r('.ps-canvas'), controls: r('.ec-controls'), viewport: innerHeight }
+        // The floating pad needs no controls row; fixed controls sit below the arena.
+        const controls = document.querySelector('.ec-controls')?.getBoundingClientRect() ?? { top: innerHeight, bottom: innerHeight }
+        return { overflow: document.documentElement.scrollWidth > innerWidth, frame: r('.ec-frame'), rail: r('.ec-rail'), canvas: r('.ps-canvas'), controls, viewport: innerHeight }
       })
       expect(fit.overflow).toBe(false)
       expect(fit.rail.top).toBeGreaterThanOrEqual(fit.frame.bottom - 1)
@@ -242,6 +245,7 @@ test.describe('Edge Case on touch screens', () => {
     const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 664 }, hasTouch: true, isMobile: browser.browserType().name() !== 'firefox' })
     try {
       const page = await context.newPage()
+      await presetSettings(page, { movement: 'pad' })
       await page.goto(route)
       await page.getByRole('button', { name: /^Enter/ }).tap()
       await menuCard(page).getByRole('button', { name: 'Play', exact: true }).tap()

@@ -1,16 +1,25 @@
-import { exitOpen, fieldPhase, predictPath, PUSH_STEPS, reachable, tracerPosition, type Axis, type GameState, type Turn } from './engine'
+import { collected, exitOpen, fieldPhase, pockets, predictPath, PUSH_STEPS, reachable, tracerCycle, tracerPosition, type Axis, type GameState, type Turn } from './engine'
 
 export interface Palette { paper: string; panel: string; ink: string; muted: string; line: string; soft: string; accent: string; hazard: string; learning: string; predicted: string }
 export interface View {
   tile: number
+  /** Draw the next steps of every tracer (Always show paths, or Reveal). */
   previews: boolean
   reducedMotion: boolean
   highContrast: boolean
   ghost: [number, number][] | null
+  /** Reveal (§12b): the world dims and the system's routes, turns and timing light up. */
+  reveal: boolean
+  /** Inspect (§12b): one tapped thing shows its part of the system. */
+  inspect: Inspect | null
   /** Render-only memory: recent tracer positions and gate rotation animation. */
   memory: { trails: [number, number][][]; gateTurn: Map<string, { from: number; started: number }>; shiftTurn: Map<string, { started: number; dir: Turn }>; jam: { x: number; y: number; until: number } | null }
   now: number
 }
+
+export type Inspect =
+  | { kind: 'tracer'; index: number } | { kind: 'junction'; index: number } | { kind: 'gate'; index: number }
+  | { kind: 'field'; x: number; y: number } | { kind: 'exit' } | { kind: 'sample'; index: number } | { kind: 'player' }
 
 export function readPalette(element: Element): Palette {
   const css = getComputedStyle(element)
@@ -107,6 +116,7 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
 
   // Exit: an interrupted circle that closes when every sample is found.
   const ex = px(s.exit.x + 0.5), ey = px(s.exit.y + 0.5), er = T * 0.32
+  // The exit is always passable; its circle closes when complete is available (S2).
   ctx.strokeStyle = exitOpen(s) ? c.learning : c.ink
   ctx.lineWidth = 2.5 * k
   if (exitOpen(s)) {
@@ -227,6 +237,15 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
   }
   if (view.memory.jam && view.now < view.memory.jam.until) cross(ctx, px(view.memory.jam.x + 0.5), px(view.memory.jam.y + 0.5), T * 0.22, c.hazard, 3 * k)
 
+  // Reveal and Inspect sit between the world and the moving things (§12b).
+  if (view.reveal) {
+    ctx.fillStyle = c.paper
+    ctx.globalAlpha = 0.62
+    ctx.fillRect(0, 0, w, h)
+    ctx.globalAlpha = 1
+  }
+  if (view.reveal || view.inspect) drawSystem(ctx, s, view, c, T, k)
+
   // Tracers: predicted route, recent trace, then the tracer itself.
   s.tracers.forEach((t, index) => {
     const at = tracerPosition(t)
@@ -306,4 +325,103 @@ function cross(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, c
   ctx.lineCap = 'round'
   ctx.beginPath(); ctx.moveTo(x - r, y - r); ctx.lineTo(x + r, y + r); ctx.moveTo(x + r, y - r); ctx.lineTo(x - r, y + r); ctx.stroke()
   ctx.lineCap = 'butt'
+}
+
+
+/** The system made visible: every part under Reveal, or the one inspected part. */
+function drawSystem(ctx: CanvasRenderingContext2D, s: GameState, view: View, c: Palette, T: number, k: number) {
+  const px = (n: number) => n * T
+  const only = view.reveal ? null : view.inspect
+  const show = (kind: Inspect['kind'], index = -1, x = -1, y = -1) => !only || (only.kind === kind && (!('index' in only) || only.index === index) && (!('x' in only) || (only.x === x && only.y === y)))
+  ctx.save()
+  ctx.font = `600 ${Math.max(10, Math.round(T * 0.3))}px ui-monospace, Menlo, Consolas, monospace`
+  ctx.textBaseline = 'middle'
+  // Tracers: the whole repeating route, with chevrons in the direction of travel.
+  s.tracers.forEach((t, i) => {
+    if (!show('tracer', i)) return
+    const route = tracerCycle(s, t)
+    if (route.length < 2) return
+    ctx.strokeStyle = c.predicted
+    ctx.lineWidth = 3 * k
+    ctx.lineJoin = 'round'
+    ctx.beginPath()
+    route.forEach((p, n) => n ? ctx.lineTo(px(p.x), px(p.y)) : ctx.moveTo(px(p.x), px(p.y)))
+    ctx.stroke()
+    ctx.fillStyle = c.predicted
+    for (let n = 1; n < route.length; n += 2) {
+      const a = route[n - 1], b = route[n]
+      const angle = Math.atan2(b.y - a.y, b.x - a.x)
+      const mx = px((a.x + b.x) / 2), my = px((a.y + b.y) / 2)
+      ctx.beginPath()
+      ctx.moveTo(mx + Math.cos(angle) * T * 0.13, my + Math.sin(angle) * T * 0.13)
+      ctx.lineTo(mx + Math.cos(angle + 2.5) * T * 0.11, my + Math.sin(angle + 2.5) * T * 0.11)
+      ctx.lineTo(mx + Math.cos(angle - 2.5) * T * 0.11, my + Math.sin(angle - 2.5) * T * 0.11)
+      ctx.closePath(); ctx.fill()
+    }
+  })
+  // Junctions: pockets outlined, and arrowheads both ways (it turns the way you push).
+  s.junctions.forEach((j, i) => {
+    if (!show('junction', i)) return
+    ctx.strokeStyle = c.accent
+    ctx.lineWidth = 2 * k
+    ctx.setLineDash([T * 0.08, T * 0.08])
+    for (const p of pockets(j)) ctx.strokeRect(px(p.x) + 3, px(p.y) + 3, T - 6, T - 6)
+    ctx.setLineDash([])
+    const cx = px(j.x), cy = px(j.y), r = T * 0.72
+    ctx.lineWidth = 3 * k
+    ctx.beginPath(); ctx.arc(cx, cy, r, -Math.PI * 0.85, -Math.PI * 0.15); ctx.stroke()
+    ctx.beginPath(); ctx.arc(cx, cy, r, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke()
+    ctx.fillStyle = c.accent
+    for (const [angle, dir] of [[-Math.PI * 0.15, 1], [Math.PI * 0.85, 1], [-Math.PI * 0.85, -1], [Math.PI * 0.15, -1]] as const) {
+      const ax = cx + Math.cos(angle) * r, ay = cy + Math.sin(angle) * r
+      const tangent = angle + dir * Math.PI / 2
+      ctx.beginPath()
+      ctx.moveTo(ax + Math.cos(tangent) * T * 0.14, ay + Math.sin(tangent) * T * 0.14)
+      ctx.lineTo(ax + Math.cos(tangent + 2.4) * T * 0.12, ay + Math.sin(tangent + 2.4) * T * 0.12)
+      ctx.lineTo(ax + Math.cos(tangent - 2.4) * T * 0.12, ay + Math.sin(tangent - 2.4) * T * 0.12)
+      ctx.closePath(); ctx.fill()
+    }
+  })
+  // Channel gates: the axis they let through.
+  s.gates.forEach((g, i) => {
+    if (!show('gate', i)) return
+    const cx = px(g.x + 0.5), cy = px(g.y + 0.5), along = g.axis === 'ew'
+    ctx.strokeStyle = c.accent
+    ctx.lineWidth = 3 * k
+    ctx.beginPath()
+    if (along) { ctx.moveTo(cx - T * 0.45, cy); ctx.lineTo(cx + T * 0.45, cy) } else { ctx.moveTo(cx, cy - T * 0.45); ctx.lineTo(cx, cy + T * 0.45) }
+    ctx.stroke()
+  })
+  // Timed fields: seconds until the next change, on the first tile of each run.
+  const phase = fieldPhase(s)
+  for (let y = 0; y < s.height; y++) for (let x = 0; x < s.width; x++) {
+    // One label per run of field tiles; Inspect shows the run on the tapped row.
+    const firstOfRun = s.tiles[y][x] === 'field' && s.tiles[y][x - 1] !== 'field'
+    if (!firstOfRun || (only && !(only.kind === 'field' && only.y === y))) continue
+    const label = `${phase.active ? 'off' : 'on'} ${phase.untilChange.toFixed(1)}s`
+    label3(ctx, label, px(x + 0.12), px(y + 0.5), c)
+  }
+  // Exit: what complete needs.
+  // Exit: a compact badge inside its tile (collected / needed for complete); the words go to the rail.
+  if (show('exit')) {
+    ctx.strokeStyle = c.learning; ctx.lineWidth = 2 * k
+    ctx.beginPath(); ctx.arc(px(s.exit.x + 0.5), px(s.exit.y + 0.5), T * 0.44, 0, Math.PI * 2); ctx.stroke()
+    ctx.font = `600 ${Math.max(9, Math.round(T * 0.24))}px ui-monospace, Menlo, Consolas, monospace`
+    label3(ctx, `${collected(s)}/${s.required}`, px(s.exit.x) + 2, px(s.exit.y) + T * 0.16, c)
+  }
+  s.samples.forEach((sample, i) => {
+    if (sample.taken || !show('sample', i) || !only) return
+    ctx.strokeStyle = c.learning; ctx.lineWidth = 2 * k
+    ctx.beginPath(); ctx.arc(px(sample.x + 0.5), px(sample.y + 0.5), T * 0.38, 0, Math.PI * 2); ctx.stroke()
+  })
+  ctx.restore()
+}
+
+function label3(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, c: Palette) {
+  const width = ctx.measureText(text).width
+  const height = parseInt(ctx.font.match(/(\d+)px/)?.[1] ?? '12', 10)
+  ctx.fillStyle = c.panel
+  ctx.fillRect(x - 4, y - height * 0.75, width + 8, height * 1.5)
+  ctx.fillStyle = c.ink
+  ctx.fillText(text, x, y)
 }

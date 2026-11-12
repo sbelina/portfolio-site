@@ -78,6 +78,7 @@ Design basis (owner direction, 12 November 2026; compare the push-turned rotatin
 - **R4** A tracer with no allowed move stays at its tile centre and re-tries every step.
 - **R5** A tracer on a non-track tile (only possible after J5b) has no allowed moves (R2) and stays still. **It remains a hazard.**
 - **R6** Tracers do not interact with each other, samples, the exit or fields. Several tracers may share a position.
+- **R8** **Whole route**: Reveal and Inspect trace a tracer's complete repeating route under the current configuration, from its position until its (tile, direction) state repeats.
 - **R7** **Prediction**: the dotted path shows the next four tile centres R3 would produce under the current configuration. It updates immediately after any junction or gate turn.
 
 ## 8. Discoveries
@@ -86,13 +87,13 @@ Each discovery is recorded at most once per attempt. The interface keeps the set
 
 | ID | Name | Trigger (exact) |
 | --- | --- | --- |
-| 0x00 | False Start | Win level `000` |
+| 0x00 | False Start | Complete level `000` (S4) |
 | 0x01 | Expected Behavior | A tracer that has left its start tile arrives back at it and chooses its start direction (R3), while the attempt has not moved (§2.1) |
 | 0x02 | Re:Route | A turn carries a tracer onto a tile where it has an allowed move |
 | 0x03 | It's Not a Bug | A turn carries a tracer onto a tile where it has no allowed move (usually off track, R5) |
 | 0x04 | Pivot | A channel gate turns (not a jam) |
 | 0x05 | Technically Correct | Win while the exit tile was entered by `shift` (E1) |
-| 0x06 | Exception | Win with at least one sample uncollected |
+| 0x06 | Exception | Complete (S4) with at least one sample uncollected |
 | 0x07 | There Are 10 Types of Players | The system index is opened for the second time (0b10). Recorded by the interface |
 | 0x08 | Off by One | Win on a step after which some tracer, advanced one more step along its current segment, would be within hit distance (H1) |
 | 0x09 | Full Circle | Any junction's net rotation within one attempt reaches a whole turn: four quarter turns the same way (back-and-forth turns cancel) |
@@ -102,8 +103,9 @@ Outside the count: the permanent **UNKNOWN** entry. It is never awarded and is l
 ## 9. Samples and exit
 
 - **S1** A sample is collected when the player's centre is within 0.50 of its tile centre.
-- **S2** The exit opens when collected samples ≥ the level's *required* count (default: all). The HUD counter shows collected / total. **It describes; it does not decide.** The exit symbol (broken circle → closed circle) is the authoritative state, and the canvas text alternative states "Exit open/closed".
-- **S3** Win: the exit is open and the player's centre is within 0.45 of the exit tile centre.
+- **S2** *Complete* is available when collected samples ≥ the level's *required* count (default: all). The exit itself is always open (S3). The HUD counter shows collected / total. **It describes; it does not decide.** The exit symbol (broken circle → closed circle when complete is available) is the authoritative state; the canvas text alternative and Reveal state the requirement.
+- **S3** **Leaving** (owner decision, 12 November): the player's centre within 0.45 of the exit tile centre ends the attempt. Samples are optional but counted.
+- **S4** **Outcome**: *complete* when collected ≥ required, otherwise *partial*. Only complete marks a level complete, counts for rankings and ways through, and can award 0x00 or 0x06. Partial runs are logged as partial. Discoveries 0x05 and 0x08 apply to either outcome.
 
 ## 10. Hazards and conflicts
 
@@ -127,11 +129,22 @@ Outside the count: the permanent **UNKNOWN** entry. It is never awarded and is l
 
 - **I1** **Joystick** (Settings → Movement control). A floating stick: the base appears where the finger first lands in the movement zone, and the knob follows the finger. If the finger travels past the rim (44 px), the base trails it at rim distance, so the stick stays under the finger. Direction is the finger's offset from the base, snapped to the nearest of eight directions (axis directions have exactly zero cross-component, so P5 applies). Magnitude is 0 within the dead zone (18% of the radius), then rises linearly to 1 at the rim. Lifting, cancelling or losing the pointer releases to zero. Only the first finger is tracked.
 - **I2** **Control side** (Settings → Control side). The movement control (pad or joystick) on the left or the right. Layout only; inputs are identical.
-- **I3** Keyboard input (arrows/WASD) works with either touch layout. The pad remains the default because its buttons are individually labelled for assistive technology.
+- **I4** **Floating pad** (default on touch screens, owner request): touch anywhere on the arena. Holding for 150 ms, or moving more than 8 px, summons the pad under the thumb, which then behaves exactly as the joystick (I1): eight directions, partial speed, a base that trails the thumb. A quicker touch is a tap (V3), and a second finger begins a pinch (V2) and releases the pad. Settings saved before version 2 that chose the fixed pad move to the device default once.
+- **I5** On touch, two-finger gestures never zoom the page while the game is entered.
+- **I3** Keyboard input (arrows/WASD) works with every touch layout. The pad remains the default because its buttons are individually labelled for assistive technology.
+
+## 12b. Seeing the system: Reveal and Inspect (interface rules)
+
+Owner direction, 12 November 2026: routes are not visible otherwise. A pinch reveals them, like Eagle Vision.
+
+- **V1** **Hidden by default**: tracer prediction lines are not drawn in normal play. Settings › Display › "Always show the system's paths" draws them permanently (accessibility).
+- **V2** **Reveal**: while held (two fingers pinched in to 85% of their starting distance, or Space held), the world dims and every tracer's whole route (R8), each junction's two turn directions and pockets, each gate's open axis, each field run's time to its next change, and the exit's collected/required badge are drawn. **Time keeps running.** It ends when fewer than two fingers remain, Space is released, or play stops. Reveal never changes the simulation.
+- **V3** **Inspect**: a tap (touch released within 300 ms, moved under 10 px) or a mouse click on the arena describes what is under it in the message rail and highlights only that part, for 4.5 s. Order of hit testing, most specific first: tracer (within 0.7), you (within 0.5), exit, sample, gate, junction (corner within 0.6 or any of its pockets), field. Inspect never moves you.
+- **V4** Reveal and Inspect are announced to assistive technology and listed as known operations (REVEAL, INSPECT).
 
 ## 12. Run records, snapshots and ranking (interface rules)
 
-- **L1** Every ended attempt (win or failure) produces a **run record**: level, outcome (and failure cause), time, junction turns, gate turns, attempt number, hints used, discoveries this attempt, method tags (L3), timestamp, and a thumbnail snapshot.
+- **L1** Every ended attempt (complete, partial or failure) produces a **run record**: level, outcome (and failure cause), time, junction turns, gate turns, attempt number, hints used, discoveries this attempt, method tags (L3), timestamp, and a thumbnail snapshot.
 - **L2** A **snapshot** is a deterministic rendering of the final state with the attempt's full route, the end point (× for failure) and the attempt summary. Players can save a full-size PNG.
 - **L3** **Method** of a win = the set of rule-level techniques used: Re:Route, Strand (0x03), Pivot, Carried exit (0x05), Exception. With none of these, the method is Direct. "Ways through" for a level counts distinct winning methods found; its total is shown as `?` because the game does not claim to know every way.
 - **L4** **Ranking** is personal and local: per level, best time, fewest actions (junction turns + gate turns), and ways through. A run's rank is its position by time among that level's wins. No data leaves the device.

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { collected, createGame, drainEvents, exitOpen, reachable, step, STEP, type DiscoveryId, type GameEvent, type GameState } from './engine'
+import { collected, createGame, drainEvents, exitOpen, fieldPhase, pockets, reachable, step, STEP, tracerCycle, tracerPosition, type DiscoveryId, type GameEvent, type GameState } from './engine'
 import { levels } from './levels'
-import { createMemory, draw, noteGateTurn, noteShift, readPalette, type View } from './render'
+import { createMemory, draw, noteGateTurn, noteShift, readPalette, type Inspect, type View } from './render'
 import { load, prefersReducedMotion, save, type Saved, type Settings } from './settings'
 import { binary, discoveries, operations } from './system-index'
 import { Sound } from './audio'
@@ -16,7 +16,7 @@ import { appendLog, loadLog, methodOf, rankOf, saveSnapshot, snapshot, standing,
 type Screen = 'menu' | 'playing' | 'failed' | 'won' | 'snapshot'
 type MenuPage = 'root' | 'levels' | 'index' | 'log' | 'settings' | 'controls' | 'sound' | 'display' | 'gameplay' | 'how'
 interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate'; tile: string }
-interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[] }
+interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[]; complete: boolean; taken: number; required: number }
 
 const PAGE_TITLES: Record<MenuPage, string> = {
   root: 'Menu', levels: 'Levels', index: 'System index', log: 'Field log', settings: 'Settings',
@@ -26,6 +26,7 @@ const MOVE: Record<string, [number, number]> = {
   ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
 }
 const isTextEntry = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('input, select, textarea')
+const isControl = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('button, a, input, select, textarea, summary')
 const axisWords = (axis: string) => axis === 'ns' ? 'north–south' : 'east–west'
 const discoveryOf = (id: string) => discoveries.find(d => d.id === id)!
 
@@ -68,7 +69,7 @@ export function EdgeCaseGame() {
   const [announcement, setAnnouncement] = useState('')
   const [hint, setHint] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const [summary, setSummary] = useState<Summary>({ seconds: 0, attempts: 1, shifts: 0, found: [] })
+  const [summary, setSummary] = useState<Summary>({ seconds: 0, attempts: 1, shifts: 0, found: [], complete: true, taken: 0, required: 0 })
   const [failCause, setFailCause] = useState<'tracer' | 'field'>('tracer')
   const [log, setLog] = useState<RunRecord[]>(() => loadLog())
   const [lastRecord, setLastRecord] = useState<RunRecord | null>(null)
@@ -89,6 +90,11 @@ export function EdgeCaseGame() {
   const attempts = useRef(1)
   const runFound = useRef<DiscoveryId[]>([])
   const tile = useRef(36)
+  // Reveal (pinch or hold Space) and Inspect (tap) are views of the system, never actions in it (§12b).
+  const revealRef = useRef(false)
+  const [revealing, setRevealing] = useState(false)
+  const inspectRef = useRef<{ target: Inspect; text: string } | null>(null)
+  const [inspected, setInspected] = useState<string | null>(null)
   const keys = useRef(new Set<string>())
   const pad = useRef({ dx: 0, dy: 0 })
   const padKey = useRef({ dx: 0, dy: 0 })
@@ -135,7 +141,7 @@ export function EdgeCaseGame() {
     const dpr = window.devicePixelRatio || 1
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     const s = settingsRef.current
-    draw(ctx, game.current, { tile: tile.current, previews: s.previews, reducedMotion: prefersReducedMotion(s), highContrast: s.highContrast, ghost: ghost.current, memory: memory.current, now: performance.now() }, readPalette(root))
+    draw(ctx, game.current, { tile: tile.current, previews: s.alwaysPaths || revealRef.current, reveal: revealRef.current, inspect: inspectRef.current?.target ?? null, reducedMotion: prefersReducedMotion(s), highContrast: s.highContrast, ghost: ghost.current, memory: memory.current, now: performance.now() }, readPalette(root))
   }, [])
 
   /** The arena takes the largest whole-pixel tile that fits the stage layer (§13, M5). */
@@ -157,6 +163,7 @@ export function EdgeCaseGame() {
   const syncHud = useCallback(() => {
     // Written directly each frame (not through React state) so it never lags the simulation.
     rootRef.current?.setAttribute('data-player-tile', `${game.current.tile.x},${game.current.tile.y}`)
+    rootRef.current?.setAttribute('data-tracer-tiles', game.current.tracers.map(t => { const at = tracerPosition(t); return `${Math.floor(at.x)},${Math.floor(at.y)}` }).join(' '))
     const next = hudOf(game.current)
     const key = JSON.stringify(next)
     if (key !== hudCache.current) { hudCache.current = key; setHud(next) }
@@ -270,7 +277,7 @@ export function EdgeCaseGame() {
   }, [entered, layout])
 
   /** L1: every ended attempt becomes a run record with a thumbnail snapshot. */
-  const recordRun = useCallback((outcome: 'won' | 'failed', cause?: 'tracer' | 'field') => {
+  const recordRun = useCallback((outcome: 'won' | 'partial' | 'failed', cause?: 'tracer' | 'field') => {
     const s = game.current, level = levels[levelIndex], root = rootRef.current
     const found = [...s.discovered]
     const record: RunRecord = {
@@ -290,7 +297,7 @@ export function EdgeCaseGame() {
     const buzz = (ms: number) => { if (s.haptics) try { navigator.vibrate?.(ms) } catch { /* unsupported */ } }
     for (const event of events) {
       if (event.type === 'sample') { sound.current.play('sample'); setAnnouncement(`Sample collected. ${event.remaining} left.`) }
-      if (event.type === 'exit-open') { sound.current.play('exit-open'); setAnnouncement('The exit is open.') }
+      if (event.type === 'exit-open') { sound.current.play('exit-open'); setAnnouncement('Complete is available: the exit’s circle has closed.') }
       if (event.type === 'shift') {
         sound.current.play('shift'); buzz(20)
         noteShift(memory.current, event.x, event.y, performance.now(), event.dir)
@@ -321,11 +328,13 @@ export function EdgeCaseGame() {
       if (event.type === 'won') {
         sound.current.play('won')
         const id = levels[levelIndex].id
-        setSummary({ seconds: game.current.time, attempts: attempts.current, shifts: game.current.shifts + game.current.gateTurns, found: [...runFound.current] })
-        persist(current => ({ ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }))
-        recordRun('won')
+        const complete = game.current.outcome === 'complete'
+        setSummary({ seconds: game.current.time, attempts: attempts.current, shifts: game.current.shifts + game.current.gateTurns, found: [...runFound.current], complete, taken: collected(game.current), required: game.current.required })
+        // S4: only a complete exit marks the level complete; a partial one is logged as such.
+        if (complete) persist(current => ({ ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }))
+        recordRun(complete ? 'won' : 'partial')
         setScreen('won')
-        setAnnouncement(`Level ${levels[levelIndex].code} complete.`)
+        setAnnouncement(complete ? `Level ${levels[levelIndex].code} complete.` : `Left level ${levels[levelIndex].code} early: ${collected(game.current)} of ${game.current.required} samples. Logged as partial.`)
       }
     }
   }, [levelIndex, persist, record, recordRun])
@@ -408,12 +417,13 @@ export function EdgeCaseGame() {
       const current = screenRef.current
       if (current === 'playing') {
         if (MOVE[event.code] && !isTextEntry(event.target)) { event.preventDefault(); keys.current.add(event.code); return }
+        if (event.code === 'Space' && !isControl(event.target)) { event.preventDefault(); if (!event.repeat) setReveal(true); return }
         if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); if (event.code === 'Escape') noteEscape(); pause(); return }
         if (event.code === 'KeyR' && !isTextEntry(event.target)) { event.preventDefault(); restart() }
       } else if (current === 'failed' && event.code === 'KeyR') { event.preventDefault(); restart() }
     }
-    const up = (event: KeyboardEvent) => { keys.current.delete(event.code) }
-    const release = () => { keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 } }
+    const up = (event: KeyboardEvent) => { keys.current.delete(event.code); if (event.code === 'Space') setReveal(false) }
+    const release = () => { keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }; setReveal(false) }
     const away = () => { release(); if (screenRef.current === 'playing') pause('Paused while the page was in the background.') }
     const visibility = () => { if (document.visibilityState === 'hidden') away() }
     window.addEventListener('keydown', down)
@@ -443,6 +453,62 @@ export function EdgeCaseGame() {
     onKeyUp: (event: ReactKeyboardEvent) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); padKey.current = { dx: 0, dy: 0 } } },
     onBlur: () => { padKey.current = { dx: 0, dy: 0 } },
   })
+
+  /** Reveal (§12b): held by a pinch or by Space; time keeps running. */
+  const setReveal = useCallback((on: boolean) => {
+    if (revealRef.current === on) return
+    revealRef.current = on
+    setRevealing(on)
+    if (on) setAnnouncement('Revealing the system: routes, turns and timing.')
+    paint()
+  }, [paint])
+
+  /** Inspect (§12b): a tap or click describes the thing under it, for a few seconds. */
+  const inspectAt = (clientX: number, clientY: number) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const s = game.current
+    const x = (clientX - rect.left) / tile.current, y = (clientY - rect.top) / tile.current
+    const near = (px: number, py: number, reach: number) => Math.hypot(px - x, py - y) <= reach
+    const tx = Math.floor(x), ty = Math.floor(y)
+    let found: { target: Inspect; text: string } | null = null
+    const tracer = s.tracers.findIndex(t => { const at = tracerPosition(t); return near(at.x, at.y, 0.7) })
+    if (tracer >= 0) {
+      const t = s.tracers[tracer], steps = Math.max(1, tracerCycle(s, t).length - 1)
+      found = { target: { kind: 'tracer', index: tracer }, text: t.next ? `Tracer: repeats a ${steps}-step route about every ${(steps / t.speed).toFixed(1)} s.` : 'Tracer: stopped, with no track to follow. Still dangerous.' }
+    } else if (near(s.player.x, s.player.y, 0.5)) found = { target: { kind: 'player' }, text: 'You.' }
+    else {
+      // Most specific first: things on a tile outrank the junction pocket they may sit in (V3).
+      const junction = s.junctions.findIndex(j => near(j.x, j.y, 0.6) || pockets(j).some(p => p.x === tx && p.y === ty))
+      const gate = s.gates.findIndex(g => g.x === tx && g.y === ty)
+      const sample = s.samples.findIndex(sm => !sm.taken && sm.x === tx && sm.y === ty)
+      if (tx === s.exit.x && ty === s.exit.y) found = { target: { kind: 'exit' }, text: `Exit: leave any time. Complete needs ${s.required} of ${s.samples.length} samples; you have ${collected(s)}.` }
+      else if (sample >= 0) found = { target: { kind: 'sample', index: sample }, text: `Sample: ${collected(s)} of ${s.samples.length} collected.` }
+      else if (gate >= 0) found = { target: { kind: 'gate', index: gate }, text: `Gate: lets movement through ${s.gates[gate].axis === 'ns' ? 'north–south' : 'east–west'}. It carries nothing.` }
+      else if (junction >= 0) found = { target: { kind: 'junction', index: junction }, text: 'Junction: push one of its arms to turn it, either way. It carries whatever is in its pockets.' }
+      else if (s.tiles[ty]?.[tx] === 'field' && s.level.field) { const f = s.level.field, ph = fieldPhase(s); found = { target: { kind: 'field', x: tx, y: ty }, text: `Field: on for ${f.on} s in every ${f.period} s. ${ph.active ? 'Off' : 'On'} in ${ph.untilChange.toFixed(1)} s.` } }
+    }
+    inspectRef.current = found
+    setInspected(found?.text ?? null)
+    if (found) setAnnouncement(found.text)
+    paint()
+  }
+  useEffect(() => {
+    if (!inspected) return
+    const timer = window.setTimeout(() => { inspectRef.current = null; setInspected(null); paint() }, 4500)
+    return () => window.clearTimeout(timer)
+  }, [inspected, paint])
+  // Reveal and Inspect end when play stops.
+  useEffect(() => { if (screen !== 'playing') { setReveal(false); inspectRef.current = null; setInspected(null) } }, [screen, setReveal])
+  // Inside the game, two-finger gestures belong to Reveal, never to page zoom (iOS).
+  useEffect(() => {
+    if (!entered) return
+    const stop = (event: Event) => event.preventDefault()
+    document.addEventListener('gesturestart', stop, { passive: false } as AddEventListenerOptions)
+    document.addEventListener('gesturechange', stop, { passive: false } as AddEventListenerOptions)
+    return () => { document.removeEventListener('gesturestart', stop); document.removeEventListener('gesturechange', stop) }
+  }, [entered])
 
   /** Menu navigation (§13, M3): open a submenu, or go back one level. */
   const openPage = (page: MenuPage) => {
@@ -494,7 +560,7 @@ export function EdgeCaseGame() {
   const trail = [paused ? 'Paused' : 'Edge Case', ...menuPath.slice(1).map(p => PAGE_TITLES[p])]
   const count = discoveries.filter(d => saved.discovered.includes(d.id)).length
   // The message rail (§13, M5): one line at a time, never over the arena.
-  const rail = notice ? { kind: 'Discovery', text: notice } : tipVisible && hintText && screen === 'playing' ? { kind: `Hint ${hintLevel}`, text: hintText } : hint && screen === 'playing' ? { kind: level.code, text: level.hint } : null
+  const rail = notice ? { kind: 'Discovery', text: notice } : inspected && screen === 'playing' ? { kind: 'Inspect', text: inspected } : revealing && screen === 'playing' ? { kind: 'Reveal', text: `Routes, turns and timing. Complete: ${hud.taken} of ${game.current.required} samples.` } : tipVisible && hintText && screen === 'playing' ? { kind: `Hint ${hintLevel}`, text: hintText } : hint && screen === 'playing' ? { kind: level.code, text: level.hint } : null
 
   const entrance = (
     <div className="ec-entrance">
@@ -508,7 +574,7 @@ export function EdgeCaseGame() {
   )
 
   const shell = entered && (
-    <div ref={rootRef} className="pc-site ec-shell ps" role="dialog" aria-modal="true" aria-labelledby={headingId} data-screen={screen} data-theme={settings.theme} data-surface={settings.theme === 'dark' ? 'observatory' : undefined} data-side={settings.movementSide} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
+    <div ref={rootRef} className="pc-site ec-shell ps" role="dialog" aria-modal="true" aria-labelledby={headingId} data-screen={screen} data-reveal={revealing ? 'true' : 'false'} data-theme={settings.theme} data-surface={settings.theme === 'dark' ? 'observatory' : undefined} data-side={settings.movementSide} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
       <h2 id={headingId} className="ps-visually-hidden">Edge Case game</h2>
       {/* Frame layer: identity and state at a glance; one control. */}
       <header className="ec-frame">
@@ -529,6 +595,7 @@ export function EdgeCaseGame() {
       {/* World layer, with the modal layer (menus and cards) above it. */}
       <div className="ps-stage ec-stage" ref={stageRef} tabIndex={-1}>
         <canvas ref={canvasRef} className="ps-canvas" role="img" aria-label={stateLabel}/>
+        {screen === 'playing' && <TouchSurface floating={settings.movement === 'floating'} onStart={() => sound.current.unlock()} onMove={(dx, dy) => { pad.current = { dx, dy } }} onTap={inspectAt} onReveal={setReveal}/>}
         {screen === 'snapshot' && snapshotUrl && lastRecord && (
           <Card title="Field record" kicker={`${lastRecord.code} · ${lastRecord.title}`} focus wide>
             <img className="ps-snapshot" src={snapshotUrl} alt={`Field record for ${lastRecord.code} ${lastRecord.title}: ${lastRecord.outcome === 'won' ? `complete in ${lastRecord.seconds.toFixed(1)} seconds` : `caught after ${lastRecord.seconds.toFixed(1)} seconds`}, ${lastRecord.shifts} junction turns, attempt ${lastRecord.attempt}. Your route is drawn on the arena.`}/>
@@ -551,7 +618,8 @@ export function EdgeCaseGame() {
           </Card>
         )}
         {screen === 'won' && (
-          <Card title={levelIndex === levels.length - 1 ? 'Chapter complete' : 'Level complete'} kicker={`${level.code} · ${level.title}`} focus>
+          <Card title={!summary.complete ? 'Left early' : levelIndex === levels.length - 1 ? 'Chapter complete' : 'Level complete'} kicker={`${level.code} · ${level.title}`} focus>
+            {!summary.complete && <p>Partial: {summary.taken} of {summary.required} samples. Logged as partial; complete needs {summary.required}.</p>}
             <dl className="ps-summary">
               <div><dt>Time</dt><dd>{summary.seconds.toFixed(1)} s</dd></div>
               <div><dt>Attempts</dt><dd>{summary.attempts}</dd></div>
@@ -565,8 +633,9 @@ export function EdgeCaseGame() {
             )}
             {levelIndex === levels.length - 1 && <p>That is all of chapter 000–010 for now.</p>}
             <div className="ps-card-actions">
-              {levelIndex < levels.length - 1 && <button type="button" className="ps-primary" onClick={() => begin(levelIndex + 1)}>Next level</button>}
-              <button type="button" className={levelIndex === levels.length - 1 ? 'ps-primary' : undefined} onClick={() => begin(levelIndex)}>Replay</button>
+              {!summary.complete && <button type="button" className="ps-primary" onClick={() => begin(levelIndex)}>Try for complete</button>}
+              {levelIndex < levels.length - 1 && <button type="button" className={summary.complete ? 'ps-primary' : undefined} onClick={() => begin(levelIndex + 1)}>Next level</button>}
+              {summary.complete && <button type="button" className={levelIndex === levels.length - 1 ? 'ps-primary' : undefined} onClick={() => begin(levelIndex)}>Replay</button>}
               <button type="button" onClick={openSnapshot}>Snapshot</button>
               <button type="button" onClick={() => openMenu(['root', 'log'])}>Field log</button>
               <button type="button" onClick={() => openMenu(['root'])}>Menu</button>
@@ -606,7 +675,7 @@ export function EdgeCaseGame() {
               {page === 'log' && <FieldLog log={log}/>}
               {page === 'settings' && (
                 <MenuList>
-                  <MenuItem submenu onClick={() => openPage('controls')}>Controls<span className="ec-item-detail">{settings.movement === 'joystick' ? 'Joystick' : 'Pad'}, {settings.movementSide}</span></MenuItem>
+                  <MenuItem submenu onClick={() => openPage('controls')}>Controls<span className="ec-item-detail">{settings.movement === 'floating' ? 'Floating pad' : settings.movement === 'joystick' ? 'Joystick' : 'Fixed pad'}{settings.movement === 'floating' ? '' : `, ${settings.movementSide}`}</span></MenuItem>
                   <MenuItem submenu onClick={() => openPage('sound')}>Sound<span className="ec-item-detail">{settings.sound ? `On, ${Math.round(settings.volume * 100)}%` : 'Off'}</span></MenuItem>
                   <MenuItem submenu onClick={() => openPage('display')}>Display<span className="ec-item-detail">{settings.theme === 'dark' ? 'Dark' : 'Light'}, {settings.motion === 'system' ? 'device motion' : settings.motion === 'reduce' ? 'reduced motion' : 'full motion'}</span></MenuItem>
                   <MenuItem submenu onClick={() => openPage('gameplay')}>Gameplay<span className="ec-item-detail">{Math.round(settings.speed * 100)}% speed</span></MenuItem>
@@ -619,7 +688,8 @@ export function EdgeCaseGame() {
         </div>
       )}
       {/* Control layer. */}
-      <div className="ps-controls ec-controls" data-side={settings.movementSide} data-movement={settings.movement}>
+      {/* The floating pad lives on the touch surface; fixed controls get their own row. */}
+      {settings.movement !== 'floating' && <div className="ps-controls ec-controls" data-side={settings.movementSide} data-movement={settings.movement}>
         {settings.movement === 'joystick' ? (
           <Joystick active={screen === 'playing'} onStart={() => sound.current.unlock()} onMove={(dx, dy) => { pad.current = { dx, dy } }}/>
         ) : (
@@ -630,7 +700,7 @@ export function EdgeCaseGame() {
           <button type="button" className="ps-pad-down" aria-label="Move down" disabled={screen !== 'playing'} {...padButtonKey(0, 1)}><span aria-hidden="true">▼</span></button>
         </div>
         )}
-      </div>
+      </div>}
       <p className="ps-visually-hidden" aria-live="polite" role="status">{announcement}</p>
     </div>
   )
@@ -698,9 +768,11 @@ function MenuItem({ children, onClick, submenu, primary }: { children: ReactNode
 function HowToPlay() {
   return (
     <div className="ec-how">
-      <p>Collect samples until the exit opens, then reach it. Watch what repeats before you move.</p>
+      <p>Reach the exit. Collect the samples it asks for to complete the level; leave with fewer and it counts as partial. Watch what repeats before you move.</p>
       <dl className="ps-controls-list">
-        <div><dt>Move</dt><dd>Arrow keys or WASD; on touch screens, the pad or joystick</dd></div>
+        <div><dt>Move</dt><dd>Arrow keys or WASD; on touch screens, touch anywhere and drag</dd></div>
+        <div><dt>Reveal</dt><dd>Pinch in and hold, or hold Space</dd></div>
+        <div><dt>Inspect</dt><dd>Tap or click anything</dd></div>
         <div><dt>Turn a junction</dt><dd>Keep moving into one of its arms; a ring fills, then it turns the way you push</dd></div>
         <div><dt>Menu</dt><dd>Escape, P or the menu button; arrows move through it, Escape goes back</dd></div>
         <div><dt>Restart</dt><dd>R, or Restart level in the menu</dd></div>
@@ -773,6 +845,99 @@ function Joystick({ active, onMove, onStart }: { active: boolean; onMove: (dx: n
   )
 }
 
+/**
+ * The touch surface over the arena (§12b, I4–I6). One finger: a quick touch and release
+ * (under 300 ms, under 10 px) inspects; holding or dragging summons the floating pad
+ * under the thumb (floating mode only), which then behaves like the joystick (I1).
+ * Two fingers pinching in (to 85% of their starting distance) reveal the system until
+ * fewer than two fingers remain. Keyboard equivalents: hold Space to reveal.
+ */
+const PAD_RADIUS = 48
+function TouchSurface({ floating, onMove, onTap, onReveal, onStart }: { floating: boolean; onMove: (dx: number, dy: number) => void; onTap: (x: number, y: number) => void; onReveal: (on: boolean) => void; onStart: () => void }) {
+  const zone = useRef<HTMLDivElement>(null)
+  const base = useRef<HTMLDivElement>(null)
+  const knob = useRef<HTMLDivElement>(null)
+  const actions = useRef({ onMove, onTap, onReveal, onStart })
+  actions.current = { onMove, onTap, onReveal, onStart }
+  const pointers = useRef(new Map<number, { x: number; y: number; sx: number; sy: number; t: number }>())
+  const stick = useRef<{ id: number; origin: { x: number; y: number } } | null>(null)
+  const pinch = useRef<{ d0: number; on: boolean } | null>(null)
+  const timer = useRef(0)
+  const place = (o: { x: number; y: number }, k: { x: number; y: number }) => {
+    if (base.current) base.current.style.transform = `translate(${o.x}px, ${o.y}px)`
+    if (knob.current) knob.current.style.transform = `translate(${k.x}px, ${k.y}px)`
+  }
+  const release = () => {
+    stick.current = null
+    zone.current?.removeAttribute('data-held')
+    actions.current.onMove(0, 0)
+  }
+  const steer = (id: number) => {
+    const p = pointers.current.get(id), st = stick.current
+    if (!p || !st || st.id !== id) return
+    st.origin = followBase(st.origin, p, PAD_RADIUS)
+    place(st.origin, p)
+    actions.current.onMove(...stickInput(p.x - st.origin.x, p.y - st.origin.y, PAD_RADIUS))
+  }
+  const activate = (id: number) => {
+    const p = pointers.current.get(id)
+    if (!p || stick.current || pinch.current) return
+    stick.current = { id, origin: { x: p.sx, y: p.sy } }
+    zone.current?.setAttribute('data-held', 'true')
+    steer(id)
+  }
+  useEffect(() => () => { window.clearTimeout(timer.current); actions.current.onMove(0, 0); if (pinch.current?.on) actions.current.onReveal(false) }, [])
+  const local = (event: ReactPointerEvent<HTMLDivElement>) => { const rect = event.currentTarget.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
+  const distance = () => { const [a, b] = [...pointers.current.values()]; return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 0 }
+  const end = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const p = pointers.current.get(event.pointerId)
+    if (!p) return
+    pointers.current.delete(event.pointerId)
+    window.clearTimeout(timer.current)
+    if (stick.current?.id === event.pointerId) release()
+    else if (event.type === 'pointerup' && !pinch.current && performance.now() - p.t < 300 && Math.hypot(p.x - p.sx, p.y - p.sy) < 10) actions.current.onTap(event.clientX, event.clientY)
+    if (pinch.current && pointers.current.size < 2) {
+      if (pinch.current.on) actions.current.onReveal(false)
+      pinch.current = { ...pinch.current, on: false }
+    }
+    if (pointers.current.size === 0) pinch.current = null
+  }
+  return (
+    <div ref={zone} className="ec-touch" data-floating={floating ? 'true' : 'false'} aria-hidden="true"
+      onPointerDown={event => {
+        event.preventDefault()
+        actions.current.onStart()
+        try { event.currentTarget.setPointerCapture(event.pointerId) } catch { /* synthetic pointer */ }
+        const at = local(event)
+        pointers.current.set(event.pointerId, { ...at, sx: at.x, sy: at.y, t: performance.now() })
+        if (pointers.current.size === 1 && floating) {
+          const id = event.pointerId
+          timer.current = window.setTimeout(() => { if (pointers.current.size === 1) activate(id) }, 150)
+        } else if (pointers.current.size === 2) {
+          window.clearTimeout(timer.current)
+          release()
+          pinch.current = { d0: distance(), on: false }
+        }
+      }}
+      onPointerMove={event => {
+        const p = pointers.current.get(event.pointerId)
+        if (!p) return
+        Object.assign(p, local(event))
+        if (pinch.current) {
+          if (!pinch.current.on && pointers.current.size >= 2 && distance() < pinch.current.d0 * 0.85) { pinch.current.on = true; actions.current.onReveal(true) }
+          return
+        }
+        if (!floating) return
+        if (!stick.current && Math.hypot(p.x - p.sx, p.y - p.sy) > 8) activate(event.pointerId)
+        else steer(event.pointerId)
+      }}
+      onPointerUp={end} onPointerCancel={end}>
+      <div ref={base} className="ec-pad-base"><span>▲</span><span>▶</span><span>▼</span><span>◀</span></div>
+      <div ref={knob} className="ec-pad-knob"/>
+    </div>
+  )
+}
+
 function Card({ title, kicker, children, focus, compact, wide }: { title: string; kicker?: string; children: ReactNode; focus?: boolean; compact?: boolean; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -837,8 +1002,8 @@ function FieldLog({ log }: { log: RunRecord[] }) {
                 <li key={record.id}>
                   {record.thumb ? <img className="ps-thumb ps-thumb--small" src={record.thumb} alt=""/> : <span className="ps-thumb ps-thumb--small" aria-hidden="true"/>}
                   <span className="ps-op-body">
-                    <strong><span className="ps-code">{record.code}</span> {record.outcome === 'won' ? `complete · ${record.seconds.toFixed(1)} s` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}</strong>
-                    <span>{record.outcome === 'won' ? `${record.method} · rank #${rank} of ${of}` : `after ${record.seconds.toFixed(1)} s`} · attempt {record.attempt}{record.hints ? ` · ${record.hints} hint${record.hints > 1 ? 's' : ''}` : ''}</span>
+                    <strong><span className="ps-code">{record.code}</span> {record.outcome === 'won' ? `complete · ${record.seconds.toFixed(1)} s` : record.outcome === 'partial' ? `left early · partial · ${record.seconds.toFixed(1)} s` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}</strong>
+                    <span>{record.outcome === 'won' ? `${record.method} · rank #${rank} of ${of}` : record.outcome === 'partial' ? 'not ranked' : `after ${record.seconds.toFixed(1)} s`} · attempt {record.attempt}{record.hints ? ` · ${record.hints} hint${record.hints > 1 ? 's' : ''}` : ''}</span>
                   </span>
                 </li>
               )
@@ -913,7 +1078,7 @@ function Legend() {
       <li><span className="ps-key ps-key--junction" aria-hidden="true"/>Junction: push an arm to turn it</li>
       <li><span className="ps-key ps-key--sample" aria-hidden="true"/>Sample</li>
       <li><span className="ps-key ps-key--field" aria-hidden="true"/>Field: switches on and off</li>
-      <li><span className="ps-key ps-key--exit" aria-hidden="true"/>Exit: closes the circle when open</li>
+      <li><span className="ps-key ps-key--exit" aria-hidden="true"/>Exit: always open; closes when complete</li>
     </ul>
   )
 }
@@ -928,7 +1093,8 @@ function SettingsGroup({ group, settings, update }: { group: 'controls' | 'sound
         <>
           <fieldset className="ps-field">
             <legend>Movement control</legend>
-            <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'pad'} onChange={() => update({ movement: 'pad' })}/> Pad (four buttons)</label>
+            <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'floating'} onChange={() => update({ movement: 'floating' })}/> Floating pad: appears under your thumb, anywhere</label>
+            <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'pad'} onChange={() => update({ movement: 'pad' })}/> Fixed pad (four labelled buttons)</label>
             <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'joystick'} onChange={() => update({ movement: 'joystick' })}/> Joystick that follows your finger</label>
           </fieldset>
           <fieldset className="ps-field">
@@ -958,7 +1124,7 @@ function SettingsGroup({ group, settings, update }: { group: 'controls' | 'sound
               <label key={value} className="ps-check"><input type="radio" name={`${id}-motion`} checked={settings.motion === value} onChange={() => update({ motion: value })}/> {value === 'system' ? 'Match my device' : value === 'reduce' ? 'Reduced' : 'Full'}</label>
             ))}
           </fieldset>
-          <label className="ps-check"><input type="checkbox" checked={settings.previews} onChange={e => update({ previews: e.target.checked })}/> Show where tracers go next</label>
+          <label className="ps-check"><input type="checkbox" checked={settings.alwaysPaths} onChange={e => update({ alwaysPaths: e.target.checked })}/> Always show the system’s paths (otherwise pinch or hold Space to reveal)</label>
           <label className="ps-check"><input type="checkbox" checked={settings.highContrast} onChange={e => update({ highContrast: e.target.checked })}/> Bolder lines</label>
         </>
       )}

@@ -46,3 +46,32 @@ export async function escapeTo(page: Page, heading: string | 'playing') {
   if (heading === 'playing') await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
   else await expect(menuCard(page).locator('h3')).toHaveText(heading)
 }
+
+/** Store settings before the page loads (schema version 2), e.g. to choose the fixed pad. */
+export async function presetSettings(page: Page, settings: Record<string, unknown>) {
+  // Seeds empty storage only, so later changes (and reloads) keep what the player chose.
+  await page.addInitScript(value => { if (!localStorage.getItem('edge-case:v1')) localStorage.setItem('edge-case:v1', JSON.stringify({ version: 2, settings: value, completed: [], discovered: [], indexOpens: 0 })) }, settings)
+}
+
+/**
+ * Hold a movement key from inside the page, checked every animation frame, until the
+ * shell attribute matches (e.g. the player's tile). Avoids overshooting under load.
+ */
+export async function keyUntil(page: Page, code: string, attribute: string, pattern: RegExp, timeout = 8000) {
+  await page.evaluate(({ code, attribute, source, flags, timeout }) => new Promise<void>((resolve, reject) => {
+    const shell = document.querySelector('.ec-shell')!
+    const re = new RegExp(source, flags)
+    window.dispatchEvent(new KeyboardEvent('keydown', { code, key: code, bubbles: true }))
+    const deadline = performance.now() + timeout
+    const frame = () => {
+      const value = shell.getAttribute(attribute) ?? ''
+      const done = re.test(value)
+      if (done || performance.now() > deadline) {
+        window.dispatchEvent(new KeyboardEvent('keyup', { code, key: code, bubbles: true }))
+        return done ? resolve() : reject(new Error(`${attribute} stayed ${value}`))
+      }
+      requestAnimationFrame(frame)
+    }
+    requestAnimationFrame(frame)
+  }), { code, attribute, source: pattern.source, flags: pattern.flags, timeout })
+}
