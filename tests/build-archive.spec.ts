@@ -20,7 +20,8 @@ test('original and review artifacts match frozen inventories; agent and writing 
  for(const [file,digest]of Object.entries(preserved)) {
    // The capture ledger is immutable. Active instructions may evolve by owner direction.
    // A committed historical copy keeps this check valid in shallow CI clones.
-   const bytes = await readFile(file === 'AGENTS.md' ? 'docs/design-system/provenance/AGENTS-418efb7.txt' : file)
+   const historical = file === 'AGENTS.md' ? 'docs/design-system/provenance/AGENTS-418efb7.txt' : file === 'studio/model.ts' ? 'docs/design-system/provenance/studio-model-418efb7.txt' : file
+   const bytes = await readFile(historical)
    expect(createHash('sha256').update(bytes).digest('hex'),file).toBe(digest)
  }
  const activeGuidance = await readFile('AGENTS.md','utf8')

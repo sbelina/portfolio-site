@@ -54,6 +54,8 @@ See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE
 
 [Assumed → observed](INSPECTABLE-ASSUMPTIONS.md) records the first synthetic interactive diagram, its structured editorial proposal, isolated preview, acceptance checks and later stages. It does not claim that the remaining diagram types are implemented.
 
+The [investigation reading and private case review slice](CLAIMS-REVIEW-SLICE.md) adds structured workflow, artifact and evidence layers, stable chapter anchors and an authenticated prepared-draft bridge. Generic implementation and invented fixtures are in Git; the actual working case remains restricted and unapproved. This does not add a production publisher.
+
 ## Status and authority
 
 Prepared 22 October 2026 against main commit `0fb948124a5f02455818f10bbbdc53d2fafbe6b4` (tree `562fe5f2c8f2f23bd32e173a48064ff5a7485218`). Reinspect before implementation. The live domain was not retested as part of this documentation handoff.

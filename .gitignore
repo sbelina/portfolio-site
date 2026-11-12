@@ -160,3 +160,4 @@ dist-studio/
 .studio-local/
 .studio-password
 studio-test-results/
+studio-case-test-results/

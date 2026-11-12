@@ -20,6 +20,7 @@
     "studio:migrate": "wrangler d1 execute DB --local --config wrangler.studio.jsonc --file migrations/0001_studio.sql",
     "studio:dev": "wrangler dev --local --config wrangler.studio.jsonc --ip 127.0.0.1 --port 4180",
     "test:studio": "playwright test --config playwright.studio.config.ts",
+    "test:studio:cases": "playwright test --config playwright.case-studio.config.ts",
     "check:studio": "wrangler deploy --dry-run --config wrangler.studio.jsonc",
     "studio:restart-proof": "tsx scripts/studio-restart-proof.ts"
   },
