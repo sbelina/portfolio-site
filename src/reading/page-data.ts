@@ -1,5 +1,6 @@
 // Build-only page selection. Full public indexes remain independent artifacts.
 import { diagramEvidenceIds } from '../content/assumed-observed'
+import { caseBlockEvidenceIds, isCaseStudyBlock } from '../content/case-blocks'
 import type { PublicEntry, PublicProjection } from '../content/model'
 import { renderBlocks } from './render-blocks'
 
@@ -29,7 +30,7 @@ export function readingPageData(projection: PublicProjection, kind: ReadingPageD
   const relationships = projection.relationships.filter(item => item.fromId === entry.id || item.toId === entry.id)
   const linkedIds = new Set(relationships.flatMap(item => [item.fromId, item.toId]))
   linkedIds.add(entry.id)
-  const evidenceIds = new Set([...entry.evidenceIds, ...(entry.investigation?.statements.flatMap(statement => statement.evidenceIds) ?? []), ...relationships.flatMap(item => item.evidenceIds), ...entry.blocks.flatMap(block => block.type === 'evidence' ? [block.evidenceId] : block.type === 'assumed_observed' ? diagramEvidenceIds(block) : [])])
+  const evidenceIds = new Set([...entry.evidenceIds, ...(entry.investigation?.statements.flatMap(statement => statement.evidenceIds) ?? []), ...relationships.flatMap(item => item.evidenceIds), ...entry.blocks.flatMap(block => block.type === 'evidence' ? [block.evidenceId] : block.type === 'assumed_observed' ? diagramEvidenceIds(block) : isCaseStudyBlock(block) ? caseBlockEvidenceIds(block) : [])])
   const evidence = projection.evidence.filter(item => evidenceIds.has(item.id))
   const assetIds = new Set([...evidence.flatMap(item => item.assetIds), ...entry.blocks.flatMap(block => block.type === 'image' ? [block.assetId] : [])])
   return {

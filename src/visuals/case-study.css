@@ -1,0 +1,109 @@
+/* Shared reading instruments: all information remains literal HTML, without a drawing runtime. */
+.reading-main--case { max-width: 72rem !important; }
+.reading-article--case > :is(.reading-breadcrumbs,.reading-entry-header,.reading-connections,.reading-back),
+.reading-article--case .investigation-narrative,
+.reading-article--case .reading-body > .reading-block:not(.reading-block--workflow_comparison):not(.reading-block--artifact_inspector):not(.reading-block--evidence_inspector) {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+.reading-article--case .reading-contents { margin-block: 2rem; padding: 1rem 0; background: var(--reading-paper); }
+.reading-article--case .reading-contents ol { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; list-style: none; padding: 0; }
+.reading-article--case .reading-contents a { display: inline-flex; align-items: center; min-height: 44px; max-width: 100%; }
+.case-chapters > summary { min-height: 44px; padding-block: .6rem; cursor: pointer; font-weight: 650; }
+.case-chapters > summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
+.reading-article--case :is(.reading-block,.reading-extra-evidence,.reading-connections) { scroll-margin-top: 1rem; }
+.case-study-block { margin-block: 3rem; padding-block: 1.5rem; border-block: 1px solid var(--reading-line); font-size: 1rem; line-height: 1.7; overflow-wrap: anywhere; }
+.case-study-block *, .case-study-block *::before, .case-study-block *::after { box-sizing: border-box; }
+.case-block-header { max-width: 46rem; margin-bottom: 1.5rem; }
+.case-block-header h2 { margin: .5rem 0 1rem; }
+.case-block-header > p { margin: .6rem 0; }
+.case-block-kicker { color: var(--signal,var(--reading-unresolved)); font: 600 .75rem/1.6 ui-monospace,'SFMono-Regular',Consolas,monospace; text-transform: uppercase; letter-spacing: .06em; }
+.case-model-basis { color: var(--reading-muted); font-size: .85rem; }
+.case-block-limitation { padding-left: .9rem; border-left: 2px solid var(--reading-unresolved); font-size: .95rem; }
+.case-study-block :is(summary,a,input):focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
+.case-study-block summary { min-height: 44px; padding-block: .65rem; cursor: pointer; }
+.case-study-block summary:hover { text-decoration: underline; text-underline-offset: .2em; }
+.case-study-block :is(p,li,dt,dd,h3,h4,summary) { min-width: 0; }
+.case-inspector-list { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 1.5rem; }
+.case-inspector-list > li { margin: 0; padding: 1rem 0; border-top: 1px solid var(--reading-line); }
+.case-inspector-list h3 { font-size: clamp(1.15rem,2vw,1.5rem); line-height: 1.4; margin: .4rem 0 .75rem; font-weight: 600; }
+.case-evidence-kind { color: var(--reading-muted); font-size: .8rem; font-weight: 650; }
+[data-kind="unverified"] > .case-evidence-kind,
+[data-kind="hypothesis"] > .case-evidence-kind { color: var(--reading-unresolved); }
+[data-kind="documented_outcome"] > .case-evidence-kind { color: var(--reading-holds); }
+.case-inspector-details { margin-top: 1rem; border-top: 1px solid var(--reading-line); }
+.case-inspector-details > summary { font-weight: 650; }
+.case-facts { margin-block: .75rem; }
+.case-facts > div { display: grid; grid-template-columns: minmax(0,10rem) minmax(0,1fr); gap: .4rem 1.5rem; padding-block: .65rem; border-bottom: 1px solid var(--reading-line); }
+.case-facts dt { font-size: .82rem; font-weight: 650; color: var(--reading-muted); }
+.case-facts dd { margin: 0; max-width: 62ch; }
+.case-facts dd ul { margin: 0; padding-left: 1.2rem; }
+.case-reconstruction { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px dashed var(--reading-unresolved); background: var(--reading-panel); }
+.case-reconstruction > p:last-child { margin-bottom: 0; white-space: pre-wrap; }
+.case-source-references { margin-top: .75rem; font-size: .85rem; }
+.case-source-references > ul { margin-top: .5rem; padding-left: 1.2rem; }
+.case-source-references .reading-evidence-facts > div { margin-block: .75rem; }
+.case-source-references .reading-evidence-facts dt { color: var(--reading-muted); font-size: .8rem; font-weight: 650; }
+.case-source-references .reading-evidence-facts dd { margin: .2rem 0 0; overflow-wrap: anywhere; }
+.case-evidence-claim > h3 { max-width: 52ch; }
+.workflow-control { position: relative; min-width: 0; margin: 1.5rem 0 0; padding: 1rem 0 0; border: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .75rem; }
+.workflow-control > legend { padding: 0; margin-bottom: .75rem; font-size: .85rem; font-weight: 650; }
+.workflow-choice { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.workflow-choice-label { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem 1rem; min-height: 44px; padding: .75rem 1rem; border: 1px solid var(--reading-line); cursor: pointer; font-weight: 600; }
+.workflow-choice:checked + .workflow-choice-label { border: 2px solid var(--reading-ink); padding: calc(.75rem - 1px) calc(1rem - 1px); }
+.workflow-choice:focus-visible + .workflow-choice-label { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
+.workflow-selected { display: none; color: var(--reading-muted); font-size: .75rem; font-weight: 500; }
+.workflow-choice:checked + .workflow-choice-label .workflow-selected { display: inline; }
+.workflow-states { grid-column: 1 / -1; min-width: 0; }
+.workflow-state { margin-top: 1.5rem; }
+.workflow-choice--after:checked ~ .workflow-states .workflow-state--before,
+.workflow-choice--before:checked ~ .workflow-states .workflow-state--after { display: none; }
+.workflow-state-header { max-width: 46rem; }
+.workflow-state-header h3 { margin: .5rem 0; font-size: 1.3rem; line-height: 1.4; }
+.workflow-track { display: grid; grid-template-columns: repeat(var(--workflow-columns,4),minmax(0,1fr)); gap: 1.5rem; list-style: none; margin: 2rem 0 0; padding: 0; }
+.workflow-stage { min-width: 0; margin: 0; padding: 1rem 0 0; border-top: 1px solid var(--reading-line); }
+.workflow-stage-marker { display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; min-height: 2rem; border: 1px solid currentColor; border-radius: 50%; font-size: .8rem; }
+.workflow-stage h4 { margin: .8rem 0 .5rem; font-size: 1.1rem; line-height: 1.4; }
+.workflow-stage-facts { margin-block: 1rem; font-size: .875rem; }
+.workflow-stage-facts > div + div { margin-top: 1rem; }
+.workflow-stage-facts dt { color: var(--reading-muted); font-size: .75rem; font-weight: 650; }
+.workflow-stage-facts dd { margin: .25rem 0 0; }
+.workflow-checkpoint { font-size: .8rem; font-weight: 650; padding-left: .6rem; border-left: 3px solid currentColor; }
+.workflow-state--before .workflow-checkpoint,
+.workflow-state--before [data-checkpoint="true"] > .workflow-stage-marker { color: var(--reading-pressure); }
+.workflow-state--after .workflow-checkpoint,
+.workflow-state--after [data-checkpoint="true"] > .workflow-stage-marker { color: var(--reading-holds); }
+@media(min-width:1000px) and (min-height:700px) {
+  .reading-article--case .reading-contents { position: sticky; top: 0; z-index: 5; padding: .6rem 1rem; max-height: 30vh; overflow: auto; border: 1px solid var(--reading-line); }
+  .reading-article--case .reading-contents h2 { font-size: .9rem; margin-bottom: .25rem; }
+  .reading-article--case .reading-contents ol { font-size: .8rem; gap: 0 1rem; }
+  .reading-article--case :is(.reading-block,.reading-extra-evidence,.reading-connections) { scroll-margin-top: calc(30vh + 1rem); }
+}
+@media(max-width:800px) {
+  .workflow-track { grid-template-columns: minmax(0,1fr); gap: 1.25rem; margin-left: .9rem; border-left: 1px solid var(--reading-line); }
+  .workflow-stage { border-top: 0; padding: .25rem 0 .5rem 1.5rem; }
+  .workflow-stage-marker { margin-left: -2.5rem; background: var(--reading-paper); }
+  .workflow-stage h4 { margin-top: .6rem; }
+}
+@media(max-width:600px) {
+  .workflow-control { grid-template-columns: minmax(0,1fr); }
+  .workflow-choice-label { padding: .75rem; }
+  .workflow-choice:checked + .workflow-choice-label { padding: calc(.75rem - 1px); }
+  .case-facts > div { grid-template-columns: minmax(0,1fr); gap: .25rem; }
+  .case-reconstruction { padding: .75rem; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .case-study-block *, .case-study-block *::before, .case-study-block *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media(forced-colors:active) {
+  .workflow-choice:checked + .workflow-choice-label { border-color: Highlight; }
+  .workflow-choice:focus-visible + .workflow-choice-label,
+  .case-study-block :is(summary,a,input):focus-visible { outline-color: Highlight; }
+}
+@media print {
+  .reading-article--case .reading-contents { display: none; }
+  .workflow-choice, .workflow-choice-label, .workflow-control > legend { display: none !important; }
+  .workflow-states .workflow-state { display: block !important; break-inside: avoid; }
+  .workflow-track { grid-template-columns: minmax(0,1fr); }
+  .case-study-block { break-inside: auto; }
+}

@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { investigationSchema } from './investigation'
 import { assumedObservedSchema } from './assumed-observed'
+import { artifactInspectorSchema, blockAnchorSchema, caseBlockEvidenceIds, evidenceInspectorSchema, isCaseStudyBlock, workflowComparisonSchema } from './case-blocks'
 
 export const uuidSchema = z.uuid().regex(/^[0-9a-f-]+$/, 'UUIDs use canonical lowercase spelling')
 export const digestSchema = z.string().regex(/^[a-f0-9]{64}$/)
@@ -14,10 +15,13 @@ const dates = { createdAt: timestamp.nullable(), updatedAt: timestamp.nullable()
 
 export const blockSchema = z.discriminatedUnion('type', [
   assumedObservedSchema,
-  z.strictObject({ id: uuidSchema, type: z.literal('prose'), markdown: text }),
+  workflowComparisonSchema,
+  artifactInspectorSchema,
+  evidenceInspectorSchema,
+  z.strictObject({ id: uuidSchema, type: z.literal('prose'), anchor: blockAnchorSchema.optional(), markdown: text }),
   // Literal verse, not Markdown: retain original whitespace and punctuation.
   z.strictObject({ id: uuidSchema, type: z.literal('verse'), text }),
-  z.strictObject({ id: uuidSchema, type: z.literal('callout'), label: z.string().min(1), markdown: text }),
+  z.strictObject({ id: uuidSchema, type: z.literal('callout'), anchor: blockAnchorSchema.optional(), label: z.string().min(1), markdown: text }),
   z.strictObject({ id: uuidSchema, type: z.literal('evidence'), evidenceId: uuidSchema }),
   z.strictObject({ id: uuidSchema, type: z.literal('image'), assetId: uuidSchema, caption: text.optional() }),
   // A registered, data-only component; arbitrary component names/props are rejected.
@@ -50,6 +54,23 @@ export const entrySchema = z.strictObject({
   if (new Set(entry.blocks.map(block => block.id)).size !== entry.blocks.length) {
     ctx.addIssue({ code: 'custom', path: ['blocks'], message: 'Duplicate block identity' })
   }
+  const reserved = new Set(['reading-main', 'reading-title', 'reading-contribution-title', 'reading-connections-title', 'reading-patterns-title', 'contribution', 'connections', 'evidence', 'limitations'])
+  const automatic = new Map(entry.blocks.map(block => [`block-${block.id}`, block.id]))
+  const componentPrefixes = entry.blocks.flatMap(block => {
+    const prefix = block.type === 'workflow_comparison' ? 'workflow' : block.type === 'artifact_inspector' ? 'case-artifacts' : block.type === 'evidence_inspector' ? 'case-evidence' : block.type === 'assumed_observed' ? 'ao' : null
+    return prefix ? [`${prefix}-${block.id}-`] : []
+  })
+  const limitations = entry.blocks.find(block => block.type === 'callout' && block.label.toLowerCase() === 'limitations')
+  const anchors = new Set<string>()
+  entry.blocks.forEach((block, index) => {
+    const explicit = 'anchor' in block ? block.anchor : undefined
+    const anchor = explicit ?? (limitations?.id === block.id ? 'limitations' : `block-${block.id}`)
+    if (explicit && reserved.has(explicit)) ctx.addIssue({ code: 'custom', path: ['blocks', index, 'anchor'], message: 'Anchor is reserved by the reading template' })
+    if (explicit && componentPrefixes.some(prefix => explicit.startsWith(prefix))) ctx.addIssue({ code: 'custom', path: ['blocks', index, 'anchor'], message: 'Anchor is reserved by a reading component' })
+    if (explicit && automatic.has(explicit) && automatic.get(explicit) !== block.id) ctx.addIssue({ code: 'custom', path: ['blocks', index, 'anchor'], message: 'Anchor collides with another block automatic anchor' })
+    if (anchors.has(anchor)) ctx.addIssue({ code: 'custom', path: ['blocks', index, 'anchor'], message: 'Duplicate reading anchor' })
+    anchors.add(anchor)
+  })
 })
 export type Entry = z.infer<typeof entrySchema>
 
@@ -102,6 +123,13 @@ export type Alias = z.infer<typeof aliasSchema>
 export const storeSchema = z.strictObject({
   entries: z.array(entrySchema), relationships: z.array(relationshipSchema),
   evidence: z.array(evidenceSchema), assets: z.array(assetSchema), aliases: z.array(aliasSchema),
+}).superRefine((store, ctx) => {
+  const evidence = new Set(store.evidence.map(record => record.id))
+  store.entries.forEach((entry, entryIndex) => entry.blocks.forEach((block, blockIndex) => {
+    if (isCaseStudyBlock(block) && caseBlockEvidenceIds(block).some(id => !evidence.has(id))) {
+      ctx.addIssue({ code: 'custom', path: ['entries', entryIndex, 'blocks', blockIndex], message: 'Case block references missing evidence' })
+    }
+  }))
 })
 export type ContentStore = z.infer<typeof storeSchema>
 export const recordRefSchema = z.strictObject({ id: uuidSchema, revision: z.number().int().positive(), digest: digestSchema })

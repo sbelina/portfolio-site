@@ -2,7 +2,7 @@ import { publicPath } from '../public-path'
 import React from 'react'
 
 /** A native disclosure keeps the build note readable without JavaScript. */
-export function ExperimentNote() {
+export function ExperimentNote({ readingLayers = false }: { readingLayers?: boolean } = {}) {
   return (
     <details className="experiment-note">
       <summary><span className="experiment-note__asterisk" aria-hidden="true">*</span><span>About this experiment</span></summary>
@@ -21,6 +21,11 @@ export function ExperimentNote() {
         <p>The current index links to a preserved review build, keeping earlier design choices and interactions available to inspect. Archiving an experience does not establish that its hypotheses or interpretations have been validated.</p>
         <p>The current design follows Test. Show. Enable., with paper and observatory reading surfaces, native navigation, and inspectable sources and limitations. The asterisk identity is being developed; the typographic mark is temporary. New design and agent review do not approve case writing or establish improved comprehension.</p>
         <p>The current introduction uses one deliberate action for each of three steps and a separate Dive in action; skip and replay remain available. Optional questions beneath the practice moves and nested illustration notes test whether supporting context can be inspected in place while the main account stays readable. Reader comprehension has not been evaluated.</p>
+        {readingLayers ? <>
+          <h2>Reading in layers</h2>
+          <p>This reading asks whether tracing a checking sequence and inspecting the reasoning, resources and sources helps visitors uncover how an investigation developed. The main account remains available without opening those layers.</p>
+          <p>Technical checks exercised native comparisons and disclosures without JavaScript, with reduced motion and at narrow widths. These observations establish interface behavior; whether the layers spark curiosity or improve understanding remains a question for evaluation with readers.</p>
+        </> : null}
         <h2>Reveal the hidden work</h2>
         <p>Does retaining a simple process while revealing the work beneath it help visitors inspect what the overview leaves out? This process is illustrative, not case evidence. Its lines encode relationships, not measured duration.</p>
         <p>Technical observations: one reveal opens the extra steps in place; the original track remains visible; HTML and SVG contain the explanation without animation. Optional p5.js motion pauses offscreen and supports pause/reset and reduced motion. These are interface checks, not evidence of improved comprehension. Reader evaluation remains to be done.</p>
