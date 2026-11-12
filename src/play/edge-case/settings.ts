@@ -12,10 +12,12 @@ export interface Settings {
   movementSide: 'left' | 'right'
   /** Stuck hints appear automatically (MECHANICS.md N1); they can always be requested. */
   autoHints: boolean
+  /** Dark uses the design system's observatory surface (default); light its paper surface. */
+  theme: 'dark' | 'light'
 }
 export interface Saved { settings: Settings; completed: string[]; discovered: string[]; indexOpens: number }
 
-export const defaultSettings: Settings = { sound: true, volume: 0.6, motion: 'system', previews: true, highContrast: false, speed: 1, haptics: true, movement: 'pad', movementSide: 'left', autoHints: true }
+export const defaultSettings: Settings = { sound: true, volume: 0.6, motion: 'system', previews: true, highContrast: false, speed: 1, haptics: true, movement: 'pad', movementSide: 'left', autoHints: true, theme: 'dark' }
 const KEY = 'edge-case:v1'
 
 /** Storage is a convenience: any failure falls back to defaults and play continues. */
@@ -35,6 +37,7 @@ export function load(): Saved {
       movement: s.movement === 'joystick' ? 'joystick' : 'pad',
       movementSide: s.movementSide === 'right' ? 'right' : 'left',
       autoHints: s.autoHints !== false,
+      theme: s.theme === 'light' ? 'light' : 'dark',
     }
     const strings = (value: unknown) => Array.isArray(value) ? value.filter((id: unknown): id is string => typeof id === 'string') : []
     const indexOpens = Number.isInteger(raw.indexOpens) && raw.indexOpens >= 0 ? raw.indexOpens : 0

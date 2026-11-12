@@ -10,6 +10,8 @@ export const menuCard = (page: Page) => page.locator('.ec-menu')
 export async function enter(page: Page) {
   await page.getByRole('button', { name: /^(Enter|Continue)/ }).click()
   await expect(shell(page)).toBeVisible()
+  // Let a true full-screen request settle (granted or refused) before pressing keys (§13, M2).
+  await page.waitForFunction(() => !!document.fullscreenElement, null, { timeout: 1500 }).catch(() => {})
 }
 
 /** Walk the nested menu by item names, e.g. menu(page, 'Settings', 'Display'). */
@@ -24,6 +26,8 @@ export async function start(page: Page, level?: string) {
   if (level) await menu(page, 'Levels', level)
   else await menuCard(page).getByRole('button', { name: 'Play', exact: true }).click()
   await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
+  // Play hands keyboard focus to the arena (one frame after starting).
+  await expect(page.locator('.ec-stage')).toBeFocused()
 }
 
 /** Hold a key until a condition holds (condition-driven, never a fixed duration). */

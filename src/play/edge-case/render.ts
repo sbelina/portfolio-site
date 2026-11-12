@@ -59,7 +59,8 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
   for (let y = 0; y < s.height; y++) for (let x = 0; x < s.width; x++) {
     const tile = s.tiles[y][x]
     if (tile === 'wall') {
-      ctx.fillStyle = view.highContrast ? c.ink : c.panel
+      // Bolder lines thicken edges rather than flooding walls with ink, so both themes stay calm.
+      ctx.fillStyle = c.panel
       ctx.fillRect(px(x), px(y), T, T)
       ctx.strokeStyle = c.ink
       ctx.lineWidth = 1.5 * k

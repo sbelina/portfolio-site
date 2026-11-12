@@ -42,9 +42,12 @@ function requestFullscreen() {
     else root.webkitRequestFullscreen?.()
   } catch { /* refused: the window-filling layout still applies */ }
 }
-/** When the page last handled Escape itself; some browsers also deliver the full-screen Escape. */
-let lastEscapeHandled = -Infinity
-const noteEscape = () => { lastEscapeHandled = performance.now() }
+/**
+ * Some browsers deliver the Escape that leaves full screen to the page as well; others
+ * swallow it. Record whether the page handled an Escape while still in full screen.
+ */
+let escapeSeenInFullscreen = false
+const noteEscape = () => { if (inFullscreen()) escapeSeenInFullscreen = true }
 const inFullscreen = () => !!(document.fullscreenElement ?? (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement)
 function exitFullscreen() {
   const doc = document as Document & { webkitFullscreenElement?: Element; webkitExitFullscreen?: () => void }
@@ -221,11 +224,18 @@ export function EdgeCaseGame() {
   const leavingOnPurpose = useRef(false)
   const escapeRef = useRef<() => void>(() => {})
   useEffect(() => {
+    // WebKit fires the standard and the prefixed event (and, after a reload in full screen,
+    // may never report entering again). Treat each exit once: ignore repeats within 100 ms.
+    let lastExit = -Infinity
     const onChange = () => {
-      if (inFullscreen() || !enteredRef.current) return
+      if (inFullscreen()) { escapeSeenInFullscreen = false; return }
+      const now = performance.now()
+      if (now - lastExit < 100) return
+      lastExit = now
+      if (!enteredRef.current) return
       if (leavingOnPurpose.current) { leavingOnPurpose.current = false; return }
       // The page already acted on this Escape (the browser delivered it too): do not act twice.
-      if (performance.now() - lastEscapeHandled < 500) return
+      if (escapeSeenInFullscreen) { escapeSeenInFullscreen = false; return }
       escapeRef.current()
     }
     document.addEventListener('fullscreenchange', onChange)
@@ -238,6 +248,16 @@ export function EdgeCaseGame() {
     window.addEventListener('popstate', onPop)
     return () => window.removeEventListener('popstate', onPop)
   }, [leave])
+
+  // Theme (M6): the browser's own toolbar takes the game's surface while entered.
+  useEffect(() => {
+    if (!entered) return
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+    const previous = meta?.content
+    const surface = rootRef.current ? getComputedStyle(rootRef.current).getPropertyValue('--paper').trim() : ''
+    if (meta && surface) meta.content = surface
+    return () => { if (meta && previous !== undefined) meta.content = previous }
+  }, [entered, settings.theme])
 
   // While entered: the page behind is inert and does not scroll.
   useEffect(() => {
@@ -441,7 +461,7 @@ export function EdgeCaseGame() {
   // What a swallowed Escape (leaving true full screen) means right now.
   escapeRef.current = () => {
     if (screenRef.current === 'playing') pause()
-    else if (screenRef.current === 'menu' && menuPath.length > 1) setMenuPath(path => path.slice(0, -1))
+    else if (screenRef.current === 'menu') back()
   }
   /** L2: show the full field record; saving is attempted only from there (§12). */
   const openSnapshot = () => {
@@ -488,7 +508,7 @@ export function EdgeCaseGame() {
   )
 
   const shell = entered && (
-    <div ref={rootRef} className="pc-site ec-shell ps" role="dialog" aria-modal="true" aria-labelledby={headingId} data-screen={screen} data-side={settings.movementSide} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
+    <div ref={rootRef} className="pc-site ec-shell ps" role="dialog" aria-modal="true" aria-labelledby={headingId} data-screen={screen} data-theme={settings.theme} data-surface={settings.theme === 'dark' ? 'observatory' : undefined} data-side={settings.movementSide} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
       <h2 id={headingId} className="ps-visually-hidden">Edge Case game</h2>
       {/* Frame layer: identity and state at a glance; one control. */}
       <header className="ec-frame">
@@ -588,7 +608,7 @@ export function EdgeCaseGame() {
                 <MenuList>
                   <MenuItem submenu onClick={() => openPage('controls')}>Controls<span className="ec-item-detail">{settings.movement === 'joystick' ? 'Joystick' : 'Pad'}, {settings.movementSide}</span></MenuItem>
                   <MenuItem submenu onClick={() => openPage('sound')}>Sound<span className="ec-item-detail">{settings.sound ? `On, ${Math.round(settings.volume * 100)}%` : 'Off'}</span></MenuItem>
-                  <MenuItem submenu onClick={() => openPage('display')}>Display<span className="ec-item-detail">{settings.motion === 'system' ? 'Device motion' : settings.motion === 'reduce' ? 'Reduced motion' : 'Full motion'}</span></MenuItem>
+                  <MenuItem submenu onClick={() => openPage('display')}>Display<span className="ec-item-detail">{settings.theme === 'dark' ? 'Dark' : 'Light'}, {settings.motion === 'system' ? 'device motion' : settings.motion === 'reduce' ? 'reduced motion' : 'full motion'}</span></MenuItem>
                   <MenuItem submenu onClick={() => openPage('gameplay')}>Gameplay<span className="ec-item-detail">{Math.round(settings.speed * 100)}% speed</span></MenuItem>
                 </MenuList>
               )}
@@ -927,6 +947,11 @@ function SettingsGroup({ group, settings, update }: { group: 'controls' | 'sound
       )}
       {group === 'display' && (
         <>
+          <fieldset className="ps-field">
+            <legend>Theme</legend>
+            <label className="ps-check"><input type="radio" name={`${id}-theme`} checked={settings.theme === 'dark'} onChange={() => update({ theme: 'dark' })}/> Dark (observatory)</label>
+            <label className="ps-check"><input type="radio" name={`${id}-theme`} checked={settings.theme === 'light'} onChange={() => update({ theme: 'light' })}/> Light (paper)</label>
+          </fieldset>
           <fieldset className="ps-field">
             <legend>Motion</legend>
             {(['system', 'reduce', 'full'] as const).map(value => (

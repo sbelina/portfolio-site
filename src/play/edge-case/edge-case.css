@@ -197,3 +197,15 @@ html.ec-open, html.ec-open body { overflow: hidden; overscroll-behavior: none; }
   .ps.ec-shell .ps-stick { flex: none; width: 11rem; }
   .ec-rail { min-height: 2.25rem; }
 }
+
+/* Theme and depth (M6). Dark is the design system's observatory surface; light its paper.
+   The arena is the one lit instrument; the chrome around it recedes to hairlines. */
+.ps.ec-shell { --shadow: color-mix(in srgb, var(--ink) 40%, transparent); }
+.ps.ec-shell[data-surface="observatory"] { --shadow: rgb(0 0 0 / .65); }
+.ec-shell .ec-frame { border-bottom: 1px solid var(--soft-line); }
+.ec-shell .ec-controls { border-top: 1px solid var(--soft-line); }
+.ps.ec-shell .ec-stage { background: radial-gradient(closest-side, color-mix(in srgb, var(--panel) 80%, transparent), transparent 100%); }
+.ec-shell .ps-canvas { border: 1px solid var(--line); box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--soft-line), 0 30px 70px -30px var(--shadow); }
+.ec-shell .ps-card { background: var(--panel); box-shadow: 6px 6px 0 var(--shadow); }
+.ec-shell .ec-rail-line.is-hint { background: var(--panel-2); }
+.ec-shell[data-surface="observatory"] .ps .ps-icon-button, .ec-shell[data-surface="observatory"] button:disabled { border-color: var(--line); }

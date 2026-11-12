@@ -35,6 +35,15 @@ Owner choices: the page shows the title and text plus one Enter button. The game
 
 Finding while testing: in true full screen, desktop browsers keep Escape for themselves, so the page never sees the first Escape. Leaving full screen is now treated as that Escape (M2).
 
+## Dark default and layered depth (12 November)
+
+Owner direction: think layers, interactive design, an immersive puzzle experience. Dark mode matching the design system is the default; light is an option in Settings.
+
+- Dark uses the design system's **observatory** surface tokens; light uses **paper**. Switch in Settings › Display; the choice persists. The canvas, menus, focus and feedback all read the same tokens, so semantic colours (coral hazards, teal samples, violet predictions, orange interaction) hold in both themes.
+- Depth: the arena is the lit instrument, with a soft edge, a subtle surrounding glow and a shadow. The frame and controls recede to hairlines. Menus are panels over a veil, and the browser's toolbar colour matches the game while entered.
+- Bolder lines now thicken edges instead of flooding walls with ink, which works in both themes.
+- Found while testing in WebKit: Escape in true full screen is swallowed, the standard and prefixed change events both fire, and after a reload made in full screen the enter notification can be missing. Exit handling now treats each full-screen exit once (spec M2). An Escape pressed while full screen is still being entered (about 0.4 s) is a known limit.
+
 ## Private play-test link
 
 A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.

@@ -78,6 +78,28 @@ test.describe('Edge Case prototype page', () => {
     await expect(shell(page)).toHaveCount(0)
   })
 
+  test('M6: dark (observatory) by default; light in Settings › Display persists; both pass automated checks', async ({ page }) => {
+    await page.goto(route)
+    await enter(page)
+    const background = () => shell(page).evaluate(el => getComputedStyle(el).backgroundColor)
+    await expect(shell(page)).toHaveAttribute('data-surface', 'observatory')
+    expect(await background()).toBe('rgb(17, 23, 22)')
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#111716')
+    expect((await new AxeBuilder({ page }).include('.ec-shell').analyze()).violations).toEqual([])
+    await menu(page, 'Settings', 'Display')
+    await menuCard(page).getByLabel('Light (paper)').check()
+    await expect(shell(page)).not.toHaveAttribute('data-surface', 'observatory')
+    expect(await background()).toBe('rgb(243, 239, 231)')
+    expect((await new AxeBuilder({ page }).include('.ec-shell').analyze()).violations).toEqual([])
+    await page.reload()
+    await enter(page)
+    expect(await background()).toBe('rgb(243, 239, 231)')
+    // Leaving restores the page's own toolbar colour.
+    await page.keyboard.press('Escape')
+    await expect(shell(page)).toHaveCount(0)
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#f3efe7')
+  })
+
   test('M4: settings are grouped into Controls, Sound, Display and Gameplay, each with its own screen', async ({ page }) => {
     await page.goto(route)
     await enter(page)
