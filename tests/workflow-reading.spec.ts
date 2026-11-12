@@ -70,14 +70,16 @@ test('touch, narrow enlarged reading and reduced motion preserve the useful resu
     const stages = page.locator('.workflow-state--before .workflow-stage')
     expect(await stages.nth(1).evaluate((element, first) => element.getBoundingClientRect().top > Number(first), await stages.first().evaluate(element => element.getBoundingClientRect().top))).toBe(true)
     expect(errors).toEqual([])
-    await page.screenshot({ path: '/tmp/claims-case-review-fixture-320.png', fullPage: true })
+    const capture = await page.screenshot({ path: test.info().outputPath('synthetic-case-320.png'), fullPage: true })
+    await test.info().attach('Synthetic case at narrow enlarged text', { body: capture, contentType: 'image/png' })
   } finally { await context.close() }
 })
 
 test('case fixture has accessible controls, restrained tokens and a readable CSS-failure fallback', async ({ page, browser, baseURL }) => {
   await page.goto(route)
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
-  await page.screenshot({ path: '/tmp/claims-case-review-fixture-desktop.png', fullPage: true })
+  const capture = await page.screenshot({ path: test.info().outputPath('synthetic-case-desktop.png'), fullPage: true })
+  await test.info().attach('Synthetic case desktop', { body: capture, contentType: 'image/png' })
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false })
   try {
     const noStyle = await context.newPage(); await noStyle.route('**/*.css', request => request.abort()); await noStyle.goto(route)

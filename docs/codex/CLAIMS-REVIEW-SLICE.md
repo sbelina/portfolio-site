@@ -70,6 +70,8 @@ npm run preview:fixtures -- --ip 127.0.0.1 --port 4174
 
 Open `/investigations/fixture-checkpoint-study/`. It is explicitly synthetic and must never be deployed. Default `npm run build` excludes it.
 
+The reading tests attach synthetic desktop/narrow captures to the Playwright report, uploaded by CI as `browser-results`. Actual private-case captures are never included in that artifact.
+
 For private authoring, follow [the local writing trial](PRIVATE-WRITING-TRIAL.md). Preserve the original, then use **Advanced: prepare an investigation draft** for a prepared record; use the existing individual text-edit forms thereafter. Keep source references in the private workspace, retain IDs and use the displayed expected entry revision. Saving neither reviews nor approves. The new case suite has its own synthetic D1 directory and runs sequentially with `npm run test:studio:cases`; it never resets an owner's database.
 
 The actual case's working files and self-contained review export are handed to the owner through private workspace links, not public fixture URLs or GitHub assets. They are local working copies, not remotely managed backups. The server remains loopback-only; do not tunnel it as a hosted editor.
