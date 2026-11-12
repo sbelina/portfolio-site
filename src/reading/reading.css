@@ -1,4 +1,5 @@
 @import "../visuals/investigation-visual.css";
+@import '../visuals/case-study.css';
 @import '../visuals/assumed-observed.css';
 @import '../components/experiment-note.css';
 @import '../components/public-navigation.css';

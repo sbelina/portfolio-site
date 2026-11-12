@@ -1,7 +1,12 @@
 import { publicPath } from '../public-path'
 import { InvestigationVisual } from '../visuals/InvestigationVisual'
 import { InvestigationNarrative } from './InvestigationNarrative'
+import { EvidenceFacts } from './EvidenceFacts'
 import { AssumedObserved } from '../visuals/AssumedObserved'
+import { WorkflowComparison } from '../visuals/WorkflowComparison'
+import { ArtifactInspector } from '../visuals/ArtifactInspector'
+import { EvidenceInspector } from '../visuals/EvidenceInspector'
+import { isCaseStudyBlock } from '../content/case-block-kind'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
 import archive from '../../content/build-archive.json'
@@ -23,6 +28,9 @@ function dateLabel(value: string | null) {
 
 function blockLabel(block: Block, index: number, projection: ReadingContext) {
   switch (block.type) {
+    case 'workflow_comparison':
+    case 'artifact_inspector':
+    case 'evidence_inspector': return block.title
     case 'assumed_observed': return block.title
     case 'verse': return `Verse ${index + 1}`
     case 'callout': return block.label
@@ -34,6 +42,7 @@ function blockLabel(block: Block, index: number, projection: ReadingContext) {
 }
 
 function blockAnchor(block: Block, entry: PublicEntry) {
+  if ('anchor' in block && block.anchor) return block.anchor
   const limitations = entry.blocks.find(item => item.type === 'callout' && item.label.toLowerCase() === 'limitations')
   return limitations?.id === block.id ? 'limitations' : `block-${block.id}`
 }
@@ -47,23 +56,19 @@ function SafeMarkdown({ block, html }: { block: Extract<Block, { type: 'prose' |
 }
 
 function EvidenceDisclosure({ evidence }: { evidence: PublicEvidence }) {
-  const locatorIsLink = /^https?:\/\//i.test(evidence.locator)
   return (
     <details className="reading-evidence">
       <summary>Evidence: {evidence.title}</summary>
-      <dl>
-        <div><dt>Source</dt><dd>{evidence.source}</dd></div>
-        <div><dt>Source locator</dt><dd>{locatorIsLink ? <a href={evidence.locator}>{evidence.locator}</a> : evidence.locator}</dd></div>
-        <div><dt>Observed or recorded</dt><dd><time dateTime={evidence.observedAt}>{dateLabel(evidence.observedAt)}</time></dd></div>
-        <div><dt>Evidence role</dt><dd>{evidence.role}</dd></div>
-        <div><dt>Limitations</dt><dd>{evidence.limitations}</dd></div>
-      </dl>
+      <EvidenceFacts evidence={evidence} />
     </details>
   )
 }
 
 function ContentBlock({ block, page }: { block: Block; page: ReadingPageData }) {
   switch (block.type) {
+    case 'workflow_comparison': return <WorkflowComparison block={block} evidence={page.projection.evidence} />
+    case 'artifact_inspector': return <ArtifactInspector block={block} evidence={page.projection.evidence} />
+    case 'evidence_inspector': return <EvidenceInspector block={block} evidence={page.projection.evidence} />
     case 'assumed_observed': return <AssumedObserved block={block} evidence={page.projection.evidence}/>
     case 'verse': return <p className="reading-verse">{block.text}</p>
     case 'prose': return <SafeMarkdown block={block} html={page.renderedMarkdown} />
@@ -122,9 +127,16 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Re
 
 function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData }) {
   const poetry = entry.format === 'poetry'
+  const caseStudy = entry.blocks.some(isCaseStudyBlock)
   const extraEvidence = page.projection.evidence.filter(evidence => entry.evidenceIds.includes(evidence.id) && !entry.blocks.some(block => block.type === 'evidence' && block.evidenceId === evidence.id))
+  const contents = <ol>
+    {!poetry ? <li><a href="#contribution">Contribution and scope</a></li> : null}
+    {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
+    {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
+    {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
+  </ol>
   return (
-    <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}`}>
+    <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}${caseStudy ? ' reading-article--case' : ''}`}>
       <nav className="reading-breadcrumbs" aria-label="Breadcrumb">
         <a href={publicPath("/")}>Home</a><span aria-hidden="true">/</span>
         {entry.kind === 'investigation' ? <><a href={publicPath("/investigations/")}>Investigations</a><span aria-hidden="true">/</span></> : null}
@@ -146,17 +158,11 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         </section> : null}
       </header>
       <nav className="reading-contents" aria-label="On this page">
-        <h2>In this reading</h2>
-        <ol>
-          {!poetry ? <li><a href="#contribution">Contribution and scope</a></li> : null}
-          {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
-          {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
-          {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
-        </ol>
+        {caseStudy ? <details className="case-chapters"><summary>Explore this investigation’s sections</summary>{contents}</details> : <><h2>In this reading</h2>{contents}</>}
       </nav>
       {entry.investigation ? <InvestigationNarrative narrative={entry.investigation} evidence={page.projection.evidence} /> : null}
       <div className="reading-body">
-        {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
+        {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} tabIndex={-1} key={block.id}><ContentBlock block={block} page={page} /></section>)}
       </div>
       {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
@@ -179,17 +185,21 @@ function Collection({ projection, fixture }: { projection: ReadingContext; fixtu
 
 export function ReadingPage({ page }: { page: ReadingPageData }) {
   const entry = page.kind === 'entry' ? page.entry : undefined
+  const caseStudy = entry?.blocks.some(isCaseStudyBlock) ?? false
+  // Old fixtures keep their historical appearance. New case fixtures exercise
+  // current tokens while retaining the prominent synthetic-content warning.
+  const legacy = page.fixture && !caseStudy
   let content: ReactNode
   if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} />
   else if (entry) content = <EntryView entry={entry} page={page} />
   else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
-    <div className={`reading-page${page.fixture ? '' : ' pc-site pc-reading'}`}>
+    <div className={`reading-page${legacy ? '' : ' pc-site pc-reading'}`}>
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
-      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}><span aria-hidden="true">{page.fixture ? '△' : '*'}</span> Producing Curiosity</a><PublicNavigation legacy={page.fixture} currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
+      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}><span aria-hidden="true">{legacy ? '△' : '*'}</span> Producing Curiosity</a><PublicNavigation legacy={legacy} currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
       {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sami’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
-      <main id="reading-main" tabIndex={-1}>{content}</main>
-      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
+      <main id="reading-main" className={caseStudy ? 'reading-main--case' : undefined} tabIndex={-1}>{content}</main>
+      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote readingLayers={caseStudy} /></footer>
     </div>
   )
 }

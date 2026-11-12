@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import { z } from 'zod'
-import { entrySchema, evidenceSchema, relationshipSchema, assetSchema, entryPath, type ContentStore, type Entry, type PublicProjection, type ReleaseManifest } from '../src/content/model'
+import { entrySchema, evidenceSchema, relationshipSchema, assetSchema, storeSchema, entryPath, type ContentStore, type Entry, type PublicProjection, type ReleaseManifest } from '../src/content/model'
 import { validateCandidateProjection, digestRecord } from '../src/content/projection'
-import { assumedObservedSchema, type AssumedObservedBlock } from '../src/content/assumed-observed'
+import { assumedObservedSchema, diagramEvidenceIds, type AssumedObservedBlock } from '../src/content/assumed-observed'
+import { caseBlockEvidenceIds, isCaseStudyBlock } from '../src/content/case-blocks'
 import { intakeText } from './intake'
 
 export const passes = ['Manuscript Intake', 'Editorial Reader', 'Evidence Reviewer', 'Connection Curator', 'Experience Reviewer', 'Release Checker'] as const
@@ -24,6 +25,14 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('edit'), entryId: uuid, blockId: uuid, after: text, rationale: z.string().min(1).max(5000) }),
  z.strictObject({ type: z.literal('decideEdit'), editId: uuid, decision: z.enum(['accept','reject']) }),
  z.strictObject({ type: z.literal('metadata'), entryId: uuid, title: short, slug: short, summary: z.string().max(2000), contribution: z.string().max(5000) }),
+ z.strictObject({
+  type: z.literal('prepareInvestigation'), manuscriptId: uuid, entryId: uuid,
+  expectedEntryRevision: z.number().int().positive().nullable(),
+  title: entrySchema.shape.title.min(1), slug: entrySchema.shape.slug,
+  summary: entrySchema.shape.summary, contribution: entrySchema.shape.contribution.unwrap(),
+  blocks: entrySchema.shape.blocks, evidenceIds: entrySchema.shape.evidenceIds.optional(),
+  investigation: entrySchema.shape.investigation,
+ }),
  z.strictObject({ type: z.literal('evidence'), entryId: uuid, title: short, source: short, locator: short, observedAt:z.iso.datetime({offset:true}), limitations: z.string().min(1).max(5000), rightsCleared: z.boolean() }),
  z.strictObject({ type: z.literal('asset'), entryId: uuid, bytes: z.string().max(100000), alt: z.string().min(1).max(2000), credit: short, rightsCleared: z.boolean() }),
  z.strictObject({ type: z.literal('relationship'), fromId: uuid, toId: uuid, rationale: z.string().min(1).max(5000), relation: relationshipSchema.shape.type }),
@@ -36,6 +45,7 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('approve'), digest: z.string().regex(/^[a-f0-9]{64}$/) }),
 ])
 export type Action = z.infer<typeof actionSchema>
+export class DraftRevisionConflict extends Error {}
 const authorId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' // Local owner identity; not Sami's authorship/approval.
 export const slugify = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,100) || 'untitled'
 const blockText = (block: Entry['blocks'][number]) => block.type === 'verse' ? block.text : block.type === 'prose' || block.type === 'callout' ? block.markdown : ''
@@ -52,7 +62,7 @@ function sections(text: string, digest: string): Section[] {
  return proposed.every(s => s.passage.end-s.passage.start >= 120) ? proposed : []
 }
 export function draftProjection(w: Workspace): PublicProjection {
- return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds})=>({id,fromId,toId,type,rationale,evidenceIds})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:w.store.aliases.filter(a=>a.reviewState==='approved').map(a=>a.kind==='path'?{id:a.id,kind:a.kind,path:a.path,targetId:a.targetId}:{id:a.id,kind:a.kind,fragment:a.fragment,targetId:a.targetId}) }
+ return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,investigation:e.investigation?structuredClone(e.investigation):undefined,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds})=>({id,fromId,toId,type,rationale,evidenceIds})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,measurement,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,measurement,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:w.store.aliases.filter(a=>a.reviewState==='approved').map(a=>a.kind==='path'?{id:a.id,kind:a.kind,path:a.path,targetId:a.targetId}:{id:a.id,kind:a.kind,fragment:a.fragment,targetId:a.targetId}) }
 }
 export function applyAction(source: Workspace, action: Action, version: number, subject: string, appRevision: string, now = new Date().toISOString()): Workspace {
  const w = structuredClone(source)
@@ -112,6 +122,55 @@ export function applyAction(source: Workspace, action: Action, version: number, 
   w.store.aliases=w.store.aliases.filter(a=>a.kind!=='path' || a.targetId!==e.id || a.path!==entryPath(e))
   if(entryPath(e)!==oldPath && !w.store.aliases.some(a=>a.kind==='path' && a.path===oldPath)) w.store.aliases.push({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'approved',kind:'path',path:oldPath,targetId:e.id})
   bump(e); break
+ }
+ case 'prepareInvestigation': {
+  const m=w.manuscripts.find(m=>m.id===action.manuscriptId)
+  if(!m)throw Error('A preserved original manuscript is required')
+  if(m.poetry || m.structure==='split')throw Error('Prepared investigations require one intact non-poetry manuscript')
+  const matches=w.store.entries.filter(e=>e.id===action.entryId)
+  if(matches.length>1)throw Error('Entry identity has more than one current draft')
+  const existing=matches[0]
+  if(existing && manuscriptForEntry(w,existing.id)?.id!==m.id)throw Error('Entry belongs to another original manuscript')
+  if(w.manuscripts.some(other=>other.id!==m.id && (other.id===action.entryId || other.sections.some(s=>s.id===action.entryId))))throw Error('Entry identity is reserved by another original manuscript')
+  if(!existing && w.store.entries.some(e=>manuscriptForEntry(w,e.id)?.id===m.id))throw Error('This original already has a draft; keep its existing entry identity')
+  if((existing?.revision??null)!==action.expectedEntryRevision)throw new DraftRevisionConflict('Prepared draft changed; reload its saved entry revision before replacing it')
+  if([w.store.evidence,w.store.assets,w.store.relationships,w.store.aliases].some(records=>records.some(record=>record.id===action.entryId)))throw Error('Entry identity belongs to another record kind')
+  if(w.edits.some(edit=>edit.entryId===action.entryId && edit.decision==='pending') || w.visualizations?.some(proposal=>proposal.entryId===action.entryId && proposal.decision==='pending'))throw Error('Decide pending edits and visualizations before replacing prepared content')
+  const prepared=entrySchema.parse({
+   schemaVersion:1,id:action.entryId,revision:(existing?.revision??0)+1,kind:'investigation',format:'case',
+   title:action.title,slug:action.slug,summary:action.summary,contribution:action.contribution,
+   blocks:action.blocks,evidenceIds:action.evidenceIds??existing?.evidenceIds??[],investigation:action.investigation??existing?.investigation,
+   editorialState:'draft',visibility:'restricted',createdAt:existing?.createdAt??now,updatedAt:now,
+   authorIds:existing?.authorIds??[authorId],topicIds:existing?.topicIds??[],...(existing?.internalNotes?{internalNotes:existing.internalNotes}:{}),
+  })
+  const nextPath=entryPath(prepared),oldPath=existing?entryPath(existing):null
+  if(w.store.entries.some(e=>e.id!==prepared.id && (entryPath(e)===nextPath || e.slug===prepared.slug)))throw Error('Prepared investigation slug or canonical route belongs to another entry')
+  if(w.store.aliases.some(a=>a.kind==='path' && a.path===nextPath && a.targetId!==prepared.id))throw Error('Prepared investigation route belongs to another entry alias')
+  for(const block of prepared.blocks) {
+   if(w.store.entries.some(e=>e.id!==prepared.id && e.blocks.some(other=>other.id===block.id)))throw Error('Block identity belongs to another entry')
+   if(existing?.blocks.some(other=>other.id===block.id && other.type!==block.type))throw Error('Keep block types stable or assign a new block identity')
+  }
+  const sourceIds=[...prepared.evidenceIds,...(prepared.investigation?.statements.flatMap(statement=>statement.evidenceIds)??[])]
+  for(const block of prepared.blocks) {
+   if(block.type==='evidence')sourceIds.push(block.evidenceId)
+   if(block.type==='assumed_observed')sourceIds.push(...diagramEvidenceIds(block))
+   if(isCaseStudyBlock(block))sourceIds.push(...caseBlockEvidenceIds(block))
+   if(block.type==='image' && !w.store.assets.some(asset=>asset.id===block.assetId))throw Error('Prepared investigation references a missing private asset')
+  }
+  if(sourceIds.some(id=>!w.store.evidence.some(evidence=>evidence.id===id)))throw Error('Prepared investigation references missing private evidence')
+  w.store.aliases=w.store.aliases.filter(a=>a.kind!=='path' || a.path!==nextPath || a.targetId!==prepared.id)
+  if(oldPath && oldPath!==nextPath) {
+   if(w.store.aliases.some(a=>a.kind==='path' && a.path===oldPath && a.targetId!==prepared.id))throw Error('Previous canonical route belongs to another entry alias')
+   if(!w.store.aliases.some(a=>a.kind==='path' && a.path===oldPath))w.store.aliases.push({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'approved',kind:'path',path:oldPath,targetId:prepared.id})
+  }
+  if(existing)w.store.entries[w.store.entries.findIndex(e=>e.id===existing.id)]=prepared
+  else w.store.entries.push(prepared)
+  // This is an explicit intact-structure choice, not completeness or review approval.
+  // Prior proposed sections remain recoverable in the versioned workspace history.
+  m.structure='intact'
+  m.sections=[{id:prepared.id,title:prepared.title,slug:prepared.slug,summary:prepared.summary,collection:'investigation',passage:{start:0,end:m.original.length,sourceDigest:m.digest},reason:'Prepared investigation draft tied to this complete preserved source; no review pass is accepted automatically.'}]
+  storeSchema.parse(w.store)
+  break
  }
  case 'evidence': {
   const e=getEntry(action.entryId),id=randomUUID()

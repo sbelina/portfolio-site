@@ -1,5 +1,6 @@
 /** Public-safe invented data for local fixture builds/tests ONLY. No real approvals. */
 import { visualFixture } from './assumed-observed'
+import { workflowFixture, workflowFixtureEvidence } from './workflow-content'
 import { buildPublicProjection, digestRecord } from '../../src/content/projection'
 import type { ContentStore, Entry, ReleaseManifest } from '../../src/content/model'
 
@@ -62,7 +63,7 @@ export function fixtureProjection() {
     limitations: 'No actual participants, operational measurements or project outcomes support this fixture.',
     statements: [{ id: '99999999-1111-4111-8111-111111111111', text: 'Sending and usability are different questions in this fictional script.', kind: 'conceptual_illustration', contribution: 'identified', evidenceIds: [id.evidence], limitation: 'Invented to test rendering; no real-world inference follows.' }],
   }
-  input.entries.push(extra.entry);input.evidence.push(...extra.evidence)
+  input.entries.push(extra.entry, workflowFixture());input.evidence.push(...extra.evidence, workflowFixtureEvidence())
   const manifest: ReleaseManifest = { schemaVersion: 1, releaseId: '77777777-7777-4777-8777-777777777777', applicationRevision: '0'.repeat(40), contentRevision: '0'.repeat(40), entries: refs(input.entries.filter(entry => entry.revision === 1)), relationships: refs(fixtureStore.relationships), evidence: refs(input.evidence), assets: [], aliases: refs(fixtureStore.aliases) }
   return buildPublicProjection(input, manifest, [{ candidateDigest: digestRecord(manifest), approvedBy: 'synthetic-test-approver-not-an-owner-approval', approvedAt: date }])
 }

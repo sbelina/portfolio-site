@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { diagramEvidenceIds } from './assumed-observed'
+import { caseBlockEvidenceIds, isCaseStudyBlock } from './case-blocks'
 import { approvalSchema, entryPath, manifestSchema, storeSchema, type CandidateApproval, type ContentStore, type PublicAlias, type PublicProjection, type RecordRef, type ReleaseManifest } from './model'
 import { publicStaticRoutes } from '../public-routes'
 export type { PublicEntry, PublicRelationship, PublicEvidence, PublicAsset, PublicAlias, PublicProjection } from './model'
@@ -67,6 +68,13 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
   const assertReferences = (ids: string[], allowed: Set<string>, message: string) => {
     if (ids.some(id => !allowed.has(id))) throw new Error(message)
   }
+  const assertStatementEvidence = (statement: { kind: string; contribution?: string; evidenceIds: string[] }) => {
+    if (statement.kind === 'unverified') throw new Error('Unverified case statements cannot enter a selected public case block')
+    if (['direct_observation', 'documented_outcome', 'measured_result'].includes(statement.kind) && !statement.evidenceIds.length) throw new Error('Factual case statements require selected evidence')
+    if (statement.kind === 'measured_result' || statement.contribution === 'measured_impact') {
+      if (statement.kind !== 'measured_result' || !statement.evidenceIds.some(id => evidence.some(source => source.id === id && source.kind === 'metric' && source.measurement))) throw new Error('Measured case impact requires measurement provenance')
+    }
+  }
   const occupiedRoutes = new Set<string>(publicStaticRoutes)
   const occupiedSlugs = new Set<string>()
   const occupiedBlocks = new Set<string>()
@@ -95,6 +103,12 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
       if (block.type === 'assumed_observed') assertReferences(diagramEvidenceIds(block), evidenceIds, 'Diagram references private or unselected evidence')
       if (block.type === 'evidence') assertReferences([block.evidenceId], evidenceIds, 'Evidence block references unselected evidence')
       if (block.type === 'image') assertReferences([block.assetId], assetIds, 'Image block references unselected asset')
+      if (isCaseStudyBlock(block)) {
+        assertReferences(caseBlockEvidenceIds(block), evidenceIds, 'Case block references private or unselected evidence')
+        if (block.type === 'workflow_comparison' && block.basis === 'documented' && [...block.before.stages, ...block.after.stages].some(stage => !stage.evidenceIds.length)) throw new Error('Documented workflow stages require selected evidence')
+        if (block.type === 'artifact_inspector') block.artifacts.forEach(assertStatementEvidence)
+        if (block.type === 'evidence_inspector') block.claims.forEach(assertStatementEvidence)
+      }
     }
   }
   const edgeKeys = new Set<string>()

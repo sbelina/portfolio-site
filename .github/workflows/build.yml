@@ -38,7 +38,7 @@ jobs:
       run: npm test
 
     - name: Verify isolated private local writing trial
-      run: npm run test:studio && npm run studio:restart-proof && npm run check:studio
+      run: npm run test:studio && npm run test:studio:cases && npm run studio:restart-proof && npm run check:studio
 
     - name: Upload browser evidence
       if: always()
@@ -49,4 +49,5 @@ jobs:
           playwright-report/
           test-results/
           studio-test-results/
+          studio-case-test-results/
         retention-days: 14

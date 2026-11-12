@@ -11,6 +11,7 @@ import { renderToString } from 'react-dom/server'
 import App from '../src/App'
 import { ReadingPage, type ReadingPageData } from '../src/reading/ReadingPage'
 import { readingPageData } from '../src/reading/page-data'
+import { isCaseStudyBlock } from '../src/content/case-blocks'
 import type { PublicProjection } from '../src/content/model'
 import { migrationLedger } from './legacy-adapter'
 import { verifyPublicAssets } from './public-assets'
@@ -51,8 +52,9 @@ await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
 const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path)]
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
+  const currentEdition = !fixture || (data.entry?.blocks.some(isCaseStudyBlock) ?? false)
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
-    .replace('<html lang="en">', fixture ? '<html lang="en">' : '<html lang="en" data-edition="current">')
+    .replace('<html lang="en">', currentEdition ? '<html lang="en" data-edition="current">' : '<html lang="en">')
     .replace('<!--reading-html-->', () => renderToString(<ReadingPage page={data} />))
     .replace('<!--reading-data-->', () => `<script id="reading-data" type="application/json">${escapeJson(data)}</script>`)
   const target = path.join(output, file)

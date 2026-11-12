@@ -1,5 +1,6 @@
 import { AssumedObserved } from '../src/visuals/AssumedObserved'
 import { AssumedObservedEditor } from './AssumedObservedEditor'
+import { PreparedInvestigationEditor } from './PreparedInvestigationEditor'
 import '../src/visuals/assumed-observed.css'
 import React, { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { createRoot } from 'react-dom/client'
@@ -51,6 +52,7 @@ function Studio(){
    <h3>Proposed structure</h3><p>No split is required. A standalone page needs a distinct question or creative identity. No connection is inferred from headings alone.</p>
    {m.sections.length?m.sections.map(s=><details key={s.id}><summary>{s.title} · /{s.collection==='observation'?'notes':s.collection}/{s.slug}/</summary><p>{s.reason}</p><p>Source passage [{s.passage.start}, {s.passage.end}) · {s.passage.sourceDigest}</p><blockquote>{m.original.slice(s.passage.start,s.passage.end)}</blockquote>{m.structure==='undecided'?sectionFields(s,m.id):null}</details>):<p>No distinct question-led split proposed. Keep this piece intact or return with a revised manuscript.</p>}
    {m.structure==='undecided'?<div className="actions"><button onClick={()=>send({type:'structure',manuscriptId:m.id,choice:'intact'})}>Keep manuscript intact</button>{m.sections.length>=2?<button onClick={()=>send({type:'structure',manuscriptId:m.id,choice:'split'})}>Approve proposed split into drafts</button>:null}</div>:null}
+   <PreparedInvestigationEditor manuscript={m} entry={w.store.entries.find(e=>e.id===m.id || m.sections.some(s=>s.id===e.id))} onSave={send}/>
    <h3>Review passes</h3>{m.reviews.map(r=><details key={r.pass}><summary>{r.pass} · {r.decision}</summary><p>{r.suggestion}</p>{r.pass==='Connection Curator' && m.structure==='split'?<button onClick={()=>send({type:'suggestConnections',manuscriptId:m.id})}>Prepare question-based connection suggestions</button>:null}<p className="warning">Uncertainty: {r.uncertainty}</p><p>Sources: {r.sources.map(s=>`original ${s.sourceDigest} [${s.start}, ${s.end})`).join('; ')}</p>
     <Form name={`${m.title}: ${r.pass}`} submit={async v=>send({type:'review',manuscriptId:m.id,pass:r.pass,decision:v.decision as 'accept'|'reject',note:v.note,complete:v.complete==='on'})}><label>Your findings, suggestions and remaining uncertainties<textarea name="note" defaultValue={r.note} required/></label><label>Decision<select name="decision" defaultValue={r.decision==='reject'?'reject':'accept'}><option value="accept">Reviewed · accept</option><option value="reject">Request changes / unresolved</option></select></label><label><input name="complete" type="checkbox" defaultChecked={m.complete}/> I confirm this is the complete intended publication unit, with authorship/rights reviewed</label><button>Record pass</button></Form>
    </details>)}
