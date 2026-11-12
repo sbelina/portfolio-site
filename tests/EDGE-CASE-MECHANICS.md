@@ -136,3 +136,23 @@ Outside the count: the permanent **UNKNOWN** entry. It is never awarded and is l
 - **L3** **Method** of a win = the set of rule-level techniques used: Re:Route, Strand (0x03), Pivot, Carried exit (0x05), Exception. With none of these, the method is Direct. "Ways through" for a level counts distinct winning methods found; its total is shown as `?` because the game does not claim to know every way.
 - **L4** **Ranking** is personal and local: per level, best time, fewest actions (junction turns + gate turns), and ways through. A run's rank is its position by time among that level's wins. No data leaves the device.
 - **L5** The log keeps the newest 40 records. Storage failure loses records and never blocks play.
+
+## 13. Entrance, full screen, menus and layers (interface rules)
+
+Owner direction, 12 November 2026: a readable page with one entrance to a full-screen game, a nested menu shared by the title and Pause, grouped settings, and a minimal frame designed around how its layers interact.
+
+- **M1** **Enter**: the page stays readable (title, how to play, no-JavaScript text) and offers one Enter button. Entering covers the whole window and makes the page behind inert, without scrolling. Where the browser allows, it also requests true full screen (desktop and Android browsers; iPhone Safari offers none for pages, so the window-filling layout is used, and Add to Home Screen gives a chrome-free version). Browser Back leaves the game, not the page.
+- **M2** **Exit**: Exit to page, Escape at the top of the title menu, or Back returns to the page. Focus goes to the entrance button, which reads **Continue** with the paused level while one is in progress. In true full screen the browser keeps Escape for itself. Leaving full screen while entered therefore counts as that Escape: during play it opens the menu, and in a submenu it goes back one level. If the page also received the same Escape (within 500 ms), it is not applied twice. Two Escapes within about half a second in true full screen may count once.
+- **M3** **Nested menu**: one tree, reached from the title (Play or Continue) and from Pause (Resume, Restart level, Show a hint). Both lead to Levels ›, System index ›, Field log ›, Settings › and How to play ›, plus Exit to page. Navigation:
+  - Arrow keys or W/S move between items; Right or D opens a submenu; Enter or Space activates.
+  - Left, A, Backspace or Escape goes back one level. At the top, Escape resumes (Pause) or exits (title).
+  - Native controls keep their own arrow-key behaviour.
+  - A breadcrumb (e.g. Paused › Settings › Controls) appears in submenus, and submenus have a Back button.
+  - Focus moves to the first item of each page.
+- **M4** **Settings groups**: Controls (movement control, control side), Sound (sound, volume, vibration where supported), Display (motion, path previews, bolder lines) and Gameplay (game speed, offer hints when stuck). Each submenu row shows its current value.
+- **M5** **Layers**, back to front:
+  - **World**: the arena. It takes the largest whole-pixel tile that fits its area, and is quieted, not hidden, beneath cards.
+  - **Frame**: one menu button, the level code and title, samples.
+  - **Message rail**: one line at a time. A discovery outranks a stuck hint, and a stuck hint outranks the level intro. Hints persist until progress; the other two fade. The rail sits between the frame and the world and never covers the arena.
+  - **Modal**: menus span everything below the frame over a veil; end-of-attempt cards sit over the world.
+  - **Controls**: the movement pad or joystick, on the chosen side. On short landscape screens the controls sit beside the arena.

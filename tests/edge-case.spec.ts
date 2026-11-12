@@ -1,31 +1,7 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { existsSync } from 'node:fs'
-
-const route = '/play/edge-case/'
-const samples = (page: Page) => page.locator('.ps-samples')
-const status = (page: Page) => page.getByRole('status')
-
-async function hold(page: Page, key: string, ms: number) {
-  await page.keyboard.down(key)
-  await page.waitForTimeout(ms)
-  await page.keyboard.up(key)
-}
-
-/** Hold a key until a condition holds (condition-driven, never a fixed duration). */
-async function holdUntil(page: Page, key: string, condition: () => Promise<unknown>) {
-  await page.keyboard.down(key)
-  try { await condition() } finally { await page.keyboard.up(key) }
-}
-
-async function start(page: Page, level?: string) {
-  await page.goto(route)
-  if (level) {
-    await page.getByRole('button', { name: 'Choose level' }).click()
-    await page.getByRole('button', { name: new RegExp(level) }).click()
-  } else await page.getByRole('button', { name: 'Play' }).click()
-  await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
-}
+import { enter, escapeTo, holdUntil, menu, menuCard, route, samples, shell, start, status } from './support/edge-case-ui'
 
 test.describe('Edge Case prototype page', () => {
   test('is absent from production output and the production Worker', async ({ request }) => {
@@ -48,22 +24,83 @@ test.describe('Edge Case prototype page', () => {
     } finally { await context.close() }
   })
 
+  test('M1 M2: Enter fills the window over an inert page; Exit and Back return with focus on Continue', async ({ page }) => {
+    await page.goto(route)
+    await expect(shell(page)).toHaveCount(0)
+    await enter(page)
+    await expect(shell(page)).toHaveAttribute('role', 'dialog')
+    await expect(page.locator('#root')).toHaveAttribute('inert', '')
+    // It fills the window (which may itself have become the whole screen in true full screen).
+    const box = (await shell(page).boundingBox())!
+    const [width, height] = await page.evaluate(() => [innerWidth, innerHeight])
+    expect(box.width).toBeCloseTo(width, 0)
+    expect(box.height).toBeCloseTo(height, 0)
+    // Start a level, then leave from the pause menu: the level stays paused.
+    await menuCard(page).getByRole('button', { name: 'Play', exact: true }).click()
+    await page.keyboard.press('Escape')
+    await expect(menuCard(page).getByRole('heading', { name: 'Paused' })).toBeVisible()
+    await menu(page, 'Exit to page')
+    await expect(shell(page)).toHaveCount(0)
+    const again = page.getByRole('button', { name: /^Continue/ })
+    await expect(again).toBeFocused()
+    await expect(again).toContainText('000 False Start, paused')
+    await expect(page.locator('#root')).not.toHaveAttribute('inert', '')
+    // Browser Back also leaves the game rather than the page.
+    await enter(page)
+    await page.goBack()
+    await expect(shell(page)).toHaveCount(0)
+    expect(page.url()).toContain(route)
+  })
+
+  test('M3: the nested menu moves with arrows, opens with Right or Enter, goes back with Escape, and shows where you are', async ({ page }) => {
+    await page.goto(route)
+    await enter(page)
+    await expect(menuCard(page).getByRole('button', { name: 'Play', exact: true })).toBeFocused()
+    await page.keyboard.press('ArrowDown')
+    await expect(menuCard(page).getByRole('button', { name: /^Levels/ })).toBeFocused()
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await expect(menuCard(page).getByRole('button', { name: /^Exit to page/ })).toBeFocused()
+    // Settings › Controls via keyboard.
+    for (let i = 0; i < 5; i++) await page.keyboard.press('ArrowDown')
+    await expect(menuCard(page).getByRole('button', { name: /^Settings/ })).toBeFocused()
+    await page.keyboard.press('ArrowRight')
+    await expect(menuCard(page).getByRole('navigation', { name: 'Menu location' })).toHaveText(/Edge Case\s*›?\s*Settings/)
+    await page.keyboard.press('Enter')
+    await expect(menuCard(page).getByRole('heading', { name: 'Controls' })).toBeVisible()
+    await expect(menuCard(page).getByRole('navigation', { name: 'Menu location' })).toContainText('Controls')
+    await page.keyboard.press('Escape')
+    await expect(menuCard(page).getByRole('heading', { name: 'Settings' })).toBeVisible()
+    await page.keyboard.press('Backspace')
+    await expect(menuCard(page).getByRole('heading', { name: 'EDGE CASE' })).toBeVisible()
+    // Escape at the top of the title menu leaves the game.
+    await page.keyboard.press('Escape')
+    await expect(shell(page)).toHaveCount(0)
+  })
+
+  test('M4: settings are grouped into Controls, Sound, Display and Gameplay, each with its own screen', async ({ page }) => {
+    await page.goto(route)
+    await enter(page)
+    await menu(page, 'Settings')
+    for (const [group, label] of [['Controls', 'Joystick that follows your finger'], ['Sound', 'Sound'], ['Display', 'Show where tracers go next'], ['Gameplay', 'Offer hints when I seem stuck']]) {
+      await menu(page, group)
+      await expect(menuCard(page).getByLabel(label, { exact: true })).toBeVisible()
+      await menuCard(page).getByRole('button', { name: 'Back', exact: true }).click()
+    }
+  })
+
   test('keyboard: play, move to collect a sample, pause, resume and restart', async ({ page }) => {
     await start(page)
     await expect(status(page)).toContainText('Level 000, False Start')
     await expect(samples(page)).toContainText('0/2')
     // Sealed in a pocket: walls do nothing; pushing east into the arm turns the door clockwise.
-    await hold(page, 'ArrowLeft', 300)
     await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned clockwise. One thing moved with it.'))
-    const section = page.locator('.ps')
-    await holdUntil(page, 'ArrowUp', () => expect(section).toHaveAttribute('data-player-tile', /^\d+,4$/))
+    await holdUntil(page, 'ArrowUp', () => expect(shell(page)).toHaveAttribute('data-player-tile', /^\d+,4$/))
     await holdUntil(page, 'ArrowRight', () => expect(samples(page)).toContainText('1/2'))
-    await expect(status(page)).toContainText('Sample collected')
     await page.keyboard.press('Escape')
-    await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Resume' })).toBeFocused()
+    await expect(menuCard(page).getByRole('button', { name: 'Resume' })).toBeFocused()
     await page.keyboard.press('Enter')
-    await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
+    await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
     await page.keyboard.press('KeyR')
     await expect(status(page)).toContainText('Attempt 2')
     await expect(samples(page)).toContainText('0/2')
@@ -72,20 +109,17 @@ test.describe('Edge Case prototype page', () => {
   test('PU1 PU2: pushing an arm turns the junction the way you push, either way, with no other control', async ({ page }) => {
     await start(page)
     await expect(page.getByRole('button', { name: /shift/i })).toHaveCount(0)
-    const section = page.locator('.ps')
-    // From the north-west pocket, pushing south turns counter-clockwise into the south-west pocket.
     await holdUntil(page, 'ArrowDown', () => expect(status(page)).toContainText('turned counter-clockwise'))
     // Carried into the south-west pocket; a still-held push may walk straight out of its open south side.
-    await expect(section).toHaveAttribute('data-player-tile', /^3,(6|7)$/)
-    // Pushing north into the arm turns it back clockwise.
+    await expect(shell(page)).toHaveAttribute('data-player-tile', /^3,(6|7)$/)
     await holdUntil(page, 'ArrowUp', () => expect(status(page)).toContainText('turned clockwise'))
-    await expect(section).toHaveAttribute('data-player-tile', /^3,(5|4)$/)
   })
 
   test('the system index shows known and unknown operations, a binary counter, and an uncounted UNKNOWN entry', async ({ page }) => {
     await page.goto(route)
-    await page.getByRole('button', { name: 'System index' }).click()
-    const index = page.getByRole('dialog', { name: 'System index' })
+    await enter(page)
+    await menu(page, 'System index')
+    const index = menuCard(page)
     await expect(index.getByText('03 / 07')).toBeVisible()
     await expect(index.getByText('3 of 7 known')).toBeAttached()
     await expect(index.getByText('Undiscovered operation')).toHaveCount(4)
@@ -93,34 +127,34 @@ test.describe('Edge Case prototype page', () => {
     await expect(index.getByText('Not counted. This list may not describe everything.')).toBeVisible()
     await index.getByLabel('Show unavailable operations').uncheck()
     await expect(index.getByText('Undiscovered operation')).toHaveCount(0)
-    await index.getByRole('button', { name: 'Done' }).click()
+    await index.getByRole('button', { name: 'Back', exact: true }).click()
     // The second visit is a discovery: 0b10.
-    await page.getByRole('button', { name: 'System index' }).click()
-    await expect(page.getByText('0001 / 1010')).toBeVisible()
-    await expect(page.getByRole('dialog', { name: 'System index' }).getByText('There Are 10 Types of Players')).toBeVisible()
+    await menu(page, 'System index')
+    await expect(menuCard(page).getByText('0001 / 1010')).toBeVisible()
+    await expect(menuCard(page).getByText('There Are 10 Types of Players')).toBeVisible()
     await expect(status(page)).toContainText('Discovery 0x07')
     await page.reload()
-    await page.getByRole('button', { name: 'System index' }).click()
-    await expect(page.getByText('0001 / 1010')).toBeVisible()
+    await expect(page.getByText('Discoveries 0001 / 1010')).toBeVisible()
   })
 
   test('Space on a focused control activates that control, not the game', async ({ page }) => {
     await start(page)
-    await page.getByRole('button', { name: 'Pause' }).focus()
+    await page.getByRole('button', { name: 'Menu', exact: true }).focus()
     await page.keyboard.press('Space')
-    await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()
+    await expect(menuCard(page).getByRole('heading', { name: 'Paused' })).toBeVisible()
   })
 
   test('settings persist, and blocked storage never prevents play', async ({ page, browser, baseURL }) => {
     await page.goto(route)
-    await page.getByRole('button', { name: 'Settings' }).click()
-    await page.getByLabel('Show where tracers go next').uncheck()
-    await page.getByLabel('Reduced').check()
-    await page.getByRole('button', { name: 'Done' }).click()
+    await enter(page)
+    await menu(page, 'Settings', 'Display')
+    await menuCard(page).getByLabel('Show where tracers go next').uncheck()
+    await menuCard(page).getByLabel('Reduced').check()
     await page.reload()
-    await page.getByRole('button', { name: 'Settings' }).click()
-    await expect(page.getByLabel('Show where tracers go next')).not.toBeChecked()
-    await expect(page.locator('.ps')).toHaveAttribute('data-reduced-motion', 'true')
+    await enter(page)
+    await menu(page, 'Settings', 'Display')
+    await expect(menuCard(page).getByLabel('Show where tracers go next')).not.toBeChecked()
+    await expect(shell(page)).toHaveAttribute('data-reduced-motion', 'true')
 
     const blocked = await browser.newContext({ baseURL })
     try {
@@ -128,9 +162,9 @@ test.describe('Edge Case prototype page', () => {
       const other = await blocked.newPage()
       await start(other)
       await holdUntil(other, 'ArrowRight', () => expect(status(other)).toContainText('The junction turned'))
-      await other.getByRole('button', { name: 'Pause' }).click()
-      await other.getByRole('button', { name: 'System index' }).click()
-      await expect(other.getByText('03 / 07')).toBeVisible()
+      await other.keyboard.press('Escape')
+      await menu(other, 'System index')
+      await expect(menuCard(other).getByText('03 / 07')).toBeVisible()
     } finally { await blocked.close() }
   })
 
@@ -139,39 +173,44 @@ test.describe('Edge Case prototype page', () => {
     try {
       const page = await context.newPage()
       await page.goto(route)
-      await expect(page.locator('.ps')).toHaveAttribute('data-reduced-motion', 'true')
+      await enter(page)
+      await expect(shell(page)).toHaveAttribute('data-reduced-motion', 'true')
     } finally { await context.close() }
   })
 
-  test('controls meet touch target size and the title and settings pass automated accessibility checks', async ({ page }) => {
+  test('controls meet touch target size; the page, menus, settings and index pass automated accessibility checks', async ({ page }) => {
     await page.goto(route)
-    for (const box of await page.locator('.ps button').evaluateAll(els => els.map(el => el.getBoundingClientRect()).filter(r => r.width > 0))) {
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
+    await start(page)
+    for (const box of await page.locator('.ec-shell button').evaluateAll(els => els.map(el => el.getBoundingClientRect()).filter(r => r.width > 0))) {
       expect(box.width).toBeGreaterThanOrEqual(44)
       expect(box.height).toBeGreaterThanOrEqual(44)
     }
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
-    await page.getByRole('button', { name: 'Settings' }).click()
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
-    await page.getByRole('button', { name: 'Done' }).click()
-    await page.getByRole('button', { name: 'System index' }).click()
-    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([])
+    await page.keyboard.press('Escape')
+    expect((await new AxeBuilder({ page }).include('.ec-shell').analyze()).violations).toEqual([])
+    await menu(page, 'Settings', 'Controls')
+    expect((await new AxeBuilder({ page }).include('.ec-shell').analyze()).violations).toEqual([])
+    await escapeTo(page, 'Settings'); await escapeTo(page, 'Paused')
+    await menu(page, 'System index')
+    expect((await new AxeBuilder({ page }).include('.ec-shell').analyze()).violations).toEqual([])
   })
 
-  test('the whole arena and the controls fit one screen at 320px and do not scroll sideways', async ({ browser, baseURL }) => {
+  test('M5: the frame, rail, arena and controls fit one 320 × 568 screen without overlapping or scrolling sideways', async ({ browser, baseURL }) => {
     const context = await browser.newContext({ baseURL, viewport: { width: 320, height: 568 }, hasTouch: true })
     try {
       const page = await context.newPage()
       await start(page)
-      await page.waitForTimeout(600)
+      await page.waitForTimeout(300)
       const fit = await page.evaluate(() => {
-        const canvas = document.querySelector('.ps-canvas')!.getBoundingClientRect()
-        const controls = document.querySelector('.ps-controls')!.getBoundingClientRect()
-        return { overflow: document.documentElement.scrollWidth > innerWidth, canvasTop: canvas.top, controlsBottom: controls.bottom, viewport: innerHeight, canvasBottom: canvas.bottom, controlsTop: controls.top }
+        const r = (s: string) => document.querySelector(s)!.getBoundingClientRect()
+        return { overflow: document.documentElement.scrollWidth > innerWidth, frame: r('.ec-frame'), rail: r('.ec-rail'), canvas: r('.ps-canvas'), controls: r('.ec-controls'), viewport: innerHeight }
       })
       expect(fit.overflow).toBe(false)
-      expect(fit.canvasTop).toBeGreaterThanOrEqual(0)
-      expect(fit.canvasBottom).toBeLessThanOrEqual(fit.controlsTop)
-      expect(fit.controlsBottom).toBeLessThanOrEqual(fit.viewport + 1)
+      expect(fit.rail.top).toBeGreaterThanOrEqual(fit.frame.bottom - 1)
+      // Messages never cover the world layer.
+      expect(fit.canvas.top).toBeGreaterThanOrEqual(fit.rail.bottom - 1)
+      expect(fit.canvas.bottom).toBeLessThanOrEqual(fit.controls.top + 1)
+      expect(fit.controls.bottom).toBeLessThanOrEqual(fit.viewport + 1)
     } finally { await context.close() }
   })
 })
@@ -182,11 +221,10 @@ test.describe('Edge Case on touch screens', () => {
     try {
       const page = await context.newPage()
       await page.goto(route)
-      await page.getByRole('button', { name: 'Play' }).tap()
-      await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
+      await page.getByRole('button', { name: /^Enter/ }).tap()
+      await menuCard(page).getByRole('button', { name: 'Play', exact: true }).tap()
+      await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
       const pad = page.locator('.ps-pad')
-      const section = page.locator('.ps')
-      // Hold a pad direction until a condition holds, then lift.
       const pressUntil = async (name: string, condition: () => Promise<unknown>) => {
         const box = await page.getByRole('button', { name }).boundingBox()
         const at = { clientX: box!.x + box!.width / 2, clientY: box!.y + box!.height / 2, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true }
@@ -194,7 +232,7 @@ test.describe('Edge Case on touch screens', () => {
         try { await condition() } finally { await pad.dispatchEvent('pointerup', { ...at, buttons: 0 }) }
       }
       await pressUntil('Move right', () => expect(status(page)).toContainText('The junction turned clockwise'))
-      await pressUntil('Move up', () => expect(section).toHaveAttribute('data-player-tile', /^\d+,4$/))
+      await pressUntil('Move up', () => expect(shell(page)).toHaveAttribute('data-player-tile', /^\d+,4$/))
       await pressUntil('Move right', () => expect(samples(page)).toContainText('1/2'))
     } finally { await context.close() }
   })

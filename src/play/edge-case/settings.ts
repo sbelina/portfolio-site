@@ -10,10 +10,12 @@ export interface Settings {
   movement: 'pad' | 'joystick'
   /** Which side the movement control sits on; Shift takes the other side. */
   movementSide: 'left' | 'right'
+  /** Stuck hints appear automatically (MECHANICS.md N1); they can always be requested. */
+  autoHints: boolean
 }
 export interface Saved { settings: Settings; completed: string[]; discovered: string[]; indexOpens: number }
 
-export const defaultSettings: Settings = { sound: true, volume: 0.6, motion: 'system', previews: true, highContrast: false, speed: 1, haptics: true, movement: 'pad', movementSide: 'left' }
+export const defaultSettings: Settings = { sound: true, volume: 0.6, motion: 'system', previews: true, highContrast: false, speed: 1, haptics: true, movement: 'pad', movementSide: 'left', autoHints: true }
 const KEY = 'edge-case:v1'
 
 /** Storage is a convenience: any failure falls back to defaults and play continues. */
@@ -32,6 +34,7 @@ export function load(): Saved {
       haptics: !!s.haptics,
       movement: s.movement === 'joystick' ? 'joystick' : 'pad',
       movementSide: s.movementSide === 'right' ? 'right' : 'left',
+      autoHints: s.autoHints !== false,
     }
     const strings = (value: unknown) => Array.isArray(value) ? value.filter((id: unknown): id is string => typeof id === 'string') : []
     const indexOpens = Number.isInteger(raw.indexOpens) && raw.indexOpens >= 0 ? raw.indexOpens : 0

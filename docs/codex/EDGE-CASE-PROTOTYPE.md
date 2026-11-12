@@ -29,6 +29,12 @@ Proposed next, not implemented (owner decision):
 2. **Doorway jam** (Kwirk): a turn is blocked while something stands half in a doorway, instead of being clamped inside.
 3. **Thick doors** (Kwirk) as a later variant, where the arms occupy cells and can push things.
 
+## Full-screen entrance and nested menu (12 November)
+
+Owner choices: the page shows the title and text plus one Enter button. The game fills the window, with true full screen where allowed; iPhone Safari has none for pages. Exit, Escape or Back return to the page with Continue. One menu tree serves the title and Pause, with game-style keyboard navigation and breadcrumbs. Settings are grouped into Controls, Sound, Display and Gameplay. The frame is minimal and layer-aware: hints and discoveries move to their own message rail and no longer cover the arena; menus span below the frame over a veil. Spec §13 (M1–M5). New setting: offer hints when stuck (on by default).
+
+Finding while testing: in true full screen, desktop browsers keep Escape for themselves, so the page never sees the first Escape. Leaving full screen is now treated as that Escape (M2).
+
 ## Private play-test link
 
 A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.

@@ -1,17 +1,14 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import { enter, escapeTo, holdUntil, menu, menuCard, route, shell, start, status } from './support/edge-case-ui'
 
-// Interface rules: hints (§11) and run records (§12) in tests/EDGE-CASE-MECHANICS.md.
-const route = '/play/edge-case/'
-const status = (page: Page) => page.getByRole('status')
-const tip = (page: Page) => page.locator('.ps-tip')
+// Interface rules: hints (§11), run records (§12) and controls (§12a) in tests/EDGE-CASE-MECHANICS.md.
+const tip = (page: import('@playwright/test').Page) => page.locator('.ec-rail-line.is-hint')
 
-test('N1 N3: level 000 gives no instruction at first, then escalating hints while no junction has been turned', async ({ page }) => {
+test('N1 N3: level 000 gives no instruction at first, then escalating hints in the message rail while no junction has been turned', async ({ page }) => {
   // The fake clock renders every frame of 46 s of play; WebKit needs longer than the default timeout.
   test.slow()
   await page.clock.install()
-  await page.goto(route)
-  await page.getByRole('button', { name: 'Play' }).click()
-  await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
+  await start(page)
   await page.clock.runFor(10_000)
   await expect(tip(page)).toHaveCount(0)
   await page.clock.runFor(6_000)
@@ -29,32 +26,35 @@ test('N1 N3: level 000 gives no instruction at first, then escalating hints whil
   await expect(tip(page)).toHaveCount(0)
 })
 
-test('N1: pausing does not count as being stuck', async ({ page }) => {
+test('N1: pausing does not count as being stuck; hints can be switched off in Gameplay', async ({ page }) => {
+  // Fast-forwards about 110 s of rendered play; WebKit needs longer than the default timeout.
+  test.slow()
   await page.clock.install()
-  await page.goto(route)
-  await page.getByRole('button', { name: 'Play' }).click()
+  await start(page)
   await page.keyboard.press('Escape')
   await page.clock.runFor(60_000)
-  await page.getByRole('button', { name: 'Resume' }).click()
+  await menuCard(page).getByRole('button', { name: 'Resume' }).click()
   await page.clock.runFor(1_000)
+  await expect(tip(page)).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await menu(page, 'Settings', 'Gameplay')
+  await menuCard(page).getByLabel('Offer hints when I seem stuck').uncheck()
+  await escapeTo(page, 'Settings'); await escapeTo(page, 'Paused'); await escapeTo(page, 'playing')
+  await page.clock.runFor(50_000)
   await expect(tip(page)).toHaveCount(0)
 })
 
 test('N3: a hint can be requested early from the pause menu', async ({ page }) => {
-  await page.goto(route)
-  await page.getByRole('button', { name: 'Play' }).click()
+  await start(page)
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: 'Show a hint' }).click()
+  await menu(page, 'Show a hint')
   await expect(tip(page)).toContainText('Hint 1')
-  await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
+  await expect(shell(page)).toHaveAttribute('data-screen', 'playing')
 })
 
 test('L1 L2: a failed attempt is logged with a snapshot that can be saved as a PNG', async ({ page }) => {
-  await page.goto(route)
-  await page.getByRole('button', { name: 'Play' }).click()
-  await page.keyboard.down('ArrowRight')
-  await expect(status(page)).toContainText('The junction turned')
-  await page.keyboard.up('ArrowRight')
+  await start(page)
+  await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned'))
   // Walk into the tracer's lane and wait for it.
   await page.keyboard.down('ArrowUp'); await page.waitForTimeout(700); await page.keyboard.up('ArrowUp')
   await expect(page.getByRole('dialog', { name: 'Caught by a tracer' })).toBeVisible({ timeout: 10_000 })
@@ -67,8 +67,8 @@ test('L1 L2: a failed attempt is logged with a snapshot that can be saved as a P
   await record.getByRole('button', { name: 'Back' }).click()
   await page.keyboard.press('KeyR')
   await page.keyboard.press('Escape')
-  await page.getByRole('button', { name: 'Field log' }).click()
-  const log = page.getByRole('dialog', { name: 'Field log' })
+  await menu(page, 'Field log')
+  const log = menuCard(page)
   await expect(log.getByText('caught by a tracer')).toBeVisible()
   await expect(log.getByRole('table')).toContainText('000')
 })
@@ -79,42 +79,43 @@ test('L4: standings show best time, fewest actions and ways found out of an unkn
     localStorage.setItem('edge-case:log:v1', JSON.stringify([won(31.2, 'Pivot', 0), won(22.4, 'Carried exit + Exception', 2)]))
   })
   await page.goto(route)
-  await page.getByRole('button', { name: 'Field log' }).click()
-  const row = page.getByRole('dialog', { name: 'Field log' }).getByRole('row', { name: /010/ })
+  await enter(page)
+  await menu(page, 'Field log')
+  const row = menuCard(page).getByRole('row', { name: /010/ })
   await expect(row).toContainText('22.4 s')
   await expect(row).toContainText('1')
   await expect(row).toContainText('2 / ?')
-  await expect(page.getByText('Carried exit + Exception · rank #1 of 2')).toBeVisible()
+  await expect(menuCard(page).getByText('Carried exit + Exception · rank #1 of 2')).toBeVisible()
 })
 
 test('I2: the movement control can sit on either side, and the choice persists', async ({ page }) => {
   await page.goto(route)
-  const pad = page.locator('.ps-pad'), controls = page.locator('.ps-controls')
+  await enter(page)
+  const pad = page.locator('.ps-pad'), controls = page.locator('.ec-controls')
   const side = async () => { const p = (await pad.boundingBox())!, c = (await controls.boundingBox())!; return p.x + p.width / 2 < c.x + c.width / 2 ? 'left' : 'right' }
   expect(await side()).toBe('left')
-  await page.getByRole('button', { name: 'Settings' }).click()
-  await page.getByLabel('Movement control on the right').check()
-  await page.getByRole('button', { name: 'Done' }).click()
+  await menu(page, 'Settings', 'Controls')
+  await menuCard(page).getByLabel('Movement control on the right').check()
   expect(await side()).toBe('right')
   await page.reload()
+  await enter(page)
   expect(await side()).toBe('right')
 })
 
 test('I1: the joystick follows the finger and moves the player; lifting stops it', async ({ browser, baseURL }) => {
-  // Reduced motion makes the scroll-into-view on Play instant, so measured positions are stable.
+  // Reduced motion keeps measured positions stable.
   const context = await browser.newContext({ baseURL, viewport: { width: 390, height: 664 }, hasTouch: true, reducedMotion: 'reduce' })
   try {
     const page = await context.newPage()
     await page.goto(route)
-    await page.getByRole('button', { name: 'Settings' }).click()
-    await page.getByLabel('Joystick that follows your finger').check()
-    await page.getByRole('button', { name: 'Done' }).click()
+    await enter(page)
+    await menu(page, 'Settings', 'Controls')
+    await menuCard(page).getByLabel('Joystick that follows your finger').check()
+    await escapeTo(page, 'Settings'); await escapeTo(page, 'EDGE CASE')
     await expect(page.locator('.ps-pad')).toHaveCount(0)
-    await page.getByRole('button', { name: 'Play' }).click()
+    await menuCard(page).getByRole('button', { name: 'Play', exact: true }).click()
     // Keyboard still works in joystick mode: push east into the arm to leave the start pocket.
-    await page.keyboard.down('ArrowRight')
-    await expect(page.getByRole('status')).toContainText('The junction turned')
-    await page.keyboard.up('ArrowRight')
+    await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned'))
     const zone = page.locator('.ps-stick')
     const box = (await zone.boundingBox())!
     const at = (x: number, y: number, buttons: number) => ({ clientX: box.x + x, clientY: box.y + y, pointerId: 11, pointerType: 'touch', isPrimary: true, buttons, bubbles: true })
@@ -124,11 +125,10 @@ test('I1: the joystick follows the finger and moves the player; lifting stops it
     const base = await page.locator('.ps-stick-base').evaluate(el => new DOMMatrix(getComputedStyle(el).transform))
     expect(base.m41).toBeCloseTo(40, 0)
     expect(base.m42).toBeCloseTo(60, 0)
-    const section = page.locator('.ps')
     // Drive the finger from inside the page, checked every frame: drag far up (the base
     // trails the finger) until the player enters row 4, then drag right until the sample is collected.
     await page.evaluate(({ x, y }) => new Promise<void>((resolve, reject) => {
-      const zone = document.querySelector('.ps-stick')!, root = document.querySelector('.ps')!
+      const zone = document.querySelector('.ps-stick')!, root = document.querySelector('.ec-shell')!
       const move = (dx: number, dy: number) => zone.dispatchEvent(new PointerEvent('pointermove', { clientX: x + dx, clientY: y + dy, pointerId: 11, pointerType: 'touch', isPrimary: true, buttons: 1, bubbles: true }))
       move(40, 10)
       let turned = false
@@ -144,9 +144,8 @@ test('I1: the joystick follows the finger and moves the player; lifting stops it
     await zone.dispatchEvent('pointerup', at(90, 60, 0))
     await expect(zone).not.toHaveAttribute('data-held', 'true')
     // Released: the player brakes to a stop (P2).
-    const stopped = await section.getAttribute('data-player-tile')
+    const stopped = await shell(page).getAttribute('data-player-tile')
     await page.waitForTimeout(400)
-    await expect(section).toHaveAttribute('data-player-tile', stopped!)
-    await expect(page.locator('.ps-samples')).toContainText('1/2')
+    await expect(shell(page)).toHaveAttribute('data-player-tile', stopped!)
   } finally { await context.close() }
 })

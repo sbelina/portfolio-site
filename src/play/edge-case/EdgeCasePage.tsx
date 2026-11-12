@@ -24,8 +24,8 @@ export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string
           <dl className="ps-controls-list">
             <div><dt>Move</dt><dd>Arrow keys or WASD; on touch screens, the movement pad</dd></div>
             <div><dt>Turn a junction</dt><dd>Keep moving into one of its arms; a ring fills, then it turns</dd></div>
-            <div><dt>Pause</dt><dd>Escape or P; or the pause button</dd></div>
-            <div><dt>Restart</dt><dd>R; or the restart button</dd></div>
+            <div><dt>Menu</dt><dd>Escape or P, or the menu button. Arrow keys move through it; Escape goes back</dd></div>
+            <div><dt>Restart</dt><dd>R, or Restart level in the menu</dd></div>
           </dl>
           <h3>What you will see</h3>
           <ul>

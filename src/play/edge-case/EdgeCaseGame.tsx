@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { collected, createGame, drainEvents, exitOpen, reachable, step, STEP, type DiscoveryId, type GameEvent, type GameState } from './engine'
 import { levels } from './levels'
 import { createMemory, draw, noteGateTurn, noteShift, readPalette, type View } from './render'
@@ -8,10 +9,19 @@ import { Sound } from './audio'
 import { followBase, stickInput } from './stick'
 import { appendLog, loadLog, methodOf, rankOf, saveSnapshot, snapshot, standing, thumbnail, type RunRecord } from './records'
 
-type Screen = 'title' | 'levels' | 'settings' | 'index' | 'log' | 'snapshot' | 'playing' | 'paused' | 'failed' | 'won'
+/**
+ * Screens. `menu` is the nested menu (MECHANICS.md §13), reached from the title and
+ * from Pause; the other screens are play and the end-of-attempt cards.
+ */
+type Screen = 'menu' | 'playing' | 'failed' | 'won' | 'snapshot'
+type MenuPage = 'root' | 'levels' | 'index' | 'log' | 'settings' | 'controls' | 'sound' | 'display' | 'gameplay' | 'how'
 interface Hud { taken: number; total: number; reach: '' | 'junction' | 'gate'; tile: string }
 interface Summary { seconds: number; attempts: number; shifts: number; found: DiscoveryId[] }
 
+const PAGE_TITLES: Record<MenuPage, string> = {
+  root: 'Menu', levels: 'Levels', index: 'System index', log: 'Field log', settings: 'Settings',
+  controls: 'Controls', sound: 'Sound', display: 'Display', gameplay: 'Gameplay', how: 'How to play',
+}
 const MOVE: Record<string, [number, number]> = {
   ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
 }
@@ -24,11 +34,32 @@ function hudOf(s: GameState): Hud {
   return { taken: collected(s), total: s.samples.length, reach: target ? target.kind : '', tile: `${s.tile.x},${s.tile.y}` }
 }
 
+/** Fullscreen is optional everywhere: iPhone Safari offers none for pages, others may refuse. */
+function requestFullscreen() {
+  const root = document.documentElement as HTMLElement & { webkitRequestFullscreen?: () => void }
+  try {
+    if (root.requestFullscreen) void root.requestFullscreen({ navigationUI: 'hide' }).catch(() => {})
+    else root.webkitRequestFullscreen?.()
+  } catch { /* refused: the window-filling layout still applies */ }
+}
+/** When the page last handled Escape itself; some browsers also deliver the full-screen Escape. */
+let lastEscapeHandled = -Infinity
+const noteEscape = () => { lastEscapeHandled = performance.now() }
+const inFullscreen = () => !!(document.fullscreenElement ?? (document as Document & { webkitFullscreenElement?: Element }).webkitFullscreenElement)
+function exitFullscreen() {
+  const doc = document as Document & { webkitFullscreenElement?: Element; webkitExitFullscreen?: () => void }
+  try {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {})
+    else if (doc.webkitFullscreenElement) doc.webkitExitFullscreen?.()
+  } catch { /* already out */ }
+}
+
 export function EdgeCaseGame() {
   const headingId = useId()
   const [saved, setSaved] = useState<Saved>(() => load())
-  const [screen, setScreen] = useState<Screen>('title')
-  const [returnTo, setReturnTo] = useState<Screen>('title')
+  const [entered, setEntered] = useState(false)
+  const [screen, setScreen] = useState<Screen>('menu')
+  const [menuPath, setMenuPath] = useState<MenuPage[]>(['root'])
   const [levelIndex, setLevelIndex] = useState(0)
   const [hud, setHud] = useState<Hud>({ taken: 0, total: 0, reach: '', tile: '' })
   const [announcement, setAnnouncement] = useState('')
@@ -46,10 +77,10 @@ export function EdgeCaseGame() {
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
-  const rootRef = useRef<HTMLElement>(null)
-  const hudRef = useRef<HTMLDivElement>(null)
-  const controlsRef = useRef<HTMLDivElement>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  const enterRef = useRef<HTMLButtonElement>(null)
   const game = useRef<GameState>(createGame(levels[0]))
+  const started = useRef(false)
   const memory = useRef<View['memory']>(createMemory())
   const ghost = useRef<[number, number][] | null>(null)
   const attempts = useRef(1)
@@ -61,6 +92,8 @@ export function EdgeCaseGame() {
   const sound = useRef(new Sound())
   const settingsRef = useRef(saved.settings)
   const screenRef = useRef(screen)
+  const enteredRef = useRef(entered)
+  const pushedHistory = useRef(false)
   const hudCache = useRef('')
   const hintRef = useRef(0)
   const hintsRequested = useRef(0)
@@ -68,6 +101,7 @@ export function EdgeCaseGame() {
   const settings = saved.settings
   settingsRef.current = settings
   screenRef.current = screen
+  enteredRef.current = entered
   sound.current.enabled = settings.sound
   sound.current.volume = settings.volume
 
@@ -76,13 +110,16 @@ export function EdgeCaseGame() {
   const persist = useCallback((update: (current: Saved) => Saved) => { const next = update(savedRef.current); savedRef.current = next; setSaved(next); save(next) }, [])
   const updateSettings = (patch: Partial<Settings>) => persist(current => ({ ...current, settings: { ...current.settings, ...patch } }))
 
+  /** A level is in progress (so the menu root is Pause, and Enter offers Continue). */
+  const inProgress = () => started.current && game.current.status === 'playing'
+
   const record = useCallback((id: DiscoveryId) => {
     if (!savedRef.current.discovered.includes(id)) persist(current => ({ ...current, discovered: [...current.discovered, id] }))
     const d = discoveryOf(id)
     // Announce once per level run, including rediscoveries.
     if (!runFound.current.includes(id)) {
       runFound.current.push(id)
-      setNotice(`Discovery ${d.code} · ${d.name}`)
+      setNotice(`${d.code} · ${d.name}`)
       setAnnouncement(`Discovery ${d.code}: ${d.name}. ${d.text}`)
       sound.current.play('discovery')
     }
@@ -98,15 +135,14 @@ export function EdgeCaseGame() {
     draw(ctx, game.current, { tile: tile.current, previews: s.previews, reducedMotion: prefersReducedMotion(s), highContrast: s.highContrast, ghost: ghost.current, memory: memory.current, now: performance.now() }, readPalette(root))
   }, [])
 
+  /** The arena takes the largest whole-pixel tile that fits the stage layer (§13, M5). */
   const layout = useCallback(() => {
     const canvas = canvasRef.current, stage = stageRef.current
     if (!canvas || !stage) return
     const s = game.current
-    const viewport = window.visualViewport?.height ?? window.innerHeight
-    const reserved = (hudRef.current?.offsetHeight ?? 48) + (controlsRef.current?.offsetHeight ?? 150) + 24
-    const byWidth = stage.clientWidth / s.width
-    const byHeight = (viewport - reserved) / s.height
-    tile.current = Math.max(22, Math.min(64, Math.floor(Math.min(byWidth, byHeight))))
+    const byWidth = (stage.clientWidth - 8) / s.width
+    const byHeight = (stage.clientHeight - 8) / s.height
+    tile.current = Math.max(18, Math.min(72, Math.floor(Math.min(byWidth, byHeight))))
     const dpr = window.devicePixelRatio || 1
     canvas.width = Math.round(s.width * tile.current * dpr)
     canvas.height = Math.round(s.height * tile.current * dpr)
@@ -123,6 +159,8 @@ export function EdgeCaseGame() {
     if (key !== hudCache.current) { hudCache.current = key; setHud(next) }
   }, [])
 
+  const openMenu = useCallback((path: MenuPage[] = ['root']) => { setMenuPath(path); setScreen('menu') }, [])
+
   const begin = useCallback((index: number, keepGhost = false) => {
     sound.current.unlock()
     const previous = game.current
@@ -133,6 +171,7 @@ export function EdgeCaseGame() {
     setTipVisible(hintRef.current > 0)
     setSaveStatus('')
     game.current = createGame(levels[index])
+    started.current = true
     memory.current = createMemory()
     keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }
     setLevelIndex(index)
@@ -144,15 +183,71 @@ export function EdgeCaseGame() {
       setAnnouncement(`Level ${level.code}, ${level.title}. ${level.hint} Find the samples, then reach the exit.`)
       sound.current.play('start')
     } else setAnnouncement(`Attempt ${attempts.current}. Your previous route is drawn on the map.`)
-    requestAnimationFrame(() => {
-      layout()
-      // While playing, the arena and controls should fill the screen together.
-      rootRef.current?.scrollIntoView({ block: 'start', behavior: prefersReducedMotion(settingsRef.current) ? 'auto' : 'smooth' })
-      stageRef.current?.focus({ preventScroll: true })
-    })
+    requestAnimationFrame(() => { layout(); stageRef.current?.focus({ preventScroll: true }) })
   }, [layout, syncHud])
 
   const restart = useCallback(() => begin(levelIndex, true), [begin, levelIndex])
+  const resume = useCallback(() => { setScreen('playing'); requestAnimationFrame(() => stageRef.current?.focus({ preventScroll: true })) }, [])
+  const pause = useCallback((message = 'Paused.') => { openMenu(['root']); setAnnouncement(message) }, [openMenu])
+
+  /** Enter (§13, M1): fill the window, ask for true full screen, and make Back leave the game. */
+  const enter = () => {
+    sound.current.unlock()
+    requestFullscreen()
+    try { history.pushState({ ...(history.state ?? {}), edgeCase: true }, ''); pushedHistory.current = true } catch { pushedHistory.current = false }
+    setMenuPath(['root'])
+    setScreen(screenRef.current === 'playing' ? 'menu' : screenRef.current)
+    setEntered(true)
+  }
+  /** Exit (§13, M2): back to the page; a level in progress stays paused for Continue. */
+  const leave = useCallback((fromHistory = false) => {
+    if (!enteredRef.current) return
+    keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }
+    if (screenRef.current === 'playing') setScreen('menu')
+    setMenuPath(['root'])
+    if (inFullscreen()) { leavingOnPurpose.current = true; exitFullscreen() }
+    setEntered(false)
+    if (!fromHistory && pushedHistory.current) { pushedHistory.current = false; try { history.back() } catch { /* ignore */ } }
+    else pushedHistory.current = false
+    requestAnimationFrame(() => enterRef.current?.focus({ preventScroll: true }))
+  }, [])
+
+  /**
+   * In true full screen the browser keeps Escape for itself: the keypress leaves full
+   * screen and never reaches the page. Leaving full screen while entered is therefore
+   * treated as that Escape (§13, M2): during play it opens the menu; in a submenu it
+   * goes back one level. Our own exit (leave) is ignored.
+   */
+  const leavingOnPurpose = useRef(false)
+  const escapeRef = useRef<() => void>(() => {})
+  useEffect(() => {
+    const onChange = () => {
+      if (inFullscreen() || !enteredRef.current) return
+      if (leavingOnPurpose.current) { leavingOnPurpose.current = false; return }
+      // The page already acted on this Escape (the browser delivered it too): do not act twice.
+      if (performance.now() - lastEscapeHandled < 500) return
+      escapeRef.current()
+    }
+    document.addEventListener('fullscreenchange', onChange)
+    document.addEventListener('webkitfullscreenchange', onChange)
+    return () => { document.removeEventListener('fullscreenchange', onChange); document.removeEventListener('webkitfullscreenchange', onChange) }
+  }, [])
+
+  useEffect(() => {
+    const onPop = () => { if (enteredRef.current) leave(true) }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [leave])
+
+  // While entered: the page behind is inert and does not scroll.
+  useEffect(() => {
+    const page = document.getElementById('root')
+    if (!entered) return
+    document.documentElement.classList.add('ec-open')
+    page?.setAttribute('inert', '')
+    requestAnimationFrame(() => layout())
+    return () => { document.documentElement.classList.remove('ec-open'); page?.removeAttribute('inert') }
+  }, [entered, layout])
 
   /** L1: every ended attempt becomes a run record with a thumbnail snapshot. */
   const recordRun = useCallback((outcome: 'won' | 'failed', cause?: 'tracer' | 'field') => {
@@ -220,13 +315,6 @@ export function EdgeCaseGame() {
     const rule = levels[levelIndex].hints?.progress
     return rule === 'shift' ? s.shifts > 0 : rule === 'sample' ? collected(s) > 0 : rule === 'exit-open' ? exitOpen(s) : true
   }
-  const progressHints = useCallback(() => {
-    const steps = levels[levelIndex].hints?.steps ?? []
-    if (progressed(game.current)) { setTipVisible(false); return }
-    const due = steps.filter(item => item.after <= game.current.time).length
-    if (due > hintRef.current) showHint(due)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [levelIndex])
   const showHint = (level: number) => {
     const steps = levels[levelIndex].hints?.steps ?? []
     hintRef.current = Math.min(level, steps.length)
@@ -234,6 +322,14 @@ export function EdgeCaseGame() {
     setTipVisible(true)
     setAnnouncement(`Hint: ${steps[hintRef.current - 1].text}`)
   }
+  const progressHints = useCallback(() => {
+    const steps = levels[levelIndex].hints?.steps ?? []
+    if (progressed(game.current)) { setTipVisible(false); return }
+    if (!settingsRef.current.autoHints) return
+    const due = steps.filter(item => item.after <= game.current.time).length
+    if (due > hintRef.current) showHint(due)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [levelIndex])
   const requestHint = () => {
     const steps = levels[levelIndex].hints?.steps ?? []
     if (hintRef.current >= steps.length) { setAnnouncement('No more hints for this level.'); return }
@@ -243,7 +339,7 @@ export function EdgeCaseGame() {
 
   // Fixed-step simulation: movement speed never depends on frame rate.
   useEffect(() => {
-    if (screen !== 'playing') { paint(); return }
+    if (!entered || screen !== 'playing') { if (entered) paint(); return }
     let frame = 0, last = performance.now(), accumulator = 0
     const loop = (now: number) => {
       accumulator += Math.min(0.1, (now - last) / 1000) * settingsRef.current.speed
@@ -267,9 +363,10 @@ export function EdgeCaseGame() {
     }
     frame = requestAnimationFrame(loop)
     return () => cancelAnimationFrame(frame)
-  }, [screen, paint, handleEvents, syncHud, progressHints])
+  }, [entered, screen, paint, handleEvents, syncHud, progressHints])
 
   useEffect(() => {
+    if (!entered) return
     syncHud()
     layout()
     const onResize = () => layout()
@@ -278,34 +375,33 @@ export function EdgeCaseGame() {
     let observer: ResizeObserver | null = null
     try { if (stageRef.current && typeof ResizeObserver === 'function') { observer = new ResizeObserver(onResize); observer.observe(stageRef.current) } } catch { observer = null }
     return () => { window.removeEventListener('resize', onResize); window.visualViewport?.removeEventListener('resize', onResize); observer?.disconnect() }
-  }, [layout, syncHud])
+  }, [entered, layout, syncHud])
 
   useEffect(() => { paint() }, [settings, paint])
   useEffect(() => { if (!hint) return; const timer = window.setTimeout(() => setHint(null), 3200); return () => window.clearTimeout(timer) }, [hint])
   useEffect(() => { if (!notice) return; const timer = window.setTimeout(() => setNotice(null), 3600); return () => window.clearTimeout(timer) }, [notice])
 
-  // Keyboard: arrows/WASD move (and push); Escape pauses; R restarts.
+  // Keyboard in play: arrows/WASD move (and push); Escape or P opens the menu; R restarts.
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
+      if (!enteredRef.current || event.metaKey || event.ctrlKey || event.altKey) return
       const current = screenRef.current
-      if (event.metaKey || event.ctrlKey || event.altKey) return
       if (current === 'playing') {
         if (MOVE[event.code] && !isTextEntry(event.target)) { event.preventDefault(); keys.current.add(event.code); return }
-        if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); setScreen('paused'); setAnnouncement('Paused.'); return }
+        if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); if (event.code === 'Escape') noteEscape(); pause(); return }
         if (event.code === 'KeyR' && !isTextEntry(event.target)) { event.preventDefault(); restart() }
-      } else if (current === 'paused' && event.code === 'Escape') { event.preventDefault(); setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }
-      else if (current === 'failed' && event.code === 'KeyR') { event.preventDefault(); restart() }
+      } else if (current === 'failed' && event.code === 'KeyR') { event.preventDefault(); restart() }
     }
     const up = (event: KeyboardEvent) => { keys.current.delete(event.code) }
     const release = () => { keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 } }
-    const away = () => { release(); if (screenRef.current === 'playing') { setScreen('paused'); setAnnouncement('Paused while the page was in the background.') } }
+    const away = () => { release(); if (screenRef.current === 'playing') pause('Paused while the page was in the background.') }
     const visibility = () => { if (document.visibilityState === 'hidden') away() }
     window.addEventListener('keydown', down)
     window.addEventListener('keyup', up)
     window.addEventListener('blur', away)
     document.addEventListener('visibilitychange', visibility)
     return () => { window.removeEventListener('keydown', down); window.removeEventListener('keyup', up); window.removeEventListener('blur', away); document.removeEventListener('visibilitychange', visibility) }
-  }, [restart])
+  }, [restart, pause])
 
   // One pad, eight directions, held while the finger stays down.
   const padMove = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -328,14 +424,25 @@ export function EdgeCaseGame() {
     onBlur: () => { padKey.current = { dx: 0, dy: 0 } },
   })
 
-  const openIndex = (from: Screen) => {
-    setReturnTo(from)
-    setScreen('index')
-    persist(current => ({ ...current, indexOpens: current.indexOpens + 1 }))
-    if (savedRef.current.indexOpens === 2) record('ten-types')
+  /** Menu navigation (§13, M3): open a submenu, or go back one level. */
+  const openPage = (page: MenuPage) => {
+    if (page === 'index') {
+      persist(current => ({ ...current, indexOpens: current.indexOpens + 1 }))
+      if (savedRef.current.indexOpens === 2) record('ten-types')
+    }
+    setMenuPath(path => [...path, page])
+    setScreen('menu')
   }
-  const openSettings = (from: Screen) => { setReturnTo(from); setScreen('settings') }
-  const openLog = (from: Screen) => { setReturnTo(from); setScreen('log') }
+  const back = () => {
+    if (menuPath.length > 1) { setMenuPath(path => path.slice(0, -1)); return }
+    if (inProgress()) resume()
+    else leave()
+  }
+  // What a swallowed Escape (leaving true full screen) means right now.
+  escapeRef.current = () => {
+    if (screenRef.current === 'playing') pause()
+    else if (screenRef.current === 'menu' && menuPath.length > 1) setMenuPath(path => path.slice(0, -1))
+  }
   /** L2: show the full field record; saving is attempted only from there (§12). */
   const openSnapshot = () => {
     const root = rootRef.current
@@ -344,7 +451,6 @@ export function EdgeCaseGame() {
     snapshotCanvas.current = canvas
     setSnapshotUrl(canvas.toDataURL('image/png'))
     setSaveStatus('')
-    setReturnTo(screenRef.current)
     setScreen('snapshot')
   }
   const saveRecord = async () => {
@@ -363,99 +469,55 @@ export function EdgeCaseGame() {
   const stateLabel = `Level ${level.code}, ${level.title}. ${hud.taken} of ${hud.total} samples collected. Exit ${open ? 'open' : 'closed'}.${hud.reach === 'junction' ? ' A junction is within reach.' : hud.reach === 'gate' ? ' Something within reach can turn.' : ''}`
   const nextIncomplete = Math.max(0, levels.findIndex(item => !saved.completed.includes(item.id)))
   const reduced = prefersReducedMotion(settings)
+  const paused = inProgress()
+  const page = menuPath[menuPath.length - 1]
+  const trail = [paused ? 'Paused' : 'Edge Case', ...menuPath.slice(1).map(p => PAGE_TITLES[p])]
+  const count = discoveries.filter(d => saved.discovered.includes(d.id)).length
+  // The message rail (§13, M5): one line at a time, never over the arena.
+  const rail = notice ? { kind: 'Discovery', text: notice } : tipVisible && hintText && screen === 'playing' ? { kind: `Hint ${hintLevel}`, text: hintText } : hint && screen === 'playing' ? { kind: level.code, text: level.hint } : null
 
-  return (
-    <section ref={rootRef} className="ps" aria-labelledby={headingId} data-screen={screen} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
+  const entrance = (
+    <div className="ec-entrance">
+      <button ref={enterRef} type="button" className="ec-enter" onClick={enter} aria-describedby={`${headingId}-enter`}>
+        <span className="ec-enter-label">{paused ? 'Continue' : 'Enter'}</span>
+        <span className="ec-enter-detail">{paused ? `${level.code} ${level.title}, paused` : 'Edge Case · Arcade_01'}</span>
+      </button>
+      <p id={`${headingId}-enter`} className="ps-small">Opens full screen. Press Escape or choose Exit to return to this page.</p>
+      <p className="ps-small ec-entrance-register"><span aria-hidden="true">Discoveries {binary(count)} / {binary(discoveries.length)}</span><span className="ps-visually-hidden">{count} of {discoveries.length} discoveries</span>{saved.completed.length ? ` · ${saved.completed.length} of ${levels.length} levels complete` : ''}</p>
+    </div>
+  )
+
+  const shell = entered && (
+    <div ref={rootRef} className="pc-site ec-shell ps" role="dialog" aria-modal="true" aria-labelledby={headingId} data-screen={screen} data-side={settings.movementSide} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
       <h2 id={headingId} className="ps-visually-hidden">Edge Case game</h2>
-      <div className="ps-hud" ref={hudRef}>
+      {/* Frame layer: identity and state at a glance; one control. */}
+      <header className="ec-frame">
+        <button type="button" className="ps-icon-button ec-menu-button" aria-expanded={screen === 'menu'} onClick={() => { if (screen === 'menu') back(); else if (screen === 'playing') pause(); else openMenu(['root']) }}>
+          <span aria-hidden="true">☰</span><span className="ps-visually-hidden">{screen === 'menu' ? 'Close menu' : 'Menu'}</span>
+        </button>
         <p className="ps-level"><span className="ps-level-code">{level.code}</span> {level.title}</p>
         <p className="ps-samples">
           {Array.from({ length: hud.total }, (_, i) => <span key={i} className={i < hud.taken ? 'ps-diamond is-taken' : 'ps-diamond'} aria-hidden="true"/>)}
           <span className="ps-visually-hidden">Samples collected: </span>
           <span>{hud.taken}/{hud.total}</span>
         </p>
-        <div className="ps-hud-actions">
-          <button type="button" className="ps-icon-button" aria-pressed={settings.sound} onClick={() => { sound.current.unlock(); updateSettings({ sound: !settings.sound }) }}>
-            <span aria-hidden="true">{settings.sound ? '♪' : '×'}</span><span className="ps-visually-hidden">Sound</span>
-          </button>
-          <button type="button" className="ps-icon-button" disabled={screen !== 'playing' && screen !== 'failed' && screen !== 'paused'} onClick={restart}>
-            <span aria-hidden="true">↻</span><span className="ps-visually-hidden">Restart level</span>
-          </button>
-          <button type="button" className="ps-icon-button" disabled={screen !== 'playing'} onClick={() => { setScreen('paused'); setAnnouncement('Paused.') }}>
-            <span aria-hidden="true">❙❙</span><span className="ps-visually-hidden">Pause</span>
-          </button>
-        </div>
+      </header>
+      {/* Message layer: hints and discoveries get their own rail. */}
+      <div className="ec-rail" aria-hidden="true">
+        {rail && <p className={rail.kind === 'Discovery' ? 'ec-rail-line is-discovery' : rail.kind.startsWith('Hint') ? 'ec-rail-line is-hint' : 'ec-rail-line'}><span>{rail.kind}</span>{rail.text}</p>}
       </div>
-
-      {tipVisible && hintText && screen === 'playing' && <p className="ps-tip"><span>Hint {hintLevel}</span>{hintText}</p>}
-      <div className="ps-stage" ref={stageRef} tabIndex={-1}>
+      {/* World layer, with the modal layer (menus and cards) above it. */}
+      <div className="ps-stage ec-stage" ref={stageRef} tabIndex={-1}>
         <canvas ref={canvasRef} className="ps-canvas" role="img" aria-label={stateLabel}/>
-        {hint && screen === 'playing' && !notice && <p className="ps-hint" aria-hidden="true">{hint}</p>}
-        {notice && <p className="ps-notice" aria-hidden="true"><span>Discovery</span>{notice.replace(/^Discovery /, '')}</p>}
-        {screen === 'title' && (
-          <Card title="EDGE CASE" kicker="Producing Curiosity / ARCADE_01" focus>
-            <p className="ps-tagline">Every rule has an exception.</p>
-            <p>Watch what repeats. Change what you can. There is usually more than one way through.</p>
-            <div className="ps-card-actions">
-              <button type="button" className="ps-primary" onClick={() => begin(nextIncomplete)}>{saved.completed.length && saved.completed.length < levels.length ? `Continue: ${levels[nextIncomplete].code}` : 'Play'}</button>
-              <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
-              <button type="button" onClick={() => openIndex('title')}>System index</button>
-              <button type="button" onClick={() => openLog('title')}>Field log</button>
-              <button type="button" onClick={() => openSettings('title')}>Settings</button>
-            </div>
-            <Legend/>
-          </Card>
-        )}
-        {screen === 'levels' && (
-          <Card title="Choose a level" focus>
-            <ol className="ps-level-list">
-              {levels.map((item, i) => (
-                <li key={item.id}><button type="button" onClick={() => begin(i)}><span><span className="ps-level-code">{item.code}</span> {item.title}</span>{saved.completed.includes(item.id) && <span className="ps-done"> ✓ <span className="ps-visually-hidden">completed</span></span>}</button></li>
-              ))}
-            </ol>
-            <div className="ps-card-actions"><button type="button" onClick={() => setScreen('title')}>Back</button></div>
-          </Card>
-        )}
-        {screen === 'index' && (
-          <Card title="System index" kicker="EDGE CASE" focus wide>
-            <SystemIndex discovered={saved.discovered}/>
-            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
-          </Card>
-        )}
-        {screen === 'settings' && (
-          <Card title="Settings" focus>
-            <SettingsForm settings={settings} update={updateSettings}/>
-            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
-          </Card>
-        )}
-        {screen === 'paused' && (
-          <Card title="Paused" focus>
-            <div className="ps-card-actions">
-              <button type="button" className="ps-primary" onClick={() => { setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }}>Resume</button>
-              <button type="button" onClick={restart}>Restart level</button>
-              <button type="button" onClick={() => setScreen('levels')}>Choose level</button>
-              <button type="button" onClick={() => { requestHint(); setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }} disabled={hintsLeft <= 0}>{hintsLeft > 0 ? 'Show a hint' : 'No more hints'}</button>
-              <button type="button" onClick={() => openIndex('paused')}>System index</button>
-              <button type="button" onClick={() => openLog('paused')}>Field log</button>
-              <button type="button" onClick={() => openSettings('paused')}>Settings</button>
-            </div>
-          </Card>
-        )}
         {screen === 'snapshot' && snapshotUrl && lastRecord && (
           <Card title="Field record" kicker={`${lastRecord.code} · ${lastRecord.title}`} focus wide>
-            <img className="ps-snapshot" src={snapshotUrl} alt={`Field record for ${lastRecord.code} ${lastRecord.title}: ${lastRecord.outcome === 'won' ? `complete in ${lastRecord.seconds.toFixed(1)} seconds` : `caught after ${lastRecord.seconds.toFixed(1)} seconds`}, ${lastRecord.shifts} shifts, attempt ${lastRecord.attempt}. Your route is drawn on the arena.`}/>
+            <img className="ps-snapshot" src={snapshotUrl} alt={`Field record for ${lastRecord.code} ${lastRecord.title}: ${lastRecord.outcome === 'won' ? `complete in ${lastRecord.seconds.toFixed(1)} seconds` : `caught after ${lastRecord.seconds.toFixed(1)} seconds`}, ${lastRecord.shifts} junction turns, attempt ${lastRecord.attempt}. Your route is drawn on the arena.`}/>
             <p className="ps-small">If Save image does nothing in this browser, press and hold the image (or right-click it) to save it.</p>
             <div className="ps-card-actions">
               <button type="button" className="ps-primary" onClick={saveRecord}>Save image</button>
-              <button type="button" onClick={() => setScreen(returnTo)}>Back</button>
+              <button type="button" onClick={() => setScreen(lastRecord.outcome === 'won' ? 'won' : 'failed')}>Back</button>
             </div>
             {saveStatus && <p className="ps-small" role="status">{saveStatus}</p>}
-          </Card>
-        )}
-        {screen === 'log' && (
-          <Card title="Field log" kicker="EDGE CASE" focus wide>
-            <FieldLog log={log}/>
-            <div className="ps-card-actions"><button type="button" className="ps-primary" onClick={() => setScreen(returnTo)}>Done</button></div>
           </Card>
         )}
         {screen === 'failed' && (
@@ -464,8 +526,8 @@ export function EdgeCaseGame() {
             <div className="ps-card-actions">
               <button type="button" className="ps-primary" onClick={restart}>Try again <kbd>R</kbd></button>
               <button type="button" onClick={openSnapshot}>Snapshot</button>
+              <button type="button" onClick={() => openMenu(['root'])}>Menu</button>
             </div>
-            {saveStatus && <p className="ps-small">{saveStatus}</p>}
           </Card>
         )}
         {screen === 'won' && (
@@ -486,15 +548,58 @@ export function EdgeCaseGame() {
               {levelIndex < levels.length - 1 && <button type="button" className="ps-primary" onClick={() => begin(levelIndex + 1)}>Next level</button>}
               <button type="button" className={levelIndex === levels.length - 1 ? 'ps-primary' : undefined} onClick={() => begin(levelIndex)}>Replay</button>
               <button type="button" onClick={openSnapshot}>Snapshot</button>
-              <button type="button" onClick={() => openLog('won')}>Field log</button>
-              <button type="button" onClick={() => openIndex('won')}>System index</button>
+              <button type="button" onClick={() => openMenu(['root', 'log'])}>Field log</button>
+              <button type="button" onClick={() => openMenu(['root'])}>Menu</button>
             </div>
-            {saveStatus && <p className="ps-small">{saveStatus}</p>}
           </Card>
         )}
       </div>
-
-      <div className="ps-controls" ref={controlsRef} data-side={settings.movementSide} data-movement={settings.movement}>
+      {/* Modal layer for menus: spans everything below the frame, over a quieting veil. */}
+      {screen === 'menu' && (
+        <div className="ec-menu-layer">
+          {screen === 'menu' && (
+            <MenuCard trail={trail} title={page === 'root' ? (paused ? 'Paused' : 'EDGE CASE') : PAGE_TITLES[page]} kicker={page === 'root' && !paused ? 'Producing Curiosity / ARCADE_01' : undefined} onBack={back} backLabel={menuPath.length > 1 ? 'Back' : paused ? 'Resume' : 'Exit to page'} wide={page === 'index' || page === 'log'} pageKey={menuPath.join('/')}>
+              {page === 'root' && (
+                <>
+                  {!paused && <p className="ps-tagline">Every rule has an exception.</p>}
+                  <MenuList>
+                    {paused ? <MenuItem primary onClick={resume}>Resume</MenuItem> : <MenuItem primary onClick={() => begin(nextIncomplete)}>{saved.completed.length && saved.completed.length < levels.length ? `Continue: ${levels[nextIncomplete].code} ${levels[nextIncomplete].title}` : 'Play'}</MenuItem>}
+                    {paused && <MenuItem onClick={restart}>Restart level</MenuItem>}
+                    {paused && hintsLeft > 0 && <MenuItem onClick={() => { requestHint(); resume() }}>Show a hint</MenuItem>}
+                    <MenuItem submenu onClick={() => openPage('levels')}>Levels</MenuItem>
+                    <MenuItem submenu onClick={() => openPage('index')}>System index</MenuItem>
+                    <MenuItem submenu onClick={() => openPage('log')}>Field log</MenuItem>
+                    <MenuItem submenu onClick={() => openPage('settings')}>Settings</MenuItem>
+                    <MenuItem submenu onClick={() => openPage('how')}>How to play</MenuItem>
+                    <MenuItem onClick={() => leave()}>Exit to page</MenuItem>
+                  </MenuList>
+                </>
+              )}
+              {page === 'levels' && (
+                <MenuList>
+                  {levels.map((item, i) => (
+                    <MenuItem key={item.id} onClick={() => begin(i)}><span><span className="ps-level-code">{item.code}</span> {item.title}</span>{saved.completed.includes(item.id) && <span className="ps-done"> ✓ <span className="ps-visually-hidden">completed</span></span>}</MenuItem>
+                  ))}
+                </MenuList>
+              )}
+              {page === 'index' && <SystemIndex discovered={saved.discovered}/>}
+              {page === 'log' && <FieldLog log={log}/>}
+              {page === 'settings' && (
+                <MenuList>
+                  <MenuItem submenu onClick={() => openPage('controls')}>Controls<span className="ec-item-detail">{settings.movement === 'joystick' ? 'Joystick' : 'Pad'}, {settings.movementSide}</span></MenuItem>
+                  <MenuItem submenu onClick={() => openPage('sound')}>Sound<span className="ec-item-detail">{settings.sound ? `On, ${Math.round(settings.volume * 100)}%` : 'Off'}</span></MenuItem>
+                  <MenuItem submenu onClick={() => openPage('display')}>Display<span className="ec-item-detail">{settings.motion === 'system' ? 'Device motion' : settings.motion === 'reduce' ? 'Reduced motion' : 'Full motion'}</span></MenuItem>
+                  <MenuItem submenu onClick={() => openPage('gameplay')}>Gameplay<span className="ec-item-detail">{Math.round(settings.speed * 100)}% speed</span></MenuItem>
+                </MenuList>
+              )}
+              {(page === 'controls' || page === 'sound' || page === 'display' || page === 'gameplay') && <SettingsGroup group={page} settings={settings} update={updateSettings}/>}
+              {page === 'how' && <HowToPlay/>}
+            </MenuCard>
+          )}
+        </div>
+      )}
+      {/* Control layer. */}
+      <div className="ps-controls ec-controls" data-side={settings.movementSide} data-movement={settings.movement}>
         {settings.movement === 'joystick' ? (
           <Joystick active={screen === 'playing'} onStart={() => sound.current.unlock()} onMove={(dx, dy) => { pad.current = { dx, dy } }}/>
         ) : (
@@ -507,7 +612,81 @@ export function EdgeCaseGame() {
         )}
       </div>
       <p className="ps-visually-hidden" aria-live="polite" role="status">{announcement}</p>
-    </section>
+    </div>
+  )
+
+  return (
+    <>
+      {entrance}
+      {shell && createPortal(shell, document.body)}
+    </>
+  )
+}
+
+/**
+ * A menu page (§13, M3–M4): breadcrumb, heading, then items. Arrow keys/WASD move
+ * between items, Right/D or Enter opens, Left/A, Backspace or Escape go back.
+ * Native controls (radios, sliders, selects) keep their own arrow-key behaviour.
+ */
+function MenuCard({ trail, title, kicker, children, onBack, backLabel, wide, pageKey }: { trail: string[]; title: string; kicker?: string; children: ReactNode; onBack: () => void; backLabel: string; wide?: boolean; pageKey: string }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const id = useId()
+  useEffect(() => {
+    ref.current?.querySelector<HTMLElement>('[data-menu-item], input, select, button')?.focus({ preventScroll: true })
+  }, [pageKey])
+  const items = () => [...(ref.current?.querySelectorAll<HTMLElement>('[data-menu-item]:not([disabled])') ?? [])]
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement
+    const native = !!target.closest('input, select, textarea')
+    const list = items()
+    const index = list.indexOf(target)
+    const go = (delta: number) => { event.preventDefault(); list[(Math.max(0, index) + delta + list.length) % list.length]?.focus() }
+    if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); noteEscape(); onBack(); return }
+    if (native) return
+    if (['ArrowDown', 's', 'S'].includes(event.key) && list.length) go(index < 0 ? 0 : 1)
+    else if (['ArrowUp', 'w', 'W'].includes(event.key) && list.length) go(index < 0 ? 0 : -1)
+    else if (['ArrowRight', 'd', 'D'].includes(event.key) && target.dataset.submenu === 'true') { event.preventDefault(); target.click() }
+    else if (['ArrowLeft', 'a', 'A', 'Backspace'].includes(event.key)) { event.preventDefault(); onBack() }
+  }
+  return (
+    <div ref={ref} className={wide ? 'ps-card ps-card--wide ec-menu' : 'ps-card ec-menu'} role="dialog" aria-modal="false" aria-labelledby={id} onKeyDown={onKeyDown}>
+      {trail.length > 1 && <nav aria-label="Menu location"><ol className="ec-trail">{trail.map((part, i) => <li key={i} aria-current={i === trail.length - 1 ? 'page' : undefined}>{part}</li>)}</ol></nav>}
+      {kicker && <p className="ps-kicker">{kicker}</p>}
+      <h3 id={id}>{title}</h3>
+      {children}
+      {/* Top-level menus already list Resume or Exit as items; submenus get an explicit Back. */}
+      {trail.length > 1 && <div className="ps-card-actions ec-menu-back"><button type="button" onClick={onBack}>{backLabel}</button></div>}
+    </div>
+  )
+}
+
+function MenuList({ children }: { children: ReactNode }) {
+  return <ul className="ec-menu-list" role="list">{children}</ul>
+}
+
+function MenuItem({ children, onClick, submenu, primary }: { children: ReactNode; onClick: () => void; submenu?: boolean; primary?: boolean }) {
+  return (
+    <li>
+      <button type="button" data-menu-item data-submenu={submenu ? 'true' : undefined} className={primary ? 'ps-primary ec-item' : 'ec-item'} onClick={onClick}>
+        <span className="ec-item-label">{children}</span>
+        {submenu && <span className="ec-item-chevron" aria-hidden="true">›</span>}
+      </button>
+    </li>
+  )
+}
+
+function HowToPlay() {
+  return (
+    <div className="ec-how">
+      <p>Collect samples until the exit opens, then reach it. Watch what repeats before you move.</p>
+      <dl className="ps-controls-list">
+        <div><dt>Move</dt><dd>Arrow keys or WASD; on touch screens, the pad or joystick</dd></div>
+        <div><dt>Turn a junction</dt><dd>Keep moving into one of its arms; a ring fills, then it turns the way you push</dd></div>
+        <div><dt>Menu</dt><dd>Escape, P or the menu button; arrows move through it, Escape goes back</dd></div>
+        <div><dt>Restart</dt><dd>R, or Restart level in the menu</dd></div>
+      </dl>
+      <Legend/>
+    </div>
   )
 }
 
@@ -711,7 +890,7 @@ function Legend() {
     <ul className="ps-legend" aria-label="What you will see">
       <li><span className="ps-key ps-key--player" aria-hidden="true"/>You</li>
       <li><span className="ps-key ps-key--tracer" aria-hidden="true"/>Tracer: repeats a route</li>
-      <li><span className="ps-key ps-key--junction" aria-hidden="true"/>Junction: shift it to turn its pockets</li>
+      <li><span className="ps-key ps-key--junction" aria-hidden="true"/>Junction: push an arm to turn it</li>
       <li><span className="ps-key ps-key--sample" aria-hidden="true"/>Sample</li>
       <li><span className="ps-key ps-key--field" aria-hidden="true"/>Field: switches on and off</li>
       <li><span className="ps-key ps-key--exit" aria-hidden="true"/>Exit: closes the circle when open</li>
@@ -719,37 +898,55 @@ function Legend() {
   )
 }
 
-function SettingsForm({ settings, update }: { settings: Settings; update: (patch: Partial<Settings>) => void }) {
+/** Settings › one group per screen (§13, M4). */
+function SettingsGroup({ group, settings, update }: { group: 'controls' | 'sound' | 'display' | 'gameplay'; settings: Settings; update: (patch: Partial<Settings>) => void }) {
   const id = useId()
   const vibration = typeof navigator !== 'undefined' && 'vibrate' in navigator
   return (
     <div className="ps-settings">
-      <label className="ps-check"><input type="checkbox" checked={settings.sound} onChange={e => update({ sound: e.target.checked })}/> Sound</label>
-      <label className="ps-field" htmlFor={`${id}-volume`}>Volume <input id={`${id}-volume`} type="range" min={0} max={1} step={0.1} value={settings.volume} disabled={!settings.sound} onChange={e => update({ volume: Number(e.target.value) })}/></label>
-      <fieldset className="ps-field">
-        <legend>Motion</legend>
-        {(['system', 'reduce', 'full'] as const).map(value => (
-          <label key={value} className="ps-check"><input type="radio" name={`${id}-motion`} checked={settings.motion === value} onChange={() => update({ motion: value })}/> {value === 'system' ? 'Match my device' : value === 'reduce' ? 'Reduced' : 'Full'}</label>
-        ))}
-      </fieldset>
-      <label className="ps-field" htmlFor={`${id}-speed`}>Game speed
-        <select id={`${id}-speed`} value={settings.speed} onChange={e => update({ speed: Number(e.target.value) as Settings['speed'] })}>
-          <option value={1}>100%</option><option value={0.75}>75%</option><option value={0.5}>50%</option>
-        </select>
-      </label>
-      <fieldset className="ps-field">
-        <legend>Movement control</legend>
-        <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'pad'} onChange={() => update({ movement: 'pad' })}/> Pad (four buttons)</label>
-        <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'joystick'} onChange={() => update({ movement: 'joystick' })}/> Joystick that follows your finger</label>
-      </fieldset>
-      <fieldset className="ps-field">
-        <legend>Control side</legend>
-        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'left'} onChange={() => update({ movementSide: 'left' })}/> Movement control on the left</label>
-        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'right'} onChange={() => update({ movementSide: 'right' })}/> Movement control on the right</label>
-      </fieldset>
-      <label className="ps-check"><input type="checkbox" checked={settings.previews} onChange={e => update({ previews: e.target.checked })}/> Show where tracers go next</label>
-      <label className="ps-check"><input type="checkbox" checked={settings.highContrast} onChange={e => update({ highContrast: e.target.checked })}/> Bolder lines</label>
-      {vibration && <label className="ps-check"><input type="checkbox" checked={settings.haptics} onChange={e => update({ haptics: e.target.checked })}/> Vibration</label>}
+      {group === 'controls' && (
+        <>
+          <fieldset className="ps-field">
+            <legend>Movement control</legend>
+            <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'pad'} onChange={() => update({ movement: 'pad' })}/> Pad (four buttons)</label>
+            <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'joystick'} onChange={() => update({ movement: 'joystick' })}/> Joystick that follows your finger</label>
+          </fieldset>
+          <fieldset className="ps-field">
+            <legend>Control side</legend>
+            <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'left'} onChange={() => update({ movementSide: 'left' })}/> Movement control on the left</label>
+            <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'right'} onChange={() => update({ movementSide: 'right' })}/> Movement control on the right</label>
+          </fieldset>
+        </>
+      )}
+      {group === 'sound' && (
+        <>
+          <label className="ps-check"><input type="checkbox" checked={settings.sound} onChange={e => update({ sound: e.target.checked })}/> Sound</label>
+          <label className="ps-field" htmlFor={`${id}-volume`}>Volume <input id={`${id}-volume`} type="range" min={0} max={1} step={0.1} value={settings.volume} disabled={!settings.sound} onChange={e => update({ volume: Number(e.target.value) })}/></label>
+          {vibration && <label className="ps-check"><input type="checkbox" checked={settings.haptics} onChange={e => update({ haptics: e.target.checked })}/> Vibration</label>}
+        </>
+      )}
+      {group === 'display' && (
+        <>
+          <fieldset className="ps-field">
+            <legend>Motion</legend>
+            {(['system', 'reduce', 'full'] as const).map(value => (
+              <label key={value} className="ps-check"><input type="radio" name={`${id}-motion`} checked={settings.motion === value} onChange={() => update({ motion: value })}/> {value === 'system' ? 'Match my device' : value === 'reduce' ? 'Reduced' : 'Full'}</label>
+            ))}
+          </fieldset>
+          <label className="ps-check"><input type="checkbox" checked={settings.previews} onChange={e => update({ previews: e.target.checked })}/> Show where tracers go next</label>
+          <label className="ps-check"><input type="checkbox" checked={settings.highContrast} onChange={e => update({ highContrast: e.target.checked })}/> Bolder lines</label>
+        </>
+      )}
+      {group === 'gameplay' && (
+        <>
+          <label className="ps-field" htmlFor={`${id}-speed`}>Game speed
+            <select id={`${id}-speed`} value={settings.speed} onChange={e => update({ speed: Number(e.target.value) as Settings['speed'] })}>
+              <option value={1}>100%</option><option value={0.75}>75%</option><option value={0.5}>50%</option>
+            </select>
+          </label>
+          <label className="ps-check"><input type="checkbox" checked={settings.autoHints} onChange={e => update({ autoHints: e.target.checked })}/> Offer hints when I seem stuck</label>
+        </>
+      )}
     </div>
   )
 }
