@@ -103,7 +103,7 @@ export function snapshot(state: GameState, record: RunRecord, palette: Palette) 
   ctx.fillStyle = palette.ink
   ctx.fillText(`${record.code} ${record.title} — ${record.outcome === 'won' ? 'complete' : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}`, 14, arena.height + 36)
   ctx.font = '500 15px ui-monospace, Menlo, Consolas, monospace'
-  ctx.fillText(`${record.seconds.toFixed(1)} s · ${record.shifts} shifts · ${record.gateTurns} turns · attempt ${record.attempt} · hints ${record.hints}`, 14, arena.height + 70)
+  ctx.fillText(`${record.seconds.toFixed(1)} s · ${record.shifts} junction turns · ${record.gateTurns} gate turns · attempt ${record.attempt} · hints ${record.hints}`, 14, arena.height + 70)
   const found = record.discoveries.map(discoveryName).join(' · ')
   ctx.fillStyle = palette.muted
   ctx.fillText(record.outcome === 'won' ? `Method: ${record.method}${found ? ` · ${found}` : ''}`.slice(0, 64) : 'Your route is drawn; × marks where it ended.', 14, arena.height + 96)

@@ -5,7 +5,7 @@ const route = '/play/edge-case/'
 const status = (page: Page) => page.getByRole('status')
 const tip = (page: Page) => page.locator('.ps-tip')
 
-test('N1 N3: level 000 gives no instruction at first, then escalating hints while SHIFT is not found', async ({ page }) => {
+test('N1 N3: level 000 gives no instruction at first, then escalating hints while no junction has been turned', async ({ page }) => {
   // The fake clock renders every frame of 46 s of play; WebKit needs longer than the default timeout.
   test.slow()
   await page.clock.install()
@@ -15,15 +15,17 @@ test('N1 N3: level 000 gives no instruction at first, then escalating hints whil
   await page.clock.runFor(10_000)
   await expect(tip(page)).toHaveCount(0)
   await page.clock.runFor(6_000)
-  await expect(tip(page)).toContainText('Walls are not the only structure here.')
-  await expect(status(page)).toContainText('Hint: Walls are not the only structure here.')
+  await expect(tip(page)).toContainText('Not every wall here is a wall.')
+  await expect(status(page)).toContainText('Hint: Not every wall here is a wall.')
   await page.clock.runFor(15_000)
-  await expect(tip(page)).toContainText('The orange pivot belongs to something that turns.')
+  await expect(tip(page)).toContainText('The cross with the orange pivot can turn.')
   await page.clock.runFor(15_000)
-  await expect(tip(page)).toContainText('press Shift, Space or Enter, or the Shift button')
-  // Progress removes the hint; it never changed the simulation.
-  await page.keyboard.press('Shift')
-  await page.clock.runFor(200)
+  await expect(tip(page)).toContainText('Keep pushing into one of its arms. It turns the way you push.')
+  // Progress (a turn) removes the hint; it never changed the simulation.
+  await page.keyboard.down('ArrowRight')
+  await page.clock.runFor(1_000)
+  await page.keyboard.up('ArrowRight')
+  await expect(status(page)).toContainText('The junction turned')
   await expect(tip(page)).toHaveCount(0)
 })
 
@@ -50,7 +52,9 @@ test('N3: a hint can be requested early from the pause menu', async ({ page }) =
 test('L1 L2: a failed attempt is logged with a snapshot that can be saved as a PNG', async ({ page }) => {
   await page.goto(route)
   await page.getByRole('button', { name: 'Play' }).click()
-  await page.keyboard.press('Shift')
+  await page.keyboard.down('ArrowRight')
+  await expect(status(page)).toContainText('The junction turned')
+  await page.keyboard.up('ArrowRight')
   // Walk into the tracer's lane and wait for it.
   await page.keyboard.down('ArrowUp'); await page.waitForTimeout(700); await page.keyboard.up('ArrowUp')
   await expect(page.getByRole('dialog', { name: 'Caught by a tracer' })).toBeVisible({ timeout: 10_000 })
@@ -83,16 +87,17 @@ test('L4: standings show best time, fewest actions and ways found out of an unkn
   await expect(page.getByText('Carried exit + Exception · rank #1 of 2')).toBeVisible()
 })
 
-test('I2: control sides can be swapped in settings and persist', async ({ page }) => {
+test('I2: the movement control can sit on either side, and the choice persists', async ({ page }) => {
   await page.goto(route)
-  const pad = page.locator('.ps-pad'), shift = page.locator('.ps-action')
-  expect((await pad.boundingBox())!.x).toBeLessThan((await shift.boundingBox())!.x)
+  const pad = page.locator('.ps-pad'), controls = page.locator('.ps-controls')
+  const side = async () => { const p = (await pad.boundingBox())!, c = (await controls.boundingBox())!; return p.x + p.width / 2 < c.x + c.width / 2 ? 'left' : 'right' }
+  expect(await side()).toBe('left')
   await page.getByRole('button', { name: 'Settings' }).click()
-  await page.getByLabel('Movement right, Shift left').check()
+  await page.getByLabel('Movement control on the right').check()
   await page.getByRole('button', { name: 'Done' }).click()
-  expect((await pad.boundingBox())!.x).toBeGreaterThan((await shift.boundingBox())!.x)
+  expect(await side()).toBe('right')
   await page.reload()
-  expect((await pad.boundingBox())!.x).toBeGreaterThan((await shift.boundingBox())!.x)
+  expect(await side()).toBe('right')
 })
 
 test('I1: the joystick follows the finger and moves the player; lifting stops it', async ({ browser, baseURL }) => {
@@ -106,7 +111,10 @@ test('I1: the joystick follows the finger and moves the player; lifting stops it
     await page.getByRole('button', { name: 'Done' }).click()
     await expect(page.locator('.ps-pad')).toHaveCount(0)
     await page.getByRole('button', { name: 'Play' }).click()
-    await page.getByRole('button', { name: 'Shift' }).click()
+    // Keyboard still works in joystick mode: push east into the arm to leave the start pocket.
+    await page.keyboard.down('ArrowRight')
+    await expect(page.getByRole('status')).toContainText('The junction turned')
+    await page.keyboard.up('ArrowRight')
     const zone = page.locator('.ps-stick')
     const box = (await zone.boundingBox())!
     const at = (x: number, y: number, buttons: number) => ({ clientX: box.x + x, clientY: box.y + y, pointerId: 11, pointerType: 'touch', isPrimary: true, buttons, bubbles: true })

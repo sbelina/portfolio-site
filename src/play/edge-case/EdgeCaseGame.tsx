@@ -15,8 +15,6 @@ interface Summary { seconds: number; attempts: number; shifts: number; found: Di
 const MOVE: Record<string, [number, number]> = {
   ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
 }
-const ACTION = new Set(['Space', 'Enter', 'ShiftLeft', 'ShiftRight'])
-const isControl = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('button, a, input, select, textarea, summary')
 const isTextEntry = (target: EventTarget | null) => target instanceof HTMLElement && !!target.closest('input, select, textarea')
 const axisWords = (axis: string) => axis === 'ns' ? 'north–south' : 'east–west'
 const discoveryOf = (id: string) => discoveries.find(d => d.id === id)!
@@ -60,7 +58,6 @@ export function EdgeCaseGame() {
   const keys = useRef(new Set<string>())
   const pad = useRef({ dx: 0, dy: 0 })
   const padKey = useRef({ dx: 0, dy: 0 })
-  const action = useRef(false)
   const sound = useRef(new Sound())
   const settingsRef = useRef(saved.settings)
   const screenRef = useRef(screen)
@@ -137,7 +134,7 @@ export function EdgeCaseGame() {
     setSaveStatus('')
     game.current = createGame(levels[index])
     memory.current = createMemory()
-    keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }; action.current = false
+    keys.current.clear(); pad.current = { dx: 0, dy: 0 }; padKey.current = { dx: 0, dy: 0 }
     setLevelIndex(index)
     setScreen('playing')
     syncHud()
@@ -181,8 +178,9 @@ export function EdgeCaseGame() {
       if (event.type === 'exit-open') { sound.current.play('exit-open'); setAnnouncement('The exit is open.') }
       if (event.type === 'shift') {
         sound.current.play('shift'); buzz(20)
-        noteShift(memory.current, event.x, event.y, performance.now())
-        setAnnouncement(event.carried ? `Shifted. ${event.carried === 1 ? 'One thing' : `${event.carried} things`} moved one pocket clockwise.` : 'Shifted. Nothing was inside.')
+        noteShift(memory.current, event.x, event.y, performance.now(), event.dir)
+        const way = event.dir === 'cw' ? 'clockwise' : 'counter-clockwise'
+        setAnnouncement(event.carried ? `The junction turned ${way}. ${event.carried === 1 ? 'One thing' : `${event.carried} things`} moved with it.` : `The junction turned ${way}. Nothing was inside.`)
       }
       if (event.type === 'gate') {
         sound.current.play('gate'); buzz(20)
@@ -255,8 +253,7 @@ export function EdgeCaseGame() {
         let dx = 0, dy = 0
         for (const code of keys.current) { const m = MOVE[code]; if (m) { dx += m[0]; dy += m[1] } }
         dx += pad.current.dx + padKey.current.dx; dy += pad.current.dy + padKey.current.dy
-        step(game.current, { dx: Math.max(-1, Math.min(1, dx)), dy: Math.max(-1, Math.min(1, dy)), action: action.current })
-        action.current = false
+        step(game.current, { dx: Math.max(-1, Math.min(1, dx)), dy: Math.max(-1, Math.min(1, dy)) })
         accumulator -= STEP
         steps++
         const events = drainEvents(game.current)
@@ -287,14 +284,13 @@ export function EdgeCaseGame() {
   useEffect(() => { if (!hint) return; const timer = window.setTimeout(() => setHint(null), 3200); return () => window.clearTimeout(timer) }, [hint])
   useEffect(() => { if (!notice) return; const timer = window.setTimeout(() => setNotice(null), 3600); return () => window.clearTimeout(timer) }, [notice])
 
-  // Keyboard: arrows/WASD move; Shift, Space or Enter shifts; Escape pauses; R restarts.
+  // Keyboard: arrows/WASD move (and push); Escape pauses; R restarts.
   useEffect(() => {
     const down = (event: KeyboardEvent) => {
       const current = screenRef.current
       if (event.metaKey || event.ctrlKey || event.altKey) return
       if (current === 'playing') {
         if (MOVE[event.code] && !isTextEntry(event.target)) { event.preventDefault(); keys.current.add(event.code); return }
-        if (ACTION.has(event.code) && !isControl(event.target)) { event.preventDefault(); if (!event.repeat) action.current = true; return }
         if (event.code === 'Escape' || event.code === 'KeyP') { event.preventDefault(); setScreen('paused'); setAnnouncement('Paused.'); return }
         if (event.code === 'KeyR' && !isTextEntry(event.target)) { event.preventDefault(); restart() }
       } else if (current === 'paused' && event.code === 'Escape') { event.preventDefault(); setScreen('playing'); stageRef.current?.focus({ preventScroll: true }) }
@@ -332,14 +328,6 @@ export function EdgeCaseGame() {
     onBlur: () => { padKey.current = { dx: 0, dy: 0 } },
   })
 
-  const shift = () => {
-    sound.current.unlock()
-    if (screenRef.current !== 'playing') return
-    if (!reachable(game.current)) { setAnnouncement('Nothing within reach shifts.'); return }
-    action.current = true
-    stageRef.current?.focus({ preventScroll: true })
-  }
-
   const openIndex = (from: Screen) => {
     setReturnTo(from)
     setScreen('index')
@@ -375,7 +363,6 @@ export function EdgeCaseGame() {
   const stateLabel = `Level ${level.code}, ${level.title}. ${hud.taken} of ${hud.total} samples collected. Exit ${open ? 'open' : 'closed'}.${hud.reach === 'junction' ? ' A junction is within reach.' : hud.reach === 'gate' ? ' Something within reach can turn.' : ''}`
   const nextIncomplete = Math.max(0, levels.findIndex(item => !saved.completed.includes(item.id)))
   const reduced = prefersReducedMotion(settings)
-  const ready = hud.reach !== '' && screen === 'playing'
 
   return (
     <section ref={rootRef} className="ps" aria-labelledby={headingId} data-screen={screen} data-reduced-motion={reduced ? 'true' : 'false'} data-contrast={settings.highContrast ? 'high' : 'standard'}>
@@ -486,7 +473,7 @@ export function EdgeCaseGame() {
             <dl className="ps-summary">
               <div><dt>Time</dt><dd>{summary.seconds.toFixed(1)} s</dd></div>
               <div><dt>Attempts</dt><dd>{summary.attempts}</dd></div>
-              <div><dt>Shifts</dt><dd>{summary.shifts}</dd></div>
+              <div><dt>Turns</dt><dd>{summary.shifts}</dd></div>
             </dl>
             {lastRecord && lastRecord.outcome === 'won' && <Standing record={lastRecord} log={log}/>}
             {summary.found.length > 0 && (
@@ -518,10 +505,6 @@ export function EdgeCaseGame() {
           <button type="button" className="ps-pad-down" aria-label="Move down" disabled={screen !== 'playing'} {...padButtonKey(0, 1)}><span aria-hidden="true">▼</span></button>
         </div>
         )}
-        <button type="button" className="ps-action" aria-disabled={!ready} data-ready={ready ? 'true' : 'false'} onClick={shift}>
-          <span className="ps-action-icon" aria-hidden="true">⇧</span>
-          <span>Shift</span>
-        </button>
       </div>
       <p className="ps-visually-hidden" aria-live="polite" role="status">{announcement}</p>
     </section>
@@ -760,9 +743,9 @@ function SettingsForm({ settings, update }: { settings: Settings; update: (patch
         <label className="ps-check"><input type="radio" name={`${id}-movement`} checked={settings.movement === 'joystick'} onChange={() => update({ movement: 'joystick' })}/> Joystick that follows your finger</label>
       </fieldset>
       <fieldset className="ps-field">
-        <legend>Control sides</legend>
-        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'left'} onChange={() => update({ movementSide: 'left' })}/> Movement left, Shift right</label>
-        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'right'} onChange={() => update({ movementSide: 'right' })}/> Movement right, Shift left</label>
+        <legend>Control side</legend>
+        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'left'} onChange={() => update({ movementSide: 'left' })}/> Movement control on the left</label>
+        <label className="ps-check"><input type="radio" name={`${id}-side`} checked={settings.movementSide === 'right'} onChange={() => update({ movementSide: 'right' })}/> Movement control on the right</label>
       </fieldset>
       <label className="ps-check"><input type="checkbox" checked={settings.previews} onChange={e => update({ previews: e.target.checked })}/> Show where tracers go next</label>
       <label className="ps-check"><input type="checkbox" checked={settings.highContrast} onChange={e => update({ highContrast: e.target.checked })}/> Bolder lines</label>

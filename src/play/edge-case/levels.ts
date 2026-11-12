@@ -30,9 +30,9 @@ export const levels: LevelDef[] = [
     hints: {
       progress: 'shift',
       steps: [
-        { after: 15, text: 'Walls are not the only structure here.' },
-        { after: 30, text: 'The orange pivot belongs to something that turns.' },
-        { after: 45, text: 'Shift turns it: press Shift, Space or Enter, or the Shift button.' },
+        { after: 15, text: 'Not every wall here is a wall.' },
+        { after: 30, text: 'The cross with the orange pivot can turn.' },
+        { after: 45, text: 'Keep pushing into one of its arms. It turns the way you push.' },
       ],
     },
   },
@@ -61,7 +61,7 @@ export const levels: LevelDef[] = [
       progress: 'sample',
       steps: [
         { after: 30, text: 'Watch the tracer for one full cycle.' },
-        { after: 50, text: 'Its track runs through a pocket. Pockets turn.' },
+        { after: 50, text: 'Its track runs through a pocket. Pockets turn, with whatever is inside.' },
       ],
     },
   },

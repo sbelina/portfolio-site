@@ -16,6 +16,10 @@ const GATE_THICKNESS = 0.12
 const ARM_HALF = 0.06
 export const GATE_REACH = 1.3
 export const JUNCTION_REACH = 1.6
+/** Steps of continuous pressing before a push turns a junction or gate (MECHANICS.md §4a). */
+export const PUSH_STEPS = 8
+/** Steps after a turn before the same structure can turn again. */
+export const TURN_COOLDOWN = 18
 export const TRACER_HIT = 0.55
 const SAMPLE_REACH = 0.5
 const EXIT_REACH = 0.45
@@ -63,8 +67,9 @@ export interface LevelDef {
 export type DiscoveryId = 'false-start' | 'expected-behavior' | 'reroute' | 'not-a-bug' | 'pivot' | 'technically-correct' | 'exception' | 'ten-types' | 'off-by-one' | 'full-circle'
 
 export type Tile = 'wall' | 'floor' | 'track' | 'gate' | 'field'
-export interface Gate { x: number; y: number; axis: Axis }
-export interface Junction { x: number; y: number; turns: number }
+export interface Gate { x: number; y: number; axis: Axis; cooldown: number }
+export interface Junction { x: number; y: number; turns: number; net: number; cooldown: number }
+export type Turn = 'cw' | 'ccw'
 export interface Tracer {
   x: number; y: number; dir: Dir; next: { x: number; y: number } | null; progress: number; speed: number
   start: { x: number; y: number; dir: Dir }; departed: boolean
@@ -75,7 +80,7 @@ export type GameEvent =
   | { type: 'sample'; remaining: number }
   | { type: 'exit-open' }
   | { type: 'gate'; axis: Axis }
-  | { type: 'shift'; x: number; y: number; carried: number }
+  | { type: 'shift'; x: number; y: number; carried: number; dir: Turn }
   | { type: 'jammed' }
   | { type: 'discovery'; id: DiscoveryId }
   | { type: 'fail'; cause: FailCause }
@@ -102,13 +107,16 @@ export interface GameState {
   moved: boolean
   /** The tile the player's centre occupies, and how it was entered (MECHANICS.md §6). */
   tile: { x: number; y: number; enteredBy: 'start' | 'move' | 'shift' }
+  /** A push in progress against one structure, in one direction (MECHANICS.md §4a). */
+  push: { key: string; kind: 'junction' | 'gate'; x: number; y: number; dir: Turn | 'axis'; steps: number } | null
   discovered: DiscoveryId[]
   trail: [number, number][]
   events: GameEvent[]
 }
 
-export interface Input { dx: number; dy: number; action: boolean }
-export const idle: Input = { dx: 0, dy: 0, action: false }
+/** Movement is the only input: structures turn when pushed (MECHANICS.md §4a). */
+export interface Input { dx: number; dy: number }
+export const idle: Input = { dx: 0, dy: 0 }
 
 /** The four pocket tiles of a junction, clockwise from north-west. */
 export const pockets = (j: { x: number; y: number }) => [
@@ -131,7 +139,7 @@ export function createGame(level: LevelDef): GameState {
       if (char === '=') return 'track'
       if (char === '*') { samples.push({ x, y, taken: false }); return 'track' }
       if (char === 'o') { samples.push({ x, y, taken: false }); return 'floor' }
-      if (char === 'H' || char === 'V') { gates.push({ x, y, axis: char === 'H' ? 'ew' : 'ns' }); return 'gate' }
+      if (char === 'H' || char === 'V') { gates.push({ x, y, axis: char === 'H' ? 'ew' : 'ns', cooldown: 0 }); return 'gate' }
       if (char === '~') return 'field'
       if (char === 'P') player = { x, y }
       else if (char === 'E') exit = { x, y }
@@ -142,7 +150,7 @@ export function createGame(level: LevelDef): GameState {
   if (!player || !exit) throw new Error(`Level ${level.id} needs a start and an exit`)
   const enclosed = tiles.every((row, y) => y === 0 || y === height - 1 ? row.every(t => t === 'wall') : row[0] === 'wall' && row[width - 1] === 'wall')
   if (!enclosed) throw new Error(`Level ${level.id} must be enclosed`)
-  const junctions: Junction[] = (level.junctions ?? []).map(j => ({ ...j, turns: 0 }))
+  const junctions: Junction[] = (level.junctions ?? []).map(j => ({ ...j, turns: 0, net: 0, cooldown: 0 }))
   const claimed = new Set<string>()
   for (const j of junctions) for (const p of pockets(j)) {
     const t = tiles[p.y]?.[p.x]
@@ -157,7 +165,7 @@ export function createGame(level: LevelDef): GameState {
     level, width, height, tiles, tick: 0, time: 0,
     player: { x: start.x + 0.5, y: start.y + 0.5, vx: 0, vy: 0 },
     exit: exit as { x: number; y: number }, required, samples, gates, junctions, tracers: [], status: 'playing', failCause: null,
-    gateTurns: 0, shifts: 0, moved: false, tile: { x: start.x, y: start.y, enteredBy: 'start' }, discovered: [], trail: [], events: [],
+    gateTurns: 0, shifts: 0, moved: false, tile: { x: start.x, y: start.y, enteredBy: 'start' }, push: null, discovered: [], trail: [], events: [],
   }
   for (const def of level.tracers) {
     if (!rides(state, def.x, def.y)) throw new Error(`Tracer in ${level.id} must start on track`)
@@ -219,19 +227,22 @@ export function predictPath(s: GameState, t: Tracer, count: number) {
   return points
 }
 
-interface Rect { x0: number; y0: number; x1: number; y1: number }
+type Owner = { kind: 'junction'; junction: Junction } | { kind: 'gate'; gate: Gate }
+interface Rect { x0: number; y0: number; x1: number; y1: number; owner?: Owner }
 function solids(s: GameState, cx: number, cy: number): Rect[] {
   const rects: Rect[] = []
   for (let y = Math.floor(cy) - 2; y <= Math.floor(cy) + 2; y++) for (let x = Math.floor(cx) - 2; x <= Math.floor(cx) + 2; x++) {
     if (tileAt(s, x, y) === 'wall') { rects.push({ x0: x, y0: y, x1: x + 1, y1: y + 1 }); continue }
     const gate = gateAt(s, x, y)
     if (!gate) continue
-    if (gate.axis === 'ew') rects.push({ x0: x, y0: y, x1: x + 1, y1: y + GATE_THICKNESS }, { x0: x, y0: y + 1 - GATE_THICKNESS, x1: x + 1, y1: y + 1 })
-    else rects.push({ x0: x, y0: y, x1: x + GATE_THICKNESS, y1: y + 1 }, { x0: x + 1 - GATE_THICKNESS, y0: y, x1: x + 1, y1: y + 1 })
+    const owner: Owner = { kind: 'gate', gate }
+    if (gate.axis === 'ew') rects.push({ x0: x, y0: y, x1: x + 1, y1: y + GATE_THICKNESS, owner }, { x0: x, y0: y + 1 - GATE_THICKNESS, x1: x + 1, y1: y + 1, owner })
+    else rects.push({ x0: x, y0: y, x1: x + GATE_THICKNESS, y1: y + 1, owner }, { x0: x + 1 - GATE_THICKNESS, y0: y, x1: x + 1, y1: y + 1, owner })
   }
   for (const j of s.junctions) {
     if (Math.abs(j.x - cx) > 3 || Math.abs(j.y - cy) > 3) continue
-    rects.push({ x0: j.x - ARM_HALF, y0: j.y - 1, x1: j.x + ARM_HALF, y1: j.y + 1 }, { x0: j.x - 1, y0: j.y - ARM_HALF, x1: j.x + 1, y1: j.y + ARM_HALF })
+    const owner: Owner = { kind: 'junction', junction: j }
+    rects.push({ x0: j.x - ARM_HALF, y0: j.y - 1, x1: j.x + ARM_HALF, y1: j.y + 1, owner }, { x0: j.x - 1, y0: j.y - ARM_HALF, x1: j.x + 1, y1: j.y + ARM_HALF, owner })
   }
   return rects
 }
@@ -239,12 +250,13 @@ const overlaps = (px: number, py: number, h: number, r: Rect) => px + h > r.x0 &
 
 function moveAxis(s: GameState, axis: 'x' | 'y', delta: number) {
   const p = s.player
-  if (delta === 0) return false
+  if (delta === 0) return null
   p[axis] += delta
-  let blocked = false
+  let blocked: Rect | null = null
   for (const r of solids(s, p.x, p.y)) {
     if (!overlaps(p.x, p.y, PLAYER_HALF, r)) continue
-    blocked = true
+    // A pushable structure takes precedence over a wall when both block (§4a, PU1).
+    if (!blocked || (!blocked.owner && r.owner)) blocked = r
     if (axis === 'x') p.x = delta > 0 ? r.x0 - PLAYER_HALF - 1e-6 : r.x1 + PLAYER_HALF + 1e-6
     else p.y = delta > 0 ? r.y0 - PLAYER_HALF - 1e-6 : r.y1 + PLAYER_HALF + 1e-6
   }
@@ -281,7 +293,7 @@ export function gateOccupied(s: GameState, g: Gate) {
 }
 
 export type Reachable = { kind: 'gate'; gate: Gate } | { kind: 'junction'; junction: Junction }
-/** The nearest thing within reach that the player's action would turn. */
+/** The nearest turnable structure within reach: drives the reach ring and the canvas text alternative. */
 export function reachable(s: GameState): Reachable | null {
   let best: Reachable | null = null, distance = Infinity
   for (const gate of s.gates) {
@@ -308,27 +320,28 @@ function discover(s: GameState, id: DiscoveryId) {
 const POCKET_MARGIN = PLAYER_HALF + ARM_HALF + 0.01
 
 /**
- * Shift a junction (MECHANICS.md §4). Membership is decided by centre point only.
- * - Player: position offset from the corner and velocity both rotate 90° clockwise;
- *   the body is then clamped fully inside the arrival pocket.
- * - Tracers (tile-bound): snap to the arrival pocket's centre, turn right, restart
- *   from progress 0 and choose their next tile by the normal rule.
+ * Turn a junction a quarter turn (MECHANICS.md §4). Membership is by centre point only.
+ * - Player: position offset from the corner and velocity both rotate 90° in the turn's
+ *   direction; the body is then clamped fully inside the arrival pocket.
+ * - Tracers (tile-bound): snap to the arrival pocket's centre, turn the same way
+ *   (right for clockwise, left for counter-clockwise), restart from progress 0.
  * - Samples: move to the arrival pocket.
  * The exit, track, fields and channel gates never move.
  */
-function shift(s: GameState, j: Junction) {
+export function turnJunction(s: GameState, j: Junction, dir: Turn) {
   const ring = pockets(j)
+  const turn = dir === 'cw' ? 1 : 3
   const pocketOf = (x: number, y: number) => ring.findIndex(p => p.x === Math.floor(x) && p.y === Math.floor(y))
   let carried = 0
   const p = s.player
   const playerPocket = pocketOf(p.x, p.y)
   if (playerPocket >= 0) {
-    const to = ring[(playerPocket + 1) % 4]
+    const to = ring[(playerPocket + turn) % 4]
     const ox = p.x - j.x, oy = p.y - j.y
     const clamp = (value: number, low: number) => Math.min(low + 1 - POCKET_MARGIN, Math.max(low + POCKET_MARGIN, value))
-    p.x = clamp(j.x - oy, to.x); p.y = clamp(j.y + ox, to.y)
-    const vx = p.vx
-    p.vx = -p.vy; p.vy = vx
+    // Clockwise on screen (y down): (x, y) → (−y, x). Counter-clockwise: (x, y) → (y, −x).
+    if (dir === 'cw') { p.x = clamp(j.x - oy, to.x); p.y = clamp(j.y + ox, to.y); const vx = p.vx; p.vx = -p.vy; p.vy = vx }
+    else { p.x = clamp(j.x + oy, to.x); p.y = clamp(j.y - ox, to.y); const vx = p.vx; p.vx = p.vy; p.vy = -vx }
     s.tile = { x: Math.floor(p.x), y: Math.floor(p.y), enteredBy: 'shift' }
     carried++
   }
@@ -336,8 +349,8 @@ function shift(s: GameState, j: Junction) {
     const at = tracerPosition(t)
     const from = pocketOf(at.x, at.y)
     if (from < 0) continue
-    const to = ring[(from + 1) % 4]
-    t.x = to.x; t.y = to.y; t.progress = 0; t.dir = right(t.dir); t.departed = true
+    const to = ring[(from + turn) % 4]
+    t.x = to.x; t.y = to.y; t.progress = 0; t.dir = dir === 'cw' ? right(t.dir) : left(t.dir); t.departed = true
     chooseNext(s, t)
     discover(s, rides(s, t.x, t.y) && t.next ? 'reroute' : 'not-a-bug')
     carried++
@@ -346,14 +359,62 @@ function shift(s: GameState, j: Junction) {
     if (sample.taken) continue
     const from = pocketOf(sample.x + 0.5, sample.y + 0.5)
     if (from < 0) continue
-    const to = ring[(from + 1) % 4]
+    const to = ring[(from + turn) % 4]
     sample.x = to.x; sample.y = to.y
     carried++
   }
   j.turns++
+  j.net += dir === 'cw' ? 1 : -1
+  j.cooldown = TURN_COOLDOWN
   s.shifts++
-  s.events.push({ type: 'shift', x: j.x, y: j.y, carried })
-  if (j.turns % 4 === 0) discover(s, 'full-circle')
+  s.events.push({ type: 'shift', x: j.x, y: j.y, carried, dir })
+  // A full turn in one direction: net rotation back to the start (§8, 0x09).
+  if (j.net !== 0 && j.net % 4 === 0) discover(s, 'full-circle')
+}
+
+function turnGate(s: GameState, gate: Gate) {
+  if (gateOccupied(s, gate)) { s.events.push({ type: 'jammed' }); gate.cooldown = TURN_COOLDOWN; return }
+  gate.axis = gate.axis === 'ew' ? 'ns' : 'ew'
+  gate.cooldown = TURN_COOLDOWN
+  s.gateTurns++
+  s.events.push({ type: 'gate', axis: gate.axis })
+  discover(s, 'pivot')
+  for (const t of s.tracers) if (t.progress === 0) chooseNext(s, t)
+}
+
+/**
+ * §4a Push: pressing into a junction arm (from inside one of its pockets) or across a
+ * channel gate's bars for PUSH_STEPS consecutive steps turns it. A junction turns the
+ * way the push would spin it about its corner: torque = ox·fy − oy·fx (y down), positive
+ * = clockwise. A push straight at the corner has zero torque and turns nothing.
+ */
+function resolvePush(s: GameState, input: Input, blockedX: Rect | null, blockedY: Rect | null) {
+  for (const j of s.junctions) if (j.cooldown > 0) j.cooldown--
+  for (const g of s.gates) if (g.cooldown > 0) g.cooldown--
+  const p = s.player
+  const candidates: [Rect | null, number, number][] = [[blockedX, Math.sign(input.dx), 0], [blockedY, 0, Math.sign(input.dy)]]
+  for (const [rect, fx, fy] of candidates) {
+    if (!rect?.owner || (fx === 0 && fy === 0)) continue
+    let key: string, dir: Turn | 'axis', x: number, y: number
+    if (rect.owner.kind === 'junction') {
+      const j = rect.owner.junction
+      if (pocketIndex(j, Math.floor(p.x), Math.floor(p.y)) < 0) continue
+      const torque = (p.x - j.x) * fy - (p.y - j.y) * fx
+      if (Math.abs(torque) < 1e-9) continue
+      dir = torque > 0 ? 'cw' : 'ccw'
+      key = `j${j.x},${j.y}${dir}`; x = j.x; y = j.y
+    } else {
+      const g = rect.owner.gate
+      dir = 'axis'; key = `g${g.x},${g.y}`; x = g.x + 0.5; y = g.y + 0.5
+    }
+    const steps = s.push?.key === key ? s.push.steps + 1 : 1
+    s.push = { key, kind: rect.owner.kind, x, y, dir, steps }
+    if (steps < PUSH_STEPS) return
+    if (rect.owner.kind === 'junction' && rect.owner.junction.cooldown === 0) { turnJunction(s, rect.owner.junction, dir as Turn); s.push = null }
+    else if (rect.owner.kind === 'gate' && rect.owner.gate.cooldown === 0) { turnGate(s, rect.owner.gate); s.push = null }
+    return
+  }
+  s.push = null
 }
 
 export function step(s: GameState, input: Input, dt = STEP) {
@@ -373,19 +434,7 @@ export function step(s: GameState, input: Input, dt = STEP) {
   if (input.dy !== 0 && input.dx === 0 && blockedY) assist(s, 'y', Math.sign(input.dy), dt)
   if (Math.floor(p.x) !== s.tile.x || Math.floor(p.y) !== s.tile.y) s.tile = { x: Math.floor(p.x), y: Math.floor(p.y), enteredBy: 'move' }
 
-  if (input.action) {
-    const target = reachable(s)
-    if (target?.kind === 'junction') shift(s, target.junction)
-    else if (target?.kind === 'gate' && gateOccupied(s, target.gate)) s.events.push({ type: 'jammed' })
-    else if (target?.kind === 'gate') {
-      const gate = target.gate
-      gate.axis = gate.axis === 'ew' ? 'ns' : 'ew'
-      s.gateTurns++
-      s.events.push({ type: 'gate', axis: gate.axis })
-      discover(s, 'pivot')
-      for (const t of s.tracers) if (t.progress === 0) chooseNext(s, t)
-    }
-  }
+  resolvePush(s, input, blockedX, blockedY)
 
   for (const t of s.tracers) {
     if (!t.next) { chooseNext(s, t); continue }

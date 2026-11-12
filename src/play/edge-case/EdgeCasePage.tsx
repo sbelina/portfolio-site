@@ -19,11 +19,11 @@ export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string
         </div>
         <section id="how-to-play" className="ps-about" aria-labelledby="how-heading">
           <h2 id="how-heading">How to play</h2>
-          <p>Collect samples until the exit opens, then reach it. Tracers repeat the same route. Timed fields switch on in a steady rhythm. A junction is a cross of four arms on a grid corner. Shifting it turns its four pockets one step clockwise, carrying whatever is inside: you, a tracer, a sample.</p>
+          <p>Collect samples until the exit opens, then reach it. Tracers repeat the same route. Timed fields switch on in a steady rhythm. A junction is a revolving door: a cross of four arms on a grid corner. Push against one of its arms and keep pushing, and it turns a quarter turn the way you push, carrying whatever is in its pockets: you, a tracer, a sample.</p>
           <h3>Controls</h3>
           <dl className="ps-controls-list">
             <div><dt>Move</dt><dd>Arrow keys or WASD; on touch screens, the movement pad</dd></div>
-            <div><dt>Shift</dt><dd>Shift, Space or Enter when near a junction; or the Shift button</dd></div>
+            <div><dt>Turn a junction</dt><dd>Keep moving into one of its arms; a ring fills, then it turns</dd></div>
             <div><dt>Pause</dt><dd>Escape or P; or the pause button</dd></div>
             <div><dt>Restart</dt><dd>R; or the restart button</dd></div>
           </dl>
@@ -31,7 +31,7 @@ export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string
           <ul>
             <li><strong>You</strong>: a filled circle with an orange ring.</li>
             <li><strong>Tracers</strong>: arrowheads pointing the way they travel, with a dotted line showing where they go next.</li>
-            <li><strong>Junctions</strong>: a cross of four arms with an orange pivot and a dotted circle showing the turn. A dashed ring appears when one is within reach.</li>
+            <li><strong>Junctions</strong>: a cross of four arms with an orange pivot and a dotted circle showing the turn. A dashed ring appears when one is within reach; a solid orange ring fills while you push, with an arrowhead showing which way it will turn.</li>
             <li><strong>Samples</strong>: hollow diamonds.</li>
             <li><strong>Timed fields</strong>: dashed squares. Sparse hatching warns they are about to switch on; dense crosshatching means active.</li>
             <li><strong>Exit</strong>: a broken circle that closes when it opens.</li>

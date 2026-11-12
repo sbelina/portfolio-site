@@ -12,6 +12,12 @@ async function hold(page: Page, key: string, ms: number) {
   await page.keyboard.up(key)
 }
 
+/** Hold a key until a condition holds (condition-driven, never a fixed duration). */
+async function holdUntil(page: Page, key: string, condition: () => Promise<unknown>) {
+  await page.keyboard.down(key)
+  try { await condition() } finally { await page.keyboard.up(key) }
+}
+
 async function start(page: Page, level?: string) {
   await page.goto(route)
   if (level) {
@@ -46,13 +52,12 @@ test.describe('Edge Case prototype page', () => {
     await start(page)
     await expect(status(page)).toContainText('Level 000, False Start')
     await expect(samples(page)).toContainText('0/2')
-    // Sealed in a pocket: movement goes nowhere until a shift.
+    // Sealed in a pocket: walls do nothing; pushing east into the arm turns the door clockwise.
     await hold(page, 'ArrowLeft', 300)
-    await page.keyboard.press('Shift')
-    await expect(status(page)).toContainText('Shifted. One thing moved')
-    await hold(page, 'ArrowUp', 260)
-    await hold(page, 'ArrowRight', 600)
-    await expect(samples(page)).toContainText('1/2')
+    await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned clockwise. One thing moved with it.'))
+    const section = page.locator('.ps')
+    await holdUntil(page, 'ArrowUp', () => expect(section).toHaveAttribute('data-player-tile', /^\d+,4$/))
+    await holdUntil(page, 'ArrowRight', () => expect(samples(page)).toContainText('1/2'))
     await expect(status(page)).toContainText('Sample collected')
     await page.keyboard.press('Escape')
     await expect(page.getByRole('dialog', { name: 'Paused' })).toBeVisible()
@@ -64,13 +69,17 @@ test.describe('Edge Case prototype page', () => {
     await expect(samples(page)).toContainText('0/2')
   })
 
-  test('keyboard: Space and Enter shift a junction within reach; the Shift button reports readiness', async ({ page }) => {
-    await start(page, '001')
-    await expect(page.locator('.ps-action')).toHaveAttribute('data-ready', 'false')
-    await hold(page, 'ArrowUp', 900)
-    await expect(page.locator('.ps-action')).toHaveAttribute('data-ready', 'true')
-    await page.keyboard.press('Space')
-    await expect(status(page)).toContainText('Shifted')
+  test('PU1 PU2: pushing an arm turns the junction the way you push, either way, with no other control', async ({ page }) => {
+    await start(page)
+    await expect(page.getByRole('button', { name: /shift/i })).toHaveCount(0)
+    const section = page.locator('.ps')
+    // From the north-west pocket, pushing south turns counter-clockwise into the south-west pocket.
+    await holdUntil(page, 'ArrowDown', () => expect(status(page)).toContainText('turned counter-clockwise'))
+    // Carried into the south-west pocket; a still-held push may walk straight out of its open south side.
+    await expect(section).toHaveAttribute('data-player-tile', /^3,(6|7)$/)
+    // Pushing north into the arm turns it back clockwise.
+    await holdUntil(page, 'ArrowUp', () => expect(status(page)).toContainText('turned clockwise'))
+    await expect(section).toHaveAttribute('data-player-tile', /^3,(5|4)$/)
   })
 
   test('the system index shows known and unknown operations, a binary counter, and an uncounted UNKNOWN entry', async ({ page }) => {
@@ -118,8 +127,7 @@ test.describe('Edge Case prototype page', () => {
       await blocked.addInitScript(() => { Object.defineProperty(window, 'localStorage', { get() { throw new Error('blocked') } }) })
       const other = await blocked.newPage()
       await start(other)
-      await other.keyboard.press('Shift')
-      await expect(status(other)).toContainText('Shifted')
+      await holdUntil(other, 'ArrowRight', () => expect(status(other)).toContainText('The junction turned'))
       await other.getByRole('button', { name: 'Pause' }).click()
       await other.getByRole('button', { name: 'System index' }).click()
       await expect(other.getByText('03 / 07')).toBeVisible()
@@ -176,19 +184,18 @@ test.describe('Edge Case on touch screens', () => {
       await page.goto(route)
       await page.getByRole('button', { name: 'Play' }).tap()
       await expect(page.locator('.ps')).toHaveAttribute('data-screen', 'playing')
-      await page.getByRole('button', { name: 'Shift' }).tap()
-      await expect(status(page)).toContainText('Shifted')
       const pad = page.locator('.ps-pad')
-      const press = async (name: string, ms: number) => {
+      const section = page.locator('.ps')
+      // Hold a pad direction until a condition holds, then lift.
+      const pressUntil = async (name: string, condition: () => Promise<unknown>) => {
         const box = await page.getByRole('button', { name }).boundingBox()
         const at = { clientX: box!.x + box!.width / 2, clientY: box!.y + box!.height / 2, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true }
         await pad.dispatchEvent('pointerdown', { ...at, buttons: 1 })
-        await page.waitForTimeout(ms)
-        await pad.dispatchEvent('pointerup', { ...at, buttons: 0 })
+        try { await condition() } finally { await pad.dispatchEvent('pointerup', { ...at, buttons: 0 }) }
       }
-      await press('Move up', 260)
-      await press('Move right', 600)
-      await expect(samples(page)).toContainText('1/2')
+      await pressUntil('Move right', () => expect(status(page)).toContainText('The junction turned clockwise'))
+      await pressUntil('Move up', () => expect(section).toHaveAttribute('data-player-tile', /^\d+,4$/))
+      await pressUntil('Move right', () => expect(samples(page)).toContainText('1/2'))
     } finally { await context.close() }
   })
 })

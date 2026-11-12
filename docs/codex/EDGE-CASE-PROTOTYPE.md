@@ -14,6 +14,21 @@ Status, 11 November 2026: **unpublished prototype**, Slice 1 complete for owner 
 - A mechanics specification alongside the tests separates intended ambiguity from defects.
 - The original channel gate stays in as a discoverable surprise.
 
+## Push-to-turn revision (12 November)
+
+Owner direction: no button to turn doors. Push into a door and it moves, either direction. Precedents, from web search summaries (page fetches were blocked by the session's network policy, so these are not first-hand play):
+
+- **Rodger Dodger** (After Dark Games, 1998): a maze of rotating doors. Per a review, the player's sphere turns them, and so do some enemies. ([MobyGames](https://www.mobygames.com/game/4821/after-dark-games/), [Giant Bomb](https://www.giantbomb.com/after-dark-games/3030-16055/))
+- **Kwirk / Puzzle Boy** (1989–90): turnstiles you push; its arms are thick, occupying grid cells. ([Wikipedia](https://en.wikipedia.org/wiki/Kwirk), [Lexaloffle turnstile notes](https://www.lexaloffle.com/bbs/?tid=36578))
+- **Chip's Challenge 2**: swivel doors that turn when you leave through a closed side; pushed blocks also turn them. ([Bit Busters wiki](https://wiki.bitbusters.club/L-door))
+
+Implemented (spec §4a): a push builds over 8 steps (a ring fills, with an arrowhead for direction). The door then turns the way the push would spin it about its pivot. One arm of each pocket turns it clockwise, the other counter-clockwise. Holding the same push carries you through and out the far side, like a revolving door. Channel gates turn the same way, by pushing across their bars. The Shift button and keys are gone; movement is the only control. Full Circle now counts net rotation.
+
+Proposed next, not implemented (owner decision):
+1. **Tracers that push doors** (Rodger Dodger's enemies turn doors). Doors would become part of the system's pattern, and could be a distinct tracer type, introduced in one level.
+2. **Doorway jam** (Kwirk): a turn is blocked while something stands half in a doorway, instead of being clamped inside.
+3. **Thick doors** (Kwirk) as a later variant, where the arms occupy cells and can push things.
+
 ## Private play-test link
 
 A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.

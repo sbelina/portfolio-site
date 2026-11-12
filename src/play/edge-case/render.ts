@@ -1,4 +1,4 @@
-import { exitOpen, fieldPhase, predictPath, reachable, tracerPosition, type Axis, type GameState } from './engine'
+import { exitOpen, fieldPhase, predictPath, PUSH_STEPS, reachable, tracerPosition, type Axis, type GameState, type Turn } from './engine'
 
 export interface Palette { paper: string; panel: string; ink: string; muted: string; line: string; soft: string; accent: string; hazard: string; learning: string; predicted: string }
 export interface View {
@@ -8,7 +8,7 @@ export interface View {
   highContrast: boolean
   ghost: [number, number][] | null
   /** Render-only memory: recent tracer positions and gate rotation animation. */
-  memory: { trails: [number, number][][]; gateTurn: Map<string, { from: number; started: number }>; shiftTurn: Map<string, number>; jam: { x: number; y: number; until: number } | null }
+  memory: { trails: [number, number][][]; gateTurn: Map<string, { from: number; started: number }>; shiftTurn: Map<string, { started: number; dir: Turn }>; jam: { x: number; y: number; until: number } | null }
   now: number
 }
 
@@ -27,8 +27,8 @@ const angleOf = (axis: Axis) => (axis === 'ew' ? 0 : Math.PI / 2)
 const GATE_TURN_MS = 160
 const SHIFT_TURN_MS = 220
 
-export function noteShift(memory: View['memory'], x: number, y: number, now: number) {
-  memory.shiftTurn.set(`${x},${y}`, now)
+export function noteShift(memory: View['memory'], x: number, y: number, now: number, dir: Turn = 'cw') {
+  memory.shiftTurn.set(`${x},${y}`, { started: now, dir })
   // Carried tracers jump; old trail points would draw a misleading line.
   memory.trails = []
 }
@@ -171,11 +171,7 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
     ctx.setLineDash([T * 0.05, T * 0.09])
     ctx.beginPath(); ctx.arc(cx, cy, T * 0.707, 0, Math.PI * 2); ctx.stroke()
     ctx.setLineDash([])
-    // Clockwise arrowhead on the rotation circle.
-    const a = -Math.PI / 4
-    const ax = cx + Math.cos(a) * T * 0.707, ay = cy + Math.sin(a) * T * 0.707
-    ctx.fillStyle = c.line
-    ctx.beginPath(); ctx.moveTo(ax + T * 0.09, ay + T * 0.02); ctx.lineTo(ax - T * 0.05, ay - T * 0.07); ctx.lineTo(ax - T * 0.03, ay + T * 0.09); ctx.closePath(); ctx.fill()
+    // The circle shows the door turns; it turns whichever way it is pushed, so no arrow.
     if (target?.kind === 'junction' && target.junction === j) {
       ctx.strokeStyle = c.accent
       ctx.lineWidth = 3 * k
@@ -184,11 +180,11 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
       ctx.setLineDash([])
     }
     let angle = 0
-    const started = view.memory.shiftTurn.get(`${j.x},${j.y}`)
-    if (started !== undefined && !view.reducedMotion) {
-      const t = Math.min(1, (view.now - started) / SHIFT_TURN_MS)
+    const turning = view.memory.shiftTurn.get(`${j.x},${j.y}`)
+    if (turning && !view.reducedMotion) {
+      const t = Math.min(1, (view.now - turning.started) / SHIFT_TURN_MS)
       // Arms arrive from a quarter-turn behind: clockwise, easing out.
-      if (t < 1) angle = -(Math.PI / 2) * (1 - t) ** 3
+      if (t < 1) angle = (turning.dir === 'cw' ? -1 : 1) * (Math.PI / 2) * (1 - t) ** 3
       else view.memory.shiftTurn.delete(`${j.x},${j.y}`)
     }
     ctx.save()
@@ -203,6 +199,30 @@ export function draw(ctx: CanvasRenderingContext2D, s: GameState, view: View, c:
     ctx.strokeStyle = c.ink
     ctx.lineWidth = 2
     ctx.beginPath(); ctx.arc(cx, cy, T * 0.11, 0, Math.PI * 2); ctx.fill(); ctx.stroke()
+  }
+  // Push feedback (§4a): a ring fills while the push builds; the arrowhead shows which way it will turn.
+  if (s.push && s.status === 'playing') {
+    const cx = px(s.push.x), cy = px(s.push.y)
+    const radius = s.push.kind === 'junction' ? T * 1.08 : T * 0.62
+    const share = Math.min(1, s.push.steps / PUSH_STEPS)
+    const ccw = s.push.dir === 'ccw'
+    const start = -Math.PI / 2
+    const end = start + (ccw ? -1 : 1) * share * Math.PI * 2
+    ctx.strokeStyle = c.accent
+    ctx.lineWidth = 4 * k
+    ctx.lineCap = 'round'
+    ctx.beginPath(); ctx.arc(cx, cy, radius, start, end, ccw); ctx.stroke()
+    ctx.lineCap = 'butt'
+    if (s.push.dir !== 'axis') {
+      const ax = cx + Math.cos(end) * radius, ay = cy + Math.sin(end) * radius
+      const tangent = end + (ccw ? -Math.PI / 2 : Math.PI / 2)
+      ctx.fillStyle = c.accent
+      ctx.beginPath()
+      ctx.moveTo(ax + Math.cos(tangent) * T * 0.14, ay + Math.sin(tangent) * T * 0.14)
+      ctx.lineTo(ax + Math.cos(tangent + 2.4) * T * 0.12, ay + Math.sin(tangent + 2.4) * T * 0.12)
+      ctx.lineTo(ax + Math.cos(tangent - 2.4) * T * 0.12, ay + Math.sin(tangent - 2.4) * T * 0.12)
+      ctx.closePath(); ctx.fill()
+    }
   }
   if (view.memory.jam && view.now < view.memory.jam.until) cross(ctx, px(view.memory.jam.x + 0.5), px(view.memory.jam.y + 0.5), T * 0.22, c.hazard, 3 * k)
 

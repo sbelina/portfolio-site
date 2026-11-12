@@ -1,12 +1,12 @@
-import { createGame, drainEvents, step, tracerPosition, type GameEvent, type GameState, type LevelDef } from '../../src/play/edge-case/engine'
+import { createGame, drainEvents, pockets, step, tracerPosition, type GameEvent, type GameState, type LevelDef, type Turn } from '../../src/play/edge-case/engine'
 
 /** Deterministic scripted player for engine tests. No timing depends on rendering. */
 export class Bot {
   state: GameState
   events: GameEvent[] = []
   constructor(level: LevelDef) { this.state = createGame(level) }
-  private tick(dx = 0, dy = 0, action = false) {
-    step(this.state, { dx, dy, action })
+  private tick(dx = 0, dy = 0) {
+    step(this.state, { dx, dy })
     this.events.push(...drainEvents(this.state))
   }
   /** Move to a tile centre along a straight line. */
@@ -26,7 +26,25 @@ export class Bot {
     for (let i = 0; i < limit; i++) { if (predicate(this.state)) return this; this.tick() }
     throw new Error('Condition never became true')
   }
-  act() { this.tick(0, 0, true); return this }
   hold(dx: number, dy: number, ticks: number) { for (let i = 0; i < ticks; i++) this.tick(dx, dy); return this }
+  /**
+   * Push the arm that turns the junction around the player's pocket the given way (§4a),
+   * hold until it turns, then stop pushing. From NW, east turns clockwise and south
+   * counter-clockwise; the other pockets follow by symmetry.
+   */
+  turn(dir: Turn, limit = 120) {
+    const p = this.state.player
+    const j = this.state.junctions.find(junction => pockets(junction).some(q => q.x === Math.floor(p.x) && q.y === Math.floor(p.y)))
+    if (!j) throw new Error('Bot is not in a junction pocket')
+    const index = pockets(j).findIndex(q => q.x === Math.floor(p.x) && q.y === Math.floor(p.y))
+    const clockwise: [number, number][] = [[1, 0], [0, 1], [-1, 0], [0, -1]]
+    const [dx, dy] = dir === 'cw' ? clockwise[index] : clockwise[(index + 3) % 4].map(v => -v) as [number, number]
+    const before = this.events.length
+    for (let i = 0; i < limit && this.state.status === 'playing'; i++) {
+      this.tick(dx, dy)
+      if (this.events.slice(before).some(e => e.type === 'shift')) return this.settle()
+    }
+    throw new Error(`Junction did not turn ${dir}`)
+  }
   tracer(index = 0) { const t = this.state.tracers[index]; return { ...tracerPosition(t), dir: t.dir } }
 }

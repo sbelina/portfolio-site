@@ -1,14 +1,14 @@
 import type { DiscoveryId } from './engine'
 
 /**
- * KNOWN OPERATIONS and DISCOVERIES. Controls are never hidden: MOVE, SHIFT and
+ * KNOWN OPERATIONS and DISCOVERIES. Controls are never hidden: MOVE, TURN and
  * TRACE are known from the start. The mystery is only in optional discoveries.
  * Clues are observations, not instructions; some deliberately offer nothing.
  */
 export interface Operation { id: string; symbol: string; name: string; text: string; discovery?: DiscoveryId; clue?: string }
 export const operations: Operation[] = [
   { id: 'move', symbol: '↑↓←→', name: 'MOVE', text: 'Navigate the arena.' },
-  { id: 'shift', symbol: '⇧', name: 'SHIFT', text: 'Turn a junction. Whatever sits in its pockets turns with it.' },
+  { id: 'shift', symbol: '↻', name: 'TURN', text: 'Push against an arm of a junction and hold. It turns the way you push, either way, and whatever sits in its pockets turns with it.' },
   { id: 'trace', symbol: '◎', name: 'TRACE', text: 'After a restart, your previous route stays on the map.' },
   { id: 'reroute', symbol: '◇', name: 'RE:ROUTE', discovery: 'reroute', text: 'A tracer carried by a junction leaves on whatever track it lands on.', clue: 'Junctions do not check what they carry.' },
   { id: 'pivot', symbol: '‖', name: 'PIVOT', discovery: 'pivot', text: 'Some junctions carry nothing. They change which way things may pass.', clue: 'Not every junction looks like one.' },

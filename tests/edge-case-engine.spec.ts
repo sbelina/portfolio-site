@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { createGame, fieldPhase, nextDirection, predictPath, reachable, step, idle, tracerPosition, type GameState, type LevelDef } from '../src/play/edge-case/engine'
+import { createGame, fieldPhase, nextDirection, predictPath, PUSH_STEPS, step, idle, tracerPosition, turnJunction, TURN_COOLDOWN, type GameState, type LevelDef } from '../src/play/edge-case/engine'
 import { levels } from '../src/play/edge-case/levels'
 import { Bot } from './support/edge-case-bot'
 
@@ -8,11 +8,11 @@ const level = (code: string) => levels.find(item => item.code === code)!
 const inPocket = (s: GameState, x: number, y: number, index = 0) => { const at = tracerPosition(s.tracers[index]); return Math.floor(at.x) === x && Math.floor(at.y) === y }
 const tileOf = (s: GameState) => ({ x: Math.floor(s.player.x), y: Math.floor(s.player.y) })
 const discovered = (bot: Bot) => bot.events.flatMap(e => e.type === 'discovery' ? [e.id] : [])
-const shiftOnce = (s: GameState) => step(s, { ...idle, action: true })
+const shiftOnce = (s: GameState) => { turnJunction(s, s.junctions[0], 'cw'); step(s, idle) }
 
 test.describe('Edge Case engine: time, movement and structures', () => {
   test('T1 T2: identical inputs produce identical states', () => {
-    const run = () => { const s = createGame(level('001')); for (let i = 0; i < 500; i++) step(s, { dx: i % 90 < 45 ? 1 : -1, dy: i % 200 < 100 ? 1 : 0, action: i % 120 === 60 }); return s }
+    const run = () => { const s = createGame(level('001')); for (let i = 0; i < 500; i++) step(s, { dx: i % 90 < 45 ? 1 : -1, dy: i % 200 < 100 ? 1 : 0 }); return s }
     expect(JSON.stringify({ ...run(), level: 0 })).toBe(JSON.stringify({ ...run(), level: 0 }))
   })
 
@@ -25,37 +25,74 @@ test.describe('Edge Case engine: time, movement and structures', () => {
 
   test('J2 R2: junction arms separate pockets for the player and for tracers alike', () => {
     expect(nextDirection(createGame(level('001')), 3, 5, 1)).toBe(3)
+    // Brief contact (fewer than PUSH_STEPS steps against the arm) never turns it.
     const bot = new Bot(level('000'))
-    bot.hold(1, 0, 40)
+    bot.hold(1, 0, 10)
     expect(bot.state.player.x).toBeLessThan(4)
-    bot.hold(0, 1, 40)
-    expect(bot.state.player.y).toBeLessThan(6)
+    expect(bot.state.shifts).toBe(0)
   })
 
-  test('G1 G3 G4: channel gates pass one axis, turn, and jam when occupied', () => {
+  test('G1 G3 PU4: pushing across a channel gate turns it; pushing from inside it jams', () => {
     const bot = new Bot(level('010'))
     bot.state.player.x = 6.5; bot.state.player.y = 2.5
-    bot.hold(-1, 0, 60)
+    // The gate opens north–south: pushing west into its bar turns it after a short hold.
+    bot.hold(-1, 0, 4)
+    expect(bot.state.gates[0].axis).toBe('ns')
     expect(bot.state.player.x).toBeGreaterThan(6)
-    bot.act()
+    bot.hold(-1, 0, PUSH_STEPS + 4)
     expect(bot.state.gates[0].axis).toBe('ew')
-    bot.hold(-1, 0, 50)
+    expect(bot.events).toContainEqual({ type: 'gate', axis: 'ew' })
+    bot.hold(-1, 0, 40)
     expect(bot.state.player.x).toBeLessThan(5.5)
-    bot.state.player.x = 5.5
-    bot.act()
+    // Standing inside the gate and pushing across it: it cannot turn.
+    bot.state.player.x = 5.5; bot.state.player.y = 2.5; bot.state.player.vx = 0
+    bot.hold(0, -1, PUSH_STEPS + TURN_COOLDOWN + 4)
     expect(bot.events).toContainEqual({ type: 'jammed' })
+    expect(bot.state.gates[0].axis).toBe('ew')
   })
 
-  test('A1: the nearest target wins; at equal distance a channel gate wins', () => {
-    const s = createGame(level('010'))
-    s.player.x = 5.5; s.player.y = 2.5
-    expect(reachable(s)?.kind).toBe('gate')
-    s.player.x = 3.5; s.player.y = 2.5
-    expect(reachable(s)?.kind).toBe('junction')
-    // The midpoint of gate centre (5.5, 2.5) and junction corner (4, 3) is equidistant: ties go to the gate.
-    s.player.x = 4.75; s.player.y = 2.75
-    expect(Math.hypot(5.5 - 4.75, 2.5 - 2.75)).toBeCloseTo(Math.hypot(4 - 4.75, 3 - 2.75), 9)
-    expect(reachable(s)?.kind).toBe('gate')
+  test('PU1 PU2: a push turns a junction the way it would spin it; either way from the same pocket', () => {
+    const cw = new Bot(level('000'))
+    cw.turn('cw')
+    expect(tileOf(cw.state)).toEqual({ x: 4, y: 5 })
+    expect(cw.events).toContainEqual(expect.objectContaining({ type: 'shift', dir: 'cw' }))
+    const ccw = new Bot(level('000'))
+    ccw.turn('ccw')
+    expect(tileOf(ccw.state)).toEqual({ x: 3, y: 6 })
+    expect(ccw.events).toContainEqual(expect.objectContaining({ type: 'shift', dir: 'ccw' }))
+  })
+
+  test('PU1: nothing turns before PUSH_STEPS consecutive pushing steps; releasing resets the count', () => {
+    const s = createGame(level('000'))
+    const push = (n: number) => { for (let i = 0; i < n; i++) step(s, { dx: 1, dy: 0 }) }
+    // Walk into the arm until the push starts counting.
+    for (let i = 0; i < 30 && !s.push; i++) step(s, { dx: 1, dy: 0 })
+    const contact = s.push?.steps ?? 0
+    expect(contact).toBe(1)
+    push(PUSH_STEPS - contact - 1)
+    expect(s.shifts).toBe(0)
+    step(s, idle); step(s, idle)
+    expect(s.push).toBeNull()
+    push(PUSH_STEPS + 3)
+    expect(s.shifts).toBe(1)
+  })
+
+  test('PU3: after a turn the junction rests for TURN_COOLDOWN steps', () => {
+    const s = createGame(level('000'))
+    for (let i = 0; i < 40 && s.shifts === 0; i++) step(s, { dx: 1, dy: 0 })
+    expect(s.junctions[0].cooldown).toBe(TURN_COOLDOWN)
+    // Now in the north-east pocket: pushing south (its clockwise arm) waits out the rest.
+    let steps = 0
+    for (; steps < 120 && s.shifts === 1; steps++) step(s, { dx: 0, dy: 1 })
+    expect(steps).toBeGreaterThanOrEqual(TURN_COOLDOWN)
+  })
+
+  test('PU2: a push straight at the corner, or from outside every pocket, turns nothing', () => {
+    const s = createGame(level('000'))
+    // Outside, against the north tip of the vertical arm, pushing south.
+    s.player.x = 4.2; s.player.y = 4.4
+    for (let i = 0; i < 40; i++) step(s, { dx: 0, dy: 1 })
+    expect(s.shifts).toBe(0)
   })
 
   test('H2: timed fields telegraph a warning before becoming active', () => {
@@ -81,12 +118,11 @@ test.describe('Edge Case engine: time, movement and structures', () => {
 })
 
 test.describe('Edge Case engine: SHIFT (§4)', () => {
-  test('J5: members move one pocket clockwise; four shifts return them (J6); the exit never moves (J5d)', () => {
+  test('J5: clockwise turns move members one pocket clockwise; four return them (J6); the exit never moves (J5d)', () => {
     const bot = new Bot(level('000'))
     const order = [[3, 5], [4, 5], [4, 6], [3, 6], [3, 5]]
     expect(tileOf(bot.state)).toEqual({ x: 3, y: 5 })
-    for (const [x, y] of order.slice(1)) { bot.act(); expect(tileOf(bot.state)).toEqual({ x, y }) }
-    expect(bot.state.player).toMatchObject({ x: 3.5, y: 5.5 })
+    for (const [x, y] of order.slice(1)) { bot.turn('cw'); expect(tileOf(bot.state)).toEqual({ x, y }) }
     const s = createGame(level('010'))
     s.player.x = 3.5; s.player.y = 2.5
     shiftOnce(s)
@@ -172,7 +208,7 @@ test.describe('Edge Case engine: SHIFT (§4)', () => {
 test.describe('Edge Case engine: every level has more than one way through', () => {
   test('000 False Start: shift out north-east, collect both samples, time the tracer', () => {
     const bot = new Bot(level('000'))
-    bot.act().path([4, 4], [6, 4], [5, 4], [5, 5], [4, 5]).act().act().path([3, 7], [3, 8], [1, 8], [1, 9], [3, 8], [3, 7], [3, 6]).act().act()
+    bot.turn('cw').path([4, 4], [6, 4], [5, 4], [5, 5], [4, 5]).turn('cw').turn('cw').path([3, 7], [3, 8], [1, 8], [1, 9], [3, 8], [3, 7], [3, 6]).turn('cw').turn('cw')
     expect(tileOf(bot.state)).toEqual({ x: 4, y: 5 })
     bot.path([4, 4], [4, 3])
     bot.until(s => s.tracers[0].dir === 1 && tracerPosition(s.tracers[0]).x > 5.2)
@@ -181,10 +217,10 @@ test.describe('Edge Case engine: every level has more than one way through', () 
     expect(discovered(bot)).toContain('false-start')
   })
 
-  test('000 False Start: or shift out south-west first', () => {
+  test('000 False Start: or turn the other way, out south-west first', () => {
     const bot = new Bot(level('000'))
-    bot.act().act().act()
-    bot.path([3, 7], [3, 8], [1, 8], [1, 9], [3, 8], [3, 7], [3, 6]).act().act()
+    bot.turn('ccw')
+    bot.path([3, 7], [3, 8], [1, 8], [1, 9], [3, 8], [3, 7], [3, 6]).turn('cw').turn('cw')
     bot.path([4, 4], [6, 4], [4, 4], [4, 3])
     bot.until(s => s.tracers[0].dir === 1 && tracerPosition(s.tracers[0]).x > 5.2)
     bot.path([4, 1])
@@ -195,7 +231,7 @@ test.describe('Edge Case engine: every level has more than one way through', () 
     const bot = new Bot(level('001'))
     bot.path([3, 8], [3, 7], [3, 6])
     bot.until(s => s.tracers[0].dir === 3 && tracerPosition(s.tracers[0]).x < 2.4)
-    bot.act()
+    bot.turn('cw')
     expect(discovered(bot)).not.toContain('reroute')
     bot.path([3, 4], [3, 2], [1, 2], [1, 1], [7, 1], [4, 1])
     expect(bot.state.status).toBe('won')
@@ -204,19 +240,20 @@ test.describe('Edge Case engine: every level has more than one way through', () 
   test('001 Expected Behavior: or carry the tracer away (Re:Route, 0x02) and walk through', () => {
     const bot = new Bot(level('001'))
     bot.path([3, 8], [3, 7], [3, 6])
-    bot.until(s => inPocket(s, 3, 5))
-    bot.act()
+    // Begin the push as the tracer nears the pocket, so the turn lands with its centre inside (J4).
+    bot.until(s => s.tracers[0].dir === 1 && tracerPosition(s.tracers[0]).x > 2.8)
+    bot.turn('cw')
     expect(discovered(bot)).toContain('reroute')
     expect(predictPath(bot.state, bot.state.tracers[0], 12).every(p => p.x >= 4)).toBe(true)
     bot.path([3, 4], [3, 2], [1, 2], [1, 1], [7, 1], [4, 1])
     expect(bot.state.status).toBe('won')
   })
 
-  test('001 Expected Behavior: or strand the tracer off its track (It is not a bug, 0x03)', () => {
+  test('001 Expected Behavior: or turn the other way and strand the tracer off its track (It is not a bug, 0x03)', () => {
     const bot = new Bot(level('001'))
     bot.path([3, 8], [3, 7], [3, 6])
-    bot.until(s => inPocket(s, 3, 5))
-    bot.act().act().act()
+    bot.until(s => s.tracers[0].dir === 1 && tracerPosition(s.tracers[0]).x > 2.6)
+    bot.turn('ccw')
     expect(discovered(bot)).toContain('not-a-bug')
     expect(bot.state.tracers[0].next).toBeNull()
   })
@@ -225,7 +262,7 @@ test.describe('Edge Case engine: every level has more than one way through', () 
     const bot = new Bot(level('010'))
     bot.path([1, 9], [3, 9], [3, 7])
     bot.until(s => tracerPosition(s.tracers[0]).x > 5.5 && s.tracers[0].dir === 1)
-    bot.path([3, 6], [3, 4], [3, 3], [2, 3], [2, 1], [1, 1], [2, 1], [2, 3], [3, 3]).act().act()
+    bot.path([3, 6], [3, 4], [3, 3], [2, 3], [2, 1], [1, 1], [2, 1], [2, 3], [3, 3]).turn('cw').turn('cw')
     expect(bot.state.status).toBe('won')
     expect(discovered(bot)).toEqual(expect.arrayContaining(['technically-correct', 'exception']))
   })
@@ -234,7 +271,7 @@ test.describe('Edge Case engine: every level has more than one way through', () 
     const bot = new Bot(level('010'))
     bot.path([1, 9], [6, 9], [6, 7])
     bot.until(s => tracerPosition(s.tracers[0]).x < 3.5 && s.tracers[0].dir === 3)
-    bot.path([6, 6], [6, 4], [6, 3], [6, 2]).act()
+    bot.path([6, 6], [6, 4], [6, 3], [6, 2]).hold(-1, 0, PUSH_STEPS + 6)
     expect(discovered(bot)).toContain('pivot')
     bot.path([5, 2], [4, 2])
     expect(bot.state.status).toBe('won')
@@ -252,12 +289,16 @@ test.describe('Edge Case engine: discoveries come from rules (§8), not defects'
     expect(discovered(moved)).not.toContain('expected-behavior')
   })
 
-  test('0x09 Full Circle: the fourth shift of one junction', () => {
+  test('0x09 Full Circle: four quarter turns the same way (net rotation)', () => {
     const bot = new Bot(level('000'))
-    bot.act().act().act()
+    bot.turn('cw').turn('cw').turn('cw')
     expect(discovered(bot)).not.toContain('full-circle')
-    bot.act()
+    bot.turn('cw')
     expect(discovered(bot)).toContain('full-circle')
+    // Back and forth is not a full circle: net rotation counts.
+    const swing = new Bot(level('000'))
+    swing.turn('cw').turn('ccw').turn('cw').turn('ccw')
+    expect(discovered(swing)).not.toContain('full-circle')
   })
 
   test('0x08 Off by One: a win one simulation step ahead of a tracer', () => {
@@ -289,7 +330,7 @@ test.describe('Edge Case engine: discoveries come from rules (§8), not defects'
     s.player.x = 3.3; s.player.y = 2.3
     shiftOnce(s)
     expect(s.tile).toMatchObject({ x: 4, y: 2, enteredBy: 'shift' })
-    for (let i = 0; i < 60 && s.status === 'playing'; i++) step(s, { dx: Math.sign(4.5 - s.player.x), dy: Math.sign(2.5 - s.player.y), action: false })
+    for (let i = 0; i < 60 && s.status === 'playing'; i++) step(s, { dx: Math.sign(4.5 - s.player.x), dy: Math.sign(2.5 - s.player.y) })
     expect(s.status).toBe('won')
     expect(s.discovered).toContain('technically-correct')
   })
