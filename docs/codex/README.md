@@ -52,6 +52,8 @@ See [the source evaluation](CMS-EVALUATION.md) and [local writing trial](PRIVATE
 
 ## Inspectable visual slice
 
+[The Atlas semantic proof](ATLAS-SEMANTIC-PROOF.md) records the owner's corrected semantic-only primary geography, independent relationship/route grammar, private evidence reconciliation and isolated synthetic MDS/text comparison. It does not implement a finished Atlas, publish cases or validate the classification with readers.
+
 [Assumed → observed](INSPECTABLE-ASSUMPTIONS.md) records the first synthetic interactive diagram, its structured editorial proposal, isolated preview, acceptance checks and later stages. It does not claim that the remaining diagram types are implemented.
 
 The [investigation reading and private case review slice](CLAIMS-REVIEW-SLICE.md) adds structured workflow, artifact and evidence layers, stable chapter anchors and an authenticated prepared-draft bridge. Generic implementation and invented fixtures are in Git; the actual working case remains restricted and unapproved. This does not add a production publisher.

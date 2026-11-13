@@ -10,8 +10,12 @@
 
 **Connection proposal:** `Usable ≠ worth recommending` may illustrate [Related. Not equivalent.](related-not-equivalent.md) after review.
 
-## Latest owner direction — 30 October (not publication approval)
+## Earlier owner direction — 30 October (superseded on cohort reconciliation)
 
 Owner reports SUS≈70 and program NPS≈−20 among the same six participants. Preserve instrument definitions, sample limits and reported precision; these are neither interchangeable nor a causal equation. Research recovery belongs here; later independent research is not adoption of recommendations. Usability ≠ retention is an inquiry framing, not a demonstrated retention effect.
 
 Exact manuscript, source/rights review and owner approval remain pending.
+
+## Controlling review — 13 November (not publication approval)
+
+The owner now distinguishes a degraded-audio behavioral account from a separate session/score description. Their source relationship is unresolved: do not combine them, attach the reported scores to the behavioral account, or assume that they represent different studies. Preserve the earlier account as history rather than a resolved denominator. Use the behavioral-reconstruction narrative as the proposed case basis; keep score provenance in a separate private evidence account without creating another canonical case identity. Underlying records, instrument denominators, source/rights review and exact publication approval remain pending. See [current evidence rules](../EVIDENCE-RULES.md#owner-evidence-review-reconciliation--13-november-2026).

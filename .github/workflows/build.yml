@@ -37,6 +37,9 @@ jobs:
     - name: Run browser and accessibility checks
       run: npm test
 
+    - name: Verify isolated synthetic semantic layout proof
+      run: npm run test:atlas
+
     - name: Verify isolated private local writing trial
       run: npm run test:studio && npm run test:studio:cases && npm run studio:restart-proof && npm run check:studio
 
@@ -50,4 +53,5 @@ jobs:
           test-results/
           studio-test-results/
           studio-case-test-results/
+          atlas-test-results/
         retention-days: 14

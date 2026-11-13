@@ -15,3 +15,7 @@
 Two connected responses require separate accounts. Sami began unassigned, built the evidence and led the earlier salvage-review change. IAA determines document sufficiency; adjusters release payment. In parallel, Sami raised recurring problems and facilitated administrator meetings to surface practitioner knowledge, examples and procedural differences. This collaborative process informed the guide and separate onboarding/training artifacts. Error-log categories did not determine guide structure. Statewide use is owner-reported. The18% and7.6% observations require independent definitions, scopes and periods; no direct reduction claim.
 
 Exact manuscript, source/rights review and owner approval remain pending.
+
+## Controlling resource review — 13 November (not publication approval)
+
+Keep the three resource identities above distinct. Guide access activity, administrative-program reach and adapted-training persistence require separate records and attribution. An aggregate multi-office/duration account cannot be assigned to each resource until its distribution and observation periods are known. Continued resource use does not establish workflow sustainment or measured effectiveness. The detailed owner review is held privately; underlying usage/process sources and exact candidate approval remain pending. See [current evidence rules](../EVIDENCE-RULES.md#owner-evidence-review-reconciliation--13-november-2026).
