@@ -154,6 +154,10 @@ vite.config.ts.timestamp-*
 # Explicit local synthetic reading build
 dist-fixtures/
 
+# Isolated synthetic semantic proof and browser evidence
+dist-atlas/
+atlas-test-results/
+
 # Private local authoring configuration and output
 .dev.vars*
 dist-studio/

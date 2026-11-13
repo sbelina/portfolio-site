@@ -2,7 +2,7 @@ import { publicPath } from '../public-path'
 import React from 'react'
 
 /** A native disclosure keeps the build note readable without JavaScript. */
-export function ExperimentNote({ readingLayers = false }: { readingLayers?: boolean } = {}) {
+export function ExperimentNote({ readingLayers = false, atlasProof = false }: { readingLayers?: boolean; atlasProof?: boolean } = {}) {
   return (
     <details className="experiment-note">
       <summary><span className="experiment-note__asterisk" aria-hidden="true">*</span><span>About this experiment</span></summary>
@@ -25,6 +25,11 @@ export function ExperimentNote({ readingLayers = false }: { readingLayers?: bool
           <h2>Reading in layers</h2>
           <p>This reading asks whether tracing a checking sequence and inspecting the reasoning, resources and sources helps visitors uncover how an investigation developed. The main account remains available without opening those layers.</p>
           <p>Technical checks exercised native comparisons and disclosures without JavaScript, with reduced motion and at narrow widths. These observations establish interface behavior; whether the layers spark curiosity or improve understanding remains a question for evaluation with readers.</p>
+        </> : null}
+        {atlasProof ? <>
+          <h2>Atlas of Inquiry: semantic proof</h2>
+          <p>Does an inspectable geography add useful understanding beyond the same material as a text index? This isolated proof uses invented cases and an explicit classification rubric. Calculated proximity, explained relationships and editorial reading order remain separate.</p>
+          <p>The input, layout and fitting error are inspectable. Those calculations do not establish that the classification is valid, that real investigations are equivalent, or that readers understand more. Reader evaluation remains to be conducted.</p>
         </> : null}
         <h2>Reveal the hidden work</h2>
         <p>Does retaining a simple process while revealing the work beneath it help visitors inspect what the overview leaves out? This process is illustrative, not case evidence. Its lines encode relationships, not measured duration.</p>
