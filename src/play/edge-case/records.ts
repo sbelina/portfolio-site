@@ -10,6 +10,9 @@ export interface RunRecord {
   title: string
   /** won = complete; partial = left through the exit without the required samples (§9, S4). */
   outcome: 'won' | 'partial' | 'failed'
+  /** Samples collected and needed for complete (absent in records made before 13 November). */
+  samples?: number
+  required?: number
   cause?: 'tracer' | 'field'
   seconds: number
   shifts: number
@@ -45,7 +48,7 @@ export function appendLog(log: RunRecord[], record: RunRecord) {
   return next
 }
 
-export interface Standing { bestSeconds: number | null; fewestActions: number | null; ways: string[]; wins: number; runs: number }
+export interface Standing { bestSeconds: number | null; fewestActions: number | null; ways: string[]; wins: number; runs: number; bestPartial: { samples: number; required: number } | null }
 export function standing(log: RunRecord[], level: string): Standing {
   const runs = log.filter(r => r.level === level)
   const wins = runs.filter(r => r.outcome === 'won')
@@ -55,6 +58,9 @@ export function standing(log: RunRecord[], level: string): Standing {
     ways: [...new Set(wins.map(r => r.method))],
     wins: wins.length,
     runs: runs.length,
+    // L5: the largest insufficient sample, shown only while a level has no complete run.
+    bestPartial: runs.filter(r => r.outcome === 'partial' && typeof r.samples === 'number' && typeof r.required === 'number')
+      .reduce<Standing['bestPartial']>((best, r) => !best || r.samples! > best.samples ? { samples: r.samples!, required: r.required! } : best, null),
   }
 }
 
@@ -102,7 +108,7 @@ export function snapshot(state: GameState, record: RunRecord, palette: Palette) 
   ctx.fillText(`EDGE CASE · FIELD RECORD · ${record.at.slice(0, 16).replace('T', ' ')}`, 14, arena.height + 14)
   ctx.font = '700 22px ui-sans-serif, system-ui, sans-serif'
   ctx.fillStyle = palette.ink
-  ctx.fillText(`${record.code} ${record.title} — ${record.outcome === 'won' ? 'complete' : record.outcome === 'partial' ? 'left early (partial)' : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}`, 14, arena.height + 36)
+  ctx.fillText(`${record.code} ${record.title} — ${record.outcome === 'won' ? 'complete' : record.outcome === 'partial' ? `insufficient sample, n = ${record.samples ?? '?'}/${record.required ?? '?'}` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}`, 14, arena.height + 36)
   ctx.font = '500 15px ui-monospace, Menlo, Consolas, monospace'
   ctx.fillText(`${record.seconds.toFixed(1)} s · ${record.shifts} junction turns · ${record.gateTurns} gate turns · attempt ${record.attempt} · hints ${record.hints}`, 14, arena.height + 70)
   const found = record.discoveries.map(discoveryName).join(' · ')

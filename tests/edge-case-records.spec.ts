@@ -22,9 +22,17 @@ test('L4: standings use wins only; ways counts distinct methods; rank is by time
     run({ seconds: 5, outcome: 'failed', cause: 'tracer', method: '' }),
     run({ level: 'false-start', code: '000', seconds: 9 }),
   ]
-  expect(standing(log, 'shift-happens')).toEqual({ bestSeconds: 18, fewestActions: 1, ways: ['Pivot', 'Carried exit + Exception'], wins: 3, runs: 4 })
+  expect(standing(log, 'shift-happens')).toEqual({ bestSeconds: 18, fewestActions: 1, ways: ['Pivot', 'Carried exit + Exception'], wins: 3, runs: 4, bestPartial: null })
   expect(rankOf(log, log[1])).toEqual({ rank: 1, of: 3 })
   expect(rankOf(log, log[2])).toEqual({ rank: 1, of: 3 })
   expect(rankOf(log, log[0])).toEqual({ rank: 3, of: 3 })
-  expect(standing(log, 'expected-behavior')).toEqual({ bestSeconds: null, fewestActions: null, ways: [], wins: 0, runs: 0 })
+  expect(standing(log, 'expected-behavior')).toEqual({ bestSeconds: null, fewestActions: null, ways: [], wins: 0, runs: 0, bestPartial: null })
+})
+
+test('L5: partial runs are never ranked; the largest insufficient sample is kept', () => {
+  const log = [
+    run({ level: 'expected-behavior', outcome: 'partial', samples: 0, required: 2, method: '' }),
+    run({ level: 'expected-behavior', outcome: 'partial', samples: 1, required: 2, method: '' }),
+  ]
+  expect(standing(log, 'expected-behavior')).toMatchObject({ bestSeconds: null, wins: 0, runs: 2, bestPartial: { samples: 1, required: 2 } })
 })

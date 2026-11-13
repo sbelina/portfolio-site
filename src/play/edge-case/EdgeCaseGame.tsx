@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
+import { useCallback, useEffect, useId, useRef, useState, type CSSProperties, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { collected, createGame, drainEvents, exitOpen, fieldPhase, pockets, reachable, step, STEP, tracerCycle, tracerPosition, type DiscoveryId, type GameEvent, type GameState } from './engine'
 import { levels } from './levels'
@@ -22,6 +22,8 @@ const PAGE_TITLES: Record<MenuPage, string> = {
   root: 'Menu', levels: 'Levels', index: 'System index', log: 'Field log', settings: 'Settings',
   controls: 'Controls', sound: 'Sound', display: 'Display', gameplay: 'Gameplay', how: 'How to play',
 }
+/** V2: while revealing, the system runs at this fraction of its speed. */
+const REVEAL_TIME_SCALE = 0.25
 const MOVE: Record<string, [number, number]> = {
   ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1], ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
 }
@@ -163,6 +165,7 @@ export function EdgeCaseGame() {
   const syncHud = useCallback(() => {
     // Written directly each frame (not through React state) so it never lags the simulation.
     rootRef.current?.setAttribute('data-player-tile', `${game.current.tile.x},${game.current.tile.y}`)
+    rootRef.current?.setAttribute('data-sim-time', game.current.time.toFixed(2))
     rootRef.current?.setAttribute('data-tracer-tiles', game.current.tracers.map(t => { const at = tracerPosition(t); return `${Math.floor(at.x)},${Math.floor(at.y)}` }).join(' '))
     const next = hudOf(game.current)
     const key = JSON.stringify(next)
@@ -283,7 +286,7 @@ export function EdgeCaseGame() {
     const record: RunRecord = {
       id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
       level: level.id, code: level.code, title: level.title, outcome, cause,
-      seconds: Math.round(s.time * 10) / 10, shifts: s.shifts, gateTurns: s.gateTurns, attempt: attempts.current,
+      seconds: Math.round(s.time * 10) / 10, shifts: s.shifts, gateTurns: s.gateTurns, attempt: attempts.current, samples: collected(s), required: s.required,
       hints: hintRef.current, discoveries: found, method: outcome === 'won' ? methodOf(found) : '', at: new Date().toISOString(),
       thumb: root ? thumbnail(s, readPalette(root)) : '',
     }
@@ -334,7 +337,7 @@ export function EdgeCaseGame() {
         if (complete) persist(current => ({ ...current, completed: current.completed.includes(id) ? current.completed : [...current.completed, id] }))
         recordRun(complete ? 'won' : 'partial')
         setScreen('won')
-        setAnnouncement(complete ? `Level ${levels[levelIndex].code} complete.` : `Left level ${levels[levelIndex].code} early: ${collected(game.current)} of ${game.current.required} samples. Logged as partial.`)
+        setAnnouncement(complete ? `Level ${levels[levelIndex].code} complete.` : `Insufficient sample: n = ${collected(game.current)} of ${game.current.required}. Logged, not ranked.`)
       }
     }
   }, [levelIndex, persist, record, recordRun])
@@ -371,7 +374,8 @@ export function EdgeCaseGame() {
     if (!entered || screen !== 'playing') { if (entered) paint(); return }
     let frame = 0, last = performance.now(), accumulator = 0
     const loop = (now: number) => {
-      accumulator += Math.min(0.1, (now - last) / 1000) * settingsRef.current.speed
+      // V2: Reveal slows the whole system (you included) to a quarter, like reading a map's legend.
+      accumulator += Math.min(0.1, (now - last) / 1000) * settingsRef.current.speed * (revealRef.current ? REVEAL_TIME_SCALE : 1)
       last = now
       let steps = 0
       while (accumulator >= STEP && steps < 6 && screenRef.current === 'playing') {
@@ -469,7 +473,9 @@ export function EdgeCaseGame() {
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
     const s = game.current
-    const x = (clientX - rect.left) / tile.current, y = (clientY - rect.top) / tile.current
+    // The arena may be drawn scaled (Reveal eases it back), so measure tiles from its rendered size.
+    const size = rect.width / s.width
+    const x = (clientX - rect.left) / size, y = (clientY - rect.top) / size
     const near = (px: number, py: number, reach: number) => Math.hypot(px - x, py - y) <= reach
     const tx = Math.floor(x), ty = Math.floor(y)
     let found: { target: Inspect; text: string } | null = null
@@ -479,11 +485,14 @@ export function EdgeCaseGame() {
       found = { target: { kind: 'tracer', index: tracer }, text: t.next ? `Tracer: repeats a ${steps}-step route about every ${(steps / t.speed).toFixed(1)} s.` : 'Tracer: stopped, with no track to follow. Still dangerous.' }
     } else if (near(s.player.x, s.player.y, 0.5)) found = { target: { kind: 'player' }, text: 'You.' }
     else {
-      // Most specific first: things on a tile outrank the junction pocket they may sit in (V3).
-      const junction = s.junctions.findIndex(j => near(j.x, j.y, 0.6) || pockets(j).some(p => p.x === tx && p.y === ty))
+      // A tap on a junction's pivot means the junction; otherwise the most specific thing on the
+      // tile outranks the junction pocket it may sit in (V3).
+      const pivot = s.junctions.findIndex(j => near(j.x, j.y, 0.35))
+      const junction = pivot >= 0 ? pivot : s.junctions.findIndex(j => pockets(j).some(p => p.x === tx && p.y === ty))
       const gate = s.gates.findIndex(g => g.x === tx && g.y === ty)
       const sample = s.samples.findIndex(sm => !sm.taken && sm.x === tx && sm.y === ty)
-      if (tx === s.exit.x && ty === s.exit.y) found = { target: { kind: 'exit' }, text: `Exit: leave any time. Complete needs ${s.required} of ${s.samples.length} samples; you have ${collected(s)}.` }
+      if (pivot >= 0) found = { target: { kind: 'junction', index: pivot }, text: 'Junction: push one of its arms to turn it, either way. It carries whatever is in its pockets.' }
+      else if (tx === s.exit.x && ty === s.exit.y) found = { target: { kind: 'exit' }, text: `Exit: leave any time. Complete needs ${s.required} of ${s.samples.length} samples; you have ${collected(s)}.` }
       else if (sample >= 0) found = { target: { kind: 'sample', index: sample }, text: `Sample: ${collected(s)} of ${s.samples.length} collected.` }
       else if (gate >= 0) found = { target: { kind: 'gate', index: gate }, text: `Gate: lets movement through ${s.gates[gate].axis === 'ns' ? 'north–south' : 'east–west'}. It carries nothing.` }
       else if (junction >= 0) found = { target: { kind: 'junction', index: junction }, text: 'Junction: push one of its arms to turn it, either way. It carries whatever is in its pockets.' }
@@ -560,7 +569,8 @@ export function EdgeCaseGame() {
   const trail = [paused ? 'Paused' : 'Edge Case', ...menuPath.slice(1).map(p => PAGE_TITLES[p])]
   const count = discoveries.filter(d => saved.discovered.includes(d.id)).length
   // The message rail (§13, M5): one line at a time, never over the arena.
-  const rail = notice ? { kind: 'Discovery', text: notice } : inspected && screen === 'playing' ? { kind: 'Inspect', text: inspected } : revealing && screen === 'playing' ? { kind: 'Reveal', text: `Routes, turns and timing. Complete: ${hud.taken} of ${game.current.required} samples.` } : tipVisible && hintText && screen === 'playing' ? { kind: `Hint ${hintLevel}`, text: hintText } : hint && screen === 'playing' ? { kind: level.code, text: level.hint } : null
+  // M5: what you just did (Inspect, Reveal) answers first; then what the game noticed (discovery, hint, intro).
+  const rail = inspected && screen === 'playing' ? { kind: 'Inspect', text: inspected } : revealing && screen === 'playing' ? { kind: 'Reveal', text: `Time slowed to ¼. Routes, turns and timing. Complete: ${hud.taken} of ${game.current.required} samples.` } : notice ? { kind: 'Discovery', text: notice } : tipVisible && hintText && screen === 'playing' ? { kind: `Hint ${hintLevel}`, text: hintText } : hint && screen === 'playing' ? { kind: level.code, text: level.hint } : null
 
   const entrance = (
     <div className="ec-entrance">
@@ -618,8 +628,8 @@ export function EdgeCaseGame() {
           </Card>
         )}
         {screen === 'won' && (
-          <Card title={!summary.complete ? 'Left early' : levelIndex === levels.length - 1 ? 'Chapter complete' : 'Level complete'} kicker={`${level.code} · ${level.title}`} focus>
-            {!summary.complete && <p>Partial: {summary.taken} of {summary.required} samples. Logged as partial; complete needs {summary.required}.</p>}
+          <Card title={!summary.complete ? 'Insufficient sample' : levelIndex === levels.length - 1 ? 'Chapter complete' : 'Level complete'} kicker={`${level.code} · ${level.title}`} focus>
+            {!summary.complete && <p className="ec-insufficient"><SampleGauge samples={summary.taken} required={summary.required}/><span>n = {summary.taken} of {summary.required}. Too small a sample to call it complete: logged, not ranked.</span></p>}
             <dl className="ps-summary">
               <div><dt>Time</dt><dd>{summary.seconds.toFixed(1)} s</dd></div>
               <div><dt>Attempts</dt><dd>{summary.attempts}</dd></div>
@@ -938,6 +948,12 @@ function TouchSurface({ floating, onMove, onTap, onReveal, onStart }: { floating
   )
 }
 
+/** A sample diamond filled in proportion to what was collected (L5). Decorative; text carries n. */
+function SampleGauge({ samples, required }: { samples: number; required: number }) {
+  const fill = required > 0 ? Math.max(0, Math.min(1, samples / required)) : 0
+  return <span className="ec-gauge" aria-hidden="true" style={{ '--fill': `${Math.round(fill * 100)}%` } as CSSProperties}/>
+}
+
 function Card({ title, kicker, children, focus, compact, wide }: { title: string; kicker?: string; children: ReactNode; focus?: boolean; compact?: boolean; wide?: boolean }) {
   const ref = useRef<HTMLDivElement>(null)
   const id = useId()
@@ -982,7 +998,7 @@ function FieldLog({ log }: { log: RunRecord[] }) {
               return (
                 <tr key={level.id}>
                   <th scope="row"><span className="ps-code">{level.code}</span></th>
-                  <td>{s.bestSeconds === null ? '—' : `${s.bestSeconds.toFixed(1)} s`}</td>
+                  <td>{s.bestSeconds !== null ? `${s.bestSeconds.toFixed(1)} s` : s.bestPartial ? <span className="ec-insufficient"><SampleGauge samples={s.bestPartial.samples} required={s.bestPartial.required}/><span>n = {s.bestPartial.samples}/{s.bestPartial.required}</span></span> : '—'}</td>
                   <td>{s.fewestActions ?? '—'}</td>
                   <td>{s.ways.length} / ?</td>
                 </tr>
@@ -990,7 +1006,7 @@ function FieldLog({ log }: { log: RunRecord[] }) {
             })}
           </tbody>
         </table>
-        <p className="ps-small">Ways counts distinct methods you have won with. The game does not claim to know them all.</p>
+        <p className="ps-small">Ways counts distinct methods you have won with. The game does not claim to know them all. A partly filled diamond is an insufficient sample: you left before collecting enough.</p>
       </section>
       <section aria-labelledby="ec-log">
         <div className="ps-index-head"><h4 id="ec-log">Recent outcomes</h4><p className="ps-register">{log.length} / 40</p></div>
@@ -1002,7 +1018,7 @@ function FieldLog({ log }: { log: RunRecord[] }) {
                 <li key={record.id}>
                   {record.thumb ? <img className="ps-thumb ps-thumb--small" src={record.thumb} alt=""/> : <span className="ps-thumb ps-thumb--small" aria-hidden="true"/>}
                   <span className="ps-op-body">
-                    <strong><span className="ps-code">{record.code}</span> {record.outcome === 'won' ? `complete · ${record.seconds.toFixed(1)} s` : record.outcome === 'partial' ? `left early · partial · ${record.seconds.toFixed(1)} s` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}</strong>
+                    <strong><span className="ps-code">{record.code}</span> {record.outcome === 'partial' && <SampleGauge samples={record.samples ?? 0} required={record.required ?? 1}/>} {record.outcome === 'won' ? `complete · ${record.seconds.toFixed(1)} s` : record.outcome === 'partial' ? `insufficient sample · n = ${record.samples ?? '?'}/${record.required ?? '?'} · ${record.seconds.toFixed(1)} s` : record.cause === 'field' ? 'caught in a field' : 'caught by a tracer'}</strong>
                     <span>{record.outcome === 'won' ? `${record.method} · rank #${rank} of ${of}` : record.outcome === 'partial' ? 'not ranked' : `after ${record.seconds.toFixed(1)} s`} · attempt {record.attempt}{record.hints ? ` · ${record.hints} hint${record.hints > 1 ? 's' : ''}` : ''}</span>
                   </span>
                 </li>

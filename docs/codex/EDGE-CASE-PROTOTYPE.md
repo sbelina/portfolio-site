@@ -54,6 +54,15 @@ Owner choices: samples are optional but counted; a pad appears wherever the thum
 - **Reveal (V1, V2):** routes are hidden in play. Pinching in (or holding Space) dims the world and shows every tracer's whole route, each junction's turn directions, gate axes, field timing and the exit's collected/required badge. Time keeps running. "Always show the system's paths" in Settings › Display is the accessibility alternative.
 - REVEAL and INSPECT are known operations (index `05 / 09`). Two-finger gestures never zoom the page while the game is entered.
 
+## Slowed Reveal and insufficient samples (13 November)
+
+Owner direction: Reveal slows the timer, so elements move at a fraction of their speed, like zooming out to a map's legend. Partial runs should be noted in a clever way that shows the sample wasn't fully collected.
+
+- **Reveal at ¼ speed (V2):** while revealed, the whole simulation, you included, runs at 0.25×. The arena eases back to 94% with a violet edge (no animation under reduced motion). The fixed step is unchanged, so results stay deterministic.
+- **Insufficient sample (L5):** a partial run is an *insufficient sample, n = collected/required*. A sample diamond is filled in proportion on the end card, in the field log, on the snapshot, and in the standings, where a level with no complete run shows its best n instead of a time. Never ranked.
+- **Message rail order (M5):** responses to what you just did (Inspect, then Reveal) now outrank notices the game raises (discovery, hint, intro); every message is still announced.
+- **Inspect (V3):** a tap on a junction's pivot means the junction, even where the pivot touches a tile holding the exit (found on the emulated iPhone).
+
 ## Private play-test link
 
 A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.

@@ -171,6 +171,24 @@ test('V1 V2: routes are hidden in play; holding Space reveals the system without
   await expect(shell(page)).toHaveAttribute('data-reveal', 'false')
 })
 
+test('V2: Reveal slows the whole system to a quarter of its speed while held', async ({ page }) => {
+  await page.clock.install()
+  await start(page, '010')
+  const simTime = async () => Number(await shell(page).getAttribute('data-sim-time'))
+  const t0 = await simTime()
+  await page.clock.runFor(2_000)
+  const normal = (await simTime()) - t0
+  await page.keyboard.down('Space')
+  await expect(shell(page)).toHaveAttribute('data-reveal', 'true')
+  const t1 = await simTime()
+  await page.clock.runFor(2_000)
+  const revealed = (await simTime()) - t1
+  await page.keyboard.up('Space')
+  expect(normal).toBeGreaterThan(1.8)
+  expect(revealed / normal).toBeGreaterThan(0.2)
+  expect(revealed / normal).toBeLessThan(0.3)
+})
+
 test('V2 I5: two fingers pinching in reveal the system until a finger lifts', async ({ page }) => {
   await start(page, '010')
   const { surface, at } = await touchAt(page)
@@ -188,13 +206,17 @@ test('V2 I5: two fingers pinching in reveal the system until a finger lifts', as
 
 test('V3: a tap inspects what is under it and never moves you', async ({ page }) => {
   await start(page, '010')
-  const { surface, at } = await touchAt(page)
   const before = await shell(page).getAttribute('data-player-tile')
-  await surface.dispatchEvent('pointerdown', at(1, 4, 3))
-  await surface.dispatchEvent('pointerup', at(1, 4, 3, 0))
+  // A real tap is quick: dispatch down and up within one frame, so a slow test machine never turns it into a hold (I4).
+  const tap = (tx: number, ty: number) => page.evaluate(([tx, ty]) => {
+    const surface = document.querySelector('.ec-touch')!, canvas = document.querySelector('.ps-canvas')!.getBoundingClientRect()
+    const size = canvas.width / 9, init = { clientX: canvas.x + tx * size, clientY: canvas.y + ty * size, pointerId: 1, pointerType: 'touch', isPrimary: true, bubbles: true }
+    surface.dispatchEvent(new PointerEvent('pointerdown', { ...init, buttons: 1 }))
+    surface.dispatchEvent(new PointerEvent('pointerup', { ...init, buttons: 0 }))
+  }, [tx, ty])
+  await tap(4, 3)
   await expect(page.locator('.ec-rail')).toContainText('Junction: push one of its arms to turn it, either way.')
-  await surface.dispatchEvent('pointerdown', at(1, 4.5, 2.5))
-  await surface.dispatchEvent('pointerup', at(1, 4.5, 2.5, 0))
+  await tap(4.5, 2.5)
   await expect(page.locator('.ec-rail')).toContainText('Exit: leave any time. Complete needs 2 of 3 samples; you have 0.')
   await expect(shell(page)).toHaveAttribute('data-player-tile', before!)
 })
@@ -226,16 +248,19 @@ test('I4: on touch screens the floating pad is the default and appears under the
 test('S4: leaving through the exit without enough samples is logged as partial', async ({ page }) => {
   await start(page)
   // Out of the sealed pocket, up to the floor below the tracer's lane (row 3).
-  await holdUntil(page, 'ArrowRight', () => expect(status(page)).toContainText('The junction turned clockwise'))
+  // Release the push on the frame the turn carries you into the north-east pocket.
+  await keyUntil(page, 'ArrowRight', 'data-player-tile', /^4,5$/)
   await keyUntil(page, 'ArrowUp', 'data-player-tile', /^4,3$/)
   // Cross only while the tracer is at the far east end of its lane.
   await expect(shell(page)).toHaveAttribute('data-tracer-tiles', /^7,2$/, { timeout: 10_000 })
   await keyUntil(page, 'ArrowUp', 'data-screen', /^won$/)
-  const card = page.getByRole('dialog', { name: 'Left early' })
-  await expect(card).toContainText('Partial: 0 of 2 samples.')
+  const card = page.getByRole('dialog', { name: 'Insufficient sample' })
+  await expect(card).toContainText('n = 0 of 2.')
+  // The sample diamond is filled only as far as collected: empty here.
+  await expect(card.locator('.ec-gauge')).toHaveAttribute('style', /--fill: 0%/)
   await card.getByRole('button', { name: 'Menu' }).click()
   await menu(page, 'Field log')
-  await expect(menuCard(page).getByText(/left early · partial/)).toBeVisible()
-  // Partial runs are logged but never ranked: the 000 standing stays empty.
-  await expect(menuCard(page).getByRole('row', { name: /000/ })).toContainText('—')
+  await expect(menuCard(page).getByText(/insufficient sample · n = 0\/2/)).toBeVisible()
+  // Never ranked: with no complete run, the 000 standing shows its best sample size instead of a time.
+  await expect(menuCard(page).getByRole('row', { name: /000/ })).toContainText('n = 0/2')
 })

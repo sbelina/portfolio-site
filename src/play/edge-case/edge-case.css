@@ -218,3 +218,15 @@ html.ec-open, html.ec-open body { overflow: hidden; overscroll-behavior: none; }
 .ec-pad-base > :nth-child(1) { grid-area: up; } .ec-pad-base > :nth-child(2) { grid-area: right; } .ec-pad-base > :nth-child(3) { grid-area: down; } .ec-pad-base > :nth-child(4) { grid-area: left; }
 .ec-pad-knob { width: 42px; height: 42px; margin: -21px 0 0 -21px; background: var(--ink); box-shadow: inset 0 0 0 4px var(--signal-art); }
 .ps[data-reduced-motion="true"] .ec-pad-base, .ps[data-reduced-motion="true"] .ec-pad-knob { transition: none; }
+
+/* Insufficient sample (L5): the sample diamond, filled only as far as you collected. */
+.ec-gauge { position: relative; display: inline-block; flex: none; width: .9rem; height: .9rem; vertical-align: -.1rem; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: var(--holds); }
+.ec-gauge::after { content: ''; position: absolute; inset: 2px; clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); background: linear-gradient(to top, var(--holds) var(--fill, 0%), var(--panel) var(--fill, 0%)); }
+.ec-insufficient { display: inline-flex; align-items: center; gap: .45rem; }
+p.ec-insufficient { display: flex; align-items: flex-start; }
+p.ec-insufficient .ec-gauge { width: 1.4rem; height: 1.4rem; margin-top: .1rem; }
+
+/* Reveal (V2): the arena eases back, like stepping away to read a map's legend; time slows to ¼. */
+.ec-shell .ps-canvas { transition: transform .35s ease, box-shadow .35s ease; transform-origin: 50% 50%; }
+.ec-shell[data-reveal="true"] .ps-canvas { transform: scale(.94); box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--unresolved), 0 30px 70px -30px var(--shadow); }
+.ec-shell[data-reduced-motion="true"] .ps-canvas { transition: none; }

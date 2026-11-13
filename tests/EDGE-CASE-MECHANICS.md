@@ -138,8 +138,8 @@ Outside the count: the permanent **UNKNOWN** entry. It is never awarded and is l
 Owner direction, 12 November 2026: routes are not visible otherwise. A pinch reveals them, like Eagle Vision.
 
 - **V1** **Hidden by default**: tracer prediction lines are not drawn in normal play. Settings › Display › "Always show the system's paths" draws them permanently (accessibility).
-- **V2** **Reveal**: while held (two fingers pinched in to 85% of their starting distance, or Space held), the world dims and every tracer's whole route (R8), each junction's two turn directions and pockets, each gate's open axis, each field run's time to its next change, and the exit's collected/required badge are drawn. **Time keeps running.** It ends when fewer than two fingers remain, Space is released, or play stops. Reveal never changes the simulation.
-- **V3** **Inspect**: a tap (touch released within 300 ms, moved under 10 px) or a mouse click on the arena describes what is under it in the message rail and highlights only that part, for 4.5 s. Order of hit testing, most specific first: tracer (within 0.7), you (within 0.5), exit, sample, gate, junction (corner within 0.6 or any of its pockets), field. Inspect never moves you.
+- **V2** **Reveal**: while held (two fingers pinched in to 85% of their starting distance, or Space held), the world dims and every tracer's whole route (R8), each junction's two turn directions and pockets, each gate's open axis, each field run's time to its next change, and the exit's collected/required badge are drawn. **Time slows to a quarter** (owner direction, 13 November): the whole simulation, you included, runs at 0.25× while revealed, like stepping back to read a map's legend. The fixed step is unchanged, so results stay deterministic; only real time per step grows. The arena eases back (scales to 94%, none under reduced motion). Reveal ends when fewer than two fingers remain, Space is released, or play stops. Reveal never changes the simulation.
+- **V3** **Inspect**: a tap (touch released within 300 ms, moved under 10 px) or a mouse click on the arena describes what is under it in the message rail and highlights only that part, for 4.5 s. Order of hit testing: tracer (within 0.7), you (within 0.5), a junction's pivot (within 0.35), then the most specific thing on the tile: exit, sample, gate, the junction whose pocket it is, field. Inspect never moves you.
 - **V4** Reveal and Inspect are announced to assistive technology and listed as known operations (REVEAL, INSPECT).
 
 ## 12. Run records, snapshots and ranking (interface rules)
@@ -148,7 +148,8 @@ Owner direction, 12 November 2026: routes are not visible otherwise. A pinch rev
 - **L2** A **snapshot** is a deterministic rendering of the final state with the attempt's full route, the end point (× for failure) and the attempt summary. Players can save a full-size PNG.
 - **L3** **Method** of a win = the set of rule-level techniques used: Re:Route, Strand (0x03), Pivot, Carried exit (0x05), Exception. With none of these, the method is Direct. "Ways through" for a level counts distinct winning methods found; its total is shown as `?` because the game does not claim to know every way.
 - **L4** **Ranking** is personal and local: per level, best time, fewest actions (junction turns + gate turns), and ways through. A run's rank is its position by time among that level's wins. No data leaves the device.
-- **L5** The log keeps the newest 40 records. Storage failure loses records and never blocks play.
+- **L5** **Insufficient sample** (owner direction, 13 November): a partial run (S4) is shown as "insufficient sample, n = collected/required", with a sample diamond filled in that proportion. This appears on the end card, in the field log and on the snapshot, and as the level's best n in the standings while it has no complete run. Partial runs are never ranked.
+- **L6** The log keeps the newest 40 records. Storage failure loses records and never blocks play.
 
 ## 13. Entrance, full screen, menus and layers (interface rules)
 
@@ -166,7 +167,7 @@ Owner direction, 12 November 2026: a readable page with one entrance to a full-s
 - **M5** **Layers**, back to front:
   - **World**: the arena. It takes the largest whole-pixel tile that fits its area, and is quieted, not hidden, beneath cards.
   - **Frame**: one menu button, the level code and title, samples.
-  - **Message rail**: one line at a time. A discovery outranks a stuck hint, and a stuck hint outranks the level intro. Hints persist until progress; the other two fade. The rail sits between the frame and the world and never covers the arena.
+  - **Message rail**: one line at a time. Responses to what you just did come first (Inspect, then Reveal), then what the game noticed: a discovery outranks a stuck hint, which outranks the level intro. Every message is also announced to assistive technology, so nothing outranked is lost. Hints persist until progress; the other two fade. The rail sits between the frame and the world and never covers the arena.
   - **Modal**: menus span everything below the frame over a veil; end-of-attempt cards sit over the world.
   - **Controls**: the movement pad or joystick, on the chosen side. On short landscape screens the controls sit beside the arena.
 - **M6** **Theme**: dark by default, using the design system's observatory surface tokens; light (paper surface) in Settings › Display, persisted. Every colour in the canvas, menus, focus and feedback comes from the same tokens, so semantic colours keep their meaning in both themes: coral hazards, teal samples, violet predictions, orange interaction. While entered, the browser's `theme-color` takes the game's surface and is restored on exit. Depth is restrained: the arena is the lit instrument (a soft edge and shadow), and the chrome around it recedes to hairlines.
