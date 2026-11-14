@@ -2,7 +2,7 @@ import { publicPath } from '../public-path'
 import React from 'react'
 
 /** A native disclosure keeps the build note readable without JavaScript. */
-export function ExperimentNote() {
+export function ExperimentNote({ atlasProof = false }: { atlasProof?: boolean } = {}) {
   return (
     <details className="experiment-note">
       <summary><span className="experiment-note__asterisk" aria-hidden="true">*</span><span>About this experiment</span></summary>
@@ -21,6 +21,11 @@ export function ExperimentNote() {
         <p>The current index links to a preserved review build, keeping earlier design choices and interactions available to inspect. Archiving an experience does not establish that its hypotheses or interpretations have been validated.</p>
         <p>The current design follows Test. Show. Enable., with paper and observatory reading surfaces, native navigation, and inspectable sources and limitations. The asterisk identity is being developed; the typographic mark is temporary. New design and agent review do not approve case writing or establish improved comprehension.</p>
         <p>The current introduction uses one deliberate action for each of three steps and a separate Dive in action; skip and replay remain available. Optional questions beneath the practice moves and nested illustration notes test whether supporting context can be inspected in place while the main account stays readable. Reader comprehension has not been evaluated.</p>
+        <h2>Atlas of Inquiry*</h2>
+        <p>Does an inspectable geography add useful understanding beyond the same material as a text index? That remains an open question.</p>
+        <p>An optional Atlas of Inquiry experiment presents six invented investigations through an explicit classification rubric, an approximate spatial layout, explained relationships, and an equivalent text account. Inputs and fitting error are inspectable. Those calculations do not validate the classification or establish improved understanding; reader evaluation remains to be conducted.</p>
+        <p><a href={publicPath('/lab/atlas/')}>Explore the Atlas of Inquiry — experimental</a>. The asterisk marks an experiment.</p>
+        {atlasProof ? <p>This demonstration keeps semantic proximity, separately explained relationships and editorial reading order distinct. Every case and source passage is invented; none represents a finding from Sami’s investigations.</p> : null}
         <h2>Reveal the hidden work</h2>
         <p>Does retaining a simple process while revealing the work beneath it help visitors inspect what the overview leaves out? This process is illustrative, not case evidence. Its lines encode relationships, not measured duration.</p>
         <p>Technical observations: one reveal opens the extra steps in place; the original track remains visible; HTML and SVG contain the explanation without animation. Optional p5.js motion pauses offscreen and supports pause/reset and reduced motion. These are interface checks, not evidence of improved comprehension. Reader evaluation remains to be done.</p>

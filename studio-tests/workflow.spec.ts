@@ -85,6 +85,7 @@ test('authenticated durable synthetic intake → review → connected preview �
   for(const method of ['get','head'] as const){const response=await anon.request[method](base+path);expect(response.status()).toBe(401);expect(response.headers()['cache-control']).toBe('private, no-store')}
  }
  const html=await(await owner.request.get(base+previewPath)).text();expect(html).toContain('Explained connections');expect(html).not.toContain('Rejected rewrite')
+ expect(html).toContain('href="https://producingcuriosity.com/lab/atlas/"');expect(html).not.toContain(`href="/preview/${candidate.digest}/lab/atlas/"`)
  await page.goto(base+previewPath)
  const details=page.locator('.reading-evidence').first();await details.locator('summary').focus();await page.keyboard.press('Enter');await expect(details).toHaveAttribute('open','')
  const scroll=await page.evaluate(()=>scrollY);await details.locator('summary').click();expect(Math.abs(await page.evaluate(()=>scrollY)-scroll)).toBeLessThan(60)
