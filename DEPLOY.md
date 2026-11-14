@@ -1,3 +1,5 @@
+Current owner authorization, 14 November 2026: link the reviewed Atlas prototype from live navigation as **Atlas of Inquiry*** with an accessible experimental designation. Follow [the scoped Atlas release record](docs/codex/NOV-14-ATLAS-RELEASE.md). This authorizes only the synthetic experiment and necessary integration, not the unpublished authoring branches or real case material.
+
 # Development, preview and release
 
 Current owner authorization, 9 November 2026: correct the interactive intro to three deliberate step actions plus a separate Dive action, add optional nested reading context, and publish the approved current edition. Follow [the bounded release record](docs/codex/NOV-09-INTRO-RELEASE.md). Existing Git/Worker integration is the preferred publisher; no DNS or credential changes are implied. An unauthenticated local Wrangler does not establish that the connected Git publisher is unavailable. Preview success alone is not production success; verify the actual domain after the authorized merge.

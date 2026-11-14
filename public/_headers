@@ -8,6 +8,9 @@ https://:version.:subdomain.workers.dev/*
 /system/*
   X-Robots-Tag: noindex
 
+/lab/atlas/*
+  X-Robots-Tag: noindex, follow
+
 /public-content.json
   X-Robots-Tag: noindex
 /route-manifest.json

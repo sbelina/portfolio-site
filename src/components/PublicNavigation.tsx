@@ -12,6 +12,7 @@ const currentDestinations = [
   { href: '/investigations/', label: 'Investigations' },
   { href: '/patterns/', label: 'Connections' },
   { href: '/practice/', label: 'Practice' },
+  { href: '/lab/atlas/', label: 'Atlas of Inquiry' },
   { href: '/#contact', label: 'Contact' },
 ] as const
 
@@ -21,7 +22,7 @@ export function PublicNavigation({ currentPath, home = false, legacy = false }: 
   const destinations = historical ? legacyDestinations : currentDestinations
   return <nav className="public-navigation" aria-label="Primary navigation">
     <ul>{destinations.map(({ href, label }) => <li key={href}>
-      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-current={!historical && href === currentPath ? 'page' : undefined}>{label}</a>
+      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-label={href === '/lab/atlas/' ? 'Atlas of Inquiry — experimental' : undefined} aria-current={!historical && href === currentPath ? 'page' : undefined}>{label}{href === '/lab/atlas/' ? <span aria-hidden="true">*</span> : null}</a>
     </li>)}</ul>
   </nav>
 }

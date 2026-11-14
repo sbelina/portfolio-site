@@ -1,3 +1,5 @@
+Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and illustrative experiment](NOV-14-ATLAS-RELEASE.md). The synthetic prototype is being published through the existing Git/Worker path; real cases and private authoring branches remain unapproved. See the release PR for exact-head CI, preview and production status.
+
 # Codex context: start here
 
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.

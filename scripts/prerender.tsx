@@ -16,6 +16,7 @@ import { migrationLedger } from './legacy-adapter'
 import { verifyPublicAssets } from './public-assets'
 import baselineAnchors from '../content/legacy-anchors.json' with { type: 'json' }
 import { prerenderHiddenWork } from './build-experiment'
+import { prerenderAtlas } from './build-atlas'
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
 
 const fixture = process.argv.includes('--fixtures')
@@ -24,7 +25,8 @@ const output = path.resolve(outputArgument >= 0 ? process.argv[outputArgument + 
 setPublicBase(process.env.PUBLIC_BASE_PATH ?? '/')
 const origin = siteOrigin
 const empty: PublicProjection = { schemaVersion: 1, entries: [], relationships: [], evidence: [], assets: [], aliases: [] }
-// No production selection/owner approval exists. Never invent one for empty content.
+// No canonical-content selection/approval exists. Static illustrative experiments
+// have separate scoped owner authorization; never invent manuscript approval.
 const release = JSON.parse(await readFile('content/public-release.json', 'utf8'))
 if (release.schemaVersion !== 1 || release.status !== 'no-approved-content') throw new Error('A trusted release loader is required before adding approved production content')
 const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : empty
@@ -49,6 +51,7 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
+await prerenderAtlas(output)
 const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path)]
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))

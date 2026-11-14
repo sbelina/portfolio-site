@@ -111,7 +111,10 @@ async function handle(request:Request,env:Env):Promise<Response> {
   const entry=projection.entries.find(e=>e.path===relative)
   if(relative!=='/' && !entry)return json({error:'Not found'},404)
   const data=readingPageData(projection,entry?'entry':'collection',false,entry?.id)
-  let html=renderToString(<ReadingPage page={data}/>).replaceAll(/(href|src)="\/(?!\/)([^"]*)"/g,`$1="/preview/${scope}/$2"`)
+  let html=renderToString(<ReadingPage page={data}/>).replaceAll(/(href|src)="\/(?!\/)([^"]*)"/g,(_match,attribute:string,relative:string)=>{
+   if(attribute==='href' && ['lab/atlas/','lab/atlas/text/'].includes(relative))return `href="https://producingcuriosity.com/${relative}"`
+   return `${attribute}="/preview/${scope}/${relative}"`
+  })
   const links=projection.entries.map(e=>`<li><a href="/preview/${scope}${escape(e.path)}">${escape(e.title)}</a></li>`).join('')
   html=`<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${escape(entry?.title??'Private readings')} — private preview</title><link rel="stylesheet" href="/preview.css"></head><body><aside class="preview-status"><a href="/">Back to writing review</a><p>${candidate?'Frozen candidate '+candidate.digest:'Current saved draft'} — private, unpublished. No intro or graph required.</p><ul>${links}</ul></aside>${html}</body></html>`
   return new Response(html,{headers:{'Content-Type':'text/html'}})
