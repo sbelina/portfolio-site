@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test'
 
-export const route = '/play/edge-case/'
+export const route = '/lab/edge-case/'
 export const shell = (page: Page) => page.locator('.ec-shell')
 export const samples = (page: Page) => page.locator('.ps-samples')
 export const status = (page: Page) => page.locator('.ec-shell [role="status"][aria-live]')

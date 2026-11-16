@@ -51,10 +51,12 @@ export default function BuildIndex() {
         <h2 id="pc-observatory-title">A separate place for curiosity to operate</h2>
         <p>The experiments test ways of exploring questions and connections. Their cases and fragments are invented for the experiment; they are not my investigations, and none of them is needed to read the rest of the site.</p>
         <ul className="pc-observatory-links">
-          <li><a href={publicPath('/lab/atlas/')}><strong>Atlas of Inquiry<span aria-hidden="true">*</span></strong><span>What does being nearby allow us to conclude? An experimental semantic layout with its classification left inspectable.</span></a></li>
+          <li><a href={publicPath('/lab/atlas/')} aria-label="Atlas of Inquiry — experimental"><strong>Atlas of Inquiry<span aria-hidden="true">*</span></strong><span>What does being nearby allow us to conclude? An experimental semantic layout with its classification left inspectable.</span></a></li>
           <li><a href={publicPath('/lab/atlas/text/')}><strong>The Atlas as text</strong><span>The complete account without the map.</span></a></li>
           <li><a href={publicPath('/lab/atlas/je-ne-sais-qua/')}><strong>Je ne sais qu’a</strong><span>A space for what you notice before you know what you’re looking at.</span></a></li>
+          <li><a href={publicPath('/lab/edge-case/')} aria-label="Edge Case — experimental prototype game"><strong>Edge Case<span aria-hidden="true">*</span></strong><span>A prototype game: every rule has an exception.</span></a></li>
         </ul>
+        <a className="pc-text-link" href={publicPath('/lab/')}>Everything in the observatory <span aria-hidden="true">→</span></a>
       </section>
       <section id="contact" className="pc-section pc-contact" aria-labelledby="contact-title">
         <p className="pc-kicker">Continue the conversation</p><h2 id="contact-title">What needs a better explanation?</h2>

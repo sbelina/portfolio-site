@@ -56,12 +56,12 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
-const prototypeRoutes = await prerenderEdgeCase(output, fixture)
+await prerenderEdgeCase(output)
 await prerenderAtlas(output)
 const inquiryProjection = fixture ? projection : inquiryIllustrationProjection()
 await prerenderInquirySpace(output, inquiryProjection, fixture)
 const illustrativeEntries = fixture ? [] : inquiryProjection.entries
-const routes = [...publicStaticRoutes, ...prototypeRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
+const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
 if (new Set(routes).size !== routes.length || projection.aliases.some(alias => alias.kind === 'path' && routes.includes(alias.path))) throw new Error('An illustrative route collides with canonical content, an alias or a static destination')
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))

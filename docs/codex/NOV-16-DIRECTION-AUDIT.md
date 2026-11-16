@@ -8,7 +8,7 @@ On 16 November the owner supplied the directive *Producing Curiosity — Evidenc
 - [Learning and facilitation specification](LEARNING-FACILITATION-SPEC.md) (deliverable 5)
 - [Reader evaluation protocol](READER-EVALUATION-PROTOCOL.md) (directive §16)
 
-Work is on `claude/jolly-turing-noyo4q`, the branch this session is assigned. It also carries the unpublished Edge Case prototype ([record](EDGE-CASE-PROTOTYPE.md)). The directive excludes game work from this task, so the prototype is unchanged and remains fixtures-only. The owner has separately said the game will become part of the build; that needs its own release decision.
+Work is on `claude/jolly-turing-noyo4q`, the branch this session is assigned. It also carries the Edge Case prototype ([record](EDGE-CASE-PROTOTYPE.md)). Phase 1 left it unchanged. The owner then asked for it to be added to the navigation; see *Navigation decision* below.
 
 ## Phase 0 — reconciliation
 
@@ -49,13 +49,15 @@ Status: **exists** (implemented and live), **refined** (changed in Phase 1), **p
 | `/patterns/` | Related. Not equivalent. | live, unchanged |
 | `/learning/` | Learning and facilitation | local shell only |
 | `/about/` | Background, direction, collaboration | local shell only |
-| `/lab/atlas/`, `/lab/atlas/text/`, `/lab/atlas/je-ne-sais-qua/` | Observatory | live, unchanged |
+| `/lab/` | Observatory hub: every experiment, with labels | this branch, noindex |
+| `/lab/atlas/`, `/lab/atlas/text/`, `/lab/atlas/je-ne-sais-qua/` | Atlas and Je ne sais qu’a | live, unchanged |
+| `/lab/edge-case/` | Edge Case prototype game | this branch, noindex |
 | `/#contact` | Email and LinkedIn | live, unchanged |
 | `/builds/2026-11-04-418efb7/` | Frozen previous edition | live, immutable |
 
 **Visitor journeys.** *Evaluate the work*: home → Investigations → account → practice → contact. *Explore the questions*: home → Related. Not equivalent. → Atlas or its text → Je ne sais qu’a. Neither journey depends on the other, and neither requires the introduction or the map.
 
-**Navigation decision.** The primary menu stays at five items. About and Learning are not added until they have approved content and the menu change has been tested at 320 px / 200 % text, which the current five links already fill.
+**Navigation decision (updated 16 November).** The primary menu stays at five items. **Observatory\*** (`/lab/`) replaces the direct **Atlas of Inquiry\*** link, so that experiments, including Edge Case, share one section rather than one menu slot each. The reasons and rollback are in the [Edge Case record](EDGE-CASE-PROTOTYPE.md#observatory-placement-16-november). About and Learning are not added until they have approved content and the menu change has been tested at 320 px / 200 % text, which the current five links already fill.
 
 ## Component inventory
 

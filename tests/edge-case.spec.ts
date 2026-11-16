@@ -4,11 +4,14 @@ import { existsSync } from 'node:fs'
 import { enter, escapeTo, holdUntil, menu, menuCard, presetSettings, route, samples, shell, start, status } from './support/edge-case-ui'
 
 test.describe('Edge Case prototype page', () => {
-  test('is absent from production output and the production Worker', async ({ request }) => {
-    expect(existsSync('dist/play/edge-case/index.html')).toBe(false)
+  test('is in production output at its observatory route, noindex and outside the sitemap', async ({ request }) => {
+    expect(existsSync('dist/lab/edge-case/index.html')).toBe(true)
     expect(existsSync('dist/edge-case.html')).toBe(false)
     const response = await request.get(`http://127.0.0.1:4175${route}`)
-    expect(response.status()).toBe(404)
+    expect(response.status()).toBe(200)
+    expect(response.headers()['x-robots-tag']).toContain('noindex')
+    expect(await response.text()).toContain('<meta name="robots" content="noindex, follow"')
+    expect(await (await request.get('http://127.0.0.1:4175/sitemap.xml')).text()).not.toContain('edge-case')
   })
 
   test('without JavaScript the page explains the game, controls and status, and is not indexable', async ({ browser, baseURL }) => {
@@ -19,7 +22,7 @@ test.describe('Edge Case prototype page', () => {
       await expect(page.getByRole('heading', { level: 1, name: 'Edge Case' })).toBeVisible()
       await expect(page.getByText('The playable game needs JavaScript.')).toBeVisible()
       await expect(page.getByRole('heading', { name: 'How to play' })).toBeVisible()
-      await expect(page.getByText('Unpublished prototype')).toBeVisible()
+      await expect(page.getByText('Prototype', { exact: true })).toBeVisible()
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /noindex/)
     } finally { await context.close() }
   })

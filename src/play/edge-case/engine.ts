@@ -4,7 +4,6 @@
  * the rules below, never of software defects. Unpublished prototype; the
  * marker keeps it out of production output.
  */
-export const UNPUBLISHED_MARKER = 'EDGE_CASE_UNPUBLISHED_PROTOTYPE_7d3e'
 
 export const STEP = 1 / 60
 export const PLAYER_HALF = 0.3

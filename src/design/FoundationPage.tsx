@@ -6,6 +6,7 @@ import { publicPath } from '../public-path'
 export const foundationPages = {
   practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
   patterns: { path: '/patterns/', title: 'Related. Not equivalent.', description: 'Conceptual distinctions and questions for exploring how explanations change. Case-supported connections remain subject to evidence review.', indexable: true },
+  observatory: { path: '/lab/', title: 'Observatory*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
   system: { path: '/system/', title: 'Design-system specimen', description: 'Inspect the current paper and observatory surfaces, typography, semantic states and native disclosures.', indexable: false },
 } as const
 export type FoundationKind = keyof typeof foundationPages
@@ -46,6 +47,27 @@ function Patterns() {
   </>
 }
 
+const observatory = [
+  { href: '/lab/atlas/', title: 'Atlas of Inquiry', experimental: true, kind: 'Semantic layout', text: 'What does being nearby allow us to conclude? Six invented investigations, with the classification and calculations left inspectable.', also: { href: '/lab/atlas/text/', label: 'Read the Atlas as text' } },
+  { href: '/lab/atlas/je-ne-sais-qua/', title: 'Je ne sais qu’a', experimental: false, kind: 'Editorial space', text: 'A space for what you notice before you know what you’re looking at. Its fragments are invented illustrations.' },
+  { href: '/lab/edge-case/', title: 'Edge Case', experimental: true, kind: 'Prototype game', text: 'Every rule has an exception. Watch how a system repeats, change what you can, and find more than one way through. Not yet tested with players.' },
+  { href: '/experiments/reveal-hidden-work/', title: 'Reveal the hidden work', experimental: false, kind: 'Interaction experiment', text: 'Reveal the work beneath a simplified process. Readable with or without animation.' },
+] as const
+
+function Observatory() {
+  return <>
+    <p className="pc-kicker">The observatory · experimental</p><h1>Observatory<span aria-hidden="true">*</span></h1>
+    <p className="pc-lead">A separate place for curiosity to operate: experiments that test ways of exploring questions and connections.</p>
+    <p className="pc-boundary">Everything here is invented or illustrative. None of it is my investigations or evidence, and none of it is needed to read the rest of the site. The asterisk marks an experiment.</p>
+    <ul className="pc-observatory-index">{observatory.map(item => <li key={item.href}>
+      <p className="pc-kicker">{item.kind}</p>
+      <h2><a href={publicPath(item.href)} aria-label={item.experimental ? `${item.title} — experimental` : undefined}>{item.title}{item.experimental ? <span aria-hidden="true">*</span> : null}</a></h2>
+      <p>{item.text}</p>
+      {'also' in item ? <p><a className="pc-text-link" href={publicPath(item.also.href)}>{item.also.label} →</a></p> : null}
+    </li>)}</ul>
+  </>
+}
+
 function SystemSpecimen({ enhanced, surface, setSurface }: { enhanced: boolean; surface: 'paper' | 'observatory'; setSurface: (value: 'paper' | 'observatory') => void }) {
   return <>
     <p className="pc-kicker">Foundation specimen · interface examples</p><h1>Precision without rigidity.</h1>
@@ -65,6 +87,6 @@ export function FoundationPage({ kind }: { kind: FoundationKind }) {
   useEffect(() => setEnhanced(true), [])
   return <CurrentShell route={foundationPages[kind].path} surface={surface}><div className={`pc-document pc-document--${kind}`}>
     <a className="pc-breadcrumb" href={publicPath('/')}>Producing Curiosity home</a>
-    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
+    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : kind === 'observatory' ? <Observatory/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
   </div></CurrentShell>
 }

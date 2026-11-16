@@ -1,6 +1,6 @@
 # Edge Case prototype
 
-Status, 11 November 2026: **unpublished prototype**, Slice 1 complete for owner review. Working title **EDGE CASE**; tagline *Every rule has an exception*. The owner approved development and testing on `claude/jolly-turing-noyo4q`. **Production deployment requires explicit owner approval and has not happened.** The authoritative rules are in [`tests/EDGE-CASE-MECHANICS.md`](../../tests/EDGE-CASE-MECHANICS.md).
+Status, 16 November 2026: **public-build prototype on the branch**. The owner asked to add the game to the navigation, so it now builds into production output at `/lab/edge-case/`. It is noindex, outside the sitemap and labelled *Prototype*, and is reached through the Observatory* hub (see *Observatory placement* below). It goes live only when the owner approves merging the draft PR. Earlier status, 11 November: unpublished prototype, Slice 1 complete for owner review. Working title **EDGE CASE**; tagline *Every rule has an exception*. The owner approved development and testing on `claude/jolly-turing-noyo4q`. **Production deployment requires explicit owner approval and has not happened.** The authoritative rules are in [`tests/EDGE-CASE-MECHANICS.md`](../../tests/EDGE-CASE-MECHANICS.md).
 
 ## Owner direction (11 November)
 
@@ -118,10 +118,29 @@ A private claude.ai artifact, readable only by the owner: https://claude.ai/arti
 5. **Velocity rotation.** Carrying momentum makes shifts feel physical but can surprise. Keep it, or zero velocity?
 6. **Screen readers.** The game is real-time. A turn-based mode would make it playable with a screen reader alone.
 
+## Observatory placement (16 November)
+
+The owner asked: “Add the edge case into the navigation after determining the best IA structure.” An independent read-only IA review compared three options:
+
+1. a sixth menu link;
+2. an Observatory hub that replaces the Atlas link;
+3. no menu change.
+
+Both the review and the parent chose option 2.
+
+- **Primary menu.** It stays at five links: Investigations, Connections, Practice, **Observatory\***, Contact. The Observatory link goes to the hub at `/lab/` and has the accessible name “Observatory — experimental”.
+- **Current-page marking.** The link uses `aria-current="page"` on the hub itself. It uses `aria-current="true"` on member pages: the Atlas, the Atlas text account, Je ne sais qu’a, Edge Case and Reveal the hidden work. Members are an explicit list, not a URL prefix.
+- **Why a hub.** It scales as experiments are added. It matches the Portfolio / Practice / Observatory framing, and its label is shorter than “Atlas of Inquiry*”, which helps the menu wrap at 320 px. It also avoids a second asterisked menu item.
+- **What it changes.** It replaces the direct Atlas menu link the owner requested on 14 November. That is reversible. Atlas URLs are unchanged, and the Atlas is one activation from the hub and directly linked from the homepage observatory section.
+- **The game page.** It gains the global menu and a “← Observatory” link. The private play-test artifact build omits both.
+- **Indexing.** `/lab/` and `/lab/edge-case/*` send `noindex, follow`, matching the Atlas. Neither is in the sitemap.
+
+**Before going live.** The trademark check on the name “Edge Case” is still outstanding. Slice 2 still awaits owner review.
+
 ## Next
 
 Slice 2 waits for owner review: levels 011–111 (including *404: Path Not Found*), Deadlock, Phase Slip (needs a timed rotation rule) and Backtrace. Then play-testing with people. Before any public name: a trademark check on "Edge Case". After Slice 1 review: resume the dependency updates and README rewrite.
 
 ## Rollback
 
-Remove `src/play/edge-case/`, `edge-case.html`, `scripts/build-play.tsx`, `scripts/build-edge-case-artifact.tsx`, and the `edge-case*` specs, mechanics spec and bot. Then revert the `vite.config.ts`, `package.json`, `scripts/prerender.tsx` and `scripts/audit-public.ts` edits. Production output is unaffected. Foundation changes revert independently: Playwright projects and CI browsers; `public/*.png`, the `apple-touch-icon` links, the manifest and `scripts/render-icons.ts`; and test skips.
+Remove `src/play/edge-case/`, `edge-case.html`, `scripts/build-play.tsx`, `scripts/build-edge-case-artifact.tsx`, and the `edge-case*` specs, mechanics spec and bot. Then revert the `vite.config.ts`, `package.json`, `scripts/prerender.tsx`, `scripts/audit-public.ts`, `src/public-routes.ts` and `public/_headers` edits. To withdraw only the public placement while keeping the game local, revert the 16 November navigation commit; the menu returns to the Atlas link. Foundation changes revert independently: Playwright projects and CI browsers; `public/*.png`, the `apple-touch-icon` links, the manifest and `scripts/render-icons.ts`; and test skips.

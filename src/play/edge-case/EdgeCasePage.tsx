@@ -1,16 +1,18 @@
 import { publicPath } from '../../public-path'
-import { UNPUBLISHED_MARKER } from './engine'
+import { PublicNavigation } from '../../components/PublicNavigation'
 
 /** Static, readable page. The playable game mounts into #edge-case-game. */
-export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string }) {
+export function EdgeCasePage({ homeHref = publicPath('/'), navigation = true }: { homeHref?: string; navigation?: boolean }) {
   return (
-    <div className="pc-site ps-page" data-prototype={UNPUBLISHED_MARKER}>
+    <div className="pc-site ps-page">
       <a className="ps-skip" href="#how-to-play">Skip to how to play</a>
       <header className="ps-page-header">
         <a className="ps-wordmark" href={homeHref}><span aria-hidden="true">*</span> Producing Curiosity</a>
-        <p className="ps-status-tag">Unpublished prototype</p>
+        {navigation ? <PublicNavigation currentPath="/lab/edge-case/"/> : null}
       </header>
       <main className="ps-main">
+        {navigation ? <p className="ps-breadcrumb"><a href={publicPath('/lab/')}>← Observatory</a></p> : null}
+        <p className="ps-status-tag">Prototype</p>
         <p className="ps-kicker">Arcade_01</p>
         <h1>Edge Case</h1>
         <p className="ps-lede">Every rule has an exception. A small game about systems that repeat: watch how things move, change what you can, and find more than one way through.</p>
@@ -44,7 +46,7 @@ export function EdgeCasePage({ homeHref = publicPath('/') }: { homeHref?: string
         </section>
         <section className="ps-about" aria-labelledby="about-heading">
           <h2 id="about-heading">About this prototype</h2>
-          <p>An original game in development, inspired by the timing and pattern-reading of classic arcade navigation games. It is meant to reward noticing, testing and revising: what the game tells you is a description of the system, and not always the whole of it. It has three test levels (000–010). It is not published, and it is not yet tested with players.</p>
+          <p>An original game in development, inspired by the timing and pattern-reading of classic arcade navigation games. It is meant to reward noticing, testing and revising: what the game tells you is a description of the system, and not always the whole of it. It has three test levels (000–010) and has not yet been tested with players.</p>
           <p>Known limits: it is a real-time game and is not yet playable with a screen reader alone.</p>
         </section>
       </main>

@@ -10,7 +10,7 @@ Direction in development, 16 November: [evidence, inquiry and learning audit and
 
 Current approved synthetic build, 16 November: [Je ne sais qu’a release scope/status](NOV-16-INQUIRY-RELEASE.md) and [fragment, pairing and local-authoring contracts](INQUIRY-SPACE.md). Atlas is already live; real cases and the later visual/SWIFT proposal remain separate.
 
-Prototype in development, 11 November: [Edge Case](EDGE-CASE-PROTOTYPE.md), an original browser game at `/play/edge-case/`. It is built only by the local fixtures build and is excluded from production until the owner approves publication. The same change adds WebKit (Safari) browser testing.
+Prototype in development, 11 November; placed in the Observatory on 16 November: [Edge Case](EDGE-CASE-PROTOTYPE.md), an original browser game, now at `/lab/edge-case/` in the branch's public build. It goes live only when the owner approves the merge. The same work added WebKit (Safari) browser testing.
 
 Current interaction/release update, 9 November: [three deliberate intro steps plus a separate Dive action, optional nested context and publication record](NOV-09-INTRO-RELEASE.md). The owner explicitly requested the correction and publication. The new edition's positioning/design remain adopted; historical archive bytes, private drafts and exact-candidate content boundaries remain intact.
 

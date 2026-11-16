@@ -19,7 +19,7 @@ test('homepage offers both directions and a labelled observatory without JavaScr
     const observatory = page.getByRole('region', { name: 'A separate place for curiosity to operate' })
     await expect(observatory).toContainText('invented for the experiment')
     await expect(observatory).toContainText('not my investigations')
-    for (const href of ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/']) {
+    for (const href of ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/lab/']) {
       await expect(observatory.locator(`a[href="${href}"]`)).toHaveCount(1)
       expect((await page.request.get(`${production}${href}`)).status(), href).toBe(200)
     }

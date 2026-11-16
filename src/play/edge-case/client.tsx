@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { EdgeCaseGame } from './EdgeCaseGame'
 import { prepareDownloads } from './records'
 import '../../design/tokens.css'
+import '../../components/public-navigation.css'
 import './edge-case.css'
 
 prepareDownloads()

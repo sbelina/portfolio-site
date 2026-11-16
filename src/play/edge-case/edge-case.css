@@ -8,7 +8,10 @@ html, body { margin: 0; background: var(--paper, #f3efe7); }
 .ps-page-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .25rem 1rem; max-width: 34rem; margin: 0 auto; padding: max(.5rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) .25rem max(1rem, env(safe-area-inset-left)); }
 .ps-wordmark { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; color: var(--ink); font-weight: 700; text-decoration: none; letter-spacing: -.02em; }
 .ps-wordmark > span { color: var(--signal); font: 1.8rem/1 Georgia, serif; padding-top: .35rem; }
-.ps-status-tag { margin: 0; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); padding: .15rem .5rem; }
+.ps-breadcrumb { margin: .5rem 0 0; }
+.ps-breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); }
+.ps-page-header .public-navigation { flex-basis: 100%; }
+.ps-status-tag { display: inline-block; margin: .5rem 0 .75rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); border: 1px dashed var(--line); padding: .15rem .5rem; }
 .ps-main { max-width: 34rem; margin: 0 auto; padding: 0 max(1rem, env(safe-area-inset-right)) 3rem max(1rem, env(safe-area-inset-left)); }
 .ps-main h1 { font-size: 1.6rem; font-weight: 560; letter-spacing: -.04em; line-height: 1.1; margin: .5rem 0 .25rem; }
 .ps-lede { margin: 0 0 .75rem; color: var(--muted); font-size: .95rem; }

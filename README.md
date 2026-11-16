@@ -14,9 +14,13 @@ Sami Belina's applied human systems research and strategy portfolio and field jo
 | --- | --- |
 | `/` | Homepage and statement, with the first-visit introduction: three authored steps, then a separate **Dive in**. See [intro states](docs/INTRO-STATES.md). |
 | `/practice/` | Test. Show. Enable., explained. |
-| `/system/` | Conceptual Connections overview, with a text equivalent for every relationship. |
-| `/patterns/` | Design-system specimen. |
+| `/patterns/` | Connections: **Related. Not equivalent.**, as conceptual distinctions. |
+| `/lab/` | Observatory\*: a hub for the experiments below. Their contents are invented or illustrative; `noindex`. |
+| `/lab/atlas/`, `/lab/atlas/text/` | Atlas of Inquiry\*: a semantic layout of six invented investigations, with a complete text account. |
+| `/lab/atlas/je-ne-sais-qua/` | Je ne sais qu’a: an editorial space with invented fragments. |
+| `/lab/edge-case/` | Edge Case\*: an original prototype puzzle game ([record](docs/codex/EDGE-CASE-PROTOTYPE.md), [mechanics spec](tests/EDGE-CASE-MECHANICS.md)). |
 | `/experiments/reveal-hidden-work/` | Illustrative hidden-work experiment. |
+| `/system/` | Design-system specimen (`noindex`). |
 | `/investigations/` | Investigation collection. It is truthfully empty until case manuscripts receive source, rights and exact-content approval. |
 | `/builds/2026-11-04-418efb7/` | The previous edition as a frozen, `noindex` archive. Its bytes are immutable. |
 
@@ -39,7 +43,7 @@ The presentation follows the adopted [design system](docs/design-system/ADOPTION
 
 Local-only surfaces are never deployed:
 
-- **Fixtures build** (`npm run build:fixtures`): reading, poetry and manuscript templates, plus the unpublished *Edge Case* game prototype ([record](docs/codex/EDGE-CASE-PROTOTYPE.md), [mechanics spec](tests/EDGE-CASE-MECHANICS.md)).
+- **Fixtures build** (`npm run build:fixtures`): reading, poetry and manuscript templates, plus local owner-review shells for About and Learning.
 - **Writing studio** (`npm run studio:*`): an authenticated, loopback-only D1 Worker for private drafting and review.
 
 ## Run

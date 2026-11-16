@@ -27,7 +27,7 @@ const files = await readdir(work)
 if (files.filter(file => file.endsWith('.js')).length !== 1) throw new Error(`Expected one script, got ${files.join(', ')}`)
 const js = (await readFile(path.join(work, 'edge-case.js'), 'utf8')).replaceAll('</script', '<\\/script')
 const css = (await readFile(path.join(work, 'edge-case.css'), 'utf8')).replaceAll('</style', '<\\/style')
-const markup = renderToString(<EdgeCasePage homeHref="https://producingcuriosity.com/"/>)
+const markup = renderToString(<EdgeCasePage homeHref="https://producingcuriosity.com/" navigation={false}/>)
 // The artifact skeleton supplies doctype, head and body; the page supplies title, style and content.
 const html = `<title>Edge Case</title>
 <meta name="robots" content="noindex">
