@@ -8,7 +8,7 @@
 
 **Sources used to draft this:** the existing review outline, the 27 and 30 October owner corrections, the 6 and 16 November evidence rules, and owner statements made in conversation. **No employer document, log, or record was inspected.** Every statement below is therefore *owner-reported* until a source is attached in private storage.
 
-**Public-safety choices in this draft:** no employer name, state, job title, vendor name, internal figure, document title, or internal locator. The salvage vendor is described by role ("the salvage partner"). Figures are held out of this public repository entirely; the owner has a separate private notes file listing them with provenance questions.
+**Public-safety choices in this draft:** no employer name, state, job title, vendor name, exact internal figure, document title, or internal locator. Internal figures appear only as rounded or averaged estimates. The salvage vendor is described by role ("the salvage partner"). Exact figures are held out of this public repository; the owner has a separate private notes file listing them with provenance questions.
 
 ---
 
@@ -72,17 +72,16 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 | S9 | The resources remain in use. | documented_outcome | observed_use | Per-artifact: where, since when, by whom | Scope must be stated separately for each artifact |
 | S10 | Making knowledge shareable may reduce reliance on a few experienced individuals. | hypothesis | designed_or_facilitated | n/a (hypothesis) | Not measured; listed as an open question |
 
-### Figure slots (placeholders only)
+### Figures: rounded estimates only
 
-Owner direction, 16 November: placeholders and averages may be used in drafts. Values stay in private notes until each is verified and its exact wording approved. A slot is a place in the layout, not a claim.
+Owner direction, 16 November: internal figures may appear publicly as rounded or averaged estimates, never as exact counts. Exact values stay in the owner's private notes, outside this repository. Each estimate still needs its source and exact approved wording.
 
-| Slot | Placeholder text | Required before a value appears | Rule |
+| Slot | Proposed estimate wording | Still required | Rule |
 | --- | --- | --- | --- |
-| F1 | `[Rework observation: earlier scope]` | Definition, period, denominator, method, source | Never shown beside F2 or compared with it |
-| F2 | `[Rework observation: later, different scope]` | Same, independently | Never framed as a result of one change |
-| F3 | `[Guide access since upload]` | Where counted, unique or total, date read | Access is not use or effect |
-| F4 | `[Onboarding audience: average new hires per quarter]` | Source and period | Describes the audience, not who delivered training |
-| F5 | `[Continued use: sites × duration, per resource]` | Which resource; start date | One slot per resource; never combined |
+| F1, F2 | **Withheld** (two rework observations) | Separate definition, period, denominator, method, source | The problem is scope, not precision; rounding doesn't fix it. Never shown together or compared. |
+| F3 | Paperwork guide: roughly 30 views a month on average since it was shared | Where views are counted; date read | Access is not use or effect |
+| F4 | About six new hires a quarter on average | Source and period | Describes the audience, not who delivered training |
+| F5 | More than two years across several offices | Which resource has this scope | One resource per figure; never combined |
 
 ### How this case relates to the guiding purpose
 
@@ -108,9 +107,10 @@ Nothing below is approved by this branch. Each item needs Sami's decision or a s
 - [ ] Document the review-timing change: what changed, when, and who decided (S5).
 - [ ] For each resource separately, state where it is used, since when, and by whom (S7–S9). The owner has said guides and training have been used across four offices for more than two years and that this may be said publicly; the evidence rules require naming which resource has that scope before it appears.
 
-**Figures (held out of this repository)**
-- [ ] Decide whether any figure appears publicly at all. Owner direction so far: public versions are external-safe; internal figures are shared live when presenting.
-- [ ] If a figure is used, it needs its own unit, denominator, period, baseline, method and exact approved wording. The two rework observations are never paired or compared.
+**Figures (exact values held out of this repository)**
+- [x] Owner direction, 16 November: rounded or averaged estimates only, never exact internal counts.
+- [ ] Approve or edit each estimate's wording (F3–F5).
+- [ ] Each estimate still needs its unit, period and source. The two rework observations stay withheld and are never paired or compared.
 
 **Privacy and naming**
 - [ ] Employer, state and job title stay unnamed in public copy (current draft: unnamed).

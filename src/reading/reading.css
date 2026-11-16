@@ -119,3 +119,4 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-inquiry-context summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
 .reading-inquiry-context dt { font-weight: 700; }
 .reading-inquiry-context dd { margin: .4rem 0 1.2rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reading-candidate-notice { border-left: 3px solid var(--reading-unresolved); padding: .6rem 1rem; font-weight: 600; }

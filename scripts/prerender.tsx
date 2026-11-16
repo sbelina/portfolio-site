@@ -23,8 +23,13 @@ import { inquiryIllustrationProjection } from '../src/inquiry-space/illustration
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
 
 const fixture = process.argv.includes('--fixtures')
+// Local owner-review preview of an UNAPPROVED candidate. Noindex, marked non-production, never deployed.
+const candidate = process.argv.includes('--candidate')
+if (fixture && candidate) throw new Error('Fixture and candidate previews are separate builds')
+const preview = fixture || candidate
 const outputArgument = process.argv.indexOf('--output')
-const output = path.resolve(outputArgument >= 0 ? process.argv[outputArgument + 1] : fixture ? 'dist-fixtures' : 'dist')
+const output = path.resolve(outputArgument >= 0 ? process.argv[outputArgument + 1] : fixture ? 'dist-fixtures' : candidate ? 'dist-candidate' : 'dist')
+if (candidate && path.basename(output) === 'dist') throw new Error('Candidate previews never write to the production output directory')
 setPublicBase(process.env.PUBLIC_BASE_PATH ?? '/')
 const origin = siteOrigin
 const empty: PublicProjection = { schemaVersion: 1, entries: [], relationships: [], evidence: [], assets: [], aliases: [] }
@@ -32,7 +37,7 @@ const empty: PublicProjection = { schemaVersion: 1, entries: [], relationships: 
 // have separate scoped owner authorization; never invent manuscript approval.
 const release = JSON.parse(await readFile('content/public-release.json', 'utf8'))
 if (release.schemaVersion !== 1 || release.status !== 'no-approved-content') throw new Error('A trusted release loader is required before adding approved production content')
-const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : empty
+const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : candidate ? (await import('../content/candidates/claims-operations')).claimsCandidatePreviewProjection() : empty
 const escapeJson = (value: unknown) => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029')
 const [homeTemplate, readingTemplate, foundationTemplate] = await Promise.all([readFile(path.join(output, 'index.html'), 'utf8'), readFile(path.join(output, 'reading.html'), 'utf8'), readFile(path.join(output, 'foundation.html'), 'utf8')])
 const legacyIds = new Set([...renderToString(<App />).matchAll(/\bid="([^"]+)"/g)].map(match => match[1]))
@@ -49,7 +54,7 @@ if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--ap
 const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () => homeMarkup)
   .replace('data-edition="current"', fixture ? 'data-edition="legacy"' : 'data-edition="current"')
   .replace('name="color-scheme" content="light"', fixture ? 'name="color-scheme" content="dark"' : 'name="color-scheme" content="light"')
-  .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !fixture, website: true }))
+  .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !preview, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
@@ -62,19 +67,19 @@ const illustrativeEntries = fixture ? [] : inquiryProjection.entries
 const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
 if (new Set(routes).size !== routes.length || projection.aliases.some(alias => alias.kind === 'path' && routes.includes(alias.path))) throw new Error('An illustrative route collides with canonical content, an alias or a static destination')
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
-  const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
+  const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !preview && !!route }))
     .replace('<html lang="en">', !fixture || !!data.entry?.inquirySpace ? '<html lang="en" data-edition="current">' : '<html lang="en">')
     .replace('<!--reading-html-->', () => renderToString(<ReadingPage page={data} />))
     .replace('<!--reading-data-->', () => `<script id="reading-data" type="application/json">${escapeJson(data)}</script>`)
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-await page('investigations/index.html', readingPageData(projection, 'collection', fixture), 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
-for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
+await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
+for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) }, `${entry.title}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, entry.summary, entry.path)
 for (const entry of illustrativeEntries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(inquiryProjection, 'entry', false, entry.id, inquirySpacePath), illustrative: true }, `${entry.title} — synthetic illustration · Producing Curiosity`, entry.summary, entry.path, false)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
 for (const [kind, metadata] of Object.entries(foundationPages)) {
-  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !fixture }))
+  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !preview }))
     .replace('data-page=""', `data-page="${kind}"`)
     .replace('<!--foundation-html-->', () => renderToString(<FoundationPage kind={kind as FoundationKind}/>))
   const target = path.join(output, metadata.path.slice(1), 'index.html')
@@ -89,16 +94,16 @@ for (const asset of verifyPublicAssets(projection, id => {
   const target = path.join(output, asset.url.slice(1)); await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, asset.bytes)
 }
 await writeFile(path.join(output, 'public-content.json'), JSON.stringify(projection))
-if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
+if (preview) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
 const historicalRoutes = await mountBuildArchive(output)
-await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
+await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture: preview, ...(candidate ? { candidate: true } : {}), routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
 await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title, kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
-const indexableRoutes = fixture || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
+const indexableRoutes = preview || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
 await mkdir('docs/codex/generated', { recursive: true })
-if (publicBase() === '/' && !fixture) await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
+if (publicBase() === '/' && !preview) await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
 // No generic Vite shell may turn an unknown URL into a soft 200.
 await rm(path.join(output, 'reading.html'))
 await rm(path.join(output, 'foundation.html'))
-console.log(`Prerendered ${routes.length + historicalRoutes.length} routes (${fixture ? 'explicit local synthetic fixtures' : 'production-safe; no approved canonical content'}).`)
+console.log(`Prerendered ${routes.length + historicalRoutes.length} routes (${fixture ? 'explicit local synthetic fixtures' : candidate ? 'LOCAL UNAPPROVED CANDIDATE PREVIEW; never deploy' : 'production-safe; no approved canonical content'}).`)

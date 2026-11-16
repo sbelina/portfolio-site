@@ -35,6 +35,8 @@ The portfolio and the Atlas have different jobs. The homepage's hiring path does
 | `scripts/audit-public.ts` | Adds the candidate canary to forbidden public markers. |
 | `docs/codex/review-candidates/claims-operations-publication-candidate.md` | New. Short and full Claims candidate, statements with kinds and evidence needs, and the outstanding approval checklist. |
 | `tests/evidence-first.spec.ts` | New focused tests. Three existing tests updated for the new H1. |
+| `content/candidates/claims-operations.ts`, `scripts/prerender.tsx` (`--candidate`), `src/reading/*` (candidate labels), `package.json`, `wrangler.candidate.jsonc`, `.gitignore`, `tsconfig.tools.json` | Local candidate preview of the Claims page (see below). |
+| `tests/claims-candidate.spec.ts` | Schema validity, approval-boundary rejection, estimate-only wording, production exclusion. |
 
 **Deliberately unchanged:** navigation, intro (three steps plus Dive), Atlas and Je ne sais qu’a code and semantics, design tokens, asterisk placeholder, Practice and Connections pages, immutable archive bytes, `content/public-release.json` (`no-approved-content`), `docs/codex/page-review.json` approvals (all `null`).
 
@@ -51,9 +53,19 @@ Network installs were unavailable in the session that prepared this branch, so `
 - Syntax transpile of every changed TypeScript/TSX file with TypeScript 6 (`transpileModule`): no diagnostics. This is not a type-check.
 - Server render of `BuildIndex` with React 19.2.8 in both states (no approved investigation; one synthetic approved entry), plus Chrome screenshots at 1440×900, 390×844 and 320×740 using the source CSS. The hero evidence link is in the first screen at 1440×900 and 390×844. **At 320×740 it falls just below the first screen.**
 - Archive checks by script: every summary anchor and title used exists in the frozen review HTML; the archive contains no withdrawn Claims figures.
-- `ReadingPage` was not rendered (it needs the pinned zod 4, which was unavailable).
+- Claims candidate page and candidate homepage: rendered server-side with React 19.2.8 and a no-op schema stand-in (schemas loaded, nothing validated), then screenshotted. The real `npm run build:candidate` has not run.
+- The empty-state `ReadingPage` was not rendered.
 
 Required before merge: run the four repository checks with the pinned toolchain, including `tests/evidence-first.spec.ts`, and inspect `dist/` for the canary and for the previous-edition link. Then do a manual keyboard and screen-reader pass on `/` and `/investigations/`.
+
+## Claims candidate page (local preview only)
+
+Owner request, 16 November: “Build claims.” The Claims candidate now exists as a typed entry (`content/candidates/claims-operations.ts`) using the reserved stable ID, the investigation narrative schema, ten classified statements and three callouts. It is `editorialState: review`, `visibility: restricted`, and has no attached evidence, so the projection validator rejects it. A test proves this.
+
+- `npm run build:candidate` writes `dist-candidate/`: the homepage with Claims as the evidence target, the Investigations collection and `/investigations/claims-operations/`. Every page is labelled “unapproved candidate”. The output is noindex, has no sitemap entries, writes `_headers` noindex, and is marked non-production in `route-manifest.json`, so the public audit rejects it. The candidate token is visible on the page and forbidden in production output.
+- `npm run preview:candidate` serves it locally through `wrangler.candidate.jsonc`, which is local-only with no workers.dev or preview URLs. **Never deploy this output.** Noindex is not privacy.
+- Figures follow the owner's 16 November direction: rounded or averaged estimates only, never exact internal counts. The two rework observations stay withheld because their problem is scope, not precision. Exact values stay in the owner's private notes, outside the repository.
+- Production `npm run build` is unchanged: it still renders no approved content and has no Claims route.
 
 ## Rollback
 
