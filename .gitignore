@@ -154,12 +154,18 @@ vite.config.ts.timestamp-*
 # Explicit local synthetic reading build
 dist-fixtures/
 
+# Atlas review output and isolated test artifacts
+dist-atlas/
+atlas-test-results/
+studio-case-test-results/
+
 # Private local authoring configuration and output
 .dev.vars*
 dist-studio/
 .studio-local/
 .studio-password
 studio-test-results/
+inquiry-studio-test-results/
 
 # Private artifact test builds
 dist-artifact/

@@ -1,0 +1,50 @@
+.atlas-proof { max-width:78rem; margin:auto; padding:clamp(1rem,4vw,3rem); font:1.05rem/1.65 system-ui,sans-serif; overflow-wrap:anywhere; }
+.atlas-proof * { box-sizing:border-box; }
+.atlas-proof a { color:inherit; text-underline-offset:.2em; overflow-wrap:anywhere; }
+.atlas-proof :is(a,summary,input):focus-visible { outline:3px solid var(--focus); outline-offset:4px; }
+.atlas-proof :is(h1,h2,h3) { line-height:1.18; }
+.atlas-proof h1 { font:normal clamp(2.5rem,6vw,4.8rem)/1.1 var(--serif); max-width:17ch; margin:.4em 0; }
+.atlas-proof h2 { font:normal clamp(1.8rem,3vw,2.6rem)/1.2 var(--serif); }
+.atlas-proof h3 { font-size:1.3rem; }
+.atlas-proof p,.atlas-proof blockquote { max-width:76ch; }
+.atlas-header { display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:space-between; padding-bottom:1.5rem; border-bottom:1px solid var(--line); }
+.atlas-header nav { display:flex; flex-wrap:wrap; gap:.5rem 1.2rem; }
+.atlas-header a { display:inline-flex; align-items:center; min-height:44px; }
+.atlas-brand { font-weight:700; text-decoration:none; }
+.atlas-brand span { margin-right:.5rem; color:var(--signal); font-size:1.7rem; }
+.atlas-skip { position:absolute; left:1rem; top:1rem; transform:translateY(-200%); background:var(--paper); padding:1rem; z-index:3; }
+.atlas-skip:focus { transform:none; }
+.atlas-warning,.atlas-limit { border-left:3px solid var(--unresolved); padding:.8rem 1rem; background:var(--panel); }
+.atlas-intro { padding:1rem 0; }
+.atlas-lead { font-size:1.3rem; }
+.atlas-kicker { color:var(--signal); font:.8rem/1.5 monospace; text-transform:uppercase; letter-spacing:.07em; }
+.atlas-proof main > section { margin:3rem 0; padding-top:1rem; border-top:1px solid var(--line); }
+.atlas-weights { display:flex; flex-wrap:wrap; gap:.5rem 2rem; }
+.atlas-map-controls > label { display:inline-block; padding:.7rem .4rem; cursor:pointer; max-width:calc(100% - 2rem); vertical-align:middle; }
+.atlas-map-controls > input { width:1.2rem; height:1.2rem; accent-color:var(--signal); }
+.atlas-figure { margin:1rem 0; }
+.atlas-figure svg { display:block; width:100%; height:32rem; background:var(--panel); border:1px solid var(--line); }
+.atlas-figure svg g { fill:var(--ink); }
+.atlas-figure svg g circle { fill:var(--paper); stroke:var(--ink); stroke-width:.004; }
+
+.atlas-edge { stroke:var(--muted); color:var(--muted); }
+.atlas-edge--interpreted { stroke-dasharray:.025 .018; }
+.atlas-map-controls:has(>input:checked) [data-visible-in-filter="false"] { visibility:hidden; }
+.atlas-figure figcaption { padding:1rem 0; max-width:80ch; }
+.atlas-mobile-note { display:none; }
+.atlas-case-links { display:flex; flex-wrap:wrap; padding:0; list-style:none; gap:.5rem 1.5rem; }
+.atlas-case-links a { display:inline-block; min-height:44px; padding:.5rem 0; }
+.atlas-case,.atlas-account-list > li { padding:1.2rem 0; border-bottom:1px solid var(--soft-line); scroll-margin-top:1rem; }
+.atlas-proof blockquote { margin:1rem 0; padding:1rem; background:var(--panel); border-left:2px solid var(--line); font-family:var(--serif); }
+.atlas-proof summary { cursor:pointer; min-height:44px; padding:.7rem 0; font-weight:600; overflow-wrap:anywhere; }
+.atlas-proof dt { font-weight:700; text-transform:capitalize; }
+.atlas-proof dd { margin:0 0 1rem; max-width:75ch; }
+.atlas-account-list,.atlas-pair-list { list-style:none; padding:0; }
+.atlas-pair-list > li { border-bottom:1px solid var(--soft-line); }
+.atlas-proof code { overflow-wrap:anywhere; white-space:normal; }
+.atlas-proof li { overflow-wrap:anywhere; }
+.atlas-footer { margin-top:3rem; border-top:1px solid var(--line); padding-top:1.5rem; }
+@media(max-width:600px) { .atlas-figure svg { display:none; } .atlas-mobile-note { display:block; } .atlas-map-controls > input,.atlas-map-controls > label,.atlas-map-controls > p { display:none; } .atlas-proof { padding:1rem; } }
+@media(prefers-reduced-motion:reduce) { .atlas-proof * { scroll-behavior:auto!important; animation:none!important; transition:none!important; } }
+@media print { .atlas-map-controls > input,.atlas-map-controls > label { display:none; } details > * { display:block; } }
+@media(forced-colors:active) { .atlas-figure svg g circle { fill:Canvas; stroke:CanvasText; } .atlas-edge { stroke:CanvasText; color:CanvasText; } .atlas-figure svg text { fill:CanvasText; } }

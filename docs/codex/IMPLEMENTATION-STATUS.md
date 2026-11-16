@@ -1,3 +1,5 @@
+Current 14 November work: [Atlas of Inquiry* public experiment](NOV-14-ATLAS-RELEASE.md), scoped to navigation and the reviewed synthetic prototype. Real canonical content remains unselected. Actual release status is recorded in its PR; historical implementation records follow.
+
 Current 9 November task: [explicit four-action intro, nested-context layers and release record](NOV-09-INTRO-RELEASE.md). The owner authorized correction and publication. See that record and the release PR for actual checks and hosted status; approval for canonical case manuscripts remains absent. Earlier design/slice records below are historical.
 
 Current30October review branch: see [the audit, changes and verification record](OCT-30-REVIEW.md). This supersedes older positioning on this branch; no new case approval or deployment. Earlier records below remain historical.

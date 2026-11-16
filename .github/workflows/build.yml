@@ -37,8 +37,14 @@ jobs:
     - name: Run browser and accessibility checks
       run: npm test
 
+    - name: Verify public illustrative Atlas
+      run: npm run test:atlas
+
     - name: Verify isolated private local writing trial
       run: npm run test:studio && npm run studio:restart-proof && npm run check:studio
+
+    - name: Verify isolated inquiry authoring additions
+      run: npm run test:studio:inquiry
 
     - name: Upload browser evidence
       if: always()
@@ -49,4 +55,6 @@ jobs:
           playwright-report/
           test-results/
           studio-test-results/
+          atlas-test-results/
+          inquiry-studio-test-results/
         retention-days: 14

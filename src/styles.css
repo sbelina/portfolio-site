@@ -415,6 +415,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   min-height: 40px;
   padding: .48rem .74rem;
   font-size: .78rem;
+  max-width: 100%;
+  overflow-wrap: anywhere; /* long hashtags must wrap under enlarged text spacing (WCAG 1.4.12) */
 }
 .tag-button, .quiet-button, .connections-list button, .footer-replay, .trace-links button { cursor: pointer; }
 .tag-static { display: inline-flex; align-items: center; color: var(--muted); }

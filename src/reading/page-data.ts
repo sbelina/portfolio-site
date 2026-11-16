@@ -13,14 +13,18 @@ export type ReadingContext = {
 export type ReadingPageData = {
   kind: 'collection' | 'entry' | 'not-found'
   fixture: boolean
+  /** Published synthetic experiment, distinct from an unpublished fixture. */
+  illustrative?: boolean
   entry?: PublicEntry
   projection: ReadingContext
   /** Sanitized build-time HTML for current entry blocks only. */
   renderedMarkdown: Record<string, string>
+  /** Explicit build context; private entry previews need not expose a collection. */
+  inquirySpacePath?: string
 }
 const metadata = ({ id, kind, path, title, summary }: PublicEntry): LinkedEntry => ({ id, kind, path, title, summary })
 
-export function readingPageData(projection: PublicProjection, kind: ReadingPageData['kind'], fixture: boolean, entryId?: string): ReadingPageData {
+export function readingPageData(projection: PublicProjection, kind: ReadingPageData['kind'], fixture: boolean, entryId?: string, inquirySpacePath?: string): ReadingPageData {
   const empty: ReadingContext = { entries: [], relationships: [], evidence: [], assets: [] }
   if (kind === 'not-found') return { kind, fixture, projection: empty, renderedMarkdown: {} }
   if (kind === 'collection') return { kind, fixture, projection: { ...empty, entries: projection.entries.filter(entry => entry.kind === 'investigation' || entry.kind === 'pattern').map(metadata) }, renderedMarkdown: {} }
@@ -33,7 +37,7 @@ export function readingPageData(projection: PublicProjection, kind: ReadingPageD
   const evidence = projection.evidence.filter(item => evidenceIds.has(item.id))
   const assetIds = new Set([...evidence.flatMap(item => item.assetIds), ...entry.blocks.flatMap(block => block.type === 'image' ? [block.assetId] : [])])
   return {
-    kind, fixture, entry: structuredClone(entry),
+    kind, fixture, entry: structuredClone(entry), ...(inquirySpacePath ? { inquirySpacePath } : {}),
     projection: {
       entries: projection.entries.filter(item => linkedIds.has(item.id)).map(({ id, path, title }) => ({ id, path, title })),
       relationships: structuredClone(relationships), evidence: structuredClone(evidence),

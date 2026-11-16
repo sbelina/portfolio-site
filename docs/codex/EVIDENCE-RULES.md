@@ -51,3 +51,7 @@ New narrative classifications distinguish direct observation, measured result, d
 ## Design-kit reconciliation — 6 November 2026
 
 The owner agreed that the incoming design examples must retain these stronger rules: the approximately 18% and 7.6% observations have different scopes, are not a before/after series, and cannot share an assumed unit or denominator. Each needs its own definition, period, method, source and exact approved wording. Earlier review before payment is owner-reported; increased elapsed payment waiting has not been established. Neither an agent recommendation nor a conceptual readiness field authenticates approval. Only an authenticated owner action bound to the exact application/content/relationship/alias/asset candidate can authorize publication. Design adoption alone approves no real case manuscript.
+
+## Atlas evidence review — 16 November 2026
+
+The latest owner-supplied review supersedes the earlier shorthand combining telematics accounts: retain the five-participant behavioral-recovery narrative separately from the six-session SUS/NPS summary until study identifiers, instruments and denominators are reconciled. Neither measures retention. Claims guide access, administrative onboarding reach and adapted-training continued use describe different resources; do not combine their populations or assign a four-office/two-year scope to each without source evidence. Workflow adoption, resource sustainment and effectiveness remain distinct. The synthetic Atlas/curiosity approval publishes none of these real-case claims.

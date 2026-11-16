@@ -1,0 +1,4 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": ["src/experiments/atlas", "scripts/build-atlas.tsx", "atlas-tests"]
+}

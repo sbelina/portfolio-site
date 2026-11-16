@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "test": "npm run build && playwright test",
     "test:ui": "playwright test --ui",
+    "test:atlas": "tsc -p tsconfig.atlas.json && playwright test --config playwright.atlas.config.ts",
     "check:deploy": "wrangler deploy --dry-run",
     "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --mode fixtures --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
     "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc",
@@ -20,6 +21,7 @@
     "studio:migrate": "wrangler d1 execute DB --local --config wrangler.studio.jsonc --file migrations/0001_studio.sql",
     "studio:dev": "wrangler dev --local --config wrangler.studio.jsonc --ip 127.0.0.1 --port 4180",
     "test:studio": "playwright test --config playwright.studio.config.ts",
+    "test:studio:inquiry": "playwright test --config playwright.inquiry-studio.config.ts",
     "check:studio": "wrangler deploy --dry-run --config wrangler.studio.jsonc",
     "studio:restart-proof": "tsx scripts/studio-restart-proof.ts"
   },

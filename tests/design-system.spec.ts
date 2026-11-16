@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { readFile } from 'node:fs/promises'
 
 const origin = 'http://127.0.0.1:4175'
-const destinations = [['Investigations', '/investigations/'], ['Connections', '/patterns/'], ['Practice', '/practice/'], ['Contact', '/#contact']] as const
+const destinations = [['Investigations', '/investigations/'], ['Connections', '/patterns/'], ['Practice', '/practice/'], ['Atlas of Inquiry — experimental', '/lab/atlas/'], ['Contact', '/#contact']] as const
 
 for (const route of ['/', '/practice/', '/patterns/', '/system/']) {
   test(`current edition has initial reading, real menus and no required animation on ${route}`, async ({ browser }) => {

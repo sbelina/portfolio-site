@@ -1,8 +1,12 @@
+Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and illustrative experiment](NOV-14-ATLAS-RELEASE.md). The synthetic prototype is being published through the existing Git/Worker path; real cases and private authoring branches remain unapproved. See the release PR for exact-head CI, preview and production status.
+
 # Codex context: start here
 
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
 ## Current direction — 6 November 2026
+
+Current approved synthetic build, 16 November: [Je ne sais qu’a release scope/status](NOV-16-INQUIRY-RELEASE.md) and [fragment, pairing and local-authoring contracts](INQUIRY-SPACE.md). Atlas is already live; real cases and the later visual/SWIFT proposal remain separate.
 
 Prototype in development, 11 November: [Edge Case](EDGE-CASE-PROTOTYPE.md), an original browser game at `/play/edge-case/`. It is built only by the local fixtures build and is excluded from production until the owner approves publication. The same change adds WebKit (Safari) browser testing.
 
