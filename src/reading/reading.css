@@ -116,3 +116,10 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-inquiry-context summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
 .reading-inquiry-context dt { font-weight: 700; }
 .reading-inquiry-context dd { margin: .4rem 0 1.2rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.reading-empty h2 { font-size: 1.15rem; margin: 2rem 0 .75rem; }
+.reading-account-parts, .reading-meanwhile { padding-left: 1.25rem; max-width: 65ch; }
+.reading-account-parts li, .reading-meanwhile li { margin-block: .5rem; }
+.reading-meanwhile { list-style: none; padding-left: 0; }
+.reading-meanwhile a { display: inline-flex; align-items: center; min-height: 44px; }
+.reading-meanwhile span { display: block; color: var(--reading-muted); }

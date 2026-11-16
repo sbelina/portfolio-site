@@ -36,9 +36,9 @@ export default function BuildIndex() {
         </div>
         <InquiryIllustration/>
       </section>
-      <nav className="pc-journeys" aria-label="Explore the portfolio">
-        <a href={publicPath('/investigations/')}><span className="pc-kicker">Evaluate my work</span><strong>Explore investigations <span aria-hidden="true">→</span></strong><span>Questions, contributions, evidence, and what remains unresolved.</span></a>
-        <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore my questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood.</span></a>
+      <nav className="pc-journeys" aria-label="Choose a direction">
+        <a href={publicPath('/investigations/')}><span className="pc-kicker">Evaluate the work</span><strong>Examine the investigations <span aria-hidden="true">→</span></strong><span>Questions, contributions, evidence, and limits. Reviewed accounts are being prepared; until then the collection says so plainly.</span></a>
+        <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore the questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood, then follow them into the experiments.</span></a>
       </nav>
       <section className="pc-section" aria-labelledby="pc-practice-title">
         <div className="pc-section-heading"><p className="pc-kicker">The practice</p><h2 id="pc-practice-title">Test. Show. Enable.</h2></div>
@@ -46,6 +46,16 @@ export default function BuildIndex() {
         <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
       </section>
       <section className="pc-section pc-evidence-promise" aria-labelledby="pc-know-title"><p className="pc-kicker">The evidence commitment</p><h2 id="pc-know-title">How I Know</h2><p>Make the sources, methods, interpretations, and limitations inspectable. An observation is not an explanation; a proposed change is not a measured result.</p><p>Useful knowledge should return to affected people and communities, as well as the people making decisions.</p></section>
+      <section className="pc-section pc-observatory" aria-labelledby="pc-observatory-title">
+        <p className="pc-kicker">The observatory · experimental</p>
+        <h2 id="pc-observatory-title">A separate place for curiosity to operate</h2>
+        <p>The experiments test ways of exploring questions and connections. Their cases and fragments are invented for the experiment; they are not my investigations, and none of them is needed to read the rest of the site.</p>
+        <ul className="pc-observatory-links">
+          <li><a href={publicPath('/lab/atlas/')}><strong>Atlas of Inquiry<span aria-hidden="true">*</span></strong><span>What does being nearby allow us to conclude? A semantic map with its classification left inspectable.</span></a></li>
+          <li><a href={publicPath('/lab/atlas/text/')}><strong>The Atlas as text</strong><span>The complete account without the map.</span></a></li>
+          <li><a href={publicPath('/lab/atlas/je-ne-sais-qua/')}><strong>Je ne sais qu’a</strong><span>A space for what you notice before you know what you’re looking at.</span></a></li>
+        </ul>
+      </section>
       <section id="contact" className="pc-section pc-contact" aria-labelledby="contact-title">
         <p className="pc-kicker">Continue the conversation</p><h2 id="contact-title">What needs a better explanation?</h2>
         <a href="mailto:hello@sbelina.com">Email Sami Belina <ExternalArrow/></a><a href="https://www.linkedin.com/in/transplantsam">LinkedIn <ExternalArrow/></a>

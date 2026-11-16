@@ -49,6 +49,10 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-journeys .pc-kicker { margin: 0; }
 .pc-journeys strong { font-size: clamp(1.25rem,2.2vw,1.8rem); font-weight: 550; line-height: 1.35; text-decoration: underline; text-underline-offset: .25em; }
 .pc-journeys a > span:last-child { color: var(--muted); max-width: 40ch; }
+.pc-observatory-links { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; }
+.pc-observatory-links a { display: flex; flex-direction: column; gap: .4rem; min-height: 44px; padding-top: 1rem; border-top: 1px solid var(--line); text-decoration: none; }
+.pc-observatory-links strong { font-weight: 550; text-decoration: underline; text-underline-offset: .25em; overflow-wrap: anywhere; }
+.pc-observatory-links span:not([aria-hidden]) { color: var(--muted); max-width: 34ch; }
 .pc-section { margin-block: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
 .pc-section > p:not(.pc-kicker), .pc-document > p { max-width: 65ch; }
 .pc-section-heading { margin-bottom: 2.5rem; }
@@ -137,7 +141,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
   /* Give enlarged option words the full measure across system-font metrics. */
   .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
-  .pc-journeys { grid-template-columns: 1fr; }
+  .pc-journeys, .pc-observatory-links { grid-template-columns: 1fr; }
   .pc-journeys a + a { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .pc-inquiry-list > div { grid-template-columns: 1fr; gap: .5rem; }
   .pc-contact a + a { margin-left: 0; }
@@ -147,3 +151,9 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(prefers-reduced-motion:reduce) { .pc-site *, .pc-site *::before, .pc-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media(forced-colors:active) { .pc-site :is(a,summary,input):focus-visible { outline-color: Highlight; } .pc-state { border-color: CanvasText; } }
 @media print { .pc-header,.pc-footer,.pc-skip { display: none; } .pc-site { background: white; color: black; } .pc-main { width: 100%; } }
+
+/* Local owner-review shells (fixtures build only). */
+.pc-proposal-banner { border: 2px dashed var(--unresolved); padding: 1rem 1.25rem; margin-bottom: 2rem; max-width: 70ch; }
+.pc-proposal-banner p { margin: 0; }
+.pc-proposal-pending { border-left: 3px solid var(--unresolved); padding-left: 1rem; color: var(--muted); }
+.pc-proposal ol, .pc-proposal ul { max-width: 65ch; }
