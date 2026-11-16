@@ -72,6 +72,18 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 | S9 | The resources remain in use. | documented_outcome | observed_use | Per-artifact: where, since when, by whom | Scope must be stated separately for each artifact |
 | S10 | Making knowledge shareable may reduce reliance on a few experienced individuals. | hypothesis | designed_or_facilitated | n/a (hypothesis) | Not measured; listed as an open question |
 
+### Figure slots (placeholders only)
+
+Owner direction, 16 November: placeholders and averages may be used in drafts. Values stay in private notes until each is verified and its exact wording approved. A slot is a place in the layout, not a claim.
+
+| Slot | Placeholder text | Required before a value appears | Rule |
+| --- | --- | --- | --- |
+| F1 | `[Rework observation: earlier scope]` | Definition, period, denominator, method, source | Never shown beside F2 or compared with it |
+| F2 | `[Rework observation: later, different scope]` | Same, independently | Never framed as a result of one change |
+| F3 | `[Guide access since upload]` | Where counted, unique or total, date read | Access is not use or effect |
+| F4 | `[Onboarding audience: average new hires per quarter]` | Source and period | Describes the audience, not who delivered training |
+| F5 | `[Continued use: sites × duration, per resource]` | Which resource; start date | One slot per resource; never combined |
+
 ### How this case relates to the guiding purpose
 
 The purpose behind the site (creating conditions in which different people can genuinely contribute to what happens next) shows up here as **evidence of facilitation**, not of outcome. Administrators' practical knowledge shaped shared resources (S6–S7). Whether that made the team more independently capable is **not established**. S10 records it as an open question, and the case makes no claim about it.
