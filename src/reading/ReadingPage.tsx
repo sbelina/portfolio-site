@@ -189,20 +189,20 @@ const accountParts = [
   ['Orientation', 'The question, the setting, the period and scope, and my actual role.'],
   ['Initial interpretation', 'What people believed or expected, why that was plausible, and what called it into question.'],
   ['Investigation', 'Sources, methods, alternative explanations, constraints and the decisions they shaped.'],
-  ['Contribution', 'What I did, what was shared, what others adopted, and what remained a proposal.'],
-  ['What followed', 'Documented uptake, the limits of measurement and attribution, and the next useful question.'],
+  ['Contribution', 'What I did, what was shared, what, if anything, others adopted, and what remained a proposal.'],
+  ['What followed', 'Any documented uptake, the limits of measurement and attribution, and the next useful question.'],
 ] as const
 
 /** An honest empty collection that still gives the reader somewhere to go. */
 function CollectionStatus() {
   return <div className="reading-empty">
-    <p><strong>No reviewed investigation has been selected for this edition yet.</strong> Full case manuscripts remain subject to source and publication review. A case appears here only after its exact wording, sources, rights and attribution have been approved, so nothing on this page stands in for a finding.</p>
+    <p><strong>No reviewed investigation has been selected for this edition yet.</strong> Full case manuscripts remain subject to source and publication review. A case will appear here only after Sami approves its exact wording, sources, rights and attribution, so nothing on this page stands in for a finding.</p>
     <section aria-labelledby="collection-structure-title"><h2 id="collection-structure-title">What each investigation will show</h2>
       <ol className="reading-account-parts">{accountParts.map(([title, text]) => <li key={title}><strong>{title}.</strong> {text}</li>)}</ol>
     </section>
     <section aria-labelledby="collection-meanwhile-title"><h2 id="collection-meanwhile-title">Meanwhile</h2>
       <ul className="reading-meanwhile">
-        <li><a href={publicPath(`${archive.reviewPath}#work`)}>Review the previous edition’s investigation summaries →</a> <span>Preserved as published then; not re-reviewed for this edition.</span></li>
+        <li><a href={publicPath(`${archive.reviewPath}#work`)}>Review the previous edition’s investigation summaries →</a> <span>From the previous reviewed build (4 November 2026). Not re-reviewed for this edition.</span></li>
         <li><a href={publicPath('/practice/')}>Read the inquiry practice →</a> <span>How the investigations are approached.</span></li>
         <li><a href={publicPath('/patterns/')}>Explore the distinctions →</a> <span>Where two things are related but not the same.</span></li>
         <li><a href={publicPath('/#contact')}>Ask about the work directly →</a></li>

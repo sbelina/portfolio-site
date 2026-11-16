@@ -37,7 +37,7 @@ export default function BuildIndex() {
         <InquiryIllustration/>
       </section>
       <nav className="pc-journeys" aria-label="Choose a direction">
-        <a href={publicPath('/investigations/')}><span className="pc-kicker">Evaluate the work</span><strong>Examine the investigations <span aria-hidden="true">→</span></strong><span>Questions, contributions, evidence, and limits. Reviewed accounts are being prepared; until then the collection says so plainly.</span></a>
+        <a href={publicPath('/investigations/')}><span className="pc-kicker">Evaluate the work</span><strong>Examine the investigations <span aria-hidden="true">→</span></strong><span>Questions, contributions, evidence, and limits. No reviewed account is published yet; the collection says so plainly.</span></a>
         <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore the questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood, then follow them into the experiments.</span></a>
       </nav>
       <section className="pc-section" aria-labelledby="pc-practice-title">
@@ -51,7 +51,7 @@ export default function BuildIndex() {
         <h2 id="pc-observatory-title">A separate place for curiosity to operate</h2>
         <p>The experiments test ways of exploring questions and connections. Their cases and fragments are invented for the experiment; they are not my investigations, and none of them is needed to read the rest of the site.</p>
         <ul className="pc-observatory-links">
-          <li><a href={publicPath('/lab/atlas/')}><strong>Atlas of Inquiry<span aria-hidden="true">*</span></strong><span>What does being nearby allow us to conclude? A semantic map with its classification left inspectable.</span></a></li>
+          <li><a href={publicPath('/lab/atlas/')}><strong>Atlas of Inquiry<span aria-hidden="true">*</span></strong><span>What does being nearby allow us to conclude? An experimental semantic layout with its classification left inspectable.</span></a></li>
           <li><a href={publicPath('/lab/atlas/text/')}><strong>The Atlas as text</strong><span>The complete account without the map.</span></a></li>
           <li><a href={publicPath('/lab/atlas/je-ne-sais-qua/')}><strong>Je ne sais qu’a</strong><span>A space for what you notice before you know what you’re looking at.</span></a></li>
         </ul>

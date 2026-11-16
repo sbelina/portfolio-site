@@ -4,8 +4,8 @@ import { publicPath } from '../public-path'
 
 /**
  * Local-only page shells for owner review (directive of 16 November 2026, Phase 1).
- * Only `npm run build:fixtures` renders them. The production build refuses them and
- * the public audit rejects the marker below. Nothing here is approved wording.
+ * Only `npm run build:fixtures` renders them; the production build skips them, and
+ * the public audit rejects the marker below if they ever reach `dist/`. Nothing here is approved wording.
  */
 export const proposalMarker = 'OWNER_REVIEW_PROPOSAL_16NOV'
 export const proposalPages = {
@@ -19,9 +19,9 @@ function Pending({ children }: { children: ReactNode }) {
 }
 
 function Banner() {
-  return <aside className="pc-proposal-banner" aria-label="Review status" data-marker={proposalMarker}>
+  return <div className="pc-proposal-banner" role="note">
     <p><strong>Local review shell. Not published, not approved.</strong> Structure and candidate wording for owner review. Every factual statement below needs confirmation before it can appear on the public site, and no section implies completed outcomes.</p>
-  </aside>
+  </div>
 }
 
 function About() {
@@ -34,7 +34,7 @@ function About() {
       <Pending>Confirm the institution, degree name and how the owner wants it phrased. No advanced degree, teaching credential or research qualification is implied.</Pending>
     </section>
     <section className="pc-section" aria-labelledby="about-practice"><h2 id="about-practice">Where the work happens</h2>
-      <p>Applied research across organizational, technological and civic settings, drawing on research, design, facilitation and systems inquiry.</p>
+      <p>Candidate: applied research across organizational, technological and civic settings, drawing on research, design, facilitation and systems inquiry.</p>
       <Pending>Formal job titles, employers and periods, kept separate from cross-functional projects and independent work. Link each to an approved investigation once one exists.</Pending>
     </section>
     <section className="pc-section" aria-labelledby="about-why"><h2 id="about-why">Why the combination is useful</h2>
@@ -58,7 +58,7 @@ function Learning() {
     <p className="pc-kicker">Learning &amp; facilitation</p><h1>Designing conditions for other people’s understanding</h1>
     <p className="pc-lead">Three different kinds of material, kept apart so that experience, method and aspiration are not mistaken for one another.</p>
     <section className="pc-section" aria-labelledby="learning-demonstrated"><p className="pc-kicker">1 · Demonstrated practice</p><h2 id="learning-demonstrated">What has been done</h2>
-      <p>Facilitation, training, mentoring, workshop design and knowledge transfer from existing professional work.</p>
+      <p>Candidate: facilitation, workshop design, training resources and knowledge transfer from existing professional work. Each needs a source; nothing here says who delivered every session.</p>
       <Pending>Choose one substantiated case, preferably the Claims knowledge-development work or a documented workshop, and supply sanitized artifacts. It stays unpublished until its wording, sources and rights are approved.</Pending>
       <h3>Each learning-design case shows</h3><ol>{learningCase.map(item => <li key={item}>{item}</li>)}</ol>
     </section>
@@ -79,5 +79,5 @@ function Learning() {
 
 export function ProposalPage({ kind }: { kind: ProposalKind }) {
   const page = proposalPages[kind]
-  return <CurrentShell route={page.path}><article className="pc-document pc-proposal">{kind === 'about' ? <About/> : <Learning/>}</article></CurrentShell>
+  return <CurrentShell route={page.path}><article className="pc-document pc-proposal" data-marker={proposalMarker}>{kind === 'about' ? <About/> : <Learning/>}</article></CurrentShell>
 }

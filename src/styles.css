@@ -640,6 +640,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
   min-height: 36px;
   border: 1px solid var(--soft-line);
   color: var(--ink);
+  max-width: 100%;
+  overflow-wrap: anywhere; /* #accessibility must wrap at 320px under enlarged spacing */
 }
 .graph-entry-tags button:hover,
 .graph-entry-tags button:focus-visible { border-color: var(--ink); color: var(--ink); }
@@ -794,7 +796,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible {
 }
 
 @media (max-width: 940px) {
-  .field-notes-heading, .writing-card { grid-template-columns: 1fr; }
+  .field-notes-heading, .writing-card { grid-template-columns: minmax(0, 1fr); }
   .writing-meta > p { max-width: 34rem; }
 }
 
