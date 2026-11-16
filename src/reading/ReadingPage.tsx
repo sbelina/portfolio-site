@@ -4,6 +4,8 @@ import { InvestigationNarrative } from './InvestigationNarrative'
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
+import { inquiryForms, inquiryModes, pairingLevels } from '../inquiry-space/labels'
+import { inquirySpaceTitle } from '../inquiry-space/paths'
 import archive from '../../content/build-archive.json'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
@@ -14,7 +16,7 @@ type Block = PublicEntry['blocks'][number]
 
 const relationWords = {
   supports: 'supports', challenges: 'challenges', extends: 'extends', illustrates: 'illustrates',
-  contradicts: 'contradicts', depends_on: 'depends on', emerged_from: 'emerged from', shares_pattern: 'shares a pattern with',
+  contradicts: 'contradicts', depends_on: 'depends on', emerged_from: 'emerged from', shares_pattern: 'shares a pattern with', paired_with: 'is paired with',
 } as const
 
 function dateLabel(value: string | null) {
@@ -105,12 +107,21 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Re
           const target = projection.entries.find(item => item.id === relationship.toId)
           if (!source || !target) return null
           const other = source.id === entry.id ? target : source
-          const direction = relationship.type === 'shares_pattern' ? 'Shared association' : source.id === entry.id ? 'Outgoing relationship' : 'Incoming relationship'
+          const direction = relationship.exploration ? pairingLevels[relationship.exploration.level] : relationship.type === 'shares_pattern' ? 'Shared association' : source.id === entry.id ? 'Outgoing relationship' : 'Incoming relationship'
           return (
             <li key={relationship.id}>
               <p className="reading-relation-type">{direction}</p>
               <p className="reading-relation-statement"><strong>{source.title}</strong> {relationWords[relationship.type]} <strong>{target.title}</strong>.</p>
               <p>{relationship.rationale}</p>
+              {relationship.exploration ? <>
+                <p><strong>Where the comparison breaks:</strong> {relationship.exploration.boundary}</p>
+                {relationship.exploration.usefulQuestion ? <p><strong>A question it opens:</strong> {relationship.exploration.usefulQuestion}</p> : null}
+                <p>{relationship.exploration.level === 'supported' ? relationship.evidenceIds.length ? 'Inspect the cited evidence and its limits. This pairing does not create an Atlas map edge.' : 'Support has not been supplied; publication validation will reject this draft claim.' : 'This is an authored comparison, not evidence of a shared mechanism or equivalent effects.'}</p>
+              </> : null}
+              {relationship.evidenceIds.map(id => {
+                const evidence = projection.evidence.find(item => item.id === id)
+                return evidence ? <EvidenceDisclosure evidence={evidence} key={id}/> : null
+              })}
               <a className="reading-related-link" href={publicPath(other.path)}>{other.title} <span aria-hidden="true">→</span></a>
             </li>
           )
@@ -122,45 +133,54 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Re
 
 function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData }) {
   const poetry = entry.format === 'poetry'
+  const fragment = entry.inquirySpace?.presentation === 'fragment'
+  const inquiry = entry.inquirySpace
+  const showContribution = !poetry && !fragment
   const extraEvidence = page.projection.evidence.filter(evidence => entry.evidenceIds.includes(evidence.id) && !entry.blocks.some(block => block.type === 'evidence' && block.evidenceId === evidence.id))
   return (
-    <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}`}>
+    <article className={`reading-article${poetry ? ' reading-article--poetry' : ''}${fragment ? ' reading-article--fragment' : ''}`}>
       <nav className="reading-breadcrumbs" aria-label="Breadcrumb">
         <a href={publicPath("/")}>Home</a><span aria-hidden="true">/</span>
         {entry.kind === 'investigation' ? <><a href={publicPath("/investigations/")}>Investigations</a><span aria-hidden="true">/</span></> : null}
+        {inquiry && page.inquirySpacePath ? <><a href={publicPath(page.inquirySpacePath)}>{inquirySpaceTitle}</a><span aria-hidden="true">/</span></> : null}
         <span aria-current="page">{entry.title}</span>
       </nav>
       <header className="reading-entry-header">
-        <p className="reading-kicker">{poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : ''}</p>
+        <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : ''}</p>
         <h1 id="reading-title">{entry.title}</h1>
         <p className="reading-summary">{entry.summary}</p>
         {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} /> : null}
         <dl className="reading-metadata">
-          <div><dt>{page.fixture ? 'Fixture revision date' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
+          <div><dt>{page.fixture ? 'Fixture revision date' : page.illustrative ? 'Illustration revision date' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
           {entry.updatedAt !== entry.createdAt ? <div><dt>Updated</dt><dd><time dateTime={entry.updatedAt ?? undefined}>{dateLabel(entry.updatedAt)}</time></dd></div> : null}
           <div><dt>Revision</dt><dd>{entry.revision}</dd></div>
         </dl>
-        {!poetry ? <section className="reading-contribution" id="contribution" aria-labelledby="reading-contribution-title">
+        {inquiry && inquiry.epistemicMode !== 'expression' ? <p className="reading-inquiry-mode">{inquiryModes[inquiry.epistemicMode]}</p> : null}
+        {inquiry?.prompt ? <p className="reading-inquiry-prompt">{inquiry.prompt}</p> : null}
+        {showContribution ? <section className="reading-contribution" id="contribution" aria-labelledby="reading-contribution-title">
           <h2 id="reading-contribution-title">Contribution and scope</h2>
           <p>{entry.contribution}</p>
         </section> : null}
       </header>
-      <nav className="reading-contents" aria-label="On this page">
+      {!fragment || entry.blocks.length > 1 ? <nav className="reading-contents" aria-label="On this page">
         <h2>In this reading</h2>
         <ol>
-          {!poetry ? <li><a href="#contribution">Contribution and scope</a></li> : null}
+          {showContribution ? <li><a href="#contribution">Contribution and scope</a></li> : null}
           {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
           {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
           {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
         </ol>
-      </nav>
+      </nav> : null}
       {entry.investigation ? <InvestigationNarrative narrative={entry.investigation} evidence={page.projection.evidence} /> : null}
       <div className="reading-body">
         {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
       </div>
+      {inquiry && [inquiry.origin, inquiry.observation, inquiry.possibleExplanations, inquiry.competingInterpretations, inquiry.unresolvedQuestion].some(value => value?.trim()) ? <details className="reading-inquiry-context"><summary>Read the surrounding thought</summary><dl>{([
+        ['Origin', inquiry.origin], ['What caught attention', inquiry.observation], ['Possible explanations', inquiry.possibleExplanations], ['Other interpretations', inquiry.competingInterpretations], ['What remains open', inquiry.unresolvedQuestion],
+      ] as const).filter(([, value]) => value?.trim()).map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></details> : null}
       {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
-      <p className="reading-back"><a href={publicPath("/investigations/")}>← All investigations</a></p>
+      <p className="reading-back">{inquiry && page.inquirySpacePath ? <a href={publicPath(page.inquirySpacePath)}>← Return to {inquirySpaceTitle}</a> : <a href={publicPath("/investigations/")}>← All investigations</a>}</p>
     </article>
   )
 }
@@ -179,17 +199,19 @@ function Collection({ projection, fixture }: { projection: ReadingContext; fixtu
 
 export function ReadingPage({ page }: { page: ReadingPageData }) {
   const entry = page.kind === 'entry' ? page.entry : undefined
+  const current = !page.fixture || !!entry?.inquirySpace
   let content: ReactNode
   if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} />
   else if (entry) content = <EntryView entry={entry} page={page} />
   else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
-    <div className={`reading-page${page.fixture ? '' : ' pc-site pc-reading'}`}>
+    <div className={`reading-page${current ? ' pc-site pc-reading' : ''}`}>
       <a className="reading-skip" href="#reading-main">Skip to reading</a>
-      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}><span aria-hidden="true">{page.fixture ? '△' : '*'}</span> Producing Curiosity</a><PublicNavigation legacy={page.fixture} currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
+      <header className="reading-site-header"><a className="reading-wordmark" href={publicPath("/")}><span aria-hidden="true">{current ? '*' : '△'}</span> Producing Curiosity</a><PublicNavigation legacy={!current} currentPath={page.kind === 'collection' ? '/investigations/' : undefined} /></header>
       {page.fixture ? <aside className="reading-fixture" aria-label="Development fixture"><strong>Development fixture — not publication-approved content.</strong><p>This synthetic reading demonstrates templates and connections. It is not Sami’s manuscript, source evidence, or a measured project outcome. Fixtures are excluded from production builds.</p></aside> : null}
+      {page.illustrative ? <aside className="reading-fixture" aria-label="Synthetic inquiry experiment"><strong>Experimental illustration — invented writing.</strong><p>This is a synthetic example, not Sami’s manuscript, project evidence or an observed response. Its revision date records the illustration; it is not a research date.</p></aside> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
-      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote /></footer>
+      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote inquirySpace={!!entry?.inquirySpace} /></footer>
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { entrySchema, evidenceSchema, relationshipSchema, assetSchema, entryPath
 import { validateCandidateProjection, digestRecord } from '../src/content/projection'
 import { assumedObservedSchema, type AssumedObservedBlock } from '../src/content/assumed-observed'
 import { intakeText } from './intake'
+import { inquirySpaceSchema, explorationSchema } from '../src/content/inquiry-space'
 
 export const passes = ['Manuscript Intake', 'Editorial Reader', 'Evidence Reviewer', 'Connection Curator', 'Experience Reviewer', 'Release Checker'] as const
 export type Decision = 'pending' | 'accept' | 'reject'
@@ -15,6 +16,7 @@ export type Candidate = { digest: string; workspaceVersion: number; source: {kin
 export type VisualizationProposal={id:string;entryId:string;revision:number;spec:AssumedObservedBlock;decision:Decision;sourcePassages:Passage[];uncertainty:string}
 export type Workspace = { visualizations?:VisualizationProposal[]; schemaVersion: 1; manuscripts: Manuscript[]; store: ContentStore; edits: Edit[]; candidates: Candidate[] }
 export const emptyWorkspace = (): Workspace => ({ schemaVersion: 1, manuscripts: [], store: { entries: [], evidence: [], assets: [], relationships: [], aliases: [] }, edits: [], candidates: [] })
+export class DraftRevisionConflict extends Error {}
 const uuid = z.uuid(); const short = z.string().min(1).max(300); const text = z.string().max(200000)
 export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('intake'), title: short, filename: short, format: z.enum(['text','markdown','docx']), bytes: z.string().max(400000), poetry: z.boolean() }),
@@ -24,11 +26,12 @@ export const actionSchema = z.discriminatedUnion('type', [
  z.strictObject({ type: z.literal('edit'), entryId: uuid, blockId: uuid, after: text, rationale: z.string().min(1).max(5000) }),
  z.strictObject({ type: z.literal('decideEdit'), editId: uuid, decision: z.enum(['accept','reject']) }),
  z.strictObject({ type: z.literal('metadata'), entryId: uuid, title: short, slug: short, summary: z.string().max(2000), contribution: z.string().max(5000) }),
+ z.strictObject({ type: z.literal('inquiryMetadata'), entryId: uuid, expectedRevision:z.number().int().positive(), value: inquirySpaceSchema.nullable() }),
  z.strictObject({ type: z.literal('evidence'), entryId: uuid, title: short, source: short, locator: short, observedAt:z.iso.datetime({offset:true}), limitations: z.string().min(1).max(5000), rightsCleared: z.boolean() }),
  z.strictObject({ type: z.literal('asset'), entryId: uuid, bytes: z.string().max(100000), alt: z.string().min(1).max(2000), credit: short, rightsCleared: z.boolean() }),
- z.strictObject({ type: z.literal('relationship'), fromId: uuid, toId: uuid, rationale: z.string().min(1).max(5000), relation: relationshipSchema.shape.type }),
+ z.strictObject({ type: z.literal('relationship'), fromId: uuid, toId: uuid, rationale: z.string().min(1).max(5000), relation: relationshipSchema.shape.type, exploration: explorationSchema.optional(), evidenceIds:z.array(uuid).max(100).optional() }),
  z.strictObject({ type: z.literal('suggestConnections'), manuscriptId:uuid }),
- z.strictObject({ type: z.literal('reviseRelationship'), relationshipId:uuid, rationale:z.string().min(1).max(5000), relation:relationshipSchema.shape.type }),
+ z.strictObject({ type: z.literal('reviseRelationship'), relationshipId:uuid, expectedRevision:z.number().int().positive().optional(), rationale:z.string().min(1).max(5000), relation:relationshipSchema.shape.type, exploration:explorationSchema.nullable().optional(), evidenceIds:z.array(uuid).max(100).optional() }),
  z.strictObject({ type: z.literal('decideRelationship'), relationshipId: uuid, decision: z.enum(['accept','reject']) }),
  z.strictObject({type:z.literal('visualization'),entryId:uuid,spec:assumedObservedSchema}),
  z.strictObject({type:z.literal('decideVisualization'),proposalId:uuid,decision:z.enum(['accept','reject'])}),
@@ -52,7 +55,7 @@ function sections(text: string, digest: string): Section[] {
  return proposed.every(s => s.passage.end-s.passage.start >= 120) ? proposed : []
 }
 export function draftProjection(w: Workspace): PublicProjection {
- return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds})=>({id,fromId,toId,type,rationale,evidenceIds})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:w.store.aliases.filter(a=>a.reviewState==='approved').map(a=>a.kind==='path'?{id:a.id,kind:a.kind,path:a.path,targetId:a.targetId}:{id:a.id,kind:a.kind,fragment:a.fragment,targetId:a.targetId}) }
+ return { schemaVersion: 1, entries: w.store.entries.map(e => ({ id:e.id,revision:e.revision,kind:e.kind,format:e.format,slug:e.slug,path:entryPath(e),title:e.title,summary:e.summary,contribution:e.contribution ?? '',createdAt:e.createdAt,updatedAt:e.updatedAt,authorIds:e.authorIds,topicIds:e.topicIds,blocks:structuredClone(e.blocks),evidenceIds:e.evidenceIds,...(e.inquirySpace?{inquirySpace:structuredClone(e.inquirySpace)}:{}) })), relationships:w.store.relationships.filter(r=>r.reviewState==='approved').map(({id,fromId,toId,type,rationale,evidenceIds,exploration})=>({id,fromId,toId,type,rationale,evidenceIds,...(exploration?{exploration:structuredClone(exploration)}:{})})), evidence:w.store.evidence.map(({id,title,source,locator,observedAt,role,limitations,assetIds,kind})=>({id,title,source,locator,observedAt,role,limitations,assetIds,kind})), assets:w.store.assets.map(({id,url,mimeType,alt,decorative,credit,checksum})=>({id,url,mimeType,alt,decorative,credit,checksum})), aliases:w.store.aliases.filter(a=>a.reviewState==='approved').map(a=>a.kind==='path'?{id:a.id,kind:a.kind,path:a.path,targetId:a.targetId}:{id:a.id,kind:a.kind,fragment:a.fragment,targetId:a.targetId}) }
 }
 export function applyAction(source: Workspace, action: Action, version: number, subject: string, appRevision: string, now = new Date().toISOString()): Workspace {
  const w = structuredClone(source)
@@ -113,6 +116,12 @@ export function applyAction(source: Workspace, action: Action, version: number, 
   if(entryPath(e)!==oldPath && !w.store.aliases.some(a=>a.kind==='path' && a.path===oldPath)) w.store.aliases.push({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'approved',kind:'path',path:oldPath,targetId:e.id})
   bump(e); break
  }
+ case 'inquiryMetadata': {
+  const e=getEntry(action.entryId)
+  if(e.revision!==action.expectedRevision)throw new DraftRevisionConflict('Entry revision changed; compare your input with the saved revision before reloading')
+  if(action.value===null)delete e.inquirySpace;else e.inquirySpace=structuredClone(action.value)
+  e.editorialState='draft';e.visibility='restricted';entrySchema.parse(e);bump(e);break
+ }
  case 'evidence': {
   const e=getEntry(action.entryId),id=randomUUID()
   w.store.evidence.push(evidenceSchema.parse({schemaVersion:1,id,revision:1,visibility:'restricted',reviewState:'approved',title:action.title,source:action.source,locator:action.locator,observedAt:action.observedAt,role:'context',limitations:action.limitations,assetIds:[],rights:action.rightsCleared?'cleared':'pending',redaction:action.rightsCleared?'reviewed':'pending',kind:'reference'}))
@@ -127,7 +136,8 @@ export function applyAction(source: Workspace, action: Action, version: number, 
  }
  case 'relationship': {
   getEntry(action.fromId);getEntry(action.toId)
-  w.store.relationships.push(relationshipSchema.parse({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'proposed',fromId:action.fromId,toId:action.toId,type:action.relation,rationale:action.rationale,evidenceIds:[],provenance:'owner'}));break
+  if(action.evidenceIds?.some(id=>!w.store.evidence.some(e=>e.id===id)))throw Error('Pairing source is not in the private ledger')
+  w.store.relationships.push(relationshipSchema.parse({schemaVersion:1,id:randomUUID(),revision:1,visibility:'restricted',reviewState:'proposed',fromId:action.fromId,toId:action.toId,type:action.relation,rationale:action.rationale,evidenceIds:action.evidenceIds??[],provenance:'owner',...(action.exploration?{exploration:structuredClone(action.exploration)}:{})}));break
  }
  case 'suggestConnections': {
   const m=w.manuscripts.find(m=>m.id===action.manuscriptId)
@@ -142,7 +152,11 @@ export function applyAction(source: Workspace, action: Action, version: number, 
  }
  case 'reviseRelationship': {
   const r=w.store.relationships.find(r=>r.id===action.relationshipId);if(!r)throw Error('Relationship not found')
-  r.rationale=action.rationale;r.type=action.relation;r.reviewState='proposed';r.revision++;break
+  if((r.exploration || action.exploration || action.expectedRevision!==undefined) && r.revision!==action.expectedRevision)throw new DraftRevisionConflict('Relationship revision changed; compare your input with the saved revision before reloading')
+  if(action.evidenceIds?.some(id=>!w.store.evidence.some(e=>e.id===id)))throw Error('Pairing source is not in the private ledger')
+  if(action.exploration===null)delete r.exploration;else if(action.exploration!==undefined)r.exploration=structuredClone(action.exploration)
+  if(action.evidenceIds!==undefined)r.evidenceIds=[...action.evidenceIds]
+  r.rationale=action.rationale;r.type=action.relation;r.reviewState='proposed';r.revision++;relationshipSchema.parse(r);break
  }
  case 'decideRelationship': {
   const r=w.store.relationships.find(r=>r.id===action.relationshipId);if(!r)throw Error('Relationship not found')

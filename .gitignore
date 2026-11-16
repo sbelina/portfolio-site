@@ -165,3 +165,4 @@ dist-studio/
 .studio-local/
 .studio-password
 studio-test-results/
+inquiry-studio-test-results/

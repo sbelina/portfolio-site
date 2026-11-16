@@ -4,9 +4,10 @@ import { timingSafeEqual, randomUUID } from 'node:crypto'
 import { z } from 'zod'
 import { ReadingPage } from '../src/reading/ReadingPage'
 import { readingPageData } from '../src/reading/page-data'
-import { actionSchema, applyAction, draftProjection, emptyWorkspace, digestBytes, media, type Workspace, type StoredWorkspace } from './model'
+import { actionSchema, applyAction, draftProjection, emptyWorkspace, digestBytes, media, DraftRevisionConflict, type Workspace, type StoredWorkspace } from './model'
 import { digestRecord } from '../src/content/projection'
 import { entryPath, storeSchema } from '../src/content/model'
+import { inquirySpacePath } from '../src/inquiry-space/paths'
 interface Statement { bind(...args: unknown[]): Statement; first<T>(): Promise<T|null>; run(): Promise<{meta:{changes:number}}>; all<T>():Promise<{results:T[]}> }
 interface Database { prepare(sql:string): Statement; batch(statements:Statement[]):Promise<{meta:{changes:number}}[]> }
 interface Env { DB: Database; UI: {fetch(request:Request):Promise<Response>}; OWNER_PASSWORD_HASH: string; OWNER_NAME:string; APPLICATION_REVISION:string }
@@ -112,7 +113,7 @@ async function handle(request:Request,env:Env):Promise<Response> {
   if(relative!=='/' && !entry)return json({error:'Not found'},404)
   const data=readingPageData(projection,entry?'entry':'collection',false,entry?.id)
   let html=renderToString(<ReadingPage page={data}/>).replaceAll(/(href|src)="\/(?!\/)([^"]*)"/g,(_match,attribute:string,relative:string)=>{
-   if(attribute==='href' && ['lab/atlas/','lab/atlas/text/'].includes(relative))return `href="https://producingcuriosity.com/${relative}"`
+   if(attribute==='href' && ['lab/atlas/','lab/atlas/text/',inquirySpacePath.slice(1)].includes(relative))return `href="https://producingcuriosity.com/${relative}"`
    return `${attribute}="/preview/${scope}/${relative}"`
   })
   const links=projection.entries.map(e=>`<li><a href="/preview/${scope}${escape(e.path)}">${escape(e.title)}</a></li>`).join('')
@@ -133,7 +134,7 @@ export default {async fetch(request:Request,env:Env) {
    response=await handle(new Request(request,{body:bytes}),env)
   } else response=await handle(request,env)
  } catch(error) {
-  response=json({error:error instanceof z.ZodError?'Validation failed: '+error.issues.map(i=>i.path.join('.')+' '+i.message).join('; '):error instanceof Error?error.message:'Request failed'},400)
+  response=json({error:error instanceof z.ZodError?'Validation failed: '+error.issues.map(i=>i.path.join('.')+' '+i.message).join('; '):error instanceof Error?error.message:'Request failed'},error instanceof DraftRevisionConflict?409:400)
  }
  const headers=new Headers(response.headers)
  headers.set('Cache-Control','private, no-store');headers.set('Vary','Cookie, Authorization');headers.set('X-Content-Type-Options','nosniff');headers.set('Referrer-Policy','same-origin');headers.set('X-Robots-Tag','noindex, nofollow')

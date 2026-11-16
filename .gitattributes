@@ -1,2 +1,3 @@
 # Frozen build checksums describe exact bytes; never normalize their line endings.
 build-archives/** -text
+docs/design-system/provenance/studio-model-418efb7.txt -text

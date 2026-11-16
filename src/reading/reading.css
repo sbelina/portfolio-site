@@ -105,3 +105,14 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 /* Verse remains literal text. Soft wrapping changes presentation, never the source. */
 .reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
 .reading-article--poetry .reading-body { max-width: 46rem; }
+
+/* A fragment keeps its authored body separate from optional surrounding thought. */
+.reading-article--fragment { max-width: 48rem; margin-inline: auto; }
+.reading-article--fragment .reading-entry-header { padding-bottom: 1rem; }
+.reading-inquiry-prompt { font-family: Georgia, serif; font-size: 1.4rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reading-inquiry-mode { color: var(--reading-unresolved); }
+.reading-inquiry-context { margin: 2rem 0; border-block: 1px solid var(--reading-line); padding-block: .5rem; }
+.reading-inquiry-context summary { cursor: pointer; min-height: 44px; padding: .65rem 0; font-weight: 600; }
+.reading-inquiry-context summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
+.reading-inquiry-context dt { font-weight: 700; }
+.reading-inquiry-context dd { margin: .4rem 0 1.2rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }

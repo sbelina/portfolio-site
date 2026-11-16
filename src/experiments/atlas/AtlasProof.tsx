@@ -2,6 +2,7 @@ import React from 'react'
 import { ExperimentNote } from '../../components/ExperimentNote'
 import { PublicNavigation } from '../../components/PublicNavigation'
 import { publicPath } from '../../public-path'
+import { inquirySpacePath, inquirySpaceTitle } from '../../inquiry-space/paths'
 import type { SemanticLayout } from './layout'
 import { atlasPath, dimensions, type AtlasFixture } from './fixture'
 
@@ -48,6 +49,6 @@ export function AtlasProof({account,layout,textOnly=false}:{account:AtlasFixture
       <section id="guided-routes" aria-labelledby="routes-title"><h2 id="routes-title">Reading routes are a separate editorial choice</h2><ul className="atlas-account-list">{account.routes.map(route=><li key={route.id}><h3>{route.title}</h3><p>{route.rationale}</p><ol>{route.caseIds.map(id=><li key={id}><a href={`#${id}`}>{title(id)}</a></li>)}</ol></li>)}</ul></section>
       <section aria-labelledby="lexicon-title"><h2 id="lexicon-title">Working lexicon / deliberately unplotted</h2><ul className="atlas-account-list">{account.terms.map(term=><li key={term.id} id={term.id}><h3>{term.title}</h3><p>{term.definition}</p><p><strong>Boundary:</strong> {term.boundary}</p></li>)}</ul></section>
     </main>
-    <footer className="atlas-footer"><p>Synthetic experiment · <a href={publicPath("/")}>Producing Curiosity home</a> · <a href="#atlas-main">Back to top ↑</a></p><ExperimentNote atlasProof/></footer>
+    <footer className="atlas-footer"><p><a href={publicPath(inquirySpacePath)} aria-label={`${inquirySpaceTitle} — experimental`}>{inquirySpaceTitle}<span aria-hidden="true">*</span> →</a> — explore curiosity before explanation, outside this map’s geography.</p><p>Synthetic experiment · <a href={publicPath("/")}>Producing Curiosity home</a> · <a href="#atlas-main">Back to top ↑</a></p><ExperimentNote atlasProof/></footer>
   </div>
 }

@@ -17,6 +17,9 @@ import { verifyPublicAssets } from './public-assets'
 import baselineAnchors from '../content/legacy-anchors.json' with { type: 'json' }
 import { prerenderHiddenWork } from './build-experiment'
 import { prerenderAtlas } from './build-atlas'
+import { prerenderInquirySpace } from './build-inquiry-space'
+import { inquirySpacePath } from '../src/inquiry-space/paths'
+import { inquiryIllustrationProjection } from '../src/inquiry-space/illustration'
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
 
 const fixture = process.argv.includes('--fixtures')
@@ -52,17 +55,22 @@ for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Er
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
 await prerenderAtlas(output)
-const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path)]
+const inquiryProjection = fixture ? projection : inquiryIllustrationProjection()
+await prerenderInquirySpace(output, inquiryProjection, fixture)
+const illustrativeEntries = fixture ? [] : inquiryProjection.entries
+const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
+if (new Set(routes).size !== routes.length || projection.aliases.some(alias => alias.kind === 'path' && routes.includes(alias.path))) throw new Error('An illustrative route collides with canonical content, an alias or a static destination')
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
-    .replace('<html lang="en">', fixture ? '<html lang="en">' : '<html lang="en" data-edition="current">')
+    .replace('<html lang="en">', !fixture || !!data.entry?.inquirySpace ? '<html lang="en" data-edition="current">' : '<html lang="en">')
     .replace('<!--reading-html-->', () => renderToString(<ReadingPage page={data} />))
     .replace('<!--reading-data-->', () => `<script id="reading-data" type="application/json">${escapeJson(data)}</script>`)
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
 await page('investigations/index.html', readingPageData(projection, 'collection', fixture), 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
-for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, readingPageData(projection, 'entry', fixture, entry.id), `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
+for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), `${entry.title} — Producing Curiosity`, entry.summary, entry.path)
+for (const entry of illustrativeEntries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(inquiryProjection, 'entry', false, entry.id, inquirySpacePath), illustrative: true }, `${entry.title} — synthetic illustration · Producing Curiosity`, entry.summary, entry.path, false)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
 for (const [kind, metadata] of Object.entries(foundationPages)) {
   const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !fixture }))
@@ -84,7 +92,7 @@ if (fixture) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag:
 const historicalRoutes = await mountBuildArchive(output)
 await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture, routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
-await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title }) => ({ id, path, title })), edges: projection.relationships }))
+await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title, kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
 const indexableRoutes = fixture || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
 await mkdir('docs/codex/generated', { recursive: true })
