@@ -16,6 +16,8 @@ test('primary evidence prefers approved Claims, then any approved investigation,
   const claims = entry(claimsInvestigationId, 'claims-operations')
   expect(primaryEvidence([other, claims], archive.reviewPath)).toMatchObject({ status: 'approved', href: claims.path })
   expect(primaryEvidence([other], archive.reviewPath)).toMatchObject({ status: 'approved', href: other.path })
+  const brief = { tension: 't', call: 'c', result: 'r', evidence: 'e' }
+  expect(primaryEvidence([{ ...claims, brief }], archive.reviewPath)).toMatchObject({ status: 'approved', brief })
   const interim = primaryEvidence([], archive.reviewPath)
   expect(interim).toMatchObject({ status: 'previous-edition', href: claimsSummary, boundary: `Summary only. ${unpublished}` })
 })
@@ -40,6 +42,11 @@ test('production home leads with the new H1 and an honest one-click evidence pat
   // The guiding purpose informs editorial choices; it is not a headline or metadata claim.
   expect(home.toLowerCase()).not.toContain('collective agency')
   for (const kept of ['Test. Show. Enable.', 'Related. Not equivalent.', 'How I Know']) expect(home).toContain(kept)
+  // No approved case yet: no featured block. Contact actions repeat, with the address visible.
+  expect(home).not.toContain('Featured investigation')
+  expect(home.match(/class="pc-actions"/g)).toHaveLength(1)
+  expect(home).toContain('hello@sbelina.com</span>')
+  expect(home).not.toContain('Download résumé')
   const reading = JSON.parse(home.match(/<script id="home-reading" type="application\/json">(.*?)<\/script>/)![1])
   expect(reading.entries).toEqual([])
 })

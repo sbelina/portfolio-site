@@ -55,6 +55,20 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 
 **contribution (entry.contribution):** I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter. Management decided on the change; the salvage partner decides sufficiency; adjusters release payment; trainers deliver training; a process team built the later national letter.
 
+### Featured brief, ownership and measurement (added 16 November, after systemicdesign.pro)
+
+Shown on the homepage only once this case is approved (field `investigation.brief`).
+
+| Tension | My call | Result | Evidence |
+| --- | --- | --- | --- |
+| Paperwork could be marked delivered, and payment released, before anyone confirmed it was sufficient. Errors surfaced later, as rework for customers and staff. | Without an assignment, I logged the exceptions, traced each handoff and recommended that payment wait for the salvage partner’s review. | Management made that change, and who decides stayed the same. Separately, resources built from administrators’ knowledge remain in use (owner-reported). | My exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. Sources are pending review. |
+
+**What I didn’t own (`notOwned`):** I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.
+
+**How this was measured (`measurement`):** Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.
+
+**Figures (`figures`, each labelled “Approximate · owner estimate”):** ~30 views a month (paperwork guide access, averaged since it was shared; access, not use or effect) · ~6 new hires a quarter (onboarding audience, averaged; not who delivered the training) · 2+ years in use across several offices (which resource is still to be confirmed; use is not effectiveness). The projection now rejects any figure without selected evidence.
+
 ### Statements
 
 `kind` and `contribution` use the enumerations in `src/content/investigation.ts`. Every `direct_observation` or `documented_outcome` needs selected public evidence before it can enter a release; until then each is a review blocker, not a claim.

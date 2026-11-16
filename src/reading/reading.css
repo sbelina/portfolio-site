@@ -120,3 +120,9 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-inquiry-context dt { font-weight: 700; }
 .reading-inquiry-context dd { margin: .4rem 0 1.2rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
 .reading-candidate-notice { border-left: 3px solid var(--reading-unresolved); padding: .6rem 1rem; font-weight: 600; }
+.investigation-figures ul { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0 1.5rem; border-top: 1px solid var(--reading-line); }
+.investigation-figures li { padding: 1rem 0; border-bottom: 1px solid var(--reading-line); }
+.investigation-figures p { margin: 0 0 .35rem; }
+.investigation-figure-value strong { font-size: 2rem; line-height: 1.1; font-weight: 600; }
+.investigation-figure-value span, .investigation-figure-basis { color: var(--reading-muted); }
+.investigation-figure-basis { font-size: .85rem; }

@@ -1,9 +1,10 @@
 /** Stable ID reserved for the Claims operations investigation (see docs/codex/review-candidates/claims-operations.md). */
 export const claimsInvestigationId = '6c2f9e3e-23c0-4362-ada4-7d18a6ed998a'
 
-export type InvestigationSummary = { id: string; path: string; title: string; summary: string }
+export type CaseBrief = { tension: string; call: string; result: string; evidence: string }
+export type InvestigationSummary = { id: string; path: string; title: string; summary: string; brief?: CaseBrief }
 export type PrimaryEvidence =
-  | { status: 'approved'; href: string; title: string; description: string }
+  | { status: 'approved'; href: string; title: string; description: string; brief?: CaseBrief }
   | { status: 'previous-edition'; href: string; title: string; description: string; boundary: string }
 
 /**
@@ -32,7 +33,7 @@ export const previousEditionHref = (archivePath: string, anchor: string) => `${a
  */
 export function primaryEvidence(investigations: readonly InvestigationSummary[], archivePath: string): PrimaryEvidence {
   const approved = investigations.find(entry => entry.id === claimsInvestigationId) ?? investigations[0]
-  if (approved) return { status: 'approved', href: approved.path, title: approved.title, description: approved.summary }
+  if (approved) return { status: 'approved', href: approved.path, title: approved.title, description: approved.summary, ...(approved.brief ? { brief: approved.brief } : {}) }
   return {
     status: 'previous-edition',
     href: previousEditionHref(archivePath, 'claims-operations'),

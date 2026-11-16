@@ -78,6 +78,15 @@ Owner request, 16 November: “Build claims.” The Claims candidate now exists 
   - No view adds data, scale or causal claims.
   - Verified in Chrome with Playwright 1.63 against an esbuild bundle of the component, in both motion settings: keyboard arrow selection, pointer selection, toggling back, no console errors. The repository's own test (`tests/evidence-first.spec.ts`) has not run.
 
+## Patterns adopted from systemicdesign.pro, 16 November (evening)
+
+The owner chose all four patterns.
+- **Featured case.** Optional `investigation.brief` (tension, my call, result, evidence). The homepage renders it only when the evidence target is an approved investigation that has a brief, so production shows nothing today.
+- **Labelled figures.** Optional `investigation.figures`, each with a value, unit, label, basis (owner estimate, approximate, platform-reported or measured) and qualifier. They render as a figure strip on the case page. **Projection rule:** every figure needs selected evidence, and a figure marked measured needs metric provenance.
+- **What I didn’t own / How this was measured.** Optional `investigation.notOwned` and `investigation.measurement`, rendered as their own sections.
+- **Recruiter actions.** Email (with the address visible) and LinkedIn appear after How I Know, and after the featured case once one exists. A résumé action appears only when `src/content/recruiter.ts` names an owner-supplied, public-safe file; none exists yet.
+- All new fields are optional and additive, so existing records need no migration. The Claims candidate was validated against the real schemas with zod v4 (from the zod 3.25 package, not the pinned 4.6.7). The schema accepts it, and the projection rejects it both as is (not approved) and in an approved shape (figures without evidence).
+
 ## Rollback
 
 Revert the branch's commits. No content store, release manifest, archive or deployment state was changed.

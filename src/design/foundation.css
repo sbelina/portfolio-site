@@ -171,3 +171,10 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(prefers-reduced-motion:reduce) { .pc-site *, .pc-site *::before, .pc-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media(forced-colors:active) { .pc-site :is(a,summary,input):focus-visible { outline-color: Highlight; } .pc-state { border-color: CanvasText; } }
 @media print { .pc-header,.pc-footer,.pc-skip { display: none; } .pc-site { background: white; color: black; } .pc-main { width: 100%; } }
+.pc-actions { display: flex; flex-wrap: wrap; gap: 0 2rem; margin-top: 1.5rem; }
+.pc-actions a { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; font-weight: 550; }
+.pc-actions-address { font-weight: 400; color: var(--muted); }
+.pc-brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 2rem; margin: 1.5rem 0; }
+.pc-brief > div { border-top: 1px solid var(--line); padding-block: 1rem; }
+.pc-brief dt { font-weight: 650; margin-bottom: .4rem; }
+.pc-brief dd { margin: 0; max-width: 40ch; }

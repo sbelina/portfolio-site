@@ -10,6 +10,8 @@ const prose = () => [
   ...Object.values(claimsCandidate.investigation!).filter((value): value is string => typeof value === 'string'),
   claimsCandidate.investigation!.visual.left, claimsCandidate.investigation!.visual.right, claimsCandidate.investigation!.visual.explanation,
   ...claimsCandidate.investigation!.statements.flatMap(statement => [statement.text, statement.limitation]),
+  ...Object.values(claimsCandidate.investigation!.brief ?? {}),
+  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.value, figure.unit, figure.label, figure.qualifier]),
   ...claimsCandidate.blocks.flatMap(block => block.type === 'callout' ? [block.label, block.markdown.replace(claimsCandidateToken, '')] : []),
 ].join('\n')
 
@@ -44,8 +46,14 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).not.toMatch(/\d{3,}/)
   expect(text).not.toMatch(/\d\s?%/)
   expect(text).not.toContain('IAA')
-  expect(text).toContain('rework observations are withheld')
-  expect(text).toContain('roughly 30 views a month')
+  expect(text).toContain('neither is shown and they are never compared')
+  const figures = claimsCandidate.investigation!.figures ?? []
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['~30 views a month', '~6 new hires a quarter', '2+ years in use, several offices'])
+  for (const figure of figures) {
+    expect(figure.basis).toBe('owner_estimate')
+    expect(figure.value).toMatch(/^(?:~|\d+\+$)/)
+  }
+  expect(claimsCandidate.investigation!.notOwned).toContain('I didn’t own the decision')
 })
 
 test('preview projection is local-only and production output excludes the Claims page', async () => {
@@ -55,4 +63,16 @@ test('preview projection is local-only and production output excludes the Claims
   expect(content.entries).toEqual([])
   const release = JSON.parse(await readFile('content/public-release.json', 'utf8'))
   expect(release.status).toBe('no-approved-content')
+})
+
+test('figures cannot be published without selected evidence, even in an otherwise approved entry', () => {
+  const approvedShape = { ...structuredClone(claimsCandidate), editorialState: 'approved' as const, visibility: 'public' as const, authorIds: ['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'] }
+  const store = { entries: [approvedShape], relationships: [], evidence: [], assets: [], aliases: [] }
+  const manifest = {
+    schemaVersion: 1 as const, releaseId: '0f4f8a52-3c1d-4f7e-9a51-1d2b3c4d5e6f',
+    applicationRevision: 'a'.repeat(40), contentRevision: 'b'.repeat(40),
+    entries: [{ id: approvedShape.id, revision: approvedShape.revision, digest: digestRecord(approvedShape) }],
+    relationships: [], evidence: [], assets: [], aliases: [],
+  }
+  expect(() => validateCandidateProjection(store, manifest)).toThrow('Figures require selected evidence')
 })

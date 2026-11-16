@@ -30,7 +30,7 @@ export const claimsCandidate: Entry = {
   updatedAt: drafted,
   authorIds: [],
   topicIds: [],
-  contribution: 'I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter. Management decided on the change; the salvage partner decides sufficiency; adjusters release payment; trainers deliver training; a process team built the later national letter.',
+  contribution: 'I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter.',
   evidenceIds: [],
   investigation: {
     schemaVersion: 1,
@@ -46,7 +46,20 @@ export const claimsCandidate: Entry = {
     relationshipDiscovered: 'Delivered ≠ complete. The status the system reported and the state the next step depended on were related but not equivalent. The gap was a question of when sufficiency was checked, not who had authority.',
     response: 'Two connected responses, kept separate. Review timing: management chose to make payment wait for the salvage partner’s acceptance of the paperwork. Decision authority did not change: the salvage partner decides sufficiency, and adjusters release payment. Shared practitioner knowledge: I facilitated meetings in which administrators surfaced the practical knowledge, examples and procedural differences behind the process. This informed three distinct resources: a paperwork guide, a total-loss support training deck and an administrative onboarding program. The error-log categories did not become the guide’s structure. Separately, I redesigned the customer cover letter to reduce the decisions customers had to make after a total loss; a later national version was produced by a process team and is not attributed to me here.',
     consequence: 'Owner-reported, pending verification: the review-timing change and the resources remain in use. Which resource is used where, since when, and by whom has not yet been documented here. Use of a resource is not evidence that it improved outcomes.',
-    limitations: 'No controlled measurement. Two rework observations exist with different scopes, periods and definitions; neither is presented as an outcome, and they are never compared. Several changes happened close together (review timing, training, the guide, the letter), so no single change can be credited with any later difference. Any change in how long payment takes has not been measured. Contributions by managers, trainers, adjusters, the salvage partner and the process team are their own.',
+    limitations: 'Several changes happened close together (review timing, training, the guide, the letter), so no single change can be credited with any later difference. Any change in how long payment takes has not been measured. Contributions by managers, trainers, adjusters, the salvage partner and the process team are their own.',
+    brief: {
+      tension: 'Paperwork could be marked delivered, and payment released, before anyone confirmed it was sufficient. Errors surfaced later, as rework for customers and staff.',
+      call: 'Without an assignment, I logged the exceptions, traced each handoff and recommended that payment wait for the salvage partner’s review.',
+      result: 'Management made that change, and who decides stayed the same. Separately, resources built from administrators’ knowledge remain in use (owner-reported).',
+      evidence: 'My exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. Sources are pending review.',
+    },
+    notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
+    measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    figures: [
+      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '~30', unit: 'views a month', label: 'Paperwork guide access, averaged since it was shared', basis: 'owner_estimate', qualifier: 'Access, not use or effect.', evidenceIds: [] },
+      { id: 'e2b9981c-4fbe-47a9-a2db-e3aad0d14e0e', value: '~6', unit: 'new hires a quarter', label: 'Onboarding audience, averaged', basis: 'owner_estimate', qualifier: 'The audience, not who delivered the training.', evidenceIds: [] },
+      { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use, several offices', label: 'Continued use (which resource has this scope is still to be confirmed)', basis: 'owner_estimate', qualifier: 'Use is not effectiveness.', evidenceIds: [] },
+    ],
     statements: [
       { id: 'ed50dcf8-47c0-4ddd-af83-b910c458ad12', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'A delivery could be recorded, and payment released, before the salvage partner decided the paperwork was sufficient.', limitation: 'Source pending. Describes the earlier process, not every claim.' },
       { id: '3fb07550-5e1f-4326-b8dd-b01b62502d25', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'Missing signatures and missing mileage were returned to customers to correct.', limitation: 'Source pending. Examples, not a frequency.' },
@@ -62,7 +75,6 @@ export const claimsCandidate: Entry = {
   },
   blocks: [
     { id: '625493f4-3f5a-417b-a243-e1ad631300a4', type: 'callout', label: 'Review status', markdown: `**Unapproved candidate, shown for owner review only.** No statement on this page has an attached source yet, and none of it is approved for publication. Publication requires verified sources, a privacy review and an authenticated owner approval of this exact revision.\n\nCandidate token: ${claimsCandidateToken}.` },
-    { id: 'af6379d3-dbb1-47e6-9670-9e60646f9ea8', type: 'callout', label: 'Figures (rounded estimates)', markdown: 'Internal figures appear only as rounded or averaged owner estimates, not exact counts. Each still needs its source and exact approved wording.\n\n- **Paperwork guide access:** roughly 30 views a month on average since it was shared. Access is not use or effect.\n- **Onboarding audience:** about six new hires a quarter on average. This describes the audience, not who delivered the training.\n- **Continued use:** more than two years across several offices, by owner estimate. Which resource has that scope is still to be confirmed; resources are never combined.\n\nThe two rework observations are withheld from this page. The issue is scope, not precision: they measure different things and are never shown together or compared.' },
     { id: 'e685e069-41d9-480e-b564-73d500d0a9b9', type: 'callout', label: 'Purpose and its limit', markdown: 'This case shows evidence of **facilitation**: administrators’ practical knowledge shaped shared resources. Whether that made the team more independently capable is not established here.' },
   ],
 }

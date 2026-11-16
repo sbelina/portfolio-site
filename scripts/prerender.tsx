@@ -47,7 +47,7 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   if (legacyIds.has(alias.fragment)) throw new Error('A legacy fragment needs an explicitly reviewed migration before replacement')
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
-const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary }) => ({ id, path, title, summary })), fragmentRedirects }
+const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary, investigation }) => ({ id, path, title, summary, ...(investigation?.brief ? { brief: investigation.brief } : {}) })), fragmentRedirects }
 // Production home receives only approved, projected investigations; the client hydrates from the same home-reading JSON.
 const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex investigations={reading.entries} />)
 if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--app-end-->')) throw new Error('Home prerender markers missing')
