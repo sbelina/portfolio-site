@@ -49,6 +49,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-journeys .pc-kicker { margin: 0; }
 .pc-journeys strong { font-size: clamp(1.25rem,2.2vw,1.8rem); font-weight: 550; line-height: 1.35; text-decoration: underline; text-underline-offset: .25em; }
 .pc-journeys a > span:last-child { color: var(--muted); max-width: 40ch; }
+.pc-evidence-boundary { display: block; margin-top: .6rem; font-style: normal; font-size: .9rem; }
 .pc-section { margin-block: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
 .pc-section > p:not(.pc-kicker), .pc-document > p { max-width: 65ch; }
 .pc-section-heading { margin-bottom: 2.5rem; }

@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-export const forbiddenPublicMarkers = ['INQUIRY_SPACE_FIXTURE_14NOV', 'PRIVATE_INQUIRY_DRAFT_14NOV', 'PRIVATE_INQUIRY_BODY_14NOV', 'fixture-folded-margin', 'fixture-unlabelled-tab', 'fixture-open-bracket', 'ATLAS_SYNTHETIC_PROOF_13NOV', 'PUBLIC_SAFE_READING_FIXTURE_9b11', 'PRIVATE_DRAFT_CANARY_8b72', 'fixture-claims-handoff', 'fixture-delivered-not-complete', 'fixture-verse-spacing', 'fixture-assumed-observed', 'SYNTHETIC_AO_FIXTURE_4c2b', 'A test line—nothing borrowed.', 'synthetic-test-approver-not-an-owner-approval', 'synthetic-trial-password-not-an-owner-credential', 'Synthetic connected manuscript', 'Synthetic verse import', 'OWNER_PASSWORD_HASH', 'pc_studio_session']
+export const forbiddenPublicMarkers = ['INQUIRY_SPACE_FIXTURE_14NOV', 'PRIVATE_INQUIRY_DRAFT_14NOV', 'PRIVATE_INQUIRY_BODY_14NOV', 'fixture-folded-margin', 'fixture-unlabelled-tab', 'fixture-open-bracket', 'ATLAS_SYNTHETIC_PROOF_13NOV', 'PUBLIC_SAFE_READING_FIXTURE_9b11', 'PRIVATE_DRAFT_CANARY_8b72', 'fixture-claims-handoff', 'fixture-delivered-not-complete', 'fixture-verse-spacing', 'fixture-assumed-observed', 'SYNTHETIC_AO_FIXTURE_4c2b', 'A test line—nothing borrowed.', 'synthetic-test-approver-not-an-owner-approval', 'synthetic-trial-password-not-an-owner-credential', 'Synthetic connected manuscript', 'Synthetic verse import', 'OWNER_PASSWORD_HASH', 'pc_studio_session', 'CLAIMS_CANDIDATE_UNAPPROVED_16NOV']
 export async function auditPublic(directory: string) {
   const files: string[] = []
   async function walk(folder: string) {

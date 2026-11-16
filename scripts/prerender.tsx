@@ -43,7 +43,8 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
 const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary }) => ({ id, path, title, summary })), fragmentRedirects }
-const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex />)
+// Production home receives only approved, projected investigations; the client hydrates from the same home-reading JSON.
+const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex investigations={reading.entries} />)
 if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--app-end-->')) throw new Error('Home prerender markers missing')
 const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () => homeMarkup)
   .replace('data-edition="current"', fixture ? 'data-edition="legacy"' : 'data-edition="current"')

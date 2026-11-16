@@ -48,7 +48,7 @@ test('production new index links to the archived build with keyboard and preserv
  const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'})
  try{const page=await context.newPage();const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message))
  const requests:string[]=[];page.on('request',r=>requests.push(r.url()))
- await page.goto(origin+'/');await expect(page.getByRole('heading',{level:1})).toHaveText('I investigate situations where outcomes are visible, but the explanations behind them remain unclear.')
+ await page.goto(origin+'/');await expect(page.getByRole('heading',{level:1})).toHaveText('I turn gaps in understanding into evidence leaders can act on.')
  await expect(page.locator('.project-list')).toHaveCount(0)
  await expect(page.getByRole('region',{name:'Producing Curiosity introduction'})).toHaveCount(0)
  const link=page.locator('.site-footer').getByRole('link',{name:'Review the previous build'})

@@ -6,14 +6,16 @@ import { InquiryIllustration } from './design/InquiryIllustration'
 import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
+import { primaryEvidence, type InvestigationSummary } from './content/primary-evidence'
 
 const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
 export const archivedAnchors = archive.homeAnchors.filter(id => !currentAnchors.has(id))
 const labels: Record<string, string> = { work: 'Investigations', connections: 'Connections', practice: 'How I investigate', 'field-notes': 'Field notes and essays', archive: 'Writing archive', 'system-map': 'Relationship map' }
 
 /** A new entry point; previous work and its interactions live in the frozen build. */
-export default function BuildIndex() {
+export default function BuildIndex({ investigations = [] }: { investigations?: readonly InvestigationSummary[] }) {
   const introduction = useHomeIntroduction()
+  const evidence = primaryEvidence(investigations, archive.reviewPath)
   useEffect(() => {
     const followLegacyFragment = () => {
       let fragment: string
@@ -28,16 +30,17 @@ export default function BuildIndex() {
     <div className="build-index">
       <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
-          <p className="pc-kicker">Applied human systems research &amp; strategy</p>
-          <h1 id="index-title">I investigate situations where outcomes are visible, but the explanations behind them remain unclear.</h1>
-          <p className="pc-lead">I study how people understand, decide, and act within organizational, technological, and civic systems—and help make that understanding useful to the people who need it.</p>
+          <p className="pc-kicker">Research strategy · Organizational effectiveness · Service design · Innovation</p>
+          <h1 id="index-title">I turn gaps in understanding into evidence leaders can act on.</h1>
+          <p className="pc-lead">I investigate the organizational, operational, and human conditions behind an outcome. Then I design ways for people to make better decisions and develop capabilities together—through research they can use, shared guidance, training, and facilitation.</p>
+          <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
           <p className="pc-byline">An evolving portfolio and field journal by Sami Belina.</p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
         <InquiryIllustration/>
       </section>
       <nav className="pc-journeys" aria-label="Explore the portfolio">
-        <a href={publicPath('/investigations/')}><span className="pc-kicker">Evaluate my work</span><strong>Explore investigations <span aria-hidden="true">→</span></strong><span>Questions, contributions, evidence, and what remains unresolved.</span></a>
+        <a href={publicPath(evidence.href)} data-evidence-status={evidence.status}><span className="pc-kicker">Start with the evidence</span><strong>{evidence.title} <span aria-hidden="true">→</span></strong><span>{evidence.description}{evidence.status === 'previous-edition' ? <> <em className="pc-evidence-boundary">{evidence.boundary}</em></> : null}</span></a>
         <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore my questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood.</span></a>
       </nav>
       <section className="pc-section" aria-labelledby="pc-practice-title">

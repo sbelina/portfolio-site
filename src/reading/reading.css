@@ -83,6 +83,9 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-cards li { padding: 2rem 0; border-bottom: 1px solid var(--reading-line); }
 .reading-cards h2 { margin: .5rem 0 1rem; font-size: 1.75rem; line-height: 1.25; }
 .reading-cards p, .reading-patterns li p, .reading-empty { line-height: 1.7; }
+.reading-empty h2 { margin-top: 2.5rem; }
+.reading-empty ul { padding-left: 1.2rem; }
+.reading-empty li { margin-block: .6rem; }
 .reading-patterns { margin-top: 3rem; }
 .reading-patterns li { padding: 1rem 0; border-bottom: 1px solid var(--reading-line); }
 .reading-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 2rem 0; border-top: 1px solid var(--reading-line); color: var(--reading-muted); font-size: .8rem; line-height: 1.6; }
