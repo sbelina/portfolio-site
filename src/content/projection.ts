@@ -77,6 +77,7 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
     if (occupiedRoutes.has(path)) throw new Error('Duplicate public route ownership')
     occupiedRoutes.add(path)
     assertReferences(entry.evidenceIds, evidenceIds, 'Entry references unselected evidence')
+    if (entry.inquirySpace?.epistemicMode === 'evidence_backed' && !entry.evidenceIds.length && !entry.blocks.some(block => block.type === 'evidence')) throw new Error('Evidence-backed inquiry context requires selected source references')
     if (entry.investigation) {
       if (entry.kind !== 'investigation' || entry.format === 'poetry') throw new Error('Investigation narratives belong only to non-poetry investigations')
       for (const field of ['observedCondition', 'investigation', 'relationshipDiscovered', 'limitations'] as const) if (!entry.investigation[field]?.trim()) throw new Error('Selected investigation narrative is incomplete')
@@ -101,7 +102,11 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
   for (const relationship of relationships) {
     assertReferences([relationship.fromId, relationship.toId], entryIds, 'Relationship endpoint is private or unselected')
     assertReferences(relationship.evidenceIds, evidenceIds, 'Relationship references unselected evidence')
-    if (relationship.type === 'shares_pattern' && relationship.fromId > relationship.toId) [relationship.fromId, relationship.toId] = [relationship.toId, relationship.fromId]
+    if (relationship.exploration?.level === 'supported') {
+      if (!relationship.evidenceIds.length) throw new Error('Supported exploratory pairings require selected evidence')
+      if (!entries.some(entry => [relationship.fromId, relationship.toId].includes(entry.id) && ['investigation', 'pattern'].includes(entry.kind))) throw new Error('Supported exploratory pairings need an investigation or pattern endpoint')
+    }
+    if (['shares_pattern', 'paired_with'].includes(relationship.type) && relationship.fromId > relationship.toId) [relationship.fromId, relationship.toId] = [relationship.toId, relationship.fromId]
     const key = `${relationship.type}:${relationship.fromId}:${relationship.toId}`
     if (edgeKeys.has(key)) throw new Error('Duplicate relationship assertion')
     edgeKeys.add(key)
@@ -125,8 +130,8 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
   }
   const projection: PublicProjection = {
     schemaVersion: 1,
-    entries: entries.map(entry => ({ id: entry.id, revision: entry.revision, kind: entry.kind, ...(entry.investigation ? { investigation: structuredClone(entry.investigation) } : {}), ...(entry.format ? { format: entry.format } : {}), slug: entry.slug, path: entryPath(entry), title: entry.title, summary: entry.summary, contribution: entry.contribution ?? '', createdAt: entry.createdAt, updatedAt: entry.updatedAt, authorIds: [...entry.authorIds], topicIds: [...entry.topicIds], blocks: structuredClone(entry.blocks), evidenceIds: [...entry.evidenceIds] })),
-    relationships: relationships.map(record => ({ id: record.id, fromId: record.fromId, toId: record.toId, type: record.type, rationale: record.rationale, evidenceIds: [...record.evidenceIds] })),
+    entries: entries.map(entry => ({ id: entry.id, revision: entry.revision, kind: entry.kind, ...(entry.investigation ? { investigation: structuredClone(entry.investigation) } : {}), ...(entry.inquirySpace ? { inquirySpace: structuredClone(entry.inquirySpace) } : {}), ...(entry.format ? { format: entry.format } : {}), slug: entry.slug, path: entryPath(entry), title: entry.title, summary: entry.summary, contribution: entry.contribution ?? '', createdAt: entry.createdAt, updatedAt: entry.updatedAt, authorIds: [...entry.authorIds], topicIds: [...entry.topicIds], blocks: structuredClone(entry.blocks), evidenceIds: [...entry.evidenceIds] })),
+    relationships: relationships.map(record => ({ id: record.id, fromId: record.fromId, toId: record.toId, type: record.type, rationale: record.rationale, evidenceIds: [...record.evidenceIds], ...(record.exploration ? { exploration: structuredClone(record.exploration) } : {}) })),
     evidence: evidence.map(record => ({ id: record.id, title: record.title, source: record.source, locator: record.locator, observedAt: record.observedAt, role: record.role, limitations: record.limitations, assetIds: [...record.assetIds], kind: record.kind, ...(record.measurement ? { measurement: { ...record.measurement } } : {}) })),
     assets: assets.map(record => ({ id: record.id, url: record.url, mimeType: record.mimeType, ...(record.width ? { width: record.width } : {}), ...(record.height ? { height: record.height } : {}), alt: record.alt, decorative: record.decorative, credit: record.credit, checksum: record.checksum })),
     aliases: aliases.map((record): PublicAlias => record.kind === 'path' ? { id: record.id, kind: 'path', path: record.path, targetId: record.targetId } : { id: record.id, kind: 'fragment', fragment: record.fragment, targetId: record.targetId }),

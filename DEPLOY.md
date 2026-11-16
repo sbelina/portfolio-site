@@ -1,3 +1,5 @@
+Current owner authorization, 16 November 2026: approval of both synthetic builds includes the existing Atlas and bounded Je ne sais qu’a illustration. Follow [the scoped release and verification record](docs/codex/NOV-16-INQUIRY-RELEASE.md). This does not approve real manuscripts, proposed Atlas visual/SWIFT stages or deployment of the private authoring trial.
+
 Current owner authorization, 14 November 2026: link the reviewed Atlas prototype from live navigation as **Atlas of Inquiry*** with an accessible experimental designation. Follow [the scoped Atlas release record](docs/codex/NOV-14-ATLAS-RELEASE.md). This authorizes only the synthetic experiment and necessary integration, not the unpublished authoring branches or real case material.
 
 # Development, preview and release

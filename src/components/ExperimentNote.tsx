@@ -1,8 +1,9 @@
 import { publicPath } from '../public-path'
 import React from 'react'
+import { inquirySpacePath, inquirySpaceTitle } from '../inquiry-space/paths'
 
 /** A native disclosure keeps the build note readable without JavaScript. */
-export function ExperimentNote({ atlasProof = false }: { atlasProof?: boolean } = {}) {
+export function ExperimentNote({ atlasProof = false, inquirySpace = false }: { atlasProof?: boolean; inquirySpace?: boolean } = {}) {
   return (
     <details className="experiment-note">
       <summary><span className="experiment-note__asterisk" aria-hidden="true">*</span><span>About this experiment</span></summary>
@@ -25,7 +26,13 @@ export function ExperimentNote({ atlasProof = false }: { atlasProof?: boolean } 
         <p>Does an inspectable geography add useful understanding beyond the same material as a text index? That remains an open question.</p>
         <p>An optional Atlas of Inquiry experiment presents six invented investigations through an explicit classification rubric, an approximate spatial layout, explained relationships, and an equivalent text account. Inputs and fitting error are inspectable. Those calculations do not validate the classification or establish improved understanding; reader evaluation remains to be conducted.</p>
         <p><a href={publicPath('/lab/atlas/')}>Explore the Atlas of Inquiry — experimental</a>. The asterisk marks an experiment.</p>
+        <p><a href={publicPath(inquirySpacePath)}>{inquirySpaceTitle}* — curiosity before explanation</a> offers three invented fragments and one authored pairing. Its questions remain open; reader insight and comprehension have not been evaluated.</p>
         {atlasProof ? <p>This demonstration keeps semantic proximity, separately explained relationships and editorial reading order distinct. Every case and source passage is invented; none represents a finding from Sami’s investigations.</p> : null}
+        {inquirySpace ? <>
+          <h2>Curiosity before explanation</h2>
+          <p>Can a fragment invite a useful question before it becomes a finished explanation? This illustration uses invented writing and an authored pairing. Resonance is an interpretation, not evidence of a shared cause.</p>
+          <p>Fragments use the existing content identities, review and approval boundaries. Technical checks do not establish insight or improved understanding. The real seed works and proposed exhibits remain unapproved.</p>
+        </> : null}
         <h2>Reveal the hidden work</h2>
         <p>Does retaining a simple process while revealing the work beneath it help visitors inspect what the overview leaves out? This process is illustrative, not case evidence. Its lines encode relationships, not measured duration.</p>
         <p>Technical observations: one reveal opens the extra steps in place; the original track remains visible; HTML and SVG contain the explanation without animation. Optional p5.js motion pauses offscreen and supports pause/reset and reduced motion. These are interface checks, not evidence of improved comprehension. Reader evaluation remains to be done.</p>

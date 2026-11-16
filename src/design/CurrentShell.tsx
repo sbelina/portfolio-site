@@ -6,7 +6,7 @@ import { usePublicHeader } from '../components/usePublicHeader'
 import { publicPath } from '../public-path'
 
 /** Current-edition chrome; historical replay bytes never import this component. */
-export function CurrentShell({ route, children, surface = 'paper', onSkipIntro }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory'; onSkipIntro?: () => void }) {
+export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, inquirySpace = false }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory'; onSkipIntro?: () => void; inquirySpace?: boolean }) {
   const { header, compactHeader, headerMeasured, oversizedHeader } = usePublicHeader()
   const mainId = route === '/' ? 'index' : 'content'
   return <div className="pc-site" data-surface={surface}>
@@ -18,7 +18,7 @@ export function CurrentShell({ route, children, surface = 'paper', onSkipIntro }
     <main id={mainId} className="pc-main" tabIndex={-1}>{children}</main>
     <footer className="pc-footer site-footer build-index-footer">
       <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><BuildArchiveLink/><a href={`#${mainId}`}>Back to top ↑</a></div>
-      <ExperimentNote/>
+      <ExperimentNote inquirySpace={inquirySpace}/>
     </footer>
   </div>
 }

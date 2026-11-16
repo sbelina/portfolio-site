@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { investigationSchema } from './investigation'
 import { assumedObservedSchema } from './assumed-observed'
+import { explorationSchema, inquirySpaceSchema } from './inquiry-space'
 
 export const uuidSchema = z.uuid().regex(/^[0-9a-f-]+$/, 'UUIDs use canonical lowercase spelling')
 export const digestSchema = z.string().regex(/^[a-f0-9]{64}$/)
@@ -33,9 +34,14 @@ export const entrySchema = z.strictObject({
   title: z.string().max(300), summary: z.string().max(2000),
   editorialState: z.enum(['draft', 'review', 'approved', 'withdrawn']), visibility,
   authorIds: ids, topicIds: ids,
-  contribution: text.optional(), investigation: investigationSchema.optional(), blocks: z.array(blockSchema), evidenceIds: ids,
+  contribution: text.optional(), investigation: investigationSchema.optional(), inquirySpace: inquirySpaceSchema.optional(), blocks: z.array(blockSchema), evidenceIds: ids,
   internalNotes: text.optional(),
 }).superRefine((entry, ctx) => {
+  const fragmentEligible = ['observation', 'perspective', 'reference'].includes(entry.kind)
+  const isFragment = entry.inquirySpace?.presentation === 'fragment' && fragmentEligible
+  if (entry.inquirySpace && (entry.inquirySpace.presentation === 'fragment' ? !fragmentEligible : entry.kind !== 'experiment')) {
+    ctx.addIssue({ code: 'custom', path: ['inquirySpace', 'presentation'], message: 'Fragment presentation belongs to observations, perspectives or references; exhibits belong to experiments' })
+  }
   if (entry.editorialState !== 'draft' && (!entry.createdAt || !entry.updatedAt)) {
     ctx.addIssue({ code: 'custom', path: ['createdAt'], message: 'Only unreviewed drafts may have unknown dates' })
   }
@@ -43,9 +49,12 @@ export const entrySchema = z.strictObject({
     for (const field of ['title', 'summary', 'createdAt', 'updatedAt'] as const) {
       if (!entry[field]?.trim()) ctx.addIssue({ code: 'custom', path: [field], message: 'Approved entries require this field' })
     }
-    if (entry.format !== 'poetry' && !entry.contribution?.trim()) ctx.addIssue({ code: 'custom', path: ['contribution'], message: 'Approved non-poetry entries require contribution' })
+    if (entry.format !== 'poetry' && !isFragment && !entry.contribution?.trim()) ctx.addIssue({ code: 'custom', path: ['contribution'], message: 'Approved non-poetry entries require contribution' })
     if (entry.format === 'poetry' && !entry.blocks.some(block => block.type === 'verse' && block.text.trim())) ctx.addIssue({ code: 'custom', path: ['blocks'], message: 'Approved poetry requires nonempty verse' })
     if (!entry.authorIds.length) ctx.addIssue({ code: 'custom', path: ['authorIds'], message: 'Approved entries require attribution' })
+    if (isFragment && !entry.inquirySpace?.prompt?.trim() && !entry.blocks.some(block =>
+      block.type === 'image' || block.type === 'verse' && !!block.text.trim() || (block.type === 'prose' || block.type === 'callout') && !!block.markdown.trim()
+    )) ctx.addIssue({ code: 'custom', path: ['blocks'], message: 'Approved fragments need intentional readable content or a nonempty prompt' })
   }
   if (new Set(entry.blocks.map(block => block.id)).size !== entry.blocks.length) {
     ctx.addIssue({ code: 'custom', path: ['blocks'], message: 'Duplicate block identity' })
@@ -56,11 +65,17 @@ export type Entry = z.infer<typeof entrySchema>
 export const relationshipSchema = z.strictObject({
   ...base, visibility, reviewState,
   fromId: uuidSchema, toId: uuidSchema,
-  type: z.enum(['supports', 'challenges', 'extends', 'illustrates', 'contradicts', 'depends_on', 'emerged_from', 'shares_pattern']),
+  type: z.enum(['supports', 'challenges', 'extends', 'illustrates', 'contradicts', 'depends_on', 'emerged_from', 'shares_pattern', 'paired_with']),
   rationale: z.string().min(1).max(10_000), evidenceIds: ids,
   provenance: z.enum(['owner', 'import', 'assistant_suggestion']),
+  exploration: explorationSchema.optional(),
   internalNotes: text.optional(),
-}).refine(record => record.fromId !== record.toId, { message: 'Self relationships are not allowed' })
+}).superRefine((record, ctx) => {
+  if (record.fromId === record.toId) ctx.addIssue({ code: 'custom', message: 'Self relationships are not allowed' })
+  if (record.type === 'paired_with' && !record.rationale.trim()) ctx.addIssue({ code: 'custom', path: ['rationale'], message: 'Authored pairings need a meaningful rationale' })
+  if (record.type === 'paired_with' && !record.exploration) ctx.addIssue({ code: 'custom', path: ['exploration'], message: 'Authored pairings need separate exploratory meaning and boundaries' })
+  if (record.type !== 'paired_with' && record.exploration) ctx.addIssue({ code: 'custom', path: ['exploration'], message: 'Exploratory metadata belongs only to authored pairings' })
+})
 export type Relationship = z.infer<typeof relationshipSchema>
 
 export const evidenceSchema = z.strictObject({
@@ -115,8 +130,8 @@ export type ReleaseManifest = z.infer<typeof manifestSchema>
 export const approvalSchema = z.strictObject({ candidateDigest: digestSchema, approvedBy: z.string().min(1), approvedAt: timestamp })
 export type CandidateApproval = z.infer<typeof approvalSchema>
 
-export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'format' | 'investigation' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
-export type PublicRelationship = Pick<Relationship, 'id' | 'fromId' | 'toId' | 'type' | 'rationale' | 'evidenceIds'>
+export type PublicEntry = Pick<Entry, 'id' | 'revision' | 'kind' | 'format' | 'investigation' | 'inquirySpace' | 'slug' | 'title' | 'summary' | 'createdAt' | 'updatedAt' | 'authorIds' | 'topicIds' | 'blocks' | 'evidenceIds'> & { path: string; contribution: string }
+export type PublicRelationship = Pick<Relationship, 'id' | 'fromId' | 'toId' | 'type' | 'rationale' | 'evidenceIds' | 'exploration'>
 export type PublicEvidence = Pick<Evidence, 'id' | 'title' | 'source' | 'locator' | 'observedAt' | 'role' | 'limitations' | 'assetIds' | 'kind' | 'measurement'>
 export type PublicAsset = Pick<Asset, 'id' | 'url' | 'mimeType' | 'width' | 'height' | 'alt' | 'decorative' | 'credit' | 'checksum'>
 export type PublicAlias = Pick<Alias, 'id' | 'targetId'> & ({ kind: 'path'; path: string } | { kind: 'fragment'; fragment: string })

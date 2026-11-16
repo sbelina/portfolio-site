@@ -57,3 +57,5 @@ Use **Sami Belina**. The single professional practice is **Test. Show. Enable.**
 ## Bounded specialist collaboration
 
 Use independent read-only specialists for architecture, evidence and interaction audits before substantial design work; the parent integrates. [Agent orchestration](docs/design-system/AGENT_ORCHESTRATION.md) and `.codex/agents/` define bounded roles. Preserve existing writing-review records, six-pass workflow and private studio. Assign one owner per edit surface. Role restrictions are instructions, not sandbox enforcement; validate client configuration before claiming registered agents or concurrency controls work. Agent review is not authenticated owner approval or deployment authorization.
+
+Current owner authorization, 16 November: “I approve both builds” covers the existing synthetic Atlas and [bounded Je ne sais qu’a illustration](docs/codex/NOV-16-INQUIRY-RELEASE.md). Release only the allowlisted illustration, never the broader fixture/private corpus. Real seeds/cases, hosted authoring and unimplemented Atlas visual/SWIFT additions retain separate boundaries.
