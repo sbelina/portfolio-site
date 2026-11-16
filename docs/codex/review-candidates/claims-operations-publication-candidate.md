@@ -20,11 +20,11 @@ Intended as the first thing published if the full case needs more time. About 15
 >
 > In a claims team's total-loss process, paperwork could be recorded as delivered before anyone had confirmed it was sufficient. Payment sometimes followed the delivery record, and errors surfaced later as rework for customers and staff.
 >
-> Working unassigned, Sami logged recurring exceptions, traced the handoffs between adjusters, administrative staff and the salvage partner, and brought the evidence to management. Management chose to make payment wait for the salvage partner's review; who decides what did not change.
+> Working unassigned, I logged recurring exceptions, traced the handoffs between adjusters, administrative staff and the salvage partner, and brought the evidence to management. Management chose to make payment wait for the salvage partner's review; who decides what did not change.
 >
-> Separately, Sami facilitated sessions in which administrators shared the practical knowledge behind the process. That knowledge informed three distinct resources for different audiences: a paperwork guide, a support training deck and onboarding materials.
+> Separately, I facilitated sessions in which administrators shared the practical knowledge behind the process. That knowledge informed three distinct resources for different audiences: a paperwork guide, a support training deck and onboarding materials.
 >
-> **Sami's role:** identified the problem, built the evidence, led the review-timing change, facilitated the knowledge sessions, and wrote the guide and training deck.
+> **My role:** I identified the problem, built the evidence, led the review-timing change, facilitated the knowledge sessions, and wrote the guide and training deck.
 > **Not established:** a measured reduction in rework, or that any single change caused one.
 
 ---
@@ -41,19 +41,19 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 
 **workingExplanation:** *Practitioner interpretation.* The recorded handoff and the later acceptance check described different states. Treating “delivered” as “complete” moved the point of discovery to after payment, when correction is harder for everyone.
 
-**investigation:** Sami began without an assignment. Sami kept a log of recurring exceptions, then clarified the process with the teams it touched (adjusters, administrative staff and the salvage partner) to see where each one believed the work was finished. Sami brought the resulting evidence about payment timing to management.
+**investigation:** I began without an assignment. I kept a log of recurring exceptions, then clarified the process with the teams it touched (adjusters, administrative staff and the salvage partner) to see where each one believed the work was finished. I brought the resulting evidence about payment timing to management.
 
 **relationshipDiscovered:** *Delivered ≠ complete.* The status the system reported and the state the next step depended on were related but not equivalent. The gap was a question of *when* sufficiency was checked, not *who* had authority.
 
 **response:** Two connected responses, kept separate:
 1. *Review timing.* Management chose to make payment wait for the salvage partner's acceptance of the paperwork. Decision authority did not change: the salvage partner decides sufficiency, and adjusters release payment. Adjusters were trained to wait for that acceptance.
-2. *Shared practitioner knowledge.* Sami facilitated meetings in which administrators surfaced the practical knowledge, examples and procedural differences behind the process. This informed three distinct resources: a comprehensive paperwork guide, a total-loss support training deck (which trainers now teach from), and an administrative onboarding program. The error-log categories did not become the guide's structure. In parallel, Sami redesigned the customer cover letter to reduce the decisions customers had to make after a total loss; a process team later produced a national version, and that later version is not attributed to Sami here.
+2. *Shared practitioner knowledge.* I facilitated meetings in which administrators surfaced the practical knowledge, examples and procedural differences behind the process. This informed three distinct resources: a comprehensive paperwork guide, a total-loss support training deck (which trainers now teach from), and an administrative onboarding program. The error-log categories did not become the guide's structure. In parallel, I redesigned the customer cover letter to reduce the decisions customers had to make after a total loss; a process team later produced a national version, and that later version is not attributed to me here.
 
 **consequence:** *Owner-reported, pending verification.* The review-timing change and the resources remain in use. Which resource is used where, since when, and by whom has not yet been documented here. Use of a resource is not evidence that it improved outcomes.
 
 **limitations:** No controlled measurement. Two rework observations exist with different scopes, periods and definitions; neither is presented as an outcome, and they are never compared. Several changes happened close together (review timing, training, the guide, the letter), so no single change can be credited with any later difference. Any change in how long payment takes has not been measured. Contributions by managers, trainers, adjusters, the salvage partner and the process team are their own.
 
-**contribution (entry.contribution):** Sami identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. Sami facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter. Management decided on the change; the salvage partner decides sufficiency; adjusters release payment; trainers deliver training; a process team built the later national letter.
+**contribution (entry.contribution):** I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter. Management decided on the change; the salvage partner decides sufficiency; adjusters release payment; trainers deliver training; a process team built the later national letter.
 
 ### Statements
 
@@ -63,12 +63,12 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 | --- | --- | --- | --- | --- | --- |
 | S1 | A delivery could be recorded, and payment released, before the salvage partner decided the paperwork was sufficient. | direct_observation | identified | Process description or log excerpt from the period; redacted | Describes the earlier process, not every claim |
 | S2 | Missing signatures and missing mileage were returned to customers to correct. | direct_observation | identified | Log categories or examples, redacted | Examples, not a frequency |
-| S3 | Sami began the work unassigned and kept a log of recurring exceptions. | direct_observation | identified | Dated log or message showing start and initiative | Log definition and window to be stated |
+| S3 | I began the work unassigned and kept a log of recurring exceptions. | direct_observation | identified | Dated log or message showing start and initiative | Log definition and window to be stated |
 | S4 | The recorded handoff and the acceptance check described different states. | practitioner_interpretation | identified | n/a (interpretation) | Alternative: other causes of rework not examined here |
 | S5 | Management chose to make payment wait for the salvage partner's acceptance; decision authority did not change. | documented_outcome | influenced | Process change record or manager confirmation | Implementation date and scope to be stated |
-| S6 | Sami facilitated administrator meetings that surfaced practical knowledge and procedural differences. | direct_observation | designed_or_facilitated | Meeting invitations or notes, redacted | Participation is not evidence of learning |
+| S6 | I facilitated administrator meetings that surfaced practical knowledge and procedural differences. | direct_observation | designed_or_facilitated | Meeting invitations or notes, redacted | Participation is not evidence of learning |
 | S7 | The paperwork guide, support training deck and onboarding program are distinct resources for different audiences. | direct_observation | implemented | Each artifact, with version and date | Reach of one is never combined with another |
-| S8 | Trainers teach from a deck built from Sami's training deck. | documented_outcome | observed_use | Trainer confirmation or current deck metadata | Use is not effectiveness |
+| S8 | Trainers teach from a deck built from my training deck. | documented_outcome | observed_use | Trainer confirmation or current deck metadata | Use is not effectiveness |
 | S9 | The resources remain in use. | documented_outcome | observed_use | Per-artifact: where, since when, by whom | Scope must be stated separately for each artifact |
 | S10 | Making knowledge shareable may reduce reliance on a few experienced individuals. | hypothesis | designed_or_facilitated | n/a (hypothesis) | Not measured; listed as an open question |
 
@@ -99,7 +99,7 @@ Nothing below is approved by this branch. Each item needs Sami's decision or a s
 - [ ] Approve or edit the short version (A) exactly as it will appear.
 - [ ] Approve or edit each full-case field (B) and the contribution statement.
 - [ ] Confirm the people and teams named by role only (management, trainers, adjusters, process team, salvage partner) are described accurately.
-- [ ] Confirm the cover-letter sentence: the later national version is not attributed to Sami.
+- [ ] Confirm the cover-letter sentence: the later national version is not attributed to me.
 
 **Provenance (per statement S1–S9)**
 - [ ] Attach a private source for each factual statement: observer or reporter, date, and locator in private storage.

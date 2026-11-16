@@ -67,6 +67,17 @@ Owner request, 16 November: “Build claims.” The Claims candidate now exists 
 - Figures follow the owner's 16 November direction: rounded or averaged estimates only, never exact internal counts. The two rework observations stay withheld because their problem is scope, not precision. Exact values stay in the owner's private notes, outside the repository.
 - Production `npm run build` is unchanged: it still renders no approved content and has no Claims route.
 
+## Owner changes, 16 November (afternoon)
+
+- **First person.** All case copy in the Claims candidate (entry and markdown) now uses first person. Archived previous-edition summaries keep their original third-person wording because the archive bytes are immutable.
+- **Interactive homepage illustration.** Classified as *adapted* (PC-03 and PC-06). The static HTML is unchanged: the full drawing, the caption and the “Read this illustration” disclosure. After hydration:
+  - A native radio group, “Look at: Both / Outcome / Explanation / The gap”, and pointer shortcuts on the drawing change which part is emphasized. Clicking a selected part returns to Both.
+  - A polite live region describes the current view.
+  - The SVG stays `aria-hidden`; the radios and the text carry the meaning.
+  - Under reduced motion, transitions and the gap pulse are off.
+  - No view adds data, scale or causal claims.
+  - Verified in Chrome with Playwright 1.63 against an esbuild bundle of the component, in both motion settings: keyboard arrow selection, pointer selection, toggling back, no console errors. The repository's own test (`tests/evidence-first.spec.ts`) has not run.
+
 ## Rollback
 
 Revert the branch's commits. No content store, release manifest, archive or deployment state was changed.

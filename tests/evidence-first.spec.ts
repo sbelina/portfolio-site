@@ -87,3 +87,37 @@ test('one click reaches the Claims summary from the first screen, by keyboard, w
     } finally { await context.close() }
   }
 })
+
+test('homepage illustration is interactive by keyboard and pointer, with a complete static baseline', async ({ browser }) => {
+  const staticContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false })
+  try {
+    const page = await staticContext.newPage()
+    await page.goto(`${origin}/`)
+    const figure = page.locator('.pc-inquiry-figure')
+    await expect(figure).toHaveAttribute('data-focus', 'all')
+    await expect(figure.getByRole('radio')).toHaveCount(0)
+    await expect(figure.getByText('Conceptual illustration · not measured data')).toBeVisible()
+  } finally { await staticContext.close() }
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' })
+  try {
+    const page = await context.newPage()
+    const errors: string[] = []
+    page.on('pageerror', error => errors.push(error.message))
+    await page.goto(`${origin}/`)
+    const figure = page.locator('.pc-inquiry-figure')
+    const controls = figure.getByRole('group', { name: 'Look at' })
+    await expect(controls.getByRole('radio')).toHaveCount(4)
+    await controls.getByRole('radio', { name: 'Both' }).focus()
+    await page.keyboard.press('ArrowRight')
+    await expect(controls.getByRole('radio', { name: 'Outcome' })).toBeChecked()
+    await expect(figure).toHaveAttribute('data-focus', 'outcome')
+    await expect(figure.locator('.pc-inquiry-reading')).toContainText('The solid line is what was observed.')
+    await figure.locator('.pc-part--gap .pc-open-question').click({ force: true })
+    await expect(figure).toHaveAttribute('data-focus', 'gap')
+    await expect(controls.getByRole('radio', { name: 'The gap' })).toBeChecked()
+    await expect(figure.locator('.pc-inquiry-reading')).toContainText('where an investigation starts')
+    expect(await figure.locator('.pc-gap-ring').evaluate(element => getComputedStyle(element).animationName)).toBe('none')
+    await expect(figure.locator('.pc-inquiry-drawing')).toHaveAttribute('aria-hidden', 'true')
+    expect(errors).toEqual([])
+  } finally { await context.close() }
+})
