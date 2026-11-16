@@ -59,7 +59,7 @@ const inquiryProjection = fixture ? projection : inquiryIllustrationProjection()
 await prerenderInquirySpace(output, inquiryProjection, fixture)
 const illustrativeEntries = fixture ? [] : inquiryProjection.entries
 const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
-if (new Set(routes).size !== routes.length) throw new Error('An illustrative route collides with canonical content or a static destination')
+if (new Set(routes).size !== routes.length || projection.aliases.some(alias => alias.kind === 'path' && routes.includes(alias.path))) throw new Error('An illustrative route collides with canonical content, an alias or a static destination')
 async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
   const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !fixture && !!route }))
     .replace('<html lang="en">', !fixture || !!data.entry?.inquirySpace ? '<html lang="en" data-edition="current">' : '<html lang="en">')
