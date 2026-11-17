@@ -37,7 +37,7 @@ Field names follow `src/content/investigation.ts`, so this can be entered into t
 **Summary (entry.summary):** A delivery record and a sufficiency check described different states. Moving the review point earlier, and sharing practitioner knowledge, addressed the gap between them.
 **Composition:** `boundary` · **Visual:** left `Delivered`, right `Complete`, explanation: *A delivery status records a handoff. Completion depends on the relevant acceptance check. Conceptual illustration, not measured data.*
 
-**observedCondition:** In the total-loss process, title and transfer paperwork moved from customers through the claims team to a salvage partner, which decides whether documents are sufficient. A delivery could be recorded, and payment released, before that decision. Problems such as a missing date (the most common, by my account), a missing signature, or an owner completing only one of two requested items then went back to customers to fix, after the claim appeared finished.
+**observedCondition:** In the total-loss process, title and transfer paperwork moved from customers through the claims team to a salvage partner, which decides whether documents are sufficient. A delivery could be recorded, and payment released, before that decision. Problems such as a missing detail, a detail that was unreadable or changed by hand, or a request only partly completed then went back to customers to fix, after the claim appeared finished.
 
 **workingExplanation:** *Practitioner interpretation.* The recorded handoff and the later acceptance check described different states. Treating “delivered” as “complete” moved the point of discovery to after payment, when correction is harder for everyone.
 
@@ -76,7 +76,7 @@ Shown on the homepage only once this case is approved (field `investigation.brie
 | ID | Exact wording | kind | contribution | Evidence needed (private) | Limitation |
 | --- | --- | --- | --- | --- | --- |
 | S1 | A delivery could be recorded, and payment released, before the salvage partner decided the paperwork was sufficient. | direct_observation | identified | Process description or log excerpt from the period; redacted | Describes the earlier process, not every claim |
-| S2 | Missing dates, missing signatures, and owners completing only one of two requested items were returned to customers to correct. Missing dates were the most common. | direct_observation | identified | Log categories or examples, redacted | The ranking is owner-reported, not a measured frequency |
+| S2 | Paperwork with missing details, details that were unreadable or changed by hand, or requests only partly completed was returned to customers to correct. Missing details were the most common. | direct_observation | identified | Log categories or examples, redacted | The ranking is owner-reported, not a measured frequency |
 | S3 | I began the work unassigned and kept a log of recurring exceptions. | direct_observation | identified | Dated log or message showing start and initiative | Log definition and window to be stated |
 | S4 | The recorded handoff and the acceptance check described different states. | practitioner_interpretation | identified | n/a (interpretation) | Alternative: other causes of rework not examined here |
 | S5 | Management chose to make payment wait for the salvage partner's acceptance; decision authority did not change. | documented_outcome | influenced | Process change record or manager confirmation | Implementation date and scope to be stated |
