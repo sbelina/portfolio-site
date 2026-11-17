@@ -28,6 +28,7 @@ test('accepts only the configured account, Voice notifications and allowed sende
   expect(checkSender('sami.example@gmail.com', parseEmail(voiceEmail({ body: 'x', sender: '5155550999' })).headers, policy).ok).toBe(false)
   expect(checkSender('sami.example@gmail.com', parseEmail(voiceEmail({ body: 'x', from: 'Friend <friend@example.com>' })).headers, policy).ok).toBe(false)
   expect(checkSender('sami.example@gmail.com', headers, { ...policy, senderNumbers: [] }).ok).toBe(false)
+  expect(checkSender('sami.example@gmail.com', parseEmail(voiceEmail({ body: 'x', voice: '5155550177' })).headers, policy)).toEqual({ ok: false, reason: 'Not sent to the configured Voice number' })
   const confirmation = parseEmail('From: Gmail Team <forwarding-noreply@google.com>\r\nSubject: (#123456) Gmail Forwarding Confirmation - Receive Mail from sami.example@gmail.com\r\n\r\nConfirmation code: 123456')
   expect(checkSender('forwarding-noreply@google.com', confirmation.headers, policy)).toEqual({ ok: true, kind: 'gmail-confirmation' })
 })

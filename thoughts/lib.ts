@@ -149,6 +149,8 @@ export function checkSender(envelopeFrom: string, headers: MimeHeaders, policy: 
   const voice = tenDigits(policy.voiceNumber)
   const allowed = policy.senderNumbers.map(tenDigits).filter(number => number.length === 10)
   if (voice.length !== 10 || !allowed.length) return { ok: false, reason: 'Phone numbers are not configured' }
+  // Google Voice encodes both numbers in the sender address: 1<voice>.1<sender>.<token>@txt.voice.google.com
+  if (!digits(from).includes(voice)) return { ok: false, reason: 'Not sent to the configured Voice number' }
   const haystack = digits(`${from} ${headers.get('subject') ?? ''} ${headers.get('to') ?? ''}`)
   if (!allowed.some(number => haystack.includes(number))) return { ok: false, reason: 'Sender number is not allowed' }
   return { ok: true, kind: 'text' }
