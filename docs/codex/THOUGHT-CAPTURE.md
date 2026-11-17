@@ -42,26 +42,26 @@ Adapted from MindChuk to Producing Curiosity:
 
 You'll need the Cloudflare dashboard, a terminal with this branch checked out (`npm ci` first), and your Google Voice and Gmail settings. **Steps 2, 3, 5 and 7 change live account settings.**
 
-1. **Database — done 17 November.** `producing-curiosity-thoughts` (ID `2da3d1d3-7a2f-4042-a9c2-4da021d43616`, eastern North America) was created through the Cloudflare connector with the schema applied and recorded as migration `0001_thoughts.sql`. The ID is in `wrangler.thoughts.jsonc`; a database ID is not a secret.
+1. **Database — done 17 November.** `producing-curiosity-thoughts` (ID `2da3d1d3-7a2f-4042-a9c2-4da021d43616`, eastern North America) was created through the Cloudflare connector with the schema applied and recorded as migration `0001_thoughts.sql`. The ID is in `thoughts/wrangler.jsonc`; a database ID is not a secret.
 2. **Protect the subdomain with Cloudflare Access.** In Zero Trust, go to Access → Applications → Add → Self-hosted. Set the domain to `thoughts.producingcuriosity.com` and the policy to *Allow*, with your email as the only rule. Copy the application's **Audience (AUD) tag** and your team domain (`<team>.cloudflareaccess.com`).
 3. **Set the Worker's secrets.** After the first deploy (step 4), add them in the dashboard under Workers & Pages → `producing-curiosity-thoughts` → Settings → Variables and Secrets, choosing type *Secret*. Or run each of these once, from the repository root:
    ```sh
-   npx wrangler secret put OWNER_EMAIL --config wrangler.thoughts.jsonc        # the email you log in with
-   npx wrangler secret put ACCESS_TEAM_DOMAIN --config wrangler.thoughts.jsonc # <team>.cloudflareaccess.com
-   npx wrangler secret put ACCESS_AUD --config wrangler.thoughts.jsonc         # AUD tag from step 2
-   npx wrangler secret put FORWARDING_ACCOUNT --config wrangler.thoughts.jsonc # the Gmail address on your Google Voice account
-   npx wrangler secret put VOICE_NUMBER --config wrangler.thoughts.jsonc       # your Google Voice number
-   npx wrangler secret put SENDER_NUMBERS --config wrangler.thoughts.jsonc     # the cell number(s) you text from, comma-separated
-   npx wrangler secret put CSRF_SECRET --config wrangler.thoughts.jsonc        # any long random string
+   npx wrangler secret put OWNER_EMAIL --config thoughts/wrangler.jsonc        # the email you log in with
+   npx wrangler secret put ACCESS_TEAM_DOMAIN --config thoughts/wrangler.jsonc # <team>.cloudflareaccess.com
+   npx wrangler secret put ACCESS_AUD --config thoughts/wrangler.jsonc         # AUD tag from step 2
+   npx wrangler secret put FORWARDING_ACCOUNT --config thoughts/wrangler.jsonc # the Gmail address on your Google Voice account
+   npx wrangler secret put VOICE_NUMBER --config thoughts/wrangler.jsonc       # your Google Voice number
+   npx wrangler secret put SENDER_NUMBERS --config thoughts/wrangler.jsonc     # the cell number(s) you text from, comma-separated
+   npx wrangler secret put CSRF_SECRET --config thoughts/wrangler.jsonc        # any long random string
    ```
-4. **Deploy with Workers Builds (from the dashboard; works from a phone browser).** Go to Workers & Pages → Create → Import a repository, and choose `sbelina/portfolio-site`.
-   - **Project name:** `producing-curiosity-thoughts`. It must match `name` in `wrangler.thoughts.jsonc`.
-   - **Production branch:** `feature/thought-capture`.
-   - **Build command:** leave empty.
-   - **Deploy command:** `npx wrangler deploy --config wrangler.thoughts.jsonc`.
-   - **Preview builds:** turn off.
+4. **Deploy with Workers Builds.** In Workers & Pages → `producing-curiosity-thoughts` → Settings → Build, set:
+   - **Production branch:** `feat/thought-capture` (also pushed as `feature/thought-capture`).
+   - **Root directory (Path):** `thoughts`. That folder has its own `wrangler.jsonc` named `producing-curiosity-thoughts`, so Cloudflare's name check passes without touching the public site's root `wrangler.jsonc`. **Never accept Cloudflare's suggested PR to rename the root `wrangler.jsonc`**; that would break the public site deploy.
+   - **Build command:** empty.
+   - **Deploy command:** `npx wrangler deploy`.
+   - **Preview builds:** off.
 
-   The first deploy creates the `thoughts.producingcuriosity.com` custom domain. The page answers “This page is private.” until steps 2 and 3 are done. That's expected; it fails closed. If you prefer a terminal, `npx wrangler deploy --config wrangler.thoughts.jsonc` does the same.
+   Then start a build. The page answers “This page is private.” until steps 2 and 3 are done; that's expected, because it fails closed. From a terminal, `npx wrangler deploy --config thoughts/wrangler.jsonc` does the same.
 5. **Route email to the Worker.** In the producingcuriosity.com zone, go to Email → Email Routing and enable it, after checking the DNS records it proposes don't replace mail you already use. Then add a custom address, `thoughts@producingcuriosity.com`, with the action *Send to a Worker*, set to `producing-curiosity-thoughts`.
 6. **Turn on Google Voice forwarding.** In voice.google.com, go to Settings → Messages and turn on *Forward messages to email*.
 7. **Forward the texts with Gmail.**
@@ -97,4 +97,4 @@ You'll need the Cloudflare dashboard, a terminal with this branch checked out (`
 
 ## Rollback
 
-Delete the Email Routing rule (texts stop arriving), then `npx wrangler delete --config wrangler.thoughts.jsonc`, then remove the Access application. Export first if you want to keep anything: `npx wrangler d1 export producing-curiosity-thoughts --remote --output thoughts-backup.sql`. Keep that file private, outside this repository. The public site is unaffected throughout.
+Delete the Email Routing rule (texts stop arriving), then `npx wrangler delete --config thoughts/wrangler.jsonc`, then remove the Access application. Export first if you want to keep anything: `npx wrangler d1 export producing-curiosity-thoughts --remote --output thoughts-backup.sql`. Keep that file private, outside this repository. The public site is unaffected throughout.
