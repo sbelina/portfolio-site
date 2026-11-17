@@ -27,7 +27,7 @@ export interface Env {
 type EmailMessage = { from: string; to: string; headers: Headers; raw: ReadableStream<Uint8Array>; rawSize: number; setReject(reason: string): void }
 type Context = { waitUntil(promise: Promise<unknown>): void }
 
-const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct'
+const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast'
 const MAX_EMAIL = 512 * 1024
 
 const security = {

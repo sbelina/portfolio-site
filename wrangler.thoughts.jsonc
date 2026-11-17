@@ -14,12 +14,12 @@
     {
       "binding": "DB",
       "database_name": "producing-curiosity-thoughts",
-      "database_id": "REPLACE_WITH_ID_FROM_wrangler_d1_create",
+      "database_id": "2da3d1d3-7a2f-4042-a9c2-4da021d43616",
       "migrations_dir": "migrations-thoughts"
     }
   ],
   "ai": { "binding": "AI" },
   "triggers": { "crons": ["*/30 * * * *"] },
-  "vars": { "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct" },
+  "vars": { "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast" },
   "observability": { "enabled": true }
 }

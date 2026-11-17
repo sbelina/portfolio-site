@@ -36,13 +36,15 @@ Adapted from MindChuk to Producing Curiosity:
 | Edit view | Title, text, tags and archive work as ordinary forms, so nothing needs JavaScript. Delete needs a confirmation tick. The original is shown under “Original, exactly as received”. |
 | Accessibility | 40–52px touch targets, visible focus, real links and buttons, a skip link, reduced-motion respected, and no meaning carried by color alone. |
 
-## Setup (owner steps; nothing below has been done)
+## Setup
+
+**Order:** 1 (done) → 4 deploy → 2 Access → 3 secrets → 5 email routing → 6 Google Voice → 7 Gmail → 8 test.
 
 You'll need the Cloudflare dashboard, a terminal with this branch checked out (`npm ci` first), and your Google Voice and Gmail settings. **Steps 2, 3, 5 and 7 change live account settings.**
 
-1. **Create the database.** Run `npx wrangler d1 create producing-curiosity-thoughts`, then paste the returned `database_id` into `wrangler.thoughts.jsonc` in place of `REPLACE_WITH_ID_FROM_wrangler_d1_create`. Apply the schema with `npx wrangler d1 migrations apply producing-curiosity-thoughts --remote --config wrangler.thoughts.jsonc`.
+1. **Database — done 17 November.** `producing-curiosity-thoughts` (ID `2da3d1d3-7a2f-4042-a9c2-4da021d43616`, eastern North America) was created through the Cloudflare connector with the schema applied and recorded as migration `0001_thoughts.sql`. The ID is in `wrangler.thoughts.jsonc`; a database ID is not a secret.
 2. **Protect the subdomain with Cloudflare Access.** In Zero Trust, go to Access → Applications → Add → Self-hosted. Set the domain to `thoughts.producingcuriosity.com` and the policy to *Allow*, with your email as the only rule. Copy the application's **Audience (AUD) tag** and your team domain (`<team>.cloudflareaccess.com`).
-3. **Set the Worker's secrets.** Run each of these once, from the repository root:
+3. **Set the Worker's secrets.** After the first deploy (step 4), add them in the dashboard under Workers & Pages → `producing-curiosity-thoughts` → Settings → Variables and Secrets, choosing type *Secret*. Or run each of these once, from the repository root:
    ```sh
    npx wrangler secret put OWNER_EMAIL --config wrangler.thoughts.jsonc        # the email you log in with
    npx wrangler secret put ACCESS_TEAM_DOMAIN --config wrangler.thoughts.jsonc # <team>.cloudflareaccess.com
@@ -52,7 +54,14 @@ You'll need the Cloudflare dashboard, a terminal with this branch checked out (`
    npx wrangler secret put SENDER_NUMBERS --config wrangler.thoughts.jsonc     # the cell number(s) you text from, comma-separated
    npx wrangler secret put CSRF_SECRET --config wrangler.thoughts.jsonc        # any long random string
    ```
-4. **Deploy:** `npx wrangler deploy --config wrangler.thoughts.jsonc`. This creates the `thoughts.producingcuriosity.com` custom domain. Open it: you should get the Access login, then an empty Thoughts page.
+4. **Deploy with Workers Builds (from the dashboard; works from a phone browser).** Go to Workers & Pages → Create → Import a repository, and choose `sbelina/portfolio-site`.
+   - **Project name:** `producing-curiosity-thoughts`. It must match `name` in `wrangler.thoughts.jsonc`.
+   - **Production branch:** `feature/thought-capture`.
+   - **Build command:** leave empty.
+   - **Deploy command:** `npx wrangler deploy --config wrangler.thoughts.jsonc`.
+   - **Preview builds:** turn off.
+
+   The first deploy creates the `thoughts.producingcuriosity.com` custom domain. The page answers “This page is private.” until steps 2 and 3 are done. That's expected; it fails closed. If you prefer a terminal, `npx wrangler deploy --config wrangler.thoughts.jsonc` does the same.
 5. **Route email to the Worker.** In the producingcuriosity.com zone, go to Email → Email Routing and enable it, after checking the DNS records it proposes don't replace mail you already use. Then add a custom address, `thoughts@producingcuriosity.com`, with the action *Send to a Worker*, set to `producing-curiosity-thoughts`.
 6. **Turn on Google Voice forwarding.** In voice.google.com, go to Settings → Messages and turn on *Forward messages to email*.
 7. **Forward the texts with Gmail.**
@@ -84,7 +93,7 @@ You'll need the Cloudflare dashboard, a terminal with this branch checked out (`
 
   **8 of 8 passed** in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
 - The TypeScript check of `thoughts/` passed with TypeScript 6 and `@types/node`.
-- **Not run here:** `npm ci`, `wrangler dev`, `check:thoughts`, real Email Routing, real Access, real Workers AI. The Workers AI model ID in `wrangler.thoughts.jsonc` should be confirmed against Cloudflare's current model list before deploying.
+- **Not run here:** `npm ci`, `wrangler dev`, `check:thoughts`, real Email Routing, real Access, real Workers AI. The Workers AI model was checked against Cloudflare's model catalog on 17 November: `@cf/meta/llama-3.1-8b-instruct` is listed as deprecated and the fp8 variant is scheduled for deprecation on 20 November 2026, so the default is `@cf/meta/llama-3.1-8b-instruct-fast`.
 
 ## Rollback
 
