@@ -1,0 +1,139 @@
+import { expect, test } from '@playwright/test'
+import { generateKeyPairSync, createSign } from 'node:crypto'
+import { checkSender, extractVoiceText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
+import { verifyAccess, resetAccessCache } from '../thoughts/access'
+import { addThought, getThought, listThoughts, tagCloud } from '../thoughts/store'
+import { handle, receiveEmail, type Env } from '../thoughts/worker'
+import { emailMessage, memoryD1, voiceEmail } from './d1-shim'
+
+const policy = { forwardingAccount: 'sami.example@gmail.com', voiceNumber: '(515) 555-0188', senderNumbers: ['515-555-0123'] }
+const env = (overrides: Partial<Env> = {}): Env => ({
+  DB: memoryD1(), ACCESS_TEAM_DOMAIN: 'team.cloudflareaccess.com', ACCESS_AUD: 'aud-123', OWNER_EMAIL: 'owner@example.com',
+  FORWARDING_ACCOUNT: policy.forwardingAccount, VOICE_NUMBER: policy.voiceNumber, SENDER_NUMBERS: policy.senderNumbers.join(','),
+  CSRF_SECRET: 'test-secret', ...overrides,
+})
+const ctx = () => { const pending: Promise<unknown>[] = []; return { waitUntil: (p: Promise<unknown>) => { pending.push(p) }, settle: () => Promise.all(pending) } }
+
+test('parses a forwarded Google Voice text and strips the notification footer', () => {
+  const parsed = parseEmail(voiceEmail({ body: 'Ask about #research-ops = idea’s scope' }))
+  expect(extractVoiceText(parsed.text)).toBe('Ask about #research-ops = idea’s scope')
+  expect(parsed.headers.get('subject')).toContain('New text message')
+})
+
+test('accepts only the configured account, Voice notifications and allowed sender numbers', () => {
+  const headers = parseEmail(voiceEmail({ body: 'x' })).headers
+  expect(checkSender('sami.example+caf_=thoughts=example.com@gmail.com', headers, policy)).toEqual({ ok: true, kind: 'text' })
+  expect(checkSender('sami.example@gmail.com', headers, policy)).toEqual({ ok: true, kind: 'text' })
+  expect(checkSender('someone@gmail.com', headers, policy).ok).toBe(false)
+  expect(checkSender('sami.example@gmail.com', parseEmail(voiceEmail({ body: 'x', sender: '5155550999' })).headers, policy).ok).toBe(false)
+  expect(checkSender('sami.example@gmail.com', parseEmail(voiceEmail({ body: 'x', from: 'Friend <friend@example.com>' })).headers, policy).ok).toBe(false)
+  expect(checkSender('sami.example@gmail.com', headers, { ...policy, senderNumbers: [] }).ok).toBe(false)
+  const confirmation = parseEmail('From: Gmail Team <forwarding-noreply@google.com>\r\nSubject: (#123456) Gmail Forwarding Confirmation - Receive Mail from sami.example@gmail.com\r\n\r\nConfirmation code: 123456')
+  expect(checkSender('forwarding-noreply@google.com', confirmation.headers, policy)).toEqual({ ok: true, kind: 'gmail-confirmation' })
+})
+
+test('typed tags, keyword fallback and AI reply parsing stay bounded', () => {
+  expect(typedTags('Plan #Research_Ops and #ideas, again #ideas')).toEqual(['research_ops', 'ideas'])
+  expect(keywordSuggestions('Trust research trust interviews research synthesis trust')).toEqual(['trust', 'research', 'interviews', 'synthesis'])
+  expect(parseSuggestion('Sure! {"title":"Trust study follow-up","tags":["Trust","research ops","trust"]}')).toEqual({ title: 'Trust study follow-up', tags: ['trust', 'research-ops'] })
+  expect(parseSuggestion('no json here')).toBeUndefined()
+  expect(readFilter(new URLSearchParams('tag=%23Ideas&from=2026-01-01&to=bad&view=x'))).toEqual({ q: undefined, tag: 'ideas', from: '2026-01-01', to: undefined, view: 'active' })
+  expect([cloudStep(1, 1), cloudStep(1, 10), cloudStep(10, 10)]).toEqual([3, 1, 5])
+})
+
+test('email intake stores the raw text once, applies typed tags, then AI suggestions as pre-approved tags', async () => {
+  const ai = { run: async () => ({ response: '{"title":"Checkpoint idea","tags":["handoffs","portfolio"]}' }) }
+  const e = env({ AI: ai })
+  const c = ctx()
+  const first = emailMessage(voiceEmail({ body: 'Move the checkpoint earlier #portfolio' }))
+  await receiveEmail(first.message, e, c); await c.settle()
+  const duplicate = emailMessage(voiceEmail({ body: 'Move the checkpoint earlier #portfolio' }))
+  await receiveEmail(duplicate.message, e, c); await c.settle()
+  const [thought] = await listThoughts(e.DB, { view: 'active' })
+  expect(await listThoughts(e.DB, { view: 'all' })).toHaveLength(1)
+  expect(thought.raw).toBe('Move the checkpoint earlier #portfolio')
+  expect(thought.title).toBe('Checkpoint idea')
+  expect(thought.title_origin).toBe('ai')
+  expect(thought.tags).toEqual([{ tag: 'handoffs', origin: 'ai' }, { tag: 'portfolio', origin: 'typed' }])
+})
+
+test('falls back to keywords when AI is unavailable, and rejects strangers without storing anything', async () => {
+  const e = env({ AI: { run: async () => { throw new Error('down') } } })
+  const c = ctx()
+  await receiveEmail(emailMessage(voiceEmail({ body: 'Trust research: trust signals in onboarding research' })).message, e, c); await c.settle()
+  const [thought] = await listThoughts(e.DB, { view: 'active' })
+  expect(thought.title_origin).toBe('fallback')
+  expect(thought.tags.map(tag => tag.tag)).toEqual(['onboarding', 'research', 'signals', 'trust']) // stored tags list alphabetically
+  const stranger = emailMessage(voiceEmail({ body: 'spam', sender: '5155550999', messageId: '<other@x>' }))
+  await receiveEmail(stranger.message, e, c)
+  expect(stranger.rejected()).toBe('Not accepted')
+  const spoof = emailMessage(voiceEmail({ body: 'spoof', messageId: '<spoof@x>' }), 'attacker@example.com')
+  await receiveEmail(spoof.message, e, c)
+  expect(spoof.rejected()).toBe('Not accepted')
+  expect(await listThoughts(e.DB, { view: 'all' })).toHaveLength(1)
+})
+
+test('the page is closed without a verified Access identity', async () => {
+  const response = await handle(new Request('https://thoughts.example.com/'), env(), ctx())
+  expect(response.status).toBe(403)
+  const local = await handle(new Request('https://thoughts.example.com/'), env({ LOCAL_DEV: 'true' }), ctx())
+  expect(local.status).toBe(403) // the local bypass only applies on localhost
+})
+
+test('Access tokens are verified by signature, audience, expiry and owner email', async () => {
+  resetAccessCache()
+  const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 2048 })
+  const jwk = { ...publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256' }
+  const fetcher = (async () => new Response(JSON.stringify({ keys: [jwk] }))) as typeof fetch
+  const b64 = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url')
+  const sign = (claims: Record<string, unknown>) => {
+    const head = `${b64({ alg: 'RS256', kid: 'k1' })}.${b64(claims)}`
+    return `${head}.${createSign('RSA-SHA256').update(head).sign(privateKey).toString('base64url')}`
+  }
+  const config = { teamDomain: 'team.cloudflareaccess.com', audience: 'aud-123', ownerEmail: 'Owner@example.com' }
+  const now = Date.now(); const exp = Math.floor(now / 1000) + 600
+  expect(await verifyAccess(sign({ aud: ['aud-123'], email: 'owner@example.com', exp, iss: 'https://team.cloudflareaccess.com' }), config, now, fetcher)).toBe('owner@example.com')
+  expect(await verifyAccess(sign({ aud: ['other'], email: 'owner@example.com', exp }), config, now, fetcher)).toBeUndefined()
+  expect(await verifyAccess(sign({ aud: ['aud-123'], email: 'someone@example.com', exp }), config, now, fetcher)).toBeUndefined()
+  expect(await verifyAccess(sign({ aud: ['aud-123'], email: 'owner@example.com', exp: Math.floor(now / 1000) - 5 }), config, now, fetcher)).toBeUndefined()
+  const forged = sign({ aud: ['aud-123'], email: 'owner@example.com', exp }).replace(/\.[^.]+$/, '.AAAA')
+  expect(await verifyAccess(forged, config, now, fetcher)).toBeUndefined()
+})
+
+test('owner can search, filter by tag, edit, archive and delete; forms require the CSRF token', async () => {
+  const e = env({ LOCAL_DEV: 'true' })
+  const base = 'http://127.0.0.1:8790'
+  const c = ctx()
+  const first = await addThought(e.DB, { text: 'Interview script for #trust study', source: 'web' })
+  await addThought(e.DB, { text: 'Groceries: lentils, lemons', source: 'text' })
+  let page = await (await handle(new Request(`${base}/`), e, c)).text()
+  expect(page).toContain('Interview script for #trust study')
+  expect(page).toContain('Groceries: lentils, lemons')
+  page = await (await handle(new Request(`${base}/?tag=trust`), e, c)).text()
+  expect(page).toContain('Interview script')
+  expect(page).not.toContain('Groceries')
+  page = await (await handle(new Request(`${base}/?q=lentil`), e, c)).text()
+  expect(page).toContain('Groceries')
+  expect(page).not.toContain('Interview script')
+  const edit = await (await handle(new Request(`${base}/t/${first}`), e, c)).text()
+  const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(edit)![1]
+  const post = (path: string, fields: Record<string, string>, origin = base) => handle(new Request(`${base}${path}`, { method: 'POST', headers: { Origin: origin }, body: new URLSearchParams(fields) }), e, c)
+  expect((await post(`/t/${first}`, { csrf: 'wrong', title: 'x', body: 'x', tags: '' })).status).toBe(403)
+  expect((await post(`/t/${first}`, { csrf, title: 'x', body: 'x', tags: '' }, 'https://evil.example')).status).toBe(403)
+  expect((await post(`/t/${first}`, { csrf, title: 'Trust interviews', body: 'Interview script for #trust study, v2', tags: 'research, Interviews' })).status).toBe(303)
+  const updated = await getThought(e.DB, first!)
+  expect(updated!.title).toBe('Trust interviews')
+  expect(updated!.title_origin).toBe('manual')
+  expect(updated!.raw).toBe('Interview script for #trust study')
+  expect(updated!.tags).toEqual([{ tag: 'interviews', origin: 'manual' }, { tag: 'research', origin: 'manual' }, { tag: 'trust', origin: 'typed' }])
+  await post(`/t/${first}/archive`, { csrf })
+  expect((await listThoughts(e.DB, { view: 'active' })).map(t => t.id)).not.toContain(first)
+  expect((await tagCloud(e.DB, 'archived')).map(t => t.tag)).toContain('trust')
+  await post(`/t/${first}/delete`, { csrf })
+  expect(await getThought(e.DB, first!)).toBeDefined() // no confirmation box, nothing deleted
+  await post(`/t/${first}/delete`, { csrf, confirm: 'yes' })
+  expect(await getThought(e.DB, first!)).toBeUndefined()
+  const response = await handle(new Request(`${base}/`), e, c)
+  expect(response.headers.get('Cache-Control')).toBe('private, no-store')
+  expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+})

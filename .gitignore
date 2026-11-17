@@ -166,3 +166,6 @@ dist-studio/
 .studio-password
 studio-test-results/
 inquiry-studio-test-results/
+
+# Private thought archive test output
+thoughts-test-results/

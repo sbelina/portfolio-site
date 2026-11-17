@@ -2,6 +2,8 @@ Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and
 
 # Codex context: start here
 
+Private tool, 17 November (separate branch `feature/thought-capture`, not deployed): [text-to-archive Thoughts page](THOUGHT-CAPTURE.md). It is not part of the public site.
+
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
 ## Current direction — 6 November 2026

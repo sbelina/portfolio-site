@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Private thought archive. Separate from the public site Worker; nothing here is public.
+  // Secrets (set with `wrangler secret put … --config wrangler.thoughts.jsonc`, never in Git):
+  //   OWNER_EMAIL, FORWARDING_ACCOUNT, VOICE_NUMBER, SENDER_NUMBERS, CSRF_SECRET, ACCESS_TEAM_DOMAIN, ACCESS_AUD
+  // See docs/codex/THOUGHT-CAPTURE.md.
+  "name": "producing-curiosity-thoughts",
+  "main": "thoughts/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "thoughts.producingcuriosity.com", "custom_domain": true }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "producing-curiosity-thoughts",
+      "database_id": "REPLACE_WITH_ID_FROM_wrangler_d1_create",
+      "migrations_dir": "migrations-thoughts"
+    }
+  ],
+  "ai": { "binding": "AI" },
+  "triggers": { "crons": ["*/30 * * * *"] },
+  "vars": { "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct" },
+  "observability": { "enabled": true }
+}
