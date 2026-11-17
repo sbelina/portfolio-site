@@ -1,15 +1,18 @@
 /**
  * Private thought archive Worker (thoughts.producingcuriosity.com).
  * - email(): receives Google Voice texts forwarded by Gmail, via Cloudflare Email Routing.
- * - fetch(): the Thoughts page, behind Cloudflare Access, re-verified here.
+ * - fetch(): the Thoughts page, behind Cloudflare Access, re-verified here. On the public site's
+ *   hostnames only /field-notes/ is served: read-only notes the owner explicitly made public.
  * - scheduled(): retries sorting for anything not yet sorted.
  * Nothing here is part of the public site build. Phone numbers, emails and secrets are Worker
  * configuration, never repository content.
  */
 import { checkSender, extractVoiceText, fallbackTitle, keywordSuggestions, parseEmail, parseSuggestion, readFilter, suggestionPrompt, type Suggestion } from './lib'
 import { verifyAccess } from './access'
-import { addSystemNote, addThought, applySuggestion, deleteThought, dismissSystemNote, getThought, listThoughts, setArchived, systemNotes, tagCloud, unsorted, updateThought, type Database } from './store'
+import { addSystemNote, addThought, applySuggestion, deleteThought, dismissSystemNote, getPublicNote, getThought, listPublicNotes, listThoughts, publicTags, setArchived, systemNotes, tagCloud, unsorted, updateThought, type Database } from './store'
 import { editPage, listPage, messagePage, newPage } from './page'
+import { publicListPage, publicNotFound, publicNotePage } from './public-page'
+import { normalizeTag } from './lib'
 
 export interface Env {
   DB: Database
@@ -22,6 +25,9 @@ export interface Env {
   SENDER_NUMBERS: string          // comma-separated numbers allowed to text in (secret)
   CSRF_SECRET: string             // random string (secret)
   AI_MODEL?: string
+  PUBLIC_HOSTS?: string           // public site hostnames that may serve /field-notes/ (comma-separated)
+  PUBLIC_ORIGIN?: string          // e.g. https://producingcuriosity.com, for links from the private page
+  PUBLIC_INDEXING?: string        // 'true' lets search engines index field notes; off by default
   LOCAL_DEV?: string              // 'true' bypasses Access only on localhost
 }
 type EmailMessage = { from: string; to: string; headers: Headers; raw: ReadableStream<Uint8Array>; rawSize: number; setReject(reason: string): void }
@@ -89,6 +95,39 @@ export async function receiveEmail(message: EmailMessage, env: Env, ctx: Context
   if (id) ctx.waitUntil(sortThought(env, id, text))
 }
 
+/* ---------- Public field notes ---------- */
+
+const publicHeaders = {
+  'Content-Type': 'text/html; charset=utf-8',
+  'Cache-Control': 'public, max-age=300',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Content-Type-Options': 'nosniff',
+  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+}
+const LOCAL_HOSTS = ['127.0.0.1', 'localhost']
+const publicHosts = (env: Env) => (env.PUBLIC_HOSTS ?? '').split(',').map(host => host.trim().toLowerCase()).filter(Boolean)
+
+/** Read-only. Never touches identity, forms, raw text, sources or AI suggestions. */
+export async function handlePublic(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url)
+  const indexable = env.PUBLIC_INDEXING === 'true'
+  const respond = (body: string, status = 200) => new Response(request.method === 'HEAD' ? null : body, { status, headers: { ...publicHeaders, 'X-Robots-Tag': indexable && status === 200 ? 'index, follow' : 'noindex, follow' } })
+  if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405, headers: { Allow: 'GET, HEAD' } })
+  if (url.pathname === '/field-notes') return new Response(null, { status: 301, headers: { Location: `/field-notes/${url.search}` } })
+  if (url.pathname === '/field-notes/') {
+    const tag = normalizeTag(url.searchParams.get('tag') ?? '') || undefined
+    const [notes, tags] = await Promise.all([listPublicNotes(env.DB, tag), publicTags(env.DB)])
+    return respond(publicListPage({ notes, tags, tag, origin: url.origin, indexable }))
+  }
+  const match = /^\/field-notes\/([0-9a-f]{8})\/?$/.exec(url.pathname)
+  if (match) {
+    if (!url.pathname.endsWith('/')) return new Response(null, { status: 301, headers: { Location: `${url.pathname}/` } })
+    const note = await getPublicNote(env.DB, match[1])
+    if (note) return respond(publicNotePage(note, url.origin, indexable))
+  }
+  return respond(publicNotFound(url.origin), 404)
+}
+
 /* ---------- Page ---------- */
 
 const encoder = new TextEncoder()
@@ -121,7 +160,7 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
     }
     if (path === '/new') return html(newPage(csrf))
     const match = /^\/t\/([0-9a-f-]{36})$/.exec(path)
-    if (match) { const thought = await getThought(env.DB, match[1]); return thought ? html(editPage(thought, csrf)) : messagePage('Not found', 'That thought does not exist.', 404) }
+    if (match) { const thought = await getThought(env.DB, match[1]); return thought ? html(editPage(thought, csrf, env.PUBLIC_ORIGIN ?? '')) : messagePage('Not found', 'That thought does not exist.', 404) }
     return messagePage('Not found', 'Nothing here.', 404)
   }
 
@@ -152,12 +191,26 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
   const tags = String(form.get('tags') ?? '').split(/[,\s]+/)
   const body = String(form.get('body') ?? '')
   if (!body.trim()) return redirect(`/t/${id}`)
-  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags })
+  // The edit form always sends public_field; an unchecked box means "make private".
+  const isPublic = form.has('public_field') ? form.get('public') === 'on' : undefined
+  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags, public: isPublic })
   return saved ? redirect(`/t/${id}`) : messagePage('Not found', 'That thought does not exist.', 404)
 }
 
+/** Public hostnames only ever reach /field-notes/; the private archive never answers there. */
+export function route(request: Request, env: Env, ctx: Context): Promise<Response> {
+  const url = new URL(request.url)
+  const host = url.hostname.toLowerCase()
+  const isPublicHost = publicHosts(env).includes(host)
+  const isLocal = env.LOCAL_DEV === 'true' && LOCAL_HOSTS.includes(host)
+  const isNotesPath = url.pathname === '/field-notes' || url.pathname.startsWith('/field-notes/')
+  if (isNotesPath && (isPublicHost || isLocal)) return handlePublic(request, env)
+  if (isPublicHost) return Promise.resolve(new Response('Not found', { status: 404, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-Robots-Tag': 'noindex' } }))
+  return handle(request, env, ctx)
+}
+
 export default {
-  fetch: (request: Request, env: Env, ctx: Context) => handle(request, env, ctx),
+  fetch: (request: Request, env: Env, ctx: Context) => route(request, env, ctx),
   email: (message: EmailMessage, env: Env, ctx: Context) => receiveEmail(message, env, ctx),
   async scheduled(_event: unknown, env: Env) {
     for (const row of await unsorted(env.DB)) await sortThought(env, row.id, row.body)

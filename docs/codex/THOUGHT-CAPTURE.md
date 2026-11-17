@@ -72,9 +72,22 @@ You'll need the Cloudflare dashboard, a terminal with this branch checked out (`
 
 **Costs:** D1, Email Routing, Access (one user) and Workers are within Cloudflare's free tiers at this volume. Workers AI may bill for usage past its free daily allowance. Google Voice forwarding is free.
 
+## Public field notes
+
+Notes become public only when I say so. Everything else stays private.
+
+- **At capture:** include `#public` in the text. The note is published straight away.
+- **Later:** tick *Public field note* on the edit page, or add `#public` to a note that isn't public yet. Unticking the box makes it private again and clears the publication date. Archiving or deleting a note also removes it.
+- **What readers see:** the edited text (with `#public` removed), my own typed and manual tags, and the publication date. Readers never see the original text as captured, AI-suggested tags, the source, or the title.
+- **Where it lives:** `producingcuriosity.com/field-notes/` (list, `?tag=` filter) and `/field-notes/<first 8 characters of the ID>/`. The pages use the main site's header, navigation, paper/ink look and footer, labelled *Field notes*. They say plainly that notes are unedited thinking, not reviewed evidence, and point to the investigations for evidence. The path is `/field-notes/` because `/notes/` belongs to observation entries in the main content model.
+- **Routing:** this Worker has a zone route `producingcuriosity.com/field-notes*`. A route takes precedence over the portfolio-site Custom Domain for that path, so the portfolio-site Worker and its build are unchanged. On the public hostname, the code serves only `/field-notes/` (read-only, GET/HEAD) and returns 404 for everything else, so the private archive never answers there.
+- **Access:** the Worker-level Access rule protects every route, this one included. Field notes therefore need a separate Zero Trust self-hosted application for `producingcuriosity.com/field-notes` with a **Bypass / Everyone** policy. A path rule is more specific than the Worker rule, so it wins for that path only. The private page keeps both its Access login and the Worker's own token check.
+- **Indexing:** pages carry `noindex` until `PUBLIC_INDEXING` is set to `"true"`. Responses are cached for five minutes, so an unpublished note can stay visible for up to five minutes.
+- **Main site navigation:** the field notes pages already link to Investigations, Connections, Practice, Atlas and Contact. Adding *Field notes* to the main site's own navigation is a separate change to the public site and needs my approval.
+
 ## Privacy and limits
 
-- Your texts are stored in your Cloudflare D1 database and sent to Workers AI, which runs inside your Cloudflare account, for sorting. They are never committed to Git or included in the public site. To turn sorting off, remove the `ai` binding; keyword fallback then runs instead.
+- Your texts are stored in your Cloudflare D1 database and sent to Workers AI, which runs inside your Cloudflare account, for sorting. They are never committed to Git or included in the public site build. Only notes I mark public appear on `/field-notes/`. To turn sorting off, remove the `ai` binding; keyword fallback then runs instead.
 - Google Voice has no official API, so this relies on Google's notification email format. If Google changes it, intake may stop; your texts remain in Voice and Gmail. The sender check is deliberately strict, so a format change fails closed.
 - Group texts, picture messages and replies sent from Gmail are not handled.
 - The search is a simple text match. That's fine for thousands of thoughts; a full-text index can be added later.
@@ -89,12 +102,13 @@ You'll need the Cloudflare dashboard, a terminal with this branch checked out (`
   - AI tags marked as AI;
   - fallback when the AI fails;
   - Access token verification (signature, audience, expiry, owner, forgery);
-  - search, tag filter, edit (raw text preserved, manual title), archive, guarded delete, CSRF and origin checks, and private no-store headers.
+  - search, tag filter, edit (raw text preserved, manual title), archive, guarded delete, CSRF and origin checks, and private no-store headers;
+  - `#public` at capture, the edit switch (publish, unpublish, re-publish by hashtag), archive hiding, public output limited to edited text and owner tags, the private archive returning 404 on the public hostname, and no writes on the public view.
 
-  **8 of 8 passed** in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
+  **10 of 10 passed** in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
 - The TypeScript check of `thoughts/` passed with TypeScript 6 and `@types/node`.
 - **Not run here:** `npm ci`, `wrangler dev`, `check:thoughts`, real Email Routing, real Access, real Workers AI. The Workers AI model was checked against Cloudflare's model catalog on 17 November: `@cf/meta/llama-3.1-8b-instruct` is listed as deprecated and the fp8 variant is scheduled for deprecation on 20 November 2026, so the default is `@cf/meta/llama-3.1-8b-instruct-fast`.
 
 ## Rollback
 
-Delete the Email Routing rule (texts stop arriving), then `npx wrangler delete --config thoughts/wrangler.jsonc`, then remove the Access application. Export first if you want to keep anything: `npx wrangler d1 export producing-curiosity-thoughts --remote --output thoughts-backup.sql`. Keep that file private, outside this repository. The public site is unaffected throughout.
+Delete the Email Routing rule (texts stop arriving), then `npx wrangler delete --config thoughts/wrangler.jsonc`, then remove both Access applications. Export first if you want to keep anything: `npx wrangler d1 export producing-curiosity-thoughts --remote --output thoughts-backup.sql`. Keep that file private, outside this repository. The public site is unaffected throughout.

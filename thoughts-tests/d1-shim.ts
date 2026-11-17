@@ -1,12 +1,12 @@
 /** Test-only D1 stand-in on Node's built-in SQLite. Mirrors the subset of D1 the Worker uses. */
 import { DatabaseSync } from 'node:sqlite'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import type { Database, Statement } from '../thoughts/store'
 
-export function memoryD1(migration = 'migrations-thoughts/0001_thoughts.sql'): Database & { raw: DatabaseSync } {
+export function memoryD1(dir = 'migrations-thoughts'): Database & { raw: DatabaseSync } {
   const raw = new DatabaseSync(':memory:')
   raw.exec('PRAGMA foreign_keys = ON;')
-  raw.exec(readFileSync(migration, 'utf8'))
+  for (const file of readdirSync(dir).filter(name => name.endsWith('.sql')).sort()) raw.exec(readFileSync(`${dir}/${file}`, 'utf8'))
   const statement = (sql: string, values: unknown[] = []): Statement => ({
     bind: (...next: unknown[]) => statement(sql, next),
     first: async <T>() => (raw.prepare(sql).get(...(values as never[])) as T) ?? null,

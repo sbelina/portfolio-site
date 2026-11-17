@@ -3,18 +3,22 @@ import { normalizeTag, typedTags, type TagOrigin, type ThoughtFilter } from './l
 export interface Statement { bind(...values: unknown[]): Statement; first<T>(): Promise<T | null>; run(): Promise<{ meta: { changes: number } }>; all<T>(): Promise<{ results: T[] }> }
 export interface Database { prepare(sql: string): Statement; batch(statements: Statement[]): Promise<unknown[]> }
 
-export type ThoughtRow = { id: string; created_at: number; updated_at: number; source: 'text' | 'web'; raw: string; body: string; title: string; title_origin: string; archived: number; sorted: number }
+export type ThoughtRow = { id: string; created_at: number; updated_at: number; source: 'text' | 'web'; raw: string; body: string; title: string; title_origin: string; archived: number; sorted: number; public: number; published_at: number | null }
 export type Thought = ThoughtRow & { tags: { tag: string; origin: TagOrigin }[] }
 
 const newId = () => crypto.randomUUID()
+export const PUBLIC_TAG = 'public'
 
 /** Saves a new thought with its typed #tags. Returns undefined if this message was already stored. */
 export async function addThought(db: Database, input: { text: string; source: 'text' | 'web'; messageId?: string; now?: number }): Promise<string | undefined> {
   const now = input.now ?? Date.now()
   if (input.messageId && await db.prepare('SELECT id FROM thoughts WHERE message_id = ?').bind(input.messageId).first()) return undefined
   const id = newId()
-  const statements = [db.prepare('INSERT INTO thoughts (id, created_at, updated_at, source, raw, body, message_id) VALUES (?, ?, ?, ?, ?, ?, ?)').bind(id, now, now, input.source, input.text, input.text, input.messageId ?? null)]
-  for (const tag of typedTags(input.text)) statements.push(db.prepare('INSERT OR IGNORE INTO thought_tags (thought_id, tag, origin) VALUES (?, ?, ?)').bind(id, tag, 'typed'))
+  const tags = typedTags(input.text)
+  // #public is the owner's explicit opt-in at capture time.
+  const isPublic = tags.includes(PUBLIC_TAG) ? 1 : 0
+  const statements = [db.prepare('INSERT INTO thoughts (id, created_at, updated_at, source, raw, body, message_id, public, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, now, now, input.source, input.text, input.text, input.messageId ?? null, isPublic, isPublic ? now : null)]
+  for (const tag of tags) statements.push(db.prepare('INSERT OR IGNORE INTO thought_tags (thought_id, tag, origin) VALUES (?, ?, ?)').bind(id, tag, 'typed'))
   await db.batch(statements)
   return id
 }
@@ -59,18 +63,32 @@ export async function tagCloud(db: Database, view: ThoughtFilter['view']): Promi
 }
 
 /** Saves edits. Tags typed into the edited text are added; the tag field replaces manual/AI tags. */
-export async function updateThought(db: Database, id: string, input: { title: string; body: string; tags: string[] }, now = Date.now()) {
+export async function updateThought(db: Database, id: string, input: { title: string; body: string; tags: string[]; public?: boolean }, now = Date.now()) {
   const tags = [...new Set(input.tags.map(normalizeTag).filter(Boolean))].slice(0, 30)
   const typed = typedTags(input.body)
   const existing = await getThought(db, id)
   if (!existing) return false
   const origins = new Map(existing.tags.map(tag => [tag.tag, tag.origin]))
+  // Publishing: the edit-page switch decides. Newly adding #public (typed or in the tag field) also publishes,
+  // so the hashtag works the same after capture. The 'public' tag is kept in step with the switch.
+  let isPublic: boolean | undefined
+  if (input.public !== undefined) {
+    const addedPublicTag = !existing.public && (tags.includes(PUBLIC_TAG) || typed.includes(PUBLIC_TAG))
+    isPublic = input.public || addedPublicTag
+  }
+  const finalTags = new Set([...tags, ...typed])
+  if (isPublic === true) finalTags.add(PUBLIC_TAG)
+  if (isPublic === false) finalTags.delete(PUBLIC_TAG)
   const statements = [
     db.prepare("UPDATE thoughts SET title = ?, title_origin = CASE WHEN ? = title THEN title_origin ELSE 'manual' END, body = ?, updated_at = ? WHERE id = ?").bind(input.title.trim().slice(0, 200), input.title.trim().slice(0, 200), input.body.slice(0, 20_000), now, id),
     db.prepare('DELETE FROM thought_tags WHERE thought_id = ?').bind(id),
   ]
-  for (const tag of new Set([...tags, ...typed])) {
-    const origin: TagOrigin = typed.includes(tag) ? 'typed' : origins.get(tag) === 'ai' ? 'ai' : 'manual'
+  // After capture, the edit-page switch decides; publishing again keeps the first publication date.
+  if (isPublic !== undefined) statements.push(isPublic
+    ? db.prepare('UPDATE thoughts SET public = 1, published_at = COALESCE(published_at, ?) WHERE id = ?').bind(now, id)
+    : db.prepare('UPDATE thoughts SET public = 0, published_at = NULL WHERE id = ?').bind(id))
+  for (const tag of finalTags) {
+    const origin: TagOrigin = typed.includes(tag) ? 'typed' : origins.get(tag) === 'ai' && tag !== PUBLIC_TAG ? 'ai' : 'manual'
     statements.push(db.prepare('INSERT OR IGNORE INTO thought_tags (thought_id, tag, origin) VALUES (?, ?, ?)').bind(id, tag, origin))
   }
   await db.batch(statements)
@@ -101,4 +119,38 @@ export async function systemNotes(db: Database) {
 
 export async function dismissSystemNote(db: Database, id: number) {
   await db.prepare('DELETE FROM system_notes WHERE id = ?').bind(id).run()
+}
+
+/* ---------- Public field notes (read-only, opt-in) ---------- */
+
+export type PublicNote = { id: string; slug: string; body: string; published_at: number; tags: string[] }
+/** Only what a reader may see: edited text, owner tags (typed or manual), publication date. Never raw text, sources or AI tags. */
+const toPublic = (row: { id: string; body: string; published_at: number }, tags: { tag: string; origin: TagOrigin }[]): PublicNote => ({
+  id: row.id, slug: row.id.slice(0, 8), published_at: row.published_at,
+  body: row.body.replace(/(^|[\s(])#public\b/gi, '$1').replace(/[ \t]{2,}/g, ' ').trim(),
+  tags: tags.filter(tag => tag.origin !== 'ai' && tag.tag !== PUBLIC_TAG).map(tag => tag.tag),
+})
+
+export async function listPublicNotes(db: Database, tag?: string, limit = 200): Promise<PublicNote[]> {
+  const where = ['t.public = 1', 't.archived = 0']
+  const values: unknown[] = []
+  if (tag) { where.push("EXISTS (SELECT 1 FROM thought_tags x WHERE x.thought_id = t.id AND x.tag = ? AND x.origin != 'ai')"); values.push(tag) }
+  const { results } = await db.prepare(`SELECT t.id, t.body, t.published_at FROM thoughts t WHERE ${where.join(' AND ')} ORDER BY t.published_at DESC LIMIT ?`).bind(...values, limit).all<{ id: string; body: string; published_at: number }>()
+  if (!results.length) return []
+  const ids = results.map(row => row.id)
+  const { results: tags } = await db.prepare(`SELECT thought_id, tag, origin FROM thought_tags WHERE thought_id IN (${ids.map(() => '?').join(',')}) ORDER BY tag`).bind(...ids).all<{ thought_id: string; tag: string; origin: TagOrigin }>()
+  return results.map(row => toPublic(row, tags.filter(tag => tag.thought_id === row.id)))
+}
+
+export async function getPublicNote(db: Database, slug: string): Promise<PublicNote | undefined> {
+  if (!/^[0-9a-f]{8}$/.test(slug)) return undefined
+  const row = await db.prepare("SELECT id, body, published_at FROM thoughts WHERE public = 1 AND archived = 0 AND substr(id, 1, 8) = ?").bind(slug).first<{ id: string; body: string; published_at: number }>()
+  if (!row) return undefined
+  const { results } = await db.prepare('SELECT tag, origin FROM thought_tags WHERE thought_id = ? ORDER BY tag').bind(row.id).all<{ tag: string; origin: TagOrigin }>()
+  return toPublic(row, results)
+}
+
+export async function publicTags(db: Database): Promise<{ tag: string; count: number }[]> {
+  const { results } = await db.prepare("SELECT g.tag AS tag, COUNT(*) AS count FROM thought_tags g JOIN thoughts t ON t.id = g.thought_id WHERE t.public = 1 AND t.archived = 0 AND g.origin != 'ai' AND g.tag != 'public' GROUP BY g.tag ORDER BY count DESC, g.tag").all<{ tag: string; count: number }>()
+  return results.map(row => ({ tag: row.tag, count: Number(row.count) }))
 }

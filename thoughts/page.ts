@@ -54,7 +54,7 @@ details.cloud{margin:-.5rem 0 1.25rem}details.cloud summary{cursor:pointer;color
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .form{display:grid;gap:1rem;max-width:44rem}.form label{display:grid;gap:.35rem;font-size:.85rem;color:var(--muted)}
 .form input,.form textarea{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:.75rem;font:inherit;font-size:1rem}
-.form textarea{min-height:12rem;resize:vertical}.actions{display:flex;flex-wrap:wrap;gap:.75rem}
+.form textarea{min-height:12rem;resize:vertical}.publish{display:flex!important;grid-template-columns:none;gap:.75rem!important;align-items:flex-start;color:var(--ink)!important;font-size:1rem!important;min-height:44px}.publish input{width:22px;height:22px;margin:.15rem 0 0;accent-color:var(--signal)}.publish small{display:block;color:var(--muted);font-size:.8rem;margin-top:.2rem}.pub{color:var(--signal)}.actions{display:flex;flex-wrap:wrap;gap:.75rem}
 .raw{background:var(--panel);border:1px dashed var(--line-strong);border-radius:10px;padding:1rem;white-space:pre-wrap;color:var(--muted)}
 .legend{color:var(--muted);font-size:.8rem}
 @media (max-width:40rem){.grid{columns:1}.shell{padding:.75rem}}
@@ -95,7 +95,7 @@ export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; cou
   const cards = thoughts.map(thought => {
     const lead = thought.tags.find(tag => tag.origin === 'typed') ?? thought.tags.find(tag => tag.origin === 'manual') ?? thought.tags[0]
     const hue = lead ? tagHue(lead.tag) : 'var(--line-strong)'
-    return `<a class="card" style="--hue:${hue}" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${thought.archived ? ' · archived' : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>`
+    return `<a class="card" style="--hue:${hue}" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${thought.archived ? ' · archived' : ''}${thought.public ? ' · <span class="pub">public</span>' : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>`
   }).join('')
   const filtered = Boolean(filter.q || filter.tag || filter.from || filter.to || filter.view !== 'active')
   return shell(filter.tag ? `#${filter.tag}` : 'All thoughts', `
@@ -112,7 +112,7 @@ ${cloud.length > top.length ? `<details class="cloud"><summary>All ${cloud.lengt
 ${thoughts.length ? `<div class="grid">${cards}</div>` : `<p class="empty">${filtered ? 'Nothing matches these filters.' : 'Text your Voice number, or add a thought with +.'}</p>`}`, '')
 }
 
-export function editPage(thought: Thought, csrf: string): string {
+export function editPage(thought: Thought, csrf: string, publicOrigin = ''): string {
   const editable = thought.tags.filter(tag => tag.origin !== 'typed').map(tag => tag.tag).join(', ')
   const typed = thought.tags.filter(tag => tag.origin === 'typed').map(tag => `#${tag.tag}`).join(' ')
   return shell(thought.title || 'Thought', `
@@ -124,6 +124,9 @@ ${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.
 <label>Title<input name="title" value="${e(thought.title)}" maxlength="200"></label>
 <label>Thought<textarea name="body" required maxlength="20000">${e(thought.body)}</textarea></label>
 <label>Tags (comma separated)${typed ? ` — plus ${e(typed)} from the text` : ''}<input name="tags" value="${e(editable)}"></label>
+<input type="hidden" name="public_field" value="1">
+<label class="publish"><input type="checkbox" name="public"${thought.public ? ' checked' : ''}> <span>Public field note<small>Shows the edited text and your own tags at producingcuriosity.com/field-notes/. Never the original text or AI tags. Typing #public does the same.</small></span></label>
+${thought.public ? `<p class="meta">Published ${thought.published_at ? new Date(thought.published_at).toLocaleDateString('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }) : ''}${publicOrigin ? ` · <a href="${e(publicOrigin)}/field-notes/${thought.id.slice(0, 8)}/">View public note ↗</a>` : ''}</p>` : ''}
 <div class="actions"><button class="btn btn-primary">Save</button></div></form>
 <div class="actions" style="margin-top:1rem"><form method="post" action="/t/${thought.id}/${thought.archived ? 'restore' : 'archive'}"><input type="hidden" name="csrf" value="${e(csrf)}"><button class="btn">${thought.archived ? 'Restore' : 'Archive'}</button></form>
 <form method="post" action="/t/${thought.id}/delete"><input type="hidden" name="csrf" value="${e(csrf)}"><label class="legend" style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" name="confirm" value="yes" required> Delete permanently</label><button class="btn btn-danger">Delete</button></form></div>

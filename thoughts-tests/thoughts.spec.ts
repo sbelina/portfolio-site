@@ -3,7 +3,7 @@ import { generateKeyPairSync, createSign } from 'node:crypto'
 import { checkSender, extractVoiceText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
 import { verifyAccess, resetAccessCache } from '../thoughts/access'
 import { addThought, getThought, listThoughts, tagCloud } from '../thoughts/store'
-import { handle, receiveEmail, type Env } from '../thoughts/worker'
+import { handle, receiveEmail, route, type Env } from '../thoughts/worker'
 import { emailMessage, memoryD1, voiceEmail } from './d1-shim'
 
 const policy = { forwardingAccount: 'sami.example@gmail.com', voiceNumber: '(515) 555-0188', senderNumbers: ['515-555-0123'] }
@@ -137,4 +137,73 @@ test('owner can search, filter by tag, edit, archive and delete; forms require t
   const response = await handle(new Request(`${base}/`), e, c)
   expect(response.headers.get('Cache-Control')).toBe('private, no-store')
   expect(response.headers.get('X-Robots-Tag')).toBe('noindex, nofollow')
+})
+
+test('#public publishes at capture; the public page shows only edited text and owner tags', async () => {
+  const e = env({ PUBLIC_HOSTS: 'producingcuriosity.com' })
+  const c = ctx()
+  const visible = await addThought(e.DB, { text: 'What if the checkpoint moved upstream? #public #claims', source: 'text' })
+  await addThought(e.DB, { text: 'Private: salary notes', source: 'text' })
+  await e.DB.prepare("INSERT INTO thought_tags (thought_id, tag, origin) VALUES (?, 'ai-guess', 'ai')").bind(visible).run()
+  const get = (path: string, host = 'producingcuriosity.com') => route(new Request(`https://${host}${path}`), e, c)
+  const list = await get('/field-notes/')
+  const html = await list.text()
+  expect(list.status).toBe(200)
+  expect(list.headers.get('Cache-Control')).toBe('public, max-age=300')
+  expect(list.headers.get('X-Robots-Tag')).toBe('noindex, follow')
+  expect(html).toContain('What if the checkpoint moved upstream?')
+  expect(html).not.toContain('#public')
+  expect(html).not.toContain('ai-guess')
+  expect(html).not.toContain('salary')
+  expect(html).toContain('unedited and unreviewed')
+  expect(html).toContain('href="/investigations/"')
+  expect(html).toContain('aria-current="page">Field notes')
+  const slug = visible!.slice(0, 8)
+  expect((await get(`/field-notes/${slug}/`)).status).toBe(200)
+  expect((await get(`/field-notes/${slug}`)).status).toBe(301)
+  expect((await get('/field-notes/?tag=claims')).status).toBe(200)
+  expect(await (await get('/field-notes/?tag=ai-guess')).text()).toContain('No notes with this tag yet.')
+  // The private archive never answers on the public hostname, and the public view takes no writes.
+  expect((await get('/')).status).toBe(404)
+  expect((await get(`/t/${visible}`)).status).toBe(404)
+  expect((await route(new Request('https://producingcuriosity.com/field-notes/', { method: 'POST', body: 'x' }), e, c)).status).toBe(405)
+  // On the private hostname, /field-notes is not served without Access.
+  expect((await get('/field-notes/', 'thoughts.producingcuriosity.com')).status).toBe(403)
+})
+
+test('the edit switch publishes and unpublishes; adding #public later also publishes', async () => {
+  const e = env({ LOCAL_DEV: 'true', PUBLIC_HOSTS: 'producingcuriosity.com', PUBLIC_ORIGIN: 'https://producingcuriosity.com' })
+  const base = 'http://127.0.0.1:8790'
+  const c = ctx()
+  const id = await addThought(e.DB, { text: 'Same shape, different gap', source: 'web' })
+  const edit = await (await handle(new Request(`${base}/t/${id}`), e, c)).text()
+  expect(edit).toContain('name="public"')
+  expect(edit).not.toContain(' checked')
+  const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(edit)![1]
+  const save = (fields: Record<string, string>) => handle(new Request(`${base}/t/${id}`, { method: 'POST', headers: { Origin: base }, body: new URLSearchParams({ csrf, title: 'Gap', tags: '', public_field: '1', ...fields }) }), e, c)
+  const publicList = async () => (await route(new Request('https://producingcuriosity.com/field-notes/'), e, c)).text()
+
+  await save({ body: 'Same shape, different gap', public: 'on' })
+  let thought = await getThought(e.DB, id!)
+  expect(thought!.public).toBe(1)
+  const firstPublished = thought!.published_at
+  expect(thought!.tags.map(t => t.tag)).toContain('public')
+  expect(await publicList()).toContain('Same shape, different gap')
+  expect(await (await handle(new Request(`${base}/t/${id}`), e, c)).text()).toContain(`https://producingcuriosity.com/field-notes/${id!.slice(0, 8)}/`)
+
+  await save({ body: 'Same shape, different gap' }) // box unchecked
+  thought = await getThought(e.DB, id!)
+  expect(thought!.public).toBe(0)
+  expect(thought!.published_at).toBe(null)
+  expect(thought!.tags.map(t => t.tag)).not.toContain('public')
+  expect(await publicList()).not.toContain('Same shape')
+  expect((await route(new Request(`https://producingcuriosity.com/field-notes/${id!.slice(0, 8)}/`), e, c)).status).toBe(404)
+
+  await save({ body: 'Same shape, different gap #public' }) // box unchecked, hashtag newly added
+  thought = await getThought(e.DB, id!)
+  expect(thought!.public).toBe(1)
+  expect(firstPublished).not.toBe(null)
+
+  await e.DB.prepare('UPDATE thoughts SET archived = 1 WHERE id = ?').bind(id).run()
+  expect(await publicList()).not.toContain('Same shape') // archiving hides a public note too
 })
