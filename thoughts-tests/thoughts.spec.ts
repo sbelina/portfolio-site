@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { generateKeyPairSync, createSign } from 'node:crypto'
-import { checkSender, extractVoiceText, statusFromText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
+import { checkSender, dueFromText, dueLabel, extractVoiceText, parseAttachments, statusFromText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
 import { verifyAccess, resetAccessCache } from '../thoughts/access'
-import { addThought, getThought, listThoughts, tagCloud } from '../thoughts/store'
-import { handle, receiveEmail, route, type Env } from '../thoughts/worker'
+import { addThought, getThought, listPublicNotes, listThoughts, tagCloud } from '../thoughts/store'
+import { handle, purgeTrash, receiveEmail, route, weeklyBackup, type Bucket, type Env } from '../thoughts/worker'
 import { emailMessage, memoryD1, voiceEmail } from './d1-shim'
 
 const policy = { forwardingAccount: 'sami.example@gmail.com', voiceNumber: '(515) 555-0188', senderNumbers: ['515-555-0123'] }
@@ -135,8 +135,10 @@ test('owner can search, filter by tag, edit, archive and delete; forms require t
   expect((await listThoughts(e.DB, { view: 'active' })).map(t => t.id)).not.toContain(first)
   expect((await tagCloud(e.DB, 'archived')).map(t => t.tag)).toContain('trust')
   await post(`/t/${first}/delete`, { csrf })
+  expect((await getThought(e.DB, first!))!.deleted_at).not.toBe(null) // moved to Trash, still restorable
+  await post(`/t/${first}/purge`, { csrf })
   expect(await getThought(e.DB, first!)).toBeDefined() // no confirmation box, nothing deleted
-  await post(`/t/${first}/delete`, { csrf, confirm: 'yes' })
+  await post(`/t/${first}/purge`, { csrf, confirm: 'yes' })
   expect(await getThought(e.DB, first!)).toBeUndefined()
   const response = await handle(new Request(`${base}/`), e, c)
   expect(response.headers.get('Cache-Control')).toBe('private, no-store')
@@ -246,11 +248,13 @@ test('#todo, #doing and #done set a status instead of a tag; quick actions chang
   expect((await getThought(e.DB, other!))!.status).toBe('done')
   await post(`/t/${other}`, { title: 'x', body: 'Just a thought #done', tags: '', status_field: '1', status: 'todo' })
   expect((await getThought(e.DB, other!))!.status).toBe('todo')
-  // Delete from the list needs the confirmation box.
-  await post(`/t/${other}/delete`, { return: '/' })
-  expect(await getThought(e.DB, other!)).toBeDefined()
-  expect((await post(`/t/${other}/delete`, { confirm: 'yes', return: '/?status=todo' })).headers.get('Location')).toBe('/?status=todo')
-  expect(await getThought(e.DB, other!)).toBeUndefined()
+  // Delete from the list moves to Trash and returns to the same view with Undo.
+  expect((await post(`/t/${other}/delete`, { return: '/?status=todo' })).headers.get('Location')).toBe(`/?status=todo&undo=${other}`)
+  const undoPage = await (await handle(new Request(`${base}/?status=todo&undo=${other}`), e, c)).text()
+  expect(undoPage).toContain('Moved to Trash')
+  expect(undoPage).not.toContain('Just a thought #done</p>')
+  await post(`/t/${other}/untrash`, { return: '/' })
+  expect((await getThought(e.DB, other!))!.deleted_at).toBe(null)
 })
 
 test('the filter row shows only your own hashtags; AI suggestions stay in the full list', async () => {
@@ -262,4 +266,98 @@ test('the filter row shows only your own hashtags; AI suggestions stay in the fu
   expect(row).toContain('#clay')
   expect(row).not.toContain('#pottery')
   expect(page).toContain('including AI suggestions')
+})
+
+const memoryBucket = () => {
+  const store = new Map<string, { bytes: Uint8Array; type?: string }>()
+  const bucket: Bucket & { store: typeof store } = {
+    store,
+    async put(key, value, options) { store.set(key, { bytes: typeof value === 'string' ? new TextEncoder().encode(value) : new Uint8Array(value as ArrayBuffer), type: options?.httpMetadata?.contentType }) },
+    async get(key) { const item = store.get(key); return item ? { body: new Blob([item.bytes as Uint8Array<ArrayBuffer>]).stream(), size: item.bytes.byteLength } : null },
+    async delete(keys) { for (const key of [keys].flat()) store.delete(key) },
+    async list(options) { return { objects: [...store.keys()].filter(key => key.startsWith(options?.prefix ?? '')).map(key => ({ key })) } },
+  }
+  return bucket
+}
+
+test('due dates come from #today, #tomorrow and due:…; Today and Upcoming filter open items', async () => {
+  const today = '2026-11-18' // a Wednesday
+  expect(dueFromText('Call the kiln shop #today', today)).toBe('2026-11-18')
+  expect(dueFromText('Glaze order #tomorrow', today)).toBe('2026-11-19')
+  expect(dueFromText('Pick up clay due:fri', today)).toBe('2026-11-20')
+  expect(dueFromText('Pick up clay due:wed', today)).toBe('2026-11-18')
+  expect(dueFromText('Renew due:11/20', today)).toBe('2026-11-20')
+  expect(dueFromText('Taxes due:4/15', today)).toBe('2027-04-15')
+  expect(dueFromText('Exact due:2026-12-01', today)).toBe('2026-12-01')
+  expect(dueFromText('No date here', today)).toBe(undefined)
+  expect(typedTags('Glaze #today #clay')).toEqual(['clay'])
+  expect(dueLabel('2026-11-17', today)).toEqual({ text: 'Overdue · Nov 17', overdue: true })
+  expect(dueLabel('2026-11-20', today).text).toBe('Due Fri, Nov 20')
+  const e = env({ LOCAL_DEV: 'true' })
+  const now = Date.parse('2026-11-18T16:00:00Z')
+  await addThought(e.DB, { text: 'Overdue thing due:11/17', source: 'web', now: Date.parse('2026-11-16T16:00:00Z') })
+  await addThought(e.DB, { text: 'Today thing #today', source: 'web', now })
+  await addThought(e.DB, { text: 'Later thing due:12/1', source: 'web', now })
+  await addThought(e.DB, { text: 'Finished thing #today #done', source: 'web', now })
+  const todayList = (await listThoughts(e.DB, { view: 'active', due: 'today' }, 200, today)).map(t => t.body)
+  expect(todayList).toEqual(['Overdue thing due:11/17', 'Today thing #today'])
+  expect((await listThoughts(e.DB, { view: 'active', due: 'upcoming' }, 200, today)).map(t => t.body)).toEqual(['Later thing due:12/1'])
+})
+
+test('pictures from a text are stored privately, shown behind Access, and never public', async () => {
+  const media = memoryBucket()
+  const e = env({ MEDIA: media, PUBLIC_HOSTS: 'producingcuriosity.com', LOCAL_DEV: 'true' })
+  const jpeg = Buffer.alloc(6000, 7).toString('base64')
+  const logo = Buffer.alloc(6000, 8).toString('base64')
+  const raw = voiceEmail({ body: 'Look at this glaze #clay #public' }).replace(/--([^\r\n]+)--\s*$/, (_m, boundary) => `--${boundary}\r\nContent-Type: image/jpeg; name="IMG_0001.jpg"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename="IMG_0001.jpg"\r\n\r\n${jpeg}\r\n--${boundary}\r\nContent-Type: image/png; name="google_logo.png"\r\nContent-Transfer-Encoding: base64\r\n\r\n${logo}\r\n--${boundary}\r\nContent-Type: image/svg+xml\r\nContent-Transfer-Encoding: base64\r\n\r\n${jpeg}\r\n--${boundary}--\r\n`)
+  expect(parseAttachments(raw).map(item => item.contentType)).toEqual(['image/jpeg'])
+  await receiveEmail(emailMessage(raw, 'sami.example@gmail.com').message, e, ctx())
+  const [thought] = await listThoughts(e.DB, { view: 'active' })
+  expect(thought.media.length).toBe(1)
+  expect(media.store.size).toBe(1)
+  const picture = await handle(new Request(`http://127.0.0.1:8790/media/${thought.media[0].key}`), e, ctx())
+  expect(picture.status).toBe(200)
+  expect(picture.headers.get('Content-Type')).toBe('image/jpeg')
+  expect((await handle(new Request(`https://thoughts.example.com/media/${thought.media[0].key}`), env({ MEDIA: media }), ctx())).status).toBe(403)
+  const publicHtml = await (await route(new Request('https://producingcuriosity.com/field-notes/'), e, ctx())).text()
+  expect(publicHtml).toContain('Look at this glaze')
+  expect(publicHtml).not.toContain('/media/')
+  // Trash hides it from the public view; purging after 30 days removes the picture too.
+  const edit = await (await handle(new Request(`http://127.0.0.1:8790/t/${thought.id}`), e, ctx())).text()
+  const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(edit)![1]
+  await handle(new Request(`http://127.0.0.1:8790/t/${thought.id}/delete`, { method: 'POST', body: new URLSearchParams({ csrf }) }), e, ctx())
+  expect((await listPublicNotes(e.DB)).length).toBe(0)
+  await purgeTrash(e, Date.now() + 31 * 86_400_000)
+  expect(await getThought(e.DB, thought.id)).toBeUndefined()
+  expect(media.store.size).toBe(0)
+})
+
+test('export downloads everything; the weekly backup keeps the latest copies', async () => {
+  const media = memoryBucket()
+  const e = env({ MEDIA: media, LOCAL_DEV: 'true' })
+  await addThought(e.DB, { text: 'Export me #clay #todo', source: 'web' })
+  const json = await handle(new Request('http://127.0.0.1:8790/export.json'), e, ctx())
+  expect(json.headers.get('Content-Disposition')).toContain('attachment; filename="thoughts-')
+  const data = JSON.parse(await json.text())
+  expect(data.thoughts[0].body).toBe('Export me #clay #todo')
+  expect(data.thoughts[0].status).toBe('todo')
+  const md = await (await handle(new Request('http://127.0.0.1:8790/export.md'), e, ctx())).text()
+  expect(md).toContain('Export me #clay #todo')
+  expect(md).toContain('To do')
+  for (let week = 0; week < 14; week++) await weeklyBackup(e, Date.parse('2026-01-05T09:17:00Z') + week * 7 * 86_400_000)
+  const backups = [...media.store.keys()].filter(key => key.startsWith('backups/')).sort()
+  expect(backups.length).toBe(12)
+  expect(backups[0]).toBe('backups/thoughts-2026-01-19.json')
+})
+
+test('the board groups by status; the list page renders on a phone-sized layout without errors', async () => {
+  const e = env({ LOCAL_DEV: 'true' })
+  await addThought(e.DB, { text: 'A #todo', source: 'web' })
+  await addThought(e.DB, { text: 'B #doing', source: 'web' })
+  await addThought(e.DB, { text: 'C plain', source: 'web' })
+  const board = await (await handle(new Request('http://127.0.0.1:8790/?layout=board&status=todo'), e, ctx())).text()
+  expect(board).toContain('id="col-todo"')
+  expect(board).toContain('id="col-doing"')
+  expect(board).toContain('>B #doing</p>') // the status filter is ignored on the board
+  expect(board).toContain("1 notes without a status aren't on the board")
 })

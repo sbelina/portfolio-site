@@ -25,7 +25,12 @@
     }
   ],
   "ai": { "binding": "AI" },
-  "triggers": { "crons": ["*/30 * * * *"] },
+  // Private bucket for pictures from texts (served only behind Access) and weekly JSON backups.
+  // R2 must first be enabled on the account (dashboard → R2). Until then the Worker runs without it:
+  // pictures are skipped and the weekly backup does nothing; downloads still work. To turn it on, add:
+  //   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "producing-curiosity-thoughts-media" }],
+  // Every 30 minutes: retry sorting, empty Trash older than 30 days. Mondays ~3 a.m. Central: backup.
+  "triggers": { "crons": ["*/30 * * * *", "17 9 * * 1"] },
   "vars": {
     "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast",
     "PUBLIC_HOSTS": "producingcuriosity.com",

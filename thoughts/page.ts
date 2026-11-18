@@ -1,5 +1,5 @@
-import { cloudStep, escapeHtml as e, STATUSES, statusLabel, type Status, type ThoughtFilter } from './lib'
-import type { Thought } from './store'
+import { cloudStep, dueLabel, escapeHtml as e, localDate, STATUSES, statusLabel, type Status, type ThoughtFilter } from './lib'
+import type { ExportedThought, Thought } from './store'
 
 /*
  * Thoughts UI — design system (owner-requested, inspired by MindChuk, adapted to Producing Curiosity)
@@ -65,6 +65,16 @@ fieldset.status{border:1px solid var(--line);border-radius:10px;padding:.5rem .9
 .form textarea{min-height:12rem;resize:vertical}.publish{display:flex!important;grid-template-columns:none;gap:.75rem!important;align-items:flex-start;color:var(--ink)!important;font-size:1rem!important;min-height:44px}.publish input{width:22px;height:22px;margin:.15rem 0 0;accent-color:var(--signal)}.publish small{display:block;color:var(--muted);font-size:.8rem;margin-top:.2rem}.pub{color:var(--signal)}.actions{display:flex;flex-wrap:wrap;gap:.75rem}
 .raw{background:var(--panel);border:1px dashed var(--line-strong);border-radius:10px;padding:1rem;white-space:pre-wrap;color:var(--muted)}
 .legend{color:var(--muted);font-size:.8rem}
+.due{color:var(--ink)}.due.overdue{color:#f39185;font-weight:600}
+.pics{display:flex;gap:.4rem;margin:0 0 .7rem;overflow-x:auto}.pics img{width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:var(--raised)}
+.pics.large img{width:auto;height:auto;max-width:100%;max-height:28rem}
+.pic-item{display:grid;gap:.35rem;justify-items:start}
+.inline{display:inline}.link-btn{background:none;border:0;color:var(--muted);font:inherit;font-size:.8rem;cursor:pointer;min-height:40px;padding:0 .4rem;text-decoration:underline}
+.undo{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;border:1px solid var(--line-strong);border-radius:12px;padding:.6rem 1rem;margin:0 0 1rem}
+.view-toggle{display:inline-flex;gap:.25rem;margin-left:.25rem}.view-toggle a{padding:.1rem .45rem;border-radius:6px;text-decoration:none}.view-toggle a[aria-current="page"]{background:var(--ink);color:var(--paper)}
+.board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1rem;align-items:start}.board h2{font:600 .85rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.04em;margin:0 0 .75rem;color:var(--muted)}.board .col{min-width:0}.board .col-empty{color:var(--muted);font-size:.85rem;border:1px dashed var(--line);border-radius:12px;padding:1rem}
+.exports{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.85rem;color:var(--muted);margin:.25rem 0 1rem}
+@media (max-width:52rem){.board{grid-template-columns:1fr}}
 @media (max-width:40rem){.grid{columns:1}.shell{padding:.75rem}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 `
@@ -92,20 +102,46 @@ function statusControl(thought: Thought, csrf: string, returnTo: string) {
   }).join('')}</form>`
 }
 
+const hidden = (name: string, value: string) => `<input type="hidden" name="${name}" value="${e(value)}">`
+
+function dueHtml(thought: Thought, today: string) {
+  if (!thought.due_date) return ''
+  const label = dueLabel(thought.due_date, today)
+  const overdue = label.overdue && thought.status !== 'done'
+  return ` · <span class="due${overdue ? ' overdue' : ''}">${overdue ? '⚠ ' : ''}${e(overdue ? label.text : label.text.replace('Overdue', 'Was due'))}</span>`
+}
+
+const picsHtml = (thought: Thought, large = false) => thought.media.length ? `<div class="pics${large ? ' large' : ''}">${thought.media.slice(0, large ? 12 : 3).map(item => `<img src="/media/${e(item.key)}" alt="Picture sent with this text" loading="lazy">`).join('')}</div>` : ''
+
+function card(thought: Thought, input: { csrf: string; returnTo: string; now?: number; today: string; trash?: boolean }) {
+  const lead = thought.tags.find(tag => tag.origin === 'typed') ?? thought.tags.find(tag => tag.origin === 'manual') ?? thought.tags[0]
+  const hue = lead ? tagHue(lead.tag) : 'var(--line-strong)'
+  const badge = thought.status ? ` · <span class="status-badge">${statusIcon[thought.status]} ${statusLabel[thought.status]}</span>` : ''
+  const { csrf, returnTo } = input
+  const actions = input.trash
+    ? `<form method="post" action="/t/${thought.id}/untrash">${hidden('csrf', csrf)}${hidden('return', returnTo)}<button class="btn">Restore</button></form><details class="del"><summary>Delete forever</summary><form method="post" action="/t/${thought.id}/purge">${hidden('csrf', csrf)}${hidden('return', returnTo)}<label><input type="checkbox" name="confirm" value="yes" required> Yes, delete permanently</label><button class="btn btn-danger">Delete</button></form></details>`
+    : `${statusControl(thought, csrf, returnTo)}<form method="post" action="/t/${thought.id}/delete" class="inline">${hidden('csrf', csrf)}${hidden('return', returnTo)}<button class="link-btn">Delete</button></form>`
+  return `<article class="card" style="--hue:${hue}"${thought.status ? ` data-status="${thought.status}"` : ''}><a class="card-link" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${badge}${dueHtml(thought, input.today)}${thought.archived ? ' · archived' : ''}${thought.public ? ' · <span class="pub">public</span>' : ''}${thought.media.length ? ` · ${thought.media.length} ${thought.media.length === 1 ? 'picture' : 'pictures'}` : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}${picsHtml(thought)}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>
+<div class="card-actions">${actions}</div></article>`
+}
+
 function shell(title: string, content: string, _origin = '') {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${e(title)} · Thoughts</title><style>${css}</style></head><body>
 <a class="skip" href="#main">Skip to thoughts</a><div class="shell"><header class="top"><a class="mark" href="/">Thoughts<span aria-hidden="true">*</span></a></header>
 <main id="main">${content}</main></div></body></html>`
 }
 
-export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; count: number; own?: number }[]; filter: ThoughtFilter; notes: { id: number; subject: string; body: string }[]; counts?: Record<Status, number>; csrf: string; returnTo?: string; now?: number }): string {
+export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; count: number; own?: number }[]; filter: ThoughtFilter; notes: { id: number; subject: string; body: string }[]; counts?: Record<Status, number>; due?: { today: number; upcoming: number }; trash?: number; csrf: string; returnTo?: string; now?: number; today?: string; undo?: Thought }): string {
   const { thoughts, cloud, filter, notes, csrf } = input
   const returnTo = input.returnTo ?? '/'
   const counts = input.counts ?? { todo: 0, doing: 0, done: 0 }
+  const dueCount = input.due ?? { today: 0, upcoming: 0 }
+  const today = input.today ?? localDate(input.now ?? Date.now())
+  const inTrash = filter.view === 'trash'
   const query = (changes: Partial<Record<keyof ThoughtFilter, string | undefined>>) => {
     const params = new URLSearchParams()
     const merged = { ...filter, ...changes }
-    for (const [key, value] of Object.entries(merged)) if (value && !(key === 'view' && value === 'active')) params.set(key, String(value))
+    for (const [key, value] of Object.entries(merged)) if (value && key !== 'undo' && !(key === 'view' && value === 'active')) params.set(key, String(value))
     const text = params.toString()
     return text ? `/?${text}` : '/'
   }
@@ -116,30 +152,29 @@ export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; cou
   if (filter.tag && !top.some(item => item.tag === filter.tag)) { const current = cloud.find(item => item.tag === filter.tag); if (current) top.push(current) }
   const max = Math.max(1, ...cloud.map(item => item.count))
   const noteHtml = notes.map(note => `<section class="note" aria-label="Setup message"><p><strong>${e(note.subject)}</strong></p><p class="raw">${e(note.body)}</p><form method="post" action="/notes/${note.id}/dismiss"><input type="hidden" name="csrf" value="${e(csrf)}"><button class="btn">Dismiss</button></form></section>`).join('')
-  const cards = thoughts.map(thought => {
-    const lead = thought.tags.find(tag => tag.origin === 'typed') ?? thought.tags.find(tag => tag.origin === 'manual') ?? thought.tags[0]
-    const hue = lead ? tagHue(lead.tag) : 'var(--line-strong)'
-    const badge = thought.status ? ` · <span class="status-badge">${statusIcon[thought.status]} ${statusLabel[thought.status]}</span>` : ''
-    return `<article class="card" style="--hue:${hue}"${thought.status ? ` data-status="${thought.status}"` : ''}><a class="card-link" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${badge}${thought.archived ? ' · archived' : ''}${thought.public ? ' · <span class="pub">public</span>' : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>
-<div class="card-actions">${statusControl(thought, csrf, returnTo)}<details class="del"><summary>Delete</summary><form method="post" action="/t/${thought.id}/delete"><input type="hidden" name="csrf" value="${e(csrf)}"><input type="hidden" name="return" value="${e(returnTo)}"><label><input type="checkbox" name="confirm" value="yes" required> Yes, delete permanently</label><button class="btn btn-danger">Delete</button></form></details></div></article>`
-  }).join('')
-  const filtered = Boolean(filter.q || filter.tag || filter.status || filter.from || filter.to || filter.view !== 'active')
-  return shell(filter.tag ? `#${filter.tag}` : 'All thoughts', `
-${noteHtml}
+  const cardInput = { csrf, returnTo, now: input.now, today, trash: inTrash }
+  const cards = thoughts.map(thought => card(thought, cardInput)).join('')
+  const boardHtml = () => `<div class="board">${STATUSES.map(status => { const items = thoughts.filter(thought => thought.status === status); return `<section class="col" aria-labelledby="col-${status}"><h2 id="col-${status}"><span aria-hidden="true">${statusIcon[status]}</span> ${statusLabel[status]} · ${items.length}</h2>${items.length ? items.map(thought => card(thought, cardInput)).join('') : '<p class="col-empty">Nothing here.</p>'}</section>` }).join('')}</div>${thoughts.some(thought => !thought.status) ? `<p class="legend">${thoughts.filter(thought => !thought.status).length} notes without a status aren't on the board. <a href="${query({ layout: undefined })}">See the list</a>.</p>` : ''}`
+  const undoHtml = input.undo ? `<div class="undo" role="status"><span>Moved to Trash: “${e((input.undo.title || input.undo.body).slice(0, 60))}”</span><form method="post" action="/t/${input.undo.id}/untrash">${hidden('csrf', csrf)}${hidden('return', returnTo)}<button class="btn">Undo</button></form></div>` : ''
+  const filtered = Boolean(filter.q || filter.tag || filter.status || filter.due || filter.from || filter.to || filter.view !== 'active')
+  return shell(inTrash ? 'Trash' : filter.tag ? `#${filter.tag}` : 'All thoughts', `
+${noteHtml}${undoHtml}
 <form class="bar" method="get" action="/" role="search"><label class="search"><span aria-hidden="true">⌕</span><span class="sr">Search your thoughts</span><input type="search" name="q" value="${e(filter.q ?? '')}" placeholder="Search your thoughts">${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}${filter.status ? `<input type="hidden" name="status" value="${e(filter.status)}">` : ''}</label><a class="add" href="/new" aria-label="Add a thought">+</a></form>
 <ul class="chips" aria-label="Filter by your hashtags"><li><a class="chip" href="${query({ tag: undefined })}" aria-current="${!filter.tag}">All</a></li>${top.map(item => `<li><a class="chip" style="border-color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}" aria-current="${filter.tag === item.tag}">#${e(item.tag)} <small>${item.own ?? item.count}</small></a></li>`).join('')}</ul>
-<ul class="status-row" aria-label="Filter by status"><li><a class="chip" href="${query({ status: undefined })}" aria-current="${!filter.status}">Any status</a></li>${STATUSES.map(status => `<li><a class="chip" href="${query({ status })}" aria-current="${filter.status === status}"><span aria-hidden="true">${statusIcon[status]}</span> ${statusLabel[status]} <small>${counts[status]}</small></a></li>`).join('')}</ul>
+<ul class="status-row" aria-label="Filter by status"><li><a class="chip" href="${query({ status: undefined })}" aria-current="${!filter.status}">Any status</a></li>${STATUSES.map(status => `<li><a class="chip" href="${query({ status })}" aria-current="${filter.status === status}"><span aria-hidden="true">${statusIcon[status]}</span> ${statusLabel[status]} <small>${counts[status]}</small></a></li>`).join('')}<li><a class="chip" href="${query({ due: filter.due === 'today' ? undefined : 'today' })}" aria-current="${filter.due === 'today'}">Today <small>${dueCount.today}</small></a></li><li><a class="chip" href="${query({ due: filter.due === 'upcoming' ? undefined : 'upcoming' })}" aria-current="${filter.due === 'upcoming'}">Upcoming <small>${dueCount.upcoming}</small></a></li></ul>
 ${cloud.length > top.length ? `<details class="cloud"><summary>All ${cloud.length} tags, including AI suggestions ✦</summary><ul class="cloud-list">${cloud.map(item => `<li><a class="s${cloudStep(item.count, max)}" style="color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}">#${e(item.tag)}<span class="sr"> (${item.count})</span></a></li>`).join('')}</ul></details>` : ''}
 <details class="cloud" ${filter.from || filter.to || filter.view !== 'active' ? 'open' : ''}><summary>Dates and archive</summary>
 <form class="filters" method="get" action="/">${filter.q ? `<input type="hidden" name="q" value="${e(filter.q)}">` : ''}${filter.status ? `<input type="hidden" name="status" value="${e(filter.status)}">` : ''}${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}
 <label>From<input type="date" name="from" value="${filter.from ?? ''}"></label><label>To<input type="date" name="to" value="${filter.to ?? ''}"></label>
-<label>Show<select name="view"><option value="active"${filter.view === 'active' ? ' selected' : ''}>Active</option><option value="archived"${filter.view === 'archived' ? ' selected' : ''}>Archived</option><option value="all"${filter.view === 'all' ? ' selected' : ''}>Everything</option></select></label><button>Apply</button></form></details>
+<label>Show<select name="view"><option value="active"${filter.view === 'active' ? ' selected' : ''}>Active</option><option value="archived"${filter.view === 'archived' ? ' selected' : ''}>Archived</option><option value="all"${filter.view === 'all' ? ' selected' : ''}>Everything</option><option value="trash"${inTrash ? ' selected' : ''}>Trash${input.trash ? ` (${input.trash})` : ''}</option></select></label><button>Apply</button></form>
+<p class="exports">Download everything: <a href="/export.json" download>JSON</a> <a href="/export.md" download>Markdown</a> · A copy is also saved automatically every Monday.</p></details>
 <h1 class="sr">${filter.tag ? `Thoughts tagged ${e(filter.tag)}` : 'Your thoughts'}</h1>
-<p class="legend" aria-live="polite">${thoughts.length} ${thoughts.length === 1 ? 'thought' : 'thoughts'}${filtered ? ` · <a href="/">Clear filters</a>` : ''} · ✦ = tag added by AI, editable</p>
-${thoughts.length ? `<div class="grid">${cards}</div>` : `<p class="empty">${filtered ? 'Nothing matches these filters.' : 'Text your Voice number, or add a thought with +.'}</p>`}`, '')
+<p class="legend" aria-live="polite">${thoughts.length} ${thoughts.length === 1 ? 'thought' : 'thoughts'}${filtered ? ` · <a href="/">Clear filters</a>` : ''} · ✦ = tag added by AI, editable${inTrash ? '' : ` · <span class="view-toggle" aria-label="Layout"><a href="${query({ layout: undefined })}" aria-current="${filter.layout ? 'false' : 'page'}">List</a><a href="${query({ layout: 'board' })}" aria-current="${filter.layout === 'board' ? 'page' : 'false'}">Board</a></span>`}</p>
+${inTrash ? `<div class="undo"><span>Notes in Trash are deleted permanently after 30 days.</span>${thoughts.length ? `<details class="del"><summary>Empty Trash</summary><form method="post" action="/trash/empty">${hidden('csrf', csrf)}<label><input type="checkbox" name="confirm" value="yes" required> Yes, delete all ${thoughts.length} permanently</label><button class="btn btn-danger">Empty Trash</button></form></details>` : ''}</div>` : ''}
+${!thoughts.length ? `<p class="empty">${inTrash ? 'Trash is empty.' : filtered ? 'Nothing matches these filters.' : 'Text your Voice number, or add a thought with +.'}</p>` : filter.layout === 'board' && !inTrash ? boardHtml() : `<div class="grid">${cards}</div>`}`, '')
 }
 
-export function editPage(thought: Thought, csrf: string, publicOrigin = ''): string {
+export function editPage(thought: Thought, csrf: string, publicOrigin = '', today = localDate(Date.now())): string {
   const editable = thought.tags.filter(tag => tag.origin !== 'typed').map(tag => tag.tag).join(', ')
   const typed = thought.tags.filter(tag => tag.origin === 'typed').map(tag => `#${tag.tag}`).join(' ')
   return shell(thought.title || 'Thought', `
@@ -153,12 +188,17 @@ ${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.
 <label>Tags (comma separated)${typed ? ` — plus ${e(typed)} from the text` : ''}<input name="tags" value="${e(editable)}"></label>
 <input type="hidden" name="status_field" value="1">
 <fieldset class="status"><legend>Status (or type #todo, #doing, #done)</legend><label><input type="radio" name="status" value="none"${thought.status ? '' : ' checked'}> None</label>${STATUSES.map(status => `<label><input type="radio" name="status" value="${status}"${thought.status === status ? ' checked' : ''}> ${statusIcon[status]} ${statusLabel[status]}</label>`).join('')}</fieldset>
+<input type="hidden" name="due_field" value="1">
+<label>Due date (or type #today, #tomorrow, due:fri, due:11/20)<input type="date" name="due" value="${e(thought.due_date ?? '')}"></label>${thought.due_date ? `<p class="meta">${dueHtml(thought, today).replace(/^ · /, '')}</p>` : ''}
 <input type="hidden" name="public_field" value="1">
 <label class="publish"><input type="checkbox" name="public"${thought.public ? ' checked' : ''}> <span>Public field note<small>Shows the edited text and your own tags at producingcuriosity.com/field-notes/. Never the original text or AI tags. Typing #public does the same.</small></span></label>
 ${thought.public ? `<p class="meta">Published ${thought.published_at ? new Date(thought.published_at).toLocaleDateString('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }) : ''}${publicOrigin ? ` · <a href="${e(publicOrigin)}/field-notes/${thought.id.slice(0, 8)}/">View public note ↗</a>` : ''}</p>` : ''}
 <div class="actions"><button class="btn btn-primary">Save</button></div></form>
-<div class="actions" style="margin-top:1rem"><form method="post" action="/t/${thought.id}/${thought.archived ? 'restore' : 'archive'}"><input type="hidden" name="csrf" value="${e(csrf)}"><button class="btn">${thought.archived ? 'Restore' : 'Archive'}</button></form>
-<form method="post" action="/t/${thought.id}/delete"><input type="hidden" name="csrf" value="${e(csrf)}"><label class="legend" style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" name="confirm" value="yes" required> Delete permanently</label><button class="btn btn-danger">Delete</button></form></div>
+${thought.media.length ? `<section style="margin-top:1.5rem" aria-label="Pictures"><h2 class="legend">Pictures (private; never shown on field notes)</h2><div class="pics large">${thought.media.map(item => `<div class="pic-item"><img src="/media/${e(item.key)}" alt="Picture sent with this text" loading="lazy"><form method="post" action="/media/${e(item.key)}/delete">${hidden('csrf', csrf)}<button class="link-btn">Remove picture</button></form></div>`).join('')}</div></section>` : ''}
+<div class="actions" style="margin-top:1rem">${thought.deleted_at
+  ? `<p class="legend">This note is in Trash.</p><form method="post" action="/t/${thought.id}/untrash">${hidden('csrf', csrf)}<button class="btn">Restore from Trash</button></form>`
+  : `<form method="post" action="/t/${thought.id}/${thought.archived ? 'restore' : 'archive'}">${hidden('csrf', csrf)}<button class="btn">${thought.archived ? 'Restore' : 'Archive'}</button></form>
+<form method="post" action="/t/${thought.id}/delete">${hidden('csrf', csrf)}${hidden('return', '/')}<button class="btn btn-danger">Move to Trash</button></form>`}</div>
 <details class="cloud" style="margin-top:2rem"><summary>Original, exactly as received</summary><p class="raw">${e(thought.raw)}</p></details>`, '')
 }
 
@@ -168,3 +208,23 @@ export function newPage(csrf: string): string {
 }
 
 export const messagePage = (title: string, text: string, status = 200) => new Response(shell(title, `<h1 style="font:400 1.6rem/1.3 var(--serif)">${e(title)}</h1><p>${e(text)}</p>`, ''), { status, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'private, no-store' } })
+
+/** A readable Markdown export: one section per thought, newest first. */
+export function exportMarkdown(thoughts: ExportedThought[], now = Date.now()): string {
+  const lines = [`# Thoughts export`, '', `Exported ${new Date(now).toISOString()}. ${thoughts.length} thoughts, including archived and Trash.`, '']
+  for (const thought of [...thoughts].reverse()) {
+    const facts = [
+      new Date(thought.created_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Chicago' }),
+      thought.source === 'text' ? 'text' : 'added on the page',
+      thought.status ? statusLabel[thought.status] : '',
+      thought.due_date ? `due ${thought.due_date}` : '',
+      thought.public ? 'public' : '', thought.archived ? 'archived' : '', thought.deleted_at ? 'in Trash' : '',
+    ].filter(Boolean)
+    lines.push(`## ${thought.title || 'Untitled thought'}`, '', `_${facts.join(' · ')}_`, '')
+    if (thought.tags.length) lines.push(`Tags: ${thought.tags.map(tag => `#${tag.tag}${tag.origin === 'ai' ? ' (AI)' : ''}`).join(' ')}`, '')
+    lines.push(thought.body, '')
+    if (thought.raw !== thought.body) lines.push('<details><summary>Original</summary>', '', thought.raw, '', '</details>', '')
+    if (thought.media.length) lines.push(`Pictures: ${thought.media.map(item => item.key).join(', ')}`, '')
+  }
+  return lines.join('\n')
+}

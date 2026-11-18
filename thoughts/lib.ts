@@ -190,7 +190,7 @@ export const normalizeTag = (value: string) => value.toLowerCase().normalize('NF
 /** #hashtags typed in the message. Kept in the text too, so the original reads as written. */
 export function typedTags(text: string): string[] {
   const found = [...text.matchAll(/(?:^|[\s(])#([\p{L}\p{N}][\p{L}\p{N}_-]{0,39})/gu)].map(match => normalizeTag(match[1]))
-  return [...new Set(found.filter(tag => tag && !(tag in statusWords)))]
+  return [...new Set(found.filter(tag => tag && !(tag in statusWords) && !dueWords.has(tag)))]
 }
 
 /* ---------- Status: to do, doing, done ---------- */
@@ -268,7 +268,8 @@ export function cloudStep(count: number, max: number): number {
 }
 
 export type StatusFilter = Status | 'none'
-export type ThoughtFilter = { q?: string; tag?: string; from?: string; to?: string; view: 'active' | 'archived' | 'all'; status?: StatusFilter }
+export type View = 'active' | 'archived' | 'all' | 'trash'
+export type ThoughtFilter = { q?: string; tag?: string; from?: string; to?: string; view: View; status?: StatusFilter; due?: 'today' | 'upcoming'; layout?: 'board'; undo?: string }
 export function readFilter(params: URLSearchParams): ThoughtFilter {
   const date = (value: string | null) => value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined
   const view = params.get('view')
@@ -276,7 +277,100 @@ export function readFilter(params: URLSearchParams): ThoughtFilter {
     q: params.get('q')?.trim().slice(0, 200) || undefined,
     tag: params.get('tag') ? normalizeTag(params.get('tag')!) || undefined : undefined,
     from: date(params.get('from')), to: date(params.get('to')),
-    view: view === 'archived' || view === 'all' ? view : 'active',
+    view: view === 'archived' || view === 'all' || view === 'trash' ? view : 'active',
     status: ((value: string | null) => isStatus(value) || value === 'none' ? value : undefined)(params.get('status')),
+    due: ((value: string | null) => value === 'today' || value === 'upcoming' ? value : undefined)(params.get('due')),
+    layout: params.get('layout') === 'board' ? 'board' : undefined,
+    undo: /^[0-9a-f-]{36}$/.test(params.get('undo') ?? '') ? params.get('undo')! : undefined,
   }
+}
+
+/* ---------- Dates and due dates ---------- */
+
+export const TIME_ZONE = 'America/Chicago'
+/** Calendar date (YYYY-MM-DD) of a moment in the owner's time zone. */
+export const localDate = (at: number, timeZone = TIME_ZONE) => new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(at)
+export const isDate = (value: unknown): value is string => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`)) && new Date(`${value}T00:00:00Z`).toISOString().startsWith(value)
+export function addDays(date: string, days: number): string {
+  const at = new Date(`${date}T00:00:00Z`)
+  at.setUTCDate(at.getUTCDate() + days)
+  return at.toISOString().slice(0, 10)
+}
+const weekdayIndex = (date: string) => new Date(`${date}T00:00:00Z`).getUTCDay()
+const weekdays: Record<string, number> = { sun: 0, sunday: 0, mon: 1, monday: 1, tue: 2, tues: 2, tuesday: 2, wed: 3, wednesday: 3, thu: 4, thur: 4, thurs: 4, thursday: 4, fri: 5, friday: 5, sat: 6, saturday: 6 }
+const dueWords = new Set(['today', 'tomorrow'])
+
+/**
+ * A due date typed in the text, relative to `today` (YYYY-MM-DD in the owner's time zone):
+ * #today, #tomorrow, due:fri (the next Friday, or today if it is Friday), due:11/20 or due:11-20
+ * (this year, or next year if already past), due:2026-11-20. The last one typed wins.
+ */
+export function dueFromText(text: string, today: string): string | undefined {
+  let due: string | undefined
+  for (const match of text.matchAll(/(?:^|[\s(])(?:#(today|tomorrow)\b|due:\s?([\w/-]+))/gi)) {
+    if (match[1]) { due = match[1].toLowerCase() === 'today' ? today : addDays(today, 1); continue }
+    const value = match[2].toLowerCase()
+    if (value === 'today') due = today
+    else if (value === 'tomorrow') due = addDays(today, 1)
+    else if (value in weekdays) due = addDays(today, (weekdays[value] - weekdayIndex(today) + 7) % 7)
+    else if (isDate(value)) due = value
+    else {
+      const md = /^(\d{1,2})[/-](\d{1,2})$/.exec(value)
+      if (!md) continue
+      const year = Number(today.slice(0, 4))
+      const candidate = `${year}-${md[1].padStart(2, '0')}-${md[2].padStart(2, '0')}`
+      if (!isDate(candidate)) continue
+      due = candidate < today ? `${year + 1}${candidate.slice(4)}` : candidate
+    }
+  }
+  return due
+}
+
+/** Removes due-date words (for the public view, where due dates aren't shown). */
+export const stripDueTokens = (text: string) => text.replace(/(^|[\s(])(?:#(?:today|tomorrow)\b|due:\s?[\w/-]+)/gi, '$1')
+
+/** "Due today", "Due tomorrow", "Due Fri, Nov 20", or "Overdue · Nov 15". */
+export function dueLabel(due: string, today: string): { text: string; overdue: boolean } {
+  if (due < today) return { text: `Overdue · ${new Date(`${due}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}`, overdue: true }
+  if (due === today) return { text: 'Due today', overdue: false }
+  if (due === addDays(today, 1)) return { text: 'Due tomorrow', overdue: false }
+  return { text: `Due ${new Date(`${due}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })}`, overdue: false }
+}
+
+/* ---------- Pictures (MMS forwarded as email attachments) ---------- */
+
+export type Attachment = { contentType: string; extension: string; bytes: Uint8Array; filename?: string }
+export const imageTypes: Record<string, string> = { 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png', 'image/gif': 'gif', 'image/webp': 'webp', 'image/heic': 'heic', 'image/heif': 'heif' }
+export const MAX_IMAGE_BYTES = 10 * 1024 * 1024
+
+/**
+ * Image parts of a forwarded email. SVG and unknown types are ignored. Tiny images and anything
+ * named like a logo are skipped, so Google's notification artwork is never saved as your picture.
+ */
+export function parseAttachments(raw: string, limit = 6): Attachment[] {
+  const found: Attachment[] = []
+  const visit = (headers: MimeHeaders, body: string, depth: number) => {
+    if (found.length >= limit || depth > 5) return
+    const type = (headers.get('content-type') ?? 'text/plain').toLowerCase()
+    if (type.startsWith('multipart/')) {
+      const boundary = param(headers.get('content-type'), 'boundary')
+      if (!boundary) return
+      const parts = body.split(new RegExp(`\\r?\\n?--${boundary.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:--)?\\s*\\r?\\n`)).slice(1)
+      for (const part of parts) { const [head, partBody] = splitHead(part); visit(parseHeaders(head), partBody, depth + 1) }
+      return
+    }
+    const contentType = type.split(';')[0].trim()
+    const extension = imageTypes[contentType]
+    if (!extension || (headers.get('content-transfer-encoding') ?? '').toLowerCase() !== 'base64') return
+    const filename = param(headers.get('content-disposition'), 'filename') ?? param(headers.get('content-type'), 'name')
+    const label = `${filename ?? ''} ${headers.get('content-id') ?? ''}`.toLowerCase()
+    if (/logo|icon|spacer|google/.test(label)) return
+    let bytes: Uint8Array
+    try { bytes = base64Bytes(body) } catch { return }
+    if (bytes.byteLength < 4096 || bytes.byteLength > MAX_IMAGE_BYTES) return
+    found.push({ contentType: contentType === 'image/jpg' ? 'image/jpeg' : contentType, extension, bytes, filename })
+  }
+  const [head, body] = splitHead(raw)
+  visit(parseHeaders(head), body, 0)
+  return found
 }

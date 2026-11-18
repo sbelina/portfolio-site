@@ -7,15 +7,24 @@
  * Nothing here is part of the public site build. Phone numbers, emails and secrets are Worker
  * configuration, never repository content.
  */
-import { checkSender, extractVoiceText, fallbackTitle, keywordSuggestions, parseEmail, parseSuggestion, readFilter, suggestionPrompt, type Suggestion } from './lib'
+import { checkSender, extractVoiceText, fallbackTitle, isDate, keywordSuggestions, localDate, parseAttachments, parseEmail, parseSuggestion, readFilter, suggestionPrompt, type Suggestion } from './lib'
 import { verifyAccess } from './access'
-import { addSystemNote, addThought, applySuggestion, deleteThought, dismissSystemNote, getPublicNote, getThought, listPublicNotes, listThoughts, publicTags, setArchived, setStatus, statusCounts, systemNotes, tagCloud, unsorted, updateThought, type Database } from './store'
-import { editPage, listPage, messagePage, newPage } from './page'
+import { addMedia, addSystemNote, addThought, applySuggestion, deleteMedia, deleteThought, dismissSystemNote, dueCounts, exportAll, getMedia, getPublicNote, getThought, listPublicNotes, listThoughts, publicTags, setArchived, setStatus, statusCounts, systemNotes, tagCloud, trashCount, trashedIds, trashThought, TRASH_DAYS, unsorted, untrashThought, updateThought, type Database } from './store'
+import { editPage, exportMarkdown, listPage, messagePage, newPage } from './page'
 import { publicListPage, publicNotFound, publicNotePage } from './public-page'
 import { isStatus, normalizeTag } from './lib'
 
+/** The parts of an R2 bucket binding this Worker uses. */
+export interface Bucket {
+  put(key: string, value: ArrayBuffer | Uint8Array | string, options?: { httpMetadata?: { contentType?: string } }): Promise<unknown>
+  get(key: string): Promise<{ body: ReadableStream; size?: number } | null>
+  delete(keys: string | string[]): Promise<void>
+  list(options?: { prefix?: string }): Promise<{ objects: { key: string }[] }>
+}
+
 export interface Env {
   DB: Database
+  MEDIA?: Bucket                  // private R2 bucket: pictures from texts, and weekly backups
   AI?: { run(model: string, input: unknown): Promise<unknown> }
   ACCESS_TEAM_DOMAIN: string      // e.g. yourteam.cloudflareaccess.com
   ACCESS_AUD: string              // Access application audience tag
@@ -34,7 +43,9 @@ type EmailMessage = { from: string; to: string; headers: Headers; raw: ReadableS
 type Context = { waitUntil(promise: Promise<unknown>): void }
 
 const DEFAULT_MODEL = '@cf/meta/llama-3.1-8b-instruct-fast'
-const MAX_EMAIL = 512 * 1024
+const MAX_EMAIL = 20 * 1024 * 1024 // Email Workers accept up to 25 MiB; pictures make texts large
+const WEEKLY_BACKUP_CRON = '17 9 * * 1' // Mondays, about 3 a.m. Central
+const BACKUPS_KEPT = 12
 
 const security = {
   'Content-Type': 'text/html; charset=utf-8',
@@ -42,7 +53,7 @@ const security = {
   'X-Robots-Tag': 'noindex, nofollow',
   'Referrer-Policy': 'no-referrer',
   'X-Content-Type-Options': 'nosniff',
-  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
+  'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'",
 }
 const html = (body: string, status = 200) => new Response(body, { status, headers: security })
 const redirect = (location: string) => new Response(null, { status: 303, headers: { Location: location, 'Cache-Control': 'private, no-store' } })
@@ -82,7 +93,8 @@ export async function sortThought(env: Env, id: string, text: string) {
 
 export async function receiveEmail(message: EmailMessage, env: Env, ctx: Context) {
   if (message.rawSize > MAX_EMAIL) return message.setReject('Message too large')
-  const parsed = parseEmail(await readRaw(message.raw))
+  const raw = await readRaw(message.raw)
+  const parsed = parseEmail(raw)
   const check = checkSender(message.from, parsed.headers, {
     forwardingAccount: env.FORWARDING_ACCOUNT ?? '', voiceNumber: env.VOICE_NUMBER ?? '',
     senderNumbers: (env.SENDER_NUMBERS ?? '').split(',').map(value => value.trim()).filter(Boolean),
@@ -90,9 +102,37 @@ export async function receiveEmail(message: EmailMessage, env: Env, ctx: Context
   if (!check.ok) { console.warn('Rejected email:', check.reason); return message.setReject('Not accepted') }
   if (check.kind === 'gmail-confirmation') return addSystemNote(env.DB, parsed.headers.get('subject') ?? 'Gmail forwarding confirmation', parsed.text.slice(0, 3000))
   const text = extractVoiceText(parsed.text)
-  if (!text) return
-  const id = await addThought(env.DB, { text, source: 'text', messageId: parsed.headers.get('message-id') ?? undefined })
-  if (id) ctx.waitUntil(sortThought(env, id, text))
+  const pictures = env.MEDIA ? parseAttachments(raw) : []
+  if (!text && !pictures.length) return
+  const body = text || '(picture)'
+  const id = await addThought(env.DB, { text: body, source: 'text', messageId: parsed.headers.get('message-id') ?? undefined })
+  if (!id) return
+  for (const picture of pictures) {
+    const key = `${id}/${crypto.randomUUID()}.${picture.extension}`
+    await env.MEDIA!.put(key, picture.bytes, { httpMetadata: { contentType: picture.contentType } })
+    await addMedia(env.DB, { key, thought_id: id, content_type: picture.contentType, size: picture.bytes.byteLength })
+  }
+  if (text) ctx.waitUntil(sortThought(env, id, text))
+}
+
+/** Removes pictures from storage after their records are gone. */
+async function removeMedia(env: Env, keys: string[]) {
+  if (env.MEDIA && keys.length) await env.MEDIA.delete(keys)
+}
+
+/** Permanently deletes thoughts that have been in Trash for 30 days. */
+export async function purgeTrash(env: Env, now = Date.now()) {
+  for (const id of await trashedIds(env.DB, now - TRASH_DAYS * 86_400_000)) await removeMedia(env, await deleteThought(env.DB, id))
+}
+
+/** Writes a full JSON export to the private bucket and keeps the most recent copies. */
+export async function weeklyBackup(env: Env, now = Date.now()) {
+  if (!env.MEDIA) return
+  const data = JSON.stringify({ exported_at: new Date(now).toISOString(), thoughts: await exportAll(env.DB) }, null, 2)
+  await env.MEDIA.put(`backups/thoughts-${localDate(now)}.json`, data, { httpMetadata: { contentType: 'application/json' } })
+  const { objects } = await env.MEDIA.list({ prefix: 'backups/' })
+  const old = objects.map(object => object.key).sort().reverse().slice(BACKUPS_KEPT)
+  if (old.length) await env.MEDIA.delete(old)
 }
 
 /* ---------- Public field notes ---------- */
@@ -155,12 +195,30 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
   if (request.method === 'GET') {
     if (path === '/') {
       const filter = readFilter(url.searchParams)
-      const [thoughts, cloud, notes, counts] = await Promise.all([listThoughts(env.DB, filter), tagCloud(env.DB, filter.view), systemNotes(env.DB), statusCounts(env.DB, filter.view)])
-      return html(listPage({ thoughts, cloud, filter, notes, counts, csrf, returnTo: `${url.pathname}${url.search}` }))
+      const today = localDate(Date.now())
+      // The board shows every status side by side, so its status filter is ignored.
+      const listed = filter.layout === 'board' ? { ...filter, status: undefined } : filter
+      const [thoughts, cloud, notes, counts, due, trash, undone] = await Promise.all([listThoughts(env.DB, listed, 200, today), tagCloud(env.DB, filter.view), systemNotes(env.DB), statusCounts(env.DB, filter.view), dueCounts(env.DB, today), trashCount(env.DB), filter.undo ? getThought(env.DB, filter.undo) : undefined])
+      const returnParams = new URLSearchParams(url.search); returnParams.delete('undo')
+      const returnTo = `/${returnParams.toString() ? `?${returnParams}` : ''}`
+      return html(listPage({ thoughts, cloud, filter, notes, counts, due, trash, csrf, returnTo, today, undo: undone?.deleted_at ? undone : undefined }))
+    }
+    if (path === '/export.json' || path === '/export.md') {
+      const data = await exportAll(env.DB)
+      const date = localDate(Date.now())
+      const json = path.endsWith('.json')
+      return new Response(json ? JSON.stringify({ exported_at: new Date().toISOString(), thoughts: data }, null, 2) : exportMarkdown(data), { headers: { 'Content-Type': json ? 'application/json; charset=utf-8' : 'text/markdown; charset=utf-8', 'Content-Disposition': `attachment; filename="thoughts-${date}.${json ? 'json' : 'md'}"`, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' } })
+    }
+    const mediaMatch = /^\/media\/([0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpg|png|gif|webp|heic|heif))$/.exec(path)
+    if (mediaMatch) {
+      const item = await getMedia(env.DB, mediaMatch[1])
+      const object = item && env.MEDIA ? await env.MEDIA.get(item.key) : null
+      if (!item || !object) return messagePage('Not found', 'That picture is not available.', 404)
+      return new Response(object.body, { headers: { 'Content-Type': item.content_type, 'Cache-Control': 'private, max-age=86400', 'X-Content-Type-Options': 'nosniff', 'Content-Security-Policy': "default-src 'none'; sandbox" } })
     }
     if (path === '/new') return html(newPage(csrf))
     const match = /^\/t\/([0-9a-f-]{36})$/.exec(path)
-    if (match) { const thought = await getThought(env.DB, match[1]); return thought ? html(editPage(thought, csrf, env.PUBLIC_ORIGIN ?? '')) : messagePage('Not found', 'That thought does not exist.', 404) }
+    if (match) { const thought = await getThought(env.DB, match[1]); return thought ? html(editPage(thought, csrf, env.PUBLIC_ORIGIN ?? '', localDate(Date.now()))) : messagePage('Not found', 'That thought does not exist.', 404) }
     return messagePage('Not found', 'Nothing here.', 404)
   }
 
@@ -177,9 +235,20 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
     if (id) ctx.waitUntil(sortThought(env, id, body))
     return redirect('/')
   }
+  if (path === '/trash/empty') {
+    if (form.get('confirm') !== 'yes') return redirect('/?view=trash')
+    for (const id of await trashedIds(env.DB)) await removeMedia(env, await deleteThought(env.DB, id))
+    return redirect('/?view=trash')
+  }
+  const mediaDelete = /^\/media\/([0-9a-f-]{36}\/[0-9a-f-]{36}\.(?:jpg|png|gif|webp|heic|heif))\/delete$/.exec(path)
+  if (mediaDelete) {
+    const item = await getMedia(env.DB, mediaDelete[1])
+    if (item) { await deleteMedia(env.DB, item.key); await removeMedia(env, [item.key]) }
+    return redirect(item ? `/t/${item.thought_id}` : '/')
+  }
   const note = /^\/notes\/(\d+)\/dismiss$/.exec(path)
   if (note) { await dismissSystemNote(env.DB, Number(note[1])); return redirect('/') }
-  const match = /^\/t\/([0-9a-f-]{36})(?:\/(archive|restore|delete|status))?$/.exec(path)
+  const match = /^\/t\/([0-9a-f-]{36})(?:\/(archive|restore|delete|status|untrash|purge))?$/.exec(path)
   if (!match) return messagePage('Not found', 'Nothing here.', 404)
   const [, id, action] = match
   // Quick actions on the list return to the same filtered view; only same-site list URLs are accepted.
@@ -192,9 +261,17 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
     return redirect(returnTo ?? '/')
   }
   if (action === 'delete') {
-    if (form.get('confirm') !== 'yes') return redirect(returnTo ?? `/t/${id}`)
-    await deleteThought(env.DB, id)
-    return redirect(returnTo ?? '/')
+    // Delete moves to Trash; the list then offers Undo.
+    await trashThought(env.DB, id)
+    const back = new URL(returnTo ?? '/', url.origin)
+    back.searchParams.set('undo', id)
+    return redirect(`${back.pathname}${back.search}`)
+  }
+  if (action === 'untrash') { await untrashThought(env.DB, id); return redirect(returnTo ?? `/t/${id}`) }
+  if (action === 'purge') {
+    if (form.get('confirm') !== 'yes') return redirect(returnTo ?? '/?view=trash')
+    await removeMedia(env, await deleteThought(env.DB, id))
+    return redirect(returnTo ?? '/?view=trash')
   }
   const tags = String(form.get('tags') ?? '').split(/[,\s]+/)
   const body = String(form.get('body') ?? '')
@@ -203,7 +280,9 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
   const isPublic = form.has('public_field') ? form.get('public') === 'on' : undefined
   const statusValue = String(form.get('status') ?? '')
   const status = form.has('status_field') ? (isStatus(statusValue) ? statusValue : null) : undefined
-  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags, public: isPublic, status })
+  const dueValue = String(form.get('due') ?? '')
+  const due = form.has('due_field') ? (isDate(dueValue) ? dueValue : null) : undefined
+  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags, public: isPublic, status, due })
   return saved ? redirect(`/t/${id}`) : messagePage('Not found', 'That thought does not exist.', 404)
 }
 
@@ -222,7 +301,9 @@ export function route(request: Request, env: Env, ctx: Context): Promise<Respons
 export default {
   fetch: (request: Request, env: Env, ctx: Context) => route(request, env, ctx),
   email: (message: EmailMessage, env: Env, ctx: Context) => receiveEmail(message, env, ctx),
-  async scheduled(_event: unknown, env: Env) {
+  async scheduled(event: { cron?: string }, env: Env) {
+    if (event.cron === WEEKLY_BACKUP_CRON) return weeklyBackup(env)
+    await purgeTrash(env)
     for (const row of await unsorted(env.DB)) await sortThought(env, row.id, row.body)
   },
 }

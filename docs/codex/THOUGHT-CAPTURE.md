@@ -93,11 +93,20 @@ Notes become public only when I say so. Everything else stays private.
 - **Voice email cleanup.** Google's plain-text notification begins with its logo link (`<https://voice.google.com>`) and hard-wraps long texts. Both are removed at intake: Google's own links are stripped (links you type are kept), and lines of 60 or more characters are rejoined with the next line. A short line you end on purpose stays as typed. The one note captured before this fix was cleaned in place.
 - Migration `0003_status.sql` was applied to the remote database before the code deployed.
 
+## Trash, due dates, board, export and pictures (18 November)
+
+- **Trash.** Delete moves a note to Trash and the list shows **Undo**. Trash is a view under *Dates and archive*. From there a note can be restored, deleted forever (needs a confirmation tick), or the whole Trash emptied. Notes left in Trash for 30 days are deleted permanently by the 30-minute cron. Notes in Trash never appear publicly.
+- **Due dates.** Set one on the edit page, or type `#today`, `#tomorrow`, `due:fri`, `due:11/20` or `due:2026-11-20`. Day names mean the next such day, or today if it is that day. Month/day means this year, or next year if the date has passed. Dates use Central time. Cards show "Due today", "Due tomorrow", "Due Fri, Nov 20", or a ⚠ "Overdue" label, never colour alone. **Today** lists open items due today or overdue; **Upcoming** lists open items due later. Done items drop out of both. Due words are removed from public text.
+- **Board.** *List · Board* switch; columns for To do, Doing and Done (stacked on phones). The board ignores the status filter and says how many notes without a status it leaves out.
+- **Export.** *Dates and archive* has a download link for everything as JSON or Markdown, including archived and Trash. Pictures are listed by storage key.
+- **Pictures and weekly backup** need R2. Pictures are image attachments on a forwarded text: JPEG, PNG, GIF, WebP or HEIC. Tiny images and logo-named images are skipped, and so is SVG. They are stored privately, served only through the Access-protected page, and never shown on field notes. The backup runs Mondays at about 3 a.m. Central and keeps 12 copies. **R2 is not yet enabled on the account**, so the binding is commented out in `thoughts/wrangler.jsonc`. Until then pictures are skipped (the text is still saved) and the backup does nothing. Once R2 is enabled, create the bucket `producing-curiosity-thoughts-media` and uncomment the binding.
+- Migration `0004_trash_due_media.sql` was applied to the remote database before deploying.
+
 ## Privacy and limits
 
 - Your texts are stored in your Cloudflare D1 database and sent to Workers AI, which runs inside your Cloudflare account, for sorting. They are never committed to Git or included in the public site build. Only notes I mark public appear on `/field-notes/`. To turn sorting off, remove the `ai` binding; keyword fallback then runs instead.
 - Google Voice has no official API, so this relies on Google's notification email format. If Google changes it, intake may stop; your texts remain in Voice and Gmail. The sender check is deliberately strict, so a format change fails closed.
-- Group texts, picture messages and replies sent from Gmail are not handled.
+- Group texts and replies sent from Gmail are not handled. Picture messages need R2 (see above), and the format Google uses for them has not yet been seen with a real picture.
 - The search is a simple text match. That's fine for thousands of thoughts; a full-text index can be added later.
 
 ## Verification (17 November)
@@ -113,7 +122,7 @@ Notes become public only when I say so. Everything else stays private.
   - search, tag filter, edit (raw text preserved, manual title), archive, guarded delete, CSRF and origin checks, and private no-store headers;
   - `#public` at capture, the edit switch (publish, unpublish, re-publish by hashtag), archive hiding, public output limited to edited text and owner tags, the private archive returning 404 on the public hostname, and no writes on the public view.
 
-  **13 of 13 passed** (18 November) in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
+  **17 of 17 passed** (18 November) in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
 - The TypeScript check of `thoughts/` passed with TypeScript 6 and `@types/node`.
 - **Not run here:** `npm ci`, `wrangler dev`, `check:thoughts`, real Email Routing, real Access, real Workers AI. The Workers AI model was checked against Cloudflare's model catalog on 17 November: `@cf/meta/llama-3.1-8b-instruct` is listed as deprecated and the fp8 variant is scheduled for deprecation on 20 November 2026, so the default is `@cf/meta/llama-3.1-8b-instruct-fast`.
 
