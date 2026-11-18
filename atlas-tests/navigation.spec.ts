@@ -10,7 +10,7 @@ test('current primary menus expose one native experimental Atlas link in initial
     for(const route of ['/','/investigations/','/patterns/','/practice/','/system/',atlas,`${atlas}text/`,'/missing-atlas-page/']){
       const response=await page.goto(route);expect(response?.status()).toBe(route.startsWith('/missing')?404:200)
       const nav=page.getByRole('navigation',{name:'Primary navigation',exact:true})
-      await expect(nav.getByRole('link')).toHaveCount(5)
+      await expect(nav.getByRole('link')).toHaveCount(6)
       const link=nav.getByRole('link',{name:label,exact:true})
       await expect(link).toHaveText('Atlas of Inquiry*');await expect(link).toHaveAttribute('href',atlas)
       expect(await link.evaluate(element=>element.tagName)).toBe('A')
@@ -47,7 +47,7 @@ test('touch and enlarged menus preserve all destinations and reflow on narrow sc
       await page.goto(route)
       await page.addStyleTag({content:'html{font-size:200%}p,li{line-height:1.8!important;letter-spacing:.12em!important;word-spacing:.16em!important}'})
       const nav=page.getByRole('navigation',{name:'Primary navigation',exact:true})
-      await expect(nav.getByRole('link')).toHaveCount(5)
+      await expect(nav.getByRole('link')).toHaveCount(6)
       expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(320)
       for(const link of await nav.getByRole('link').all())expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(44)
     }
