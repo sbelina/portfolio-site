@@ -1,4 +1,4 @@
-import { cloudStep, escapeHtml as e, type ThoughtFilter } from './lib'
+import { cloudStep, escapeHtml as e, STATUSES, statusLabel, type Status, type ThoughtFilter } from './lib'
 import type { Thought } from './store'
 
 /*
@@ -44,7 +44,15 @@ details.cloud{margin:-.5rem 0 1.25rem}details.cloud summary{cursor:pointer;color
 .btn-primary{background:var(--signal);color:#151614;border-color:var(--signal)}.btn-danger{border-color:#f39185;color:#f39185;background:none}
 .grid{columns:2 22rem;column-gap:1rem}
 .card{break-inside:avoid;display:block;margin:0 0 1rem;padding:1rem 1.15rem 1.15rem;background:var(--panel);border:1.5px solid var(--hue,var(--line-strong));border-radius:14px;text-decoration:none}
-.card:hover{background:var(--raised)}
+.card:hover,.card:focus-within{background:var(--raised)}
+.card-link{display:block;text-decoration:none}.card[data-status="done"] .body{opacity:.62}
+.status-badge{color:var(--ink)}.card-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin-top:.9rem;padding-top:.75rem;border-top:1px solid var(--line)}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:10px;overflow:hidden}.seg button{min-height:40px;padding:0 .7rem;border:0;border-right:1px solid var(--line);background:none;color:var(--muted);font:inherit;font-size:.8rem;cursor:pointer}.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}.seg button:hover{color:var(--ink)}.seg button[aria-pressed="true"]:hover{color:var(--paper)}
+details.del summary{cursor:pointer;list-style:none;min-height:40px;display:flex;align-items:center;color:var(--muted);font-size:.8rem;padding:0 .4rem}details.del summary::-webkit-details-marker{display:none}details.del[open] summary{color:#f39185}
+details.del form{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.4rem;font-size:.8rem}
+.status-row{display:flex;flex-wrap:wrap;gap:.5rem;margin:-.5rem 0 1.25rem;padding:0;list-style:none}
+fieldset.status{border:1px solid var(--line);border-radius:10px;padding:.5rem .9rem .8rem;display:flex;flex-wrap:wrap;gap:.25rem 1.25rem}fieldset.status legend{font-size:.85rem;color:var(--muted);padding:0 .3rem}fieldset.status label{display:flex!important;align-items:center;gap:.4rem;min-height:40px;color:var(--ink)!important;font-size:.95rem!important}
 .meta{color:var(--muted);font-size:.8rem;margin:0 0 .6rem}
 .tags{display:flex;flex-wrap:wrap;gap:.35rem;margin:0 0 .7rem;padding:0;list-style:none}
 .tag{display:inline-block;padding:.15rem .5rem;border-radius:6px;font-size:.8rem;text-transform:uppercase;color:var(--hue);background:color-mix(in srgb,var(--hue) 14%,transparent)}
@@ -74,14 +82,26 @@ export function relativeTime(at: number, now = Date.now()): string {
 
 const tagChip = (tag: string, origin: string) => `<li class="tag" style="--hue:${tagHue(tag)}">#${e(tag)}${origin === 'ai' ? ' <span aria-hidden="true">✦</span><span class="sr">(suggested by AI)</span>' : ''}</li>`
 
+const statusIcon: Record<Status, string> = { todo: '○', doing: '◐', done: '●' }
+
+/** To do · Doing · Done buttons; pressing the current status clears it. Works without JavaScript. */
+function statusControl(thought: Thought, csrf: string, returnTo: string) {
+  return `<form method="post" action="/t/${thought.id}/status" class="seg" aria-label="Status"><input type="hidden" name="csrf" value="${e(csrf)}"><input type="hidden" name="return" value="${e(returnTo)}">${STATUSES.map(status => {
+    const current = thought.status === status
+    return `<button name="status" value="${current ? 'none' : status}" aria-pressed="${current}"${current ? ` title="Clear status"` : ''}><span aria-hidden="true">${statusIcon[status]}</span> ${statusLabel[status]}</button>`
+  }).join('')}</form>`
+}
+
 function shell(title: string, content: string, _origin = '') {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${e(title)} · Thoughts</title><style>${css}</style></head><body>
 <a class="skip" href="#main">Skip to thoughts</a><div class="shell"><header class="top"><a class="mark" href="/">Thoughts<span aria-hidden="true">*</span></a></header>
 <main id="main">${content}</main></div></body></html>`
 }
 
-export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; count: number }[]; filter: ThoughtFilter; notes: { id: number; subject: string; body: string }[]; csrf: string; now?: number }): string {
+export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; count: number; own?: number }[]; filter: ThoughtFilter; notes: { id: number; subject: string; body: string }[]; counts?: Record<Status, number>; csrf: string; returnTo?: string; now?: number }): string {
   const { thoughts, cloud, filter, notes, csrf } = input
+  const returnTo = input.returnTo ?? '/'
+  const counts = input.counts ?? { todo: 0, doing: 0, done: 0 }
   const query = (changes: Partial<Record<keyof ThoughtFilter, string | undefined>>) => {
     const params = new URLSearchParams()
     const merged = { ...filter, ...changes }
@@ -89,22 +109,29 @@ export function listPage(input: { thoughts: Thought[]; cloud: { tag: string; cou
     const text = params.toString()
     return text ? `/?${text}` : '/'
   }
-  const top = [...cloud].sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag)).slice(0, 6)
+  // The filter chips are your own hashtags (typed or added), most used first. AI suggestions stay on the
+  // cards and in the full tag list, but never take a place in the filter row.
+  const own = cloud.filter(item => (item.own ?? item.count) > 0)
+  const top = [...own].sort((a, b) => (b.own ?? b.count) - (a.own ?? a.count) || a.tag.localeCompare(b.tag)).slice(0, 10)
+  if (filter.tag && !top.some(item => item.tag === filter.tag)) { const current = cloud.find(item => item.tag === filter.tag); if (current) top.push(current) }
   const max = Math.max(1, ...cloud.map(item => item.count))
   const noteHtml = notes.map(note => `<section class="note" aria-label="Setup message"><p><strong>${e(note.subject)}</strong></p><p class="raw">${e(note.body)}</p><form method="post" action="/notes/${note.id}/dismiss"><input type="hidden" name="csrf" value="${e(csrf)}"><button class="btn">Dismiss</button></form></section>`).join('')
   const cards = thoughts.map(thought => {
     const lead = thought.tags.find(tag => tag.origin === 'typed') ?? thought.tags.find(tag => tag.origin === 'manual') ?? thought.tags[0]
     const hue = lead ? tagHue(lead.tag) : 'var(--line-strong)'
-    return `<a class="card" style="--hue:${hue}" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${thought.archived ? ' · archived' : ''}${thought.public ? ' · <span class="pub">public</span>' : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>`
+    const badge = thought.status ? ` · <span class="status-badge">${statusIcon[thought.status]} ${statusLabel[thought.status]}</span>` : ''
+    return `<article class="card" style="--hue:${hue}"${thought.status ? ` data-status="${thought.status}"` : ''}><a class="card-link" href="/t/${thought.id}"><p class="meta">${relativeTime(thought.created_at, input.now)}${thought.source === 'text' ? ' · text' : ''}${badge}${thought.archived ? ' · archived' : ''}${thought.public ? ' · <span class="pub">public</span>' : ''}</p>${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.tag, tag.origin)).join('')}</ul>` : ''}<p class="body">${e(thought.body)}</p><span class="sr">Edit: ${e(thought.title || 'untitled thought')}</span></a>
+<div class="card-actions">${statusControl(thought, csrf, returnTo)}<details class="del"><summary>Delete</summary><form method="post" action="/t/${thought.id}/delete"><input type="hidden" name="csrf" value="${e(csrf)}"><input type="hidden" name="return" value="${e(returnTo)}"><label><input type="checkbox" name="confirm" value="yes" required> Yes, delete permanently</label><button class="btn btn-danger">Delete</button></form></details></div></article>`
   }).join('')
-  const filtered = Boolean(filter.q || filter.tag || filter.from || filter.to || filter.view !== 'active')
+  const filtered = Boolean(filter.q || filter.tag || filter.status || filter.from || filter.to || filter.view !== 'active')
   return shell(filter.tag ? `#${filter.tag}` : 'All thoughts', `
 ${noteHtml}
-<form class="bar" method="get" action="/" role="search"><label class="search"><span aria-hidden="true">⌕</span><span class="sr">Search your thoughts</span><input type="search" name="q" value="${e(filter.q ?? '')}" placeholder="Search your thoughts">${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}</label><a class="add" href="/new" aria-label="Add a thought">+</a></form>
-<ul class="chips" aria-label="Filter by tag"><li><a class="chip" href="${query({ tag: undefined })}" aria-current="${!filter.tag}">All</a></li>${top.map(item => `<li><a class="chip" style="border-color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}" aria-current="${filter.tag === item.tag}">#${e(item.tag)} <small>${item.count}</small></a></li>`).join('')}</ul>
-${cloud.length > top.length ? `<details class="cloud"><summary>All ${cloud.length} tags</summary><ul class="cloud-list">${cloud.map(item => `<li><a class="s${cloudStep(item.count, max)}" style="color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}">#${e(item.tag)}<span class="sr"> (${item.count})</span></a></li>`).join('')}</ul></details>` : ''}
+<form class="bar" method="get" action="/" role="search"><label class="search"><span aria-hidden="true">⌕</span><span class="sr">Search your thoughts</span><input type="search" name="q" value="${e(filter.q ?? '')}" placeholder="Search your thoughts">${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}${filter.status ? `<input type="hidden" name="status" value="${e(filter.status)}">` : ''}</label><a class="add" href="/new" aria-label="Add a thought">+</a></form>
+<ul class="chips" aria-label="Filter by your hashtags"><li><a class="chip" href="${query({ tag: undefined })}" aria-current="${!filter.tag}">All</a></li>${top.map(item => `<li><a class="chip" style="border-color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}" aria-current="${filter.tag === item.tag}">#${e(item.tag)} <small>${item.own ?? item.count}</small></a></li>`).join('')}</ul>
+<ul class="status-row" aria-label="Filter by status"><li><a class="chip" href="${query({ status: undefined })}" aria-current="${!filter.status}">Any status</a></li>${STATUSES.map(status => `<li><a class="chip" href="${query({ status })}" aria-current="${filter.status === status}"><span aria-hidden="true">${statusIcon[status]}</span> ${statusLabel[status]} <small>${counts[status]}</small></a></li>`).join('')}</ul>
+${cloud.length > top.length ? `<details class="cloud"><summary>All ${cloud.length} tags, including AI suggestions ✦</summary><ul class="cloud-list">${cloud.map(item => `<li><a class="s${cloudStep(item.count, max)}" style="color:${tagHue(item.tag)}" href="${query({ tag: item.tag })}">#${e(item.tag)}<span class="sr"> (${item.count})</span></a></li>`).join('')}</ul></details>` : ''}
 <details class="cloud" ${filter.from || filter.to || filter.view !== 'active' ? 'open' : ''}><summary>Dates and archive</summary>
-<form class="filters" method="get" action="/">${filter.q ? `<input type="hidden" name="q" value="${e(filter.q)}">` : ''}${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}
+<form class="filters" method="get" action="/">${filter.q ? `<input type="hidden" name="q" value="${e(filter.q)}">` : ''}${filter.status ? `<input type="hidden" name="status" value="${e(filter.status)}">` : ''}${filter.tag ? `<input type="hidden" name="tag" value="${e(filter.tag)}">` : ''}
 <label>From<input type="date" name="from" value="${filter.from ?? ''}"></label><label>To<input type="date" name="to" value="${filter.to ?? ''}"></label>
 <label>Show<select name="view"><option value="active"${filter.view === 'active' ? ' selected' : ''}>Active</option><option value="archived"${filter.view === 'archived' ? ' selected' : ''}>Archived</option><option value="all"${filter.view === 'all' ? ' selected' : ''}>Everything</option></select></label><button>Apply</button></form></details>
 <h1 class="sr">${filter.tag ? `Thoughts tagged ${e(filter.tag)}` : 'Your thoughts'}</h1>
@@ -124,6 +151,8 @@ ${thought.tags.length ? `<ul class="tags">${thought.tags.map(tag => tagChip(tag.
 <label>Title<input name="title" value="${e(thought.title)}" maxlength="200"></label>
 <label>Thought<textarea name="body" required maxlength="20000">${e(thought.body)}</textarea></label>
 <label>Tags (comma separated)${typed ? ` — plus ${e(typed)} from the text` : ''}<input name="tags" value="${e(editable)}"></label>
+<input type="hidden" name="status_field" value="1">
+<fieldset class="status"><legend>Status (or type #todo, #doing, #done)</legend><label><input type="radio" name="status" value="none"${thought.status ? '' : ' checked'}> None</label>${STATUSES.map(status => `<label><input type="radio" name="status" value="${status}"${thought.status === status ? ' checked' : ''}> ${statusIcon[status]} ${statusLabel[status]}</label>`).join('')}</fieldset>
 <input type="hidden" name="public_field" value="1">
 <label class="publish"><input type="checkbox" name="public"${thought.public ? ' checked' : ''}> <span>Public field note<small>Shows the edited text and your own tags at producingcuriosity.com/field-notes/. Never the original text or AI tags. Typing #public does the same.</small></span></label>
 ${thought.public ? `<p class="meta">Published ${thought.published_at ? new Date(thought.published_at).toLocaleDateString('en-US', { dateStyle: 'medium', timeZone: 'America/Chicago' }) : ''}${publicOrigin ? ` · <a href="${e(publicOrigin)}/field-notes/${thought.id.slice(0, 8)}/">View public note ↗</a>` : ''}</p>` : ''}

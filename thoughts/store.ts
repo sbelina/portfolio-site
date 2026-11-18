@@ -1,9 +1,9 @@
-import { normalizeTag, typedTags, type TagOrigin, type ThoughtFilter } from './lib'
+import { normalizeTag, statusFromText, stripStatusTags, typedTags, type Status, type TagOrigin, type ThoughtFilter } from './lib'
 
 export interface Statement { bind(...values: unknown[]): Statement; first<T>(): Promise<T | null>; run(): Promise<{ meta: { changes: number } }>; all<T>(): Promise<{ results: T[] }> }
 export interface Database { prepare(sql: string): Statement; batch(statements: Statement[]): Promise<unknown[]> }
 
-export type ThoughtRow = { id: string; created_at: number; updated_at: number; source: 'text' | 'web'; raw: string; body: string; title: string; title_origin: string; archived: number; sorted: number; public: number; published_at: number | null }
+export type ThoughtRow = { id: string; created_at: number; updated_at: number; source: 'text' | 'web'; raw: string; body: string; title: string; title_origin: string; archived: number; sorted: number; public: number; published_at: number | null; status: Status | null }
 export type Thought = ThoughtRow & { tags: { tag: string; origin: TagOrigin }[] }
 
 const newId = () => crypto.randomUUID()
@@ -17,7 +17,9 @@ export async function addThought(db: Database, input: { text: string; source: 't
   const tags = typedTags(input.text)
   // #public is the owner's explicit opt-in at capture time.
   const isPublic = tags.includes(PUBLIC_TAG) ? 1 : 0
-  const statements = [db.prepare('INSERT INTO thoughts (id, created_at, updated_at, source, raw, body, message_id, public, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, now, now, input.source, input.text, input.text, input.messageId ?? null, isPublic, isPublic ? now : null)]
+  // #todo, #doing or #done set a status at capture.
+  const status = statusFromText(input.text) ?? null
+  const statements = [db.prepare('INSERT INTO thoughts (id, created_at, updated_at, source, raw, body, message_id, public, published_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, now, now, input.source, input.text, input.text, input.messageId ?? null, isPublic, isPublic ? now : null, status)]
   for (const tag of tags) statements.push(db.prepare('INSERT OR IGNORE INTO thought_tags (thought_id, tag, origin) VALUES (?, ?, ?)').bind(id, tag, 'typed'))
   await db.batch(statements)
   return id
@@ -46,6 +48,8 @@ export async function listThoughts(db: Database, filter: ThoughtFilter, limit = 
   if (filter.view === 'archived') where.push('t.archived = 1')
   if (filter.q) { where.push("(t.body LIKE ? ESCAPE '\\' OR t.title LIKE ? ESCAPE '\\')"); const like = `%${filter.q.replace(/[\\%_]/g, c => `\\${c}`)}%`; values.push(like, like) }
   if (filter.tag) { where.push('EXISTS (SELECT 1 FROM thought_tags x WHERE x.thought_id = t.id AND x.tag = ?)'); values.push(filter.tag) }
+  if (filter.status === 'none') where.push('t.status IS NULL')
+  else if (filter.status) { where.push('t.status = ?'); values.push(filter.status) }
   if (filter.from) { where.push('t.created_at >= ?'); values.push(dayStart(filter.from)) }
   if (filter.to) { where.push('t.created_at < ?'); values.push(dayStart(filter.to) + 86_400_000) }
   const sql = `SELECT t.* FROM thoughts t${where.length ? ` WHERE ${where.join(' AND ')}` : ''} ORDER BY t.created_at DESC LIMIT ?`
@@ -56,14 +60,29 @@ export async function listThoughts(db: Database, filter: ThoughtFilter, limit = 
   return results.map(row => ({ ...row, tags: tags.filter(tag => tag.thought_id === row.id).map(({ tag, origin }) => ({ tag, origin })) }))
 }
 
-export async function tagCloud(db: Database, view: ThoughtFilter['view']): Promise<{ tag: string; count: number }[]> {
+/** Every tag with its count; `own` counts only the tags you typed or added (not AI suggestions). */
+export async function tagCloud(db: Database, view: ThoughtFilter['view']): Promise<{ tag: string; count: number; own: number }[]> {
   const condition = view === 'active' ? 'WHERE t.archived = 0' : view === 'archived' ? 'WHERE t.archived = 1' : ''
-  const { results } = await db.prepare(`SELECT g.tag AS tag, COUNT(*) AS count FROM thought_tags g JOIN thoughts t ON t.id = g.thought_id ${condition} GROUP BY g.tag ORDER BY g.tag`).all<{ tag: string; count: number }>()
-  return results.map(row => ({ tag: row.tag, count: Number(row.count) }))
+  const { results } = await db.prepare(`SELECT g.tag AS tag, COUNT(*) AS count, SUM(CASE WHEN g.origin != 'ai' THEN 1 ELSE 0 END) AS own FROM thought_tags g JOIN thoughts t ON t.id = g.thought_id ${condition} GROUP BY g.tag ORDER BY g.tag`).all<{ tag: string; count: number; own: number }>()
+  return results.map(row => ({ tag: row.tag, count: Number(row.count), own: Number(row.own) }))
+}
+
+/** Counts per status for the status chips, within the current view. */
+export async function statusCounts(db: Database, view: ThoughtFilter['view']): Promise<Record<Status, number>> {
+  const condition = view === 'active' ? 'WHERE archived = 0 AND status IS NOT NULL' : view === 'archived' ? 'WHERE archived = 1 AND status IS NOT NULL' : 'WHERE status IS NOT NULL'
+  const { results } = await db.prepare(`SELECT status, COUNT(*) AS count FROM thoughts ${condition} GROUP BY status`).all<{ status: Status; count: number }>()
+  const counts: Record<Status, number> = { todo: 0, doing: 0, done: 0 }
+  for (const row of results) counts[row.status] = Number(row.count)
+  return counts
+}
+
+export async function setStatus(db: Database, id: string, status: Status | null, now = Date.now()) {
+  const { meta } = await db.prepare('UPDATE thoughts SET status = ?, updated_at = ? WHERE id = ?').bind(status, now, id).run()
+  return meta.changes > 0
 }
 
 /** Saves edits. Tags typed into the edited text are added; the tag field replaces manual/AI tags. */
-export async function updateThought(db: Database, id: string, input: { title: string; body: string; tags: string[]; public?: boolean }, now = Date.now()) {
+export async function updateThought(db: Database, id: string, input: { title: string; body: string; tags: string[]; public?: boolean; status?: Status | null }, now = Date.now()) {
   const tags = [...new Set(input.tags.map(normalizeTag).filter(Boolean))].slice(0, 30)
   const typed = typedTags(input.body)
   const existing = await getThought(db, id)
@@ -76,13 +95,19 @@ export async function updateThought(db: Database, id: string, input: { title: st
     const addedPublicTag = !existing.public && (tags.includes(PUBLIC_TAG) || typed.includes(PUBLIC_TAG))
     isPublic = input.public || addedPublicTag
   }
-  const finalTags = new Set([...tags, ...typed])
+  // Status: the edit-page control decides; a status hashtag newly typed into the text also counts,
+  // unless the control was changed in the same save.
+  let status = input.status
+  const typedStatus = statusFromText(input.body)
+  if (typedStatus && typedStatus !== statusFromText(existing.body) && (input.status === undefined || input.status === existing.status)) status = typedStatus
+  const finalTags = new Set([...tags.filter(tag => !['todo', 'to-do', 'doing', 'in-progress', 'wip', 'done'].includes(tag)), ...typed])
   if (isPublic === true) finalTags.add(PUBLIC_TAG)
   if (isPublic === false) finalTags.delete(PUBLIC_TAG)
   const statements = [
     db.prepare("UPDATE thoughts SET title = ?, title_origin = CASE WHEN ? = title THEN title_origin ELSE 'manual' END, body = ?, updated_at = ? WHERE id = ?").bind(input.title.trim().slice(0, 200), input.title.trim().slice(0, 200), input.body.slice(0, 20_000), now, id),
     db.prepare('DELETE FROM thought_tags WHERE thought_id = ?').bind(id),
   ]
+  if (status !== undefined) statements.push(db.prepare('UPDATE thoughts SET status = ? WHERE id = ?').bind(status, id))
   // After capture, the edit-page switch decides; publishing again keeps the first publication date.
   if (isPublic !== undefined) statements.push(isPublic
     ? db.prepare('UPDATE thoughts SET public = 1, published_at = COALESCE(published_at, ?) WHERE id = ?').bind(now, id)
@@ -127,7 +152,7 @@ export type PublicNote = { id: string; slug: string; body: string; published_at:
 /** Only what a reader may see: edited text, owner tags (typed or manual), publication date. Never raw text, sources or AI tags. */
 const toPublic = (row: { id: string; body: string; published_at: number }, tags: { tag: string; origin: TagOrigin }[]): PublicNote => ({
   id: row.id, slug: row.id.slice(0, 8), published_at: row.published_at,
-  body: row.body.replace(/(^|[\s(])#public\b/gi, '$1').replace(/[ \t]{2,}/g, ' ').trim(),
+  body: stripStatusTags(row.body.replace(/(^|[\s(])#public\b/gi, '$1')).replace(/[ \t]{2,}/g, ' ').trim(),
   tags: tags.filter(tag => tag.origin !== 'ai' && tag.tag !== PUBLIC_TAG).map(tag => tag.tag),
 })
 

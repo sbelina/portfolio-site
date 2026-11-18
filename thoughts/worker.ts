@@ -9,10 +9,10 @@
  */
 import { checkSender, extractVoiceText, fallbackTitle, keywordSuggestions, parseEmail, parseSuggestion, readFilter, suggestionPrompt, type Suggestion } from './lib'
 import { verifyAccess } from './access'
-import { addSystemNote, addThought, applySuggestion, deleteThought, dismissSystemNote, getPublicNote, getThought, listPublicNotes, listThoughts, publicTags, setArchived, systemNotes, tagCloud, unsorted, updateThought, type Database } from './store'
+import { addSystemNote, addThought, applySuggestion, deleteThought, dismissSystemNote, getPublicNote, getThought, listPublicNotes, listThoughts, publicTags, setArchived, setStatus, statusCounts, systemNotes, tagCloud, unsorted, updateThought, type Database } from './store'
 import { editPage, listPage, messagePage, newPage } from './page'
 import { publicListPage, publicNotFound, publicNotePage } from './public-page'
-import { normalizeTag } from './lib'
+import { isStatus, normalizeTag } from './lib'
 
 export interface Env {
   DB: Database
@@ -155,8 +155,8 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
   if (request.method === 'GET') {
     if (path === '/') {
       const filter = readFilter(url.searchParams)
-      const [thoughts, cloud, notes] = await Promise.all([listThoughts(env.DB, filter), tagCloud(env.DB, filter.view), systemNotes(env.DB)])
-      return html(listPage({ thoughts, cloud, filter, notes, csrf }))
+      const [thoughts, cloud, notes, counts] = await Promise.all([listThoughts(env.DB, filter), tagCloud(env.DB, filter.view), systemNotes(env.DB), statusCounts(env.DB, filter.view)])
+      return html(listPage({ thoughts, cloud, filter, notes, counts, csrf, returnTo: `${url.pathname}${url.search}` }))
     }
     if (path === '/new') return html(newPage(csrf))
     const match = /^\/t\/([0-9a-f-]{36})$/.exec(path)
@@ -179,21 +179,31 @@ export async function handle(request: Request, env: Env, ctx: Context): Promise<
   }
   const note = /^\/notes\/(\d+)\/dismiss$/.exec(path)
   if (note) { await dismissSystemNote(env.DB, Number(note[1])); return redirect('/') }
-  const match = /^\/t\/([0-9a-f-]{36})(?:\/(archive|restore|delete))?$/.exec(path)
+  const match = /^\/t\/([0-9a-f-]{36})(?:\/(archive|restore|delete|status))?$/.exec(path)
   if (!match) return messagePage('Not found', 'Nothing here.', 404)
   const [, id, action] = match
-  if (action === 'archive' || action === 'restore') { await setArchived(env.DB, id, action === 'archive'); return redirect(`/t/${id}`) }
+  // Quick actions on the list return to the same filtered view; only same-site list URLs are accepted.
+  const returnTo = /^\/(\?[^#\s]*)?$/.test(String(form.get('return') ?? '')) ? String(form.get('return')) : undefined
+  if (action === 'archive' || action === 'restore') { await setArchived(env.DB, id, action === 'archive'); return redirect(returnTo ?? `/t/${id}`) }
+  if (action === 'status') {
+    const value = String(form.get('status') ?? '')
+    if (!isStatus(value) && value !== 'none') return redirect(returnTo ?? '/')
+    await setStatus(env.DB, id, isStatus(value) ? value : null)
+    return redirect(returnTo ?? '/')
+  }
   if (action === 'delete') {
-    if (form.get('confirm') !== 'yes') return redirect(`/t/${id}`)
+    if (form.get('confirm') !== 'yes') return redirect(returnTo ?? `/t/${id}`)
     await deleteThought(env.DB, id)
-    return redirect('/')
+    return redirect(returnTo ?? '/')
   }
   const tags = String(form.get('tags') ?? '').split(/[,\s]+/)
   const body = String(form.get('body') ?? '')
   if (!body.trim()) return redirect(`/t/${id}`)
   // The edit form always sends public_field; an unchecked box means "make private".
   const isPublic = form.has('public_field') ? form.get('public') === 'on' : undefined
-  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags, public: isPublic })
+  const statusValue = String(form.get('status') ?? '')
+  const status = form.has('status_field') ? (isStatus(statusValue) ? statusValue : null) : undefined
+  const saved = await updateThought(env.DB, id, { title: String(form.get('title') ?? ''), body, tags, public: isPublic, status })
   return saved ? redirect(`/t/${id}`) : messagePage('Not found', 'That thought does not exist.', 404)
 }
 

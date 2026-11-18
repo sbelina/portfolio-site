@@ -118,7 +118,29 @@ export function extractVoiceText(text: string): string {
     if (/^-{2,}\s*(forwarded message|original message)/i.test(trimmed)) break
     kept.push(line)
   }
-  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+  return unwrap(cleanVoiceLinks(kept.join('\n'))).replace(/\n{3,}/g, '\n\n').trim()
+}
+
+/** Removes Google Voice's own links (the logo link at the top of the notification), never links you typed. */
+export function cleanVoiceLinks(text: string): string {
+  return text
+    .replace(/<https?:\/\/(?:[\w-]+\.)*(?:voice\.)?google\.com(?:\/[^>\s]*)?>/gi, '')
+    .split('\n').filter(line => !/^\s*<https?:\/\/[^>\s]+>\s*$/.test(line)).join('\n')
+}
+
+/**
+ * Google's plain-text email hard-wraps long texts at about 70–78 characters. Rejoin a line with the
+ * next when it is long enough to have been wrapped; short lines and blank lines are kept as typed.
+ */
+export function unwrap(text: string, width = 60): string {
+  const lines = text.split('\n')
+  const out: string[] = []
+  for (const line of lines) {
+    const previous = out[out.length - 1]
+    if (previous !== undefined && previous.trim() && line.trim() && previous.length >= width) out[out.length - 1] = `${previous.trimEnd()} ${line.trimStart()}`
+    else out.push(line)
+  }
+  return out.join('\n')
 }
 
 export const digits = (value: string) => value.replace(/\D/g, '')
@@ -168,8 +190,30 @@ export const normalizeTag = (value: string) => value.toLowerCase().normalize('NF
 /** #hashtags typed in the message. Kept in the text too, so the original reads as written. */
 export function typedTags(text: string): string[] {
   const found = [...text.matchAll(/(?:^|[\s(])#([\p{L}\p{N}][\p{L}\p{N}_-]{0,39})/gu)].map(match => normalizeTag(match[1]))
-  return [...new Set(found.filter(Boolean))]
+  return [...new Set(found.filter(tag => tag && !(tag in statusWords)))]
 }
+
+/* ---------- Status: to do, doing, done ---------- */
+
+export type Status = 'todo' | 'doing' | 'done'
+export const STATUSES: readonly Status[] = ['todo', 'doing', 'done']
+export const statusLabel: Record<Status, string> = { todo: 'To do', doing: 'Doing', done: 'Done' }
+/** Hashtags that set a status instead of becoming tags. */
+const statusWords: Record<string, Status> = { todo: 'todo', 'to-do': 'todo', doing: 'doing', 'in-progress': 'doing', wip: 'doing', done: 'done' }
+export const isStatus = (value: unknown): value is Status => typeof value === 'string' && (STATUSES as readonly string[]).includes(value)
+
+/** The last status hashtag typed in the text (#todo, #doing, #done), if any. */
+export function statusFromText(text: string): Status | undefined {
+  let status: Status | undefined
+  for (const match of text.matchAll(/(?:^|[\s(])#([\p{L}\p{N}][\p{L}\p{N}_-]{0,39})/gu)) {
+    const word = normalizeTag(match[1])
+    if (word in statusWords) status = statusWords[word]
+  }
+  return status
+}
+
+/** Removes status hashtags (for the public view, where status isn't shown). */
+export const stripStatusTags = (text: string) => text.replace(/(^|[\s(])#(todo|to-do|doing|in-progress|wip|done)\b/gi, '$1')
 
 const stopwords = new Set(('a about above after again against all am an and any are as at be because been before being below between both but by can could did do does doing down during each few for from further had has have having he her here hers herself him himself his how i if in into is it its itself just like me more most my myself no nor not now of off on once only or other our ours ourselves out over own really same she should so some such than that the their theirs them themselves then there these they this those through to too under until up very was we were what when where which while who whom why will with would you your yours yourself yourselves also get got make made maybe much need thing things think want way going one two lot lots im ive dont cant its thats').split(' '))
 
@@ -223,7 +267,8 @@ export function cloudStep(count: number, max: number): number {
   return 1 + Math.round(4 * Math.log(count) / Math.log(max))
 }
 
-export type ThoughtFilter = { q?: string; tag?: string; from?: string; to?: string; view: 'active' | 'archived' | 'all' }
+export type StatusFilter = Status | 'none'
+export type ThoughtFilter = { q?: string; tag?: string; from?: string; to?: string; view: 'active' | 'archived' | 'all'; status?: StatusFilter }
 export function readFilter(params: URLSearchParams): ThoughtFilter {
   const date = (value: string | null) => value && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : undefined
   const view = params.get('view')
@@ -232,5 +277,6 @@ export function readFilter(params: URLSearchParams): ThoughtFilter {
     tag: params.get('tag') ? normalizeTag(params.get('tag')!) || undefined : undefined,
     from: date(params.get('from')), to: date(params.get('to')),
     view: view === 'archived' || view === 'all' ? view : 'active',
+    status: ((value: string | null) => isStatus(value) || value === 'none' ? value : undefined)(params.get('status')),
   }
 }

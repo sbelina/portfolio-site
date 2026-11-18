@@ -85,6 +85,14 @@ Notes become public only when I say so. Everything else stays private.
 - **Indexing:** pages carry `noindex` until `PUBLIC_INDEXING` is set to `"true"`. Responses are cached for five minutes, so an unpublished note can stay visible for up to five minutes.
 - **Main site navigation:** the field notes pages already link to Investigations, Connections, Practice, Atlas and Contact. Adding *Field notes* to the main site's own navigation is a separate change to the public site and needs my approval.
 
+## Status, delete and cleanup (18 November)
+
+- **To do / Doing / Done.** Each card has a three-part status control; pressing the current status clears it. Typing `#todo` (or `#to-do`), `#doing` (or `#in-progress`, `#wip`) or `#done` sets the status instead of becoming a tag. A status hashtag newly typed while editing also counts. The list can be filtered by status, and the counts follow the Active/Archived view. Done cards are dimmed and always labelled "Done", so the status never depends on colour alone. Status is private: it never appears on field notes, and status hashtags are removed from the public text.
+- **Delete from the list.** Each card has a *Delete* menu that needs a "Yes, delete permanently" tick. Quick actions return to the same filtered view; only same-site list URLs are accepted as return targets.
+- **Filter row = your hashtags.** The chips show only tags you typed or added, most used first (up to 10). AI suggestions stay on the cards (✦) and in the full tag list.
+- **Voice email cleanup.** Google's plain-text notification begins with its logo link (`<https://voice.google.com>`) and hard-wraps long texts. Both are removed at intake: Google's own links are stripped (links you type are kept), and lines of 60 or more characters are rejoined with the next line. A short line you end on purpose stays as typed. The one note captured before this fix was cleaned in place.
+- Migration `0003_status.sql` was applied to the remote database before the code deployed.
+
 ## Privacy and limits
 
 - Your texts are stored in your Cloudflare D1 database and sent to Workers AI, which runs inside your Cloudflare account, for sorting. They are never committed to Git or included in the public site build. Only notes I mark public appear on `/field-notes/`. To turn sorting off, remove the `ai` binding; keyword fallback then runs instead.
@@ -105,7 +113,7 @@ Notes become public only when I say so. Everything else stays private.
   - search, tag filter, edit (raw text preserved, manual title), archive, guarded delete, CSRF and origin checks, and private no-store headers;
   - `#public` at capture, the edit switch (publish, unpublish, re-publish by hashtag), archive hiding, public output limited to edited text and owner tags, the private archive returning 404 on the public hostname, and no writes on the public view.
 
-  **10 of 10 passed** in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
+  **13 of 13 passed** (18 November) in this session, using a minimal stand-in for the Playwright test runner. The repository's real runner has not run them: `npm run test:thoughts`.
 - The TypeScript check of `thoughts/` passed with TypeScript 6 and `@types/node`.
 - **Not run here:** `npm ci`, `wrangler dev`, `check:thoughts`, real Email Routing, real Access, real Workers AI. The Workers AI model was checked against Cloudflare's model catalog on 17 November: `@cf/meta/llama-3.1-8b-instruct` is listed as deprecated and the fp8 variant is scheduled for deprecation on 20 November 2026, so the default is `@cf/meta/llama-3.1-8b-instruct-fast`.
 

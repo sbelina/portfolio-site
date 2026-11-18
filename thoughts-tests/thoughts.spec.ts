@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { generateKeyPairSync, createSign } from 'node:crypto'
-import { checkSender, extractVoiceText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
+import { checkSender, extractVoiceText, statusFromText, keywordSuggestions, parseEmail, parseSuggestion, typedTags, readFilter, cloudStep } from '../thoughts/lib'
 import { verifyAccess, resetAccessCache } from '../thoughts/access'
 import { addThought, getThought, listThoughts, tagCloud } from '../thoughts/store'
 import { handle, receiveEmail, route, type Env } from '../thoughts/worker'
@@ -182,7 +182,7 @@ test('the edit switch publishes and unpublishes; adding #public later also publi
   const id = await addThought(e.DB, { text: 'Same shape, different gap', source: 'web' })
   const edit = await (await handle(new Request(`${base}/t/${id}`), e, c)).text()
   expect(edit).toContain('name="public"')
-  expect(edit).not.toContain(' checked')
+  expect(edit).not.toMatch(/name="public" checked/)
   const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(edit)![1]
   const save = (fields: Record<string, string>) => handle(new Request(`${base}/t/${id}`, { method: 'POST', headers: { Origin: base }, body: new URLSearchParams({ csrf, title: 'Gap', tags: '', public_field: '1', ...fields }) }), e, c)
   const publicList = async () => (await route(new Request('https://producingcuriosity.com/field-notes/'), e, c)).text()
@@ -210,4 +210,56 @@ test('the edit switch publishes and unpublishes; adding #public later also publi
 
   await e.DB.prepare('UPDATE thoughts SET archived = 1 WHERE id = ?').bind(id).run()
   expect(await publicList()).not.toContain('Same shape') // archiving hides a public note too
+})
+
+test('Voice logo links are removed and wrapped lines rejoined; typed links and line breaks stay', () => {
+  const text = '<https://voice.google.com>\nMake some ceramics this week - maybe the bubbler fermentation thing for\nKyle? #idea #project #clay'
+  expect(extractVoiceText(text)).toBe('Make some ceramics this week - maybe the bubbler fermentation thing for Kyle? #idea #project #clay')
+  expect(extractVoiceText('Read this https://example.com/a\nShort line\nAnother')).toBe('Read this https://example.com/a\nShort line\nAnother')
+})
+
+test('#todo, #doing and #done set a status instead of a tag; quick actions change status and delete', async () => {
+  expect(statusFromText('Call the kiln shop #todo then #doing')).toBe('doing')
+  expect(typedTags('Glaze test #todo #clay')).toEqual(['clay'])
+  const e = env({ LOCAL_DEV: 'true' })
+  const base = 'http://127.0.0.1:8790'
+  const c = ctx()
+  const id = await addThought(e.DB, { text: 'Glaze test #todo #clay', source: 'text' })
+  const other = await addThought(e.DB, { text: 'Just a thought', source: 'web' })
+  expect((await getThought(e.DB, id!))!.status).toBe('todo')
+  let page = await (await handle(new Request(`${base}/?status=todo`), e, c)).text()
+  expect(page).toContain('Glaze test')
+  expect(page).not.toContain('Just a thought')
+  expect(page).toContain('To do <small>1</small>')
+  const csrf = /name="csrf" value="([a-f0-9]+)"/.exec(page)![1]
+  const post = (path: string, fields: Record<string, string>) => handle(new Request(`${base}${path}`, { method: 'POST', headers: { Origin: base }, body: new URLSearchParams({ csrf, ...fields }) }), e, c)
+  const moved = await post(`/t/${id}/status`, { status: 'doing', return: '/?status=todo' })
+  expect(moved.status).toBe(303)
+  expect(moved.headers.get('Location')).toBe('/?status=todo')
+  expect((await getThought(e.DB, id!))!.status).toBe('doing')
+  expect((await post(`/t/${id}/status`, { status: 'done', return: 'https://evil.example/' })).headers.get('Location')).toBe('/')
+  expect((await getThought(e.DB, id!))!.status).toBe('done')
+  await post(`/t/${id}/status`, { status: 'none' })
+  expect((await getThought(e.DB, id!))!.status).toBe(null)
+  // Editing: the control decides; typing #done into the text also works.
+  await post(`/t/${other}`, { title: 'x', body: 'Just a thought #done', tags: '', status_field: '1', status: 'none' })
+  expect((await getThought(e.DB, other!))!.status).toBe('done')
+  await post(`/t/${other}`, { title: 'x', body: 'Just a thought #done', tags: '', status_field: '1', status: 'todo' })
+  expect((await getThought(e.DB, other!))!.status).toBe('todo')
+  // Delete from the list needs the confirmation box.
+  await post(`/t/${other}/delete`, { return: '/' })
+  expect(await getThought(e.DB, other!)).toBeDefined()
+  expect((await post(`/t/${other}/delete`, { confirm: 'yes', return: '/?status=todo' })).headers.get('Location')).toBe('/?status=todo')
+  expect(await getThought(e.DB, other!)).toBeUndefined()
+})
+
+test('the filter row shows only your own hashtags; AI suggestions stay in the full list', async () => {
+  const e = env({ LOCAL_DEV: 'true' })
+  const id = await addThought(e.DB, { text: 'Kiln schedule #clay', source: 'text' })
+  await e.DB.prepare("INSERT INTO thought_tags (thought_id, tag, origin) VALUES (?, 'pottery', 'ai')").bind(id).run()
+  const page = await (await handle(new Request('http://127.0.0.1:8790/'), e, ctx())).text()
+  const row = /<ul class="chips" aria-label="Filter by your hashtags">([\s\S]*?)<\/ul>/.exec(page)![1]
+  expect(row).toContain('#clay')
+  expect(row).not.toContain('#pottery')
+  expect(page).toContain('including AI suggestions')
 })
