@@ -2,6 +2,7 @@ import {test,expect} from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import {readFile} from 'node:fs/promises'
 import {inquirySpacePath} from '../src/inquiry-space/paths'
+import {externallyServedRoutes} from '../src/public-routes'
 import {inquiryIllustrationMarker,inquiryIllustrationProjection,illustrationVerse} from '../src/inquiry-space/illustration'
 import {inquiryEntries,inquiryVerse} from './fixtures/inquiry-content'
 
@@ -56,6 +57,7 @@ test('review fixture has accessible semantics and no dead local destinations',as
  const links=await page.locator('a[href]').evaluateAll(nodes=>nodes.map(node=>node.getAttribute('href')!))
  for(const href of new Set(links)){
   if(href.startsWith('#'))await expect(page.locator(`[id="${href.slice(1)}"]`)).toHaveCount(1)
+  else if((externallyServedRoutes as readonly string[]).includes(href))continue // served by another Worker in production
   else if(href.startsWith('/'))expect((await request.get(href)).status(),href).toBe(200)
  }
  await page.goto(inquirySpacePath);const file=testInfo.outputPath('inquiry-threshold-desktop.png');await page.screenshot({path:file});await testInfo.attach('Synthetic inquiry Threshold',{path:file,contentType:'image/png'})
