@@ -1,6 +1,6 @@
 # Private thought capture ("Thoughts")
 
-**Status:** built on `feature/thought-capture`, 17 November 2026. **Not deployed.** Owner request: text ideas to a Google Voice number and have them land, sorted, on a private page of the site that can be searched, filtered and edited from anywhere. Inspired by MindChuk.
+**Status:** built on `feature/thought-capture` and deployed as the `producing-curiosity-thoughts` Worker, 17 November 2026; merged to `main` the same day. Owner request: text ideas to a Google Voice number and have them land, sorted, on a private page of the site that can be searched, filtered and edited from anywhere. Inspired by MindChuk.
 
 **Owner decisions, 17 November:** capture through her existing Google Voice number, not a paid texting number; AI suggestions applied automatically (“pre-approved”) and editable; #hashtags and keywords can be typed in a text and changed later; a tag cloud. The repository's general “no AI runtime” guidance is overridden by this explicit request, for this private tool only.
 

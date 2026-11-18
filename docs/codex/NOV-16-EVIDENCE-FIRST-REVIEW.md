@@ -1,6 +1,6 @@
 # Evidence-first review branch: 16 November 2026
 
-**Branch:** `review/evidence-first-claims` · **Status:** owner review. Not merged, not deployed. No case content is approved by this branch.
+**Branch:** `review/evidence-first-claims` · **Status:** merged to `main` and released on 17 November 2026 at the owner's request ("push all changes live"). No case content is approved by this release: the Claims candidate remains unpublished until the authenticated review process approves its exact wording.
 
 ## Owner request (summarized)
 
