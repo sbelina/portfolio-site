@@ -141,10 +141,14 @@ export function checkSender(envelopeFrom: string, headers: MimeHeaders, policy: 
   // Gmail auto-forwarding rewrites the envelope sender to the account, often as local+caf_=...@gmail.com.
   const fromAccount = envelopeDomain === accountDomain && (envelopeLocal === accountLocal || envelopeLocal.startsWith(`${accountLocal}+caf_=`))
   const from = (headers.get('from') ?? '').toLowerCase()
-  if (fromAccount || envelopeDomain === 'google.com') {
-    if (/forwarding-noreply@google\.com/.test(from) && /gmail forwarding confirmation/i.test(headers.get('subject') ?? '')) return { ok: true, kind: 'gmail-confirmation' }
+  // Google sends the one-time confirmation from its own bounce domains (e.g. …@gaia.bounces.google.com).
+  // It is only ever shown as a setup note, and must name the configured account in its subject.
+  const googleEnvelope = /^(.+\.)?(google\.com|googlemail\.com)$/.test(envelopeDomain)
+  const subject = (headers.get('subject') ?? '').toLowerCase()
+  if ((fromAccount || googleEnvelope) && /forwarding-noreply@google\.com/.test(from) && /gmail forwarding confirmation/.test(subject) && (!account || subject.includes(account))) {
+    return { ok: true, kind: 'gmail-confirmation' }
   }
-  if (!fromAccount) return { ok: false, reason: 'Not forwarded by the configured account' }
+  if (!fromAccount) return { ok: false, reason: `Not forwarded by the configured account (envelope domain: ${envelopeDomain || 'none'})` }
   if (!/@txt\.voice\.google\.com>?\s*$/.test(from)) return { ok: false, reason: 'Not a Google Voice text notification' }
   const voice = tenDigits(policy.voiceNumber)
   const allowed = policy.senderNumbers.map(tenDigits).filter(number => number.length === 10)
