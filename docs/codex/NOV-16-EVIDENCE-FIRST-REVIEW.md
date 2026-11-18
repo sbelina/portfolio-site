@@ -98,3 +98,10 @@ Revert the branch's commits. No content store, release manifest, archive or depl
 3. Confirm Claims as the first case, or approve another; the homepage follows whichever investigation is approved first.
 4. The social preview image still shows the 6 November headline; regenerating it is a separate reviewed change.
 5. Whether the mobile hero should fit the evidence link above the fold at 320px, for example with a shorter kicker on narrow screens.
+
+## 18 November additions (owner-approved)
+
+- **Evidence threaded into the story.** At the owner's request ("it takes up so much space… thread and nest it in the rest of the body"), each statement can name the narrative section it supports (`section`). On the page it appears as one compact line under that section. Opening the line shows my part and the limitation. Statements without a section are still listed together, now under **How I know**. The evidence vocabulary is shown in plain language (What I saw, My interpretation, What was decided or recorded, Open question; "My part: I identified it", and so on). The stored values are unchanged.
+- **Move the checkpoint** (Claims page). An explorable, conceptual illustration of "delivered ≠ complete". It switches when the next step goes ahead, the kind of problem (missing; unreadable or changed by hand; completed by only one of the people required) and the vocabulary (the claims case or everyday terms). Without JavaScript it shows both orders side by side. It encodes no measurements.
+- **Same shape, different gap** (homepage illustration). A case picker re-labels the existing drawing with pairs restated from the previous edition's published summaries: Claims (delivered / complete), trust research (agreement / trust), civic service (service categories / voting questions), accessibility (checks passed / question settled). Each links to its summary. The labels are decorative; the live description carries the meaning.
+- The Claims candidate remains unpublished. Its content digest changes with this revision, so approval applies to the new revision.

@@ -38,7 +38,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-byline">An evolving portfolio and field journal by Sami Belina.</p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
-        <InquiryIllustration/>
+        <InquiryIllustration archivePath={publicPath(archive.reviewPath)}/>
       </section>
       <nav className="pc-journeys" aria-label="Explore the portfolio">
         <a href={publicPath(evidence.href)} data-evidence-status={evidence.status}><span className="pc-kicker">Start with the evidence</span><strong>{evidence.title} <span aria-hidden="true">→</span></strong><span>{evidence.description}{evidence.status === 'previous-edition' ? <> <em className="pc-evidence-boundary">{evidence.boundary}</em></> : null}</span></a>

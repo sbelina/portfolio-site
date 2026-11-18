@@ -178,3 +178,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-brief > div { border-top: 1px solid var(--line); padding-block: 1rem; }
 .pc-brief dt { font-weight: 650; margin-bottom: .4rem; }
 .pc-brief dd { margin: 0; max-width: 40ch; }
+/* Same shape, different gap: case labels on the illustration (decorative; the live text carries the meaning). */
+.pc-case-labels text { font: 600 15px/1 var(--mono, ui-monospace, monospace); fill: currentColor; letter-spacing: .02em; }
+.pc-inquiry-reading strong { font-weight: 650; }

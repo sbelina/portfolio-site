@@ -63,7 +63,7 @@ test('static reading, conceptual comparisons and inquiry disclosures work at nar
     const trigger=page.getByText('Inspect an illustrative model revision',{exact:true});await trigger.focus();await page.keyboard.press('Enter')
     await expect(page.getByText('Initial explanation:',{exact:false})).toBeVisible()
     await page.goto('/investigations/fixture-claims-handoff/')
-    await expect(page.getByRole('heading',{name:'Evidence distinctions'})).toBeVisible()
+    await expect(page.getByRole('heading',{name:'How I know'})).toBeVisible()
     const source=page.getByText('Inspect source: Synthetic handoff scenario',{exact:true});await source.focus();await page.keyboard.press('Enter')
     await expect(source.locator('..')).toHaveAttribute('open','')
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'})
