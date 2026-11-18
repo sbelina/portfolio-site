@@ -126,3 +126,42 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .investigation-figure-value strong { font-size: 2rem; line-height: 1.1; font-weight: 600; }
 .investigation-figure-value span, .investigation-figure-basis { color: var(--reading-muted); }
 .investigation-figure-basis { font-size: .85rem; }
+
+/* Evidence threaded into the story: one line per statement, opened for my part and the limits. */
+.evidence-thread { margin: .75rem 0 0; border-left: 2px solid var(--reading-line); padding-left: .85rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: .1rem; min-width: 0; }
+.evidence-note { min-width: 0; }
+.evidence-note summary { cursor: pointer; min-width: 0; display: flex; gap: .5rem; align-items: baseline; min-height: 44px; padding: .55rem 0; list-style: none; font-size: .92rem; }
+.evidence-note summary::-webkit-details-marker { display: none; }
+.evidence-note summary::before { content: '+'; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--reading-muted); flex: none; width: 1ch; }
+.evidence-note[open] summary::before { content: '−'; }
+.evidence-kind { flex: none; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--reading-muted); }
+.evidence-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.evidence-note[open] .evidence-text { white-space: normal; overflow: visible; }
+.evidence-detail { margin: 0 0 .6rem 1.5rem; font-size: .88rem; color: var(--reading-muted); }
+.evidence-detail span { color: inherit; font-weight: 600; }
+.evidence-note details { margin: 0 0 .6rem 1.5rem; font-size: .88rem; }
+
+/* Move the checkpoint (conceptual, explorable). */
+.checkpoint { margin: 2rem 0; padding: 1.25rem; border: 1px solid var(--reading-line); border-radius: 4px; }
+.checkpoint h2 { margin-top: 0; }
+.checkpoint-kicker { margin: 0 0 .25rem; font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
+.checkpoint-controls { display: grid; gap: .5rem; margin: 1rem 0; }
+.checkpoint-controls fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 1rem; }
+.checkpoint-controls legend { padding: 0; margin-bottom: .1rem; font-size: .8rem; color: var(--reading-muted); }
+.checkpoint-controls input { accent-color: var(--reading-ink); width: 1.1rem; height: 1.1rem; }
+.checkpoint-controls label { display: inline-flex; gap: .45rem; align-items: center; min-height: 44px; cursor: pointer; }
+.checkpoint-steps { list-style: none; margin: 0; padding: 0; }
+.checkpoint-steps li { display: flex; gap: .75rem; align-items: flex-start; padding: .6rem 0; border-top: 1px solid var(--reading-line); }
+.checkpoint-steps li > span:last-child { display: grid; gap: .15rem; justify-items: start; min-width: 0; }
+.checkpoint-steps small { color: var(--reading-muted); }
+.checkpoint-dot { flex: none; width: .75rem; height: .75rem; margin-top: .35rem; border-radius: 50%; border: 2px solid var(--reading-muted); }
+.checkpoint-steps li[data-go] .checkpoint-dot { background: currentColor; border-color: currentColor; }
+.checkpoint-steps li[data-check] .checkpoint-dot { border-style: dashed; }
+.checkpoint-tag { justify-self: start; font-style: normal; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin: 0; padding: .05rem .4rem; border: 1px solid currentColor; border-radius: 3px; }
+.checkpoint-result { margin: 1rem 0 0; padding: .85rem 1rem; border-left: 4px solid currentColor; background: var(--reading-panel, rgba(0,0,0,.04)); }
+.checkpoint-result[data-good="true"]::before { content: '✓ '; }
+.checkpoint-result[data-good="false"]::before { content: '⚠ '; }
+.checkpoint-static { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); margin-top: 1rem; }
+.checkpoint-static h3 { font-size: 1rem; margin: 0 0 .5rem; }
+.checkpoint-note { margin: 1rem 0 0; font-size: .85rem; color: var(--reading-muted); }
+@media (prefers-reduced-motion: reduce) { .evidence-note summary, .checkpoint * { transition: none !important; } }
