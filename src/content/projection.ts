@@ -81,6 +81,11 @@ export function validateCandidateProjection(input: ContentStore, selection: Rele
     if (entry.investigation) {
       if (entry.kind !== 'investigation' || entry.format === 'poetry') throw new Error('Investigation narratives belong only to non-poetry investigations')
       for (const field of ['observedCondition', 'investigation', 'relationshipDiscovered', 'limitations'] as const) if (!entry.investigation[field]?.trim()) throw new Error('Selected investigation narrative is incomplete')
+      for (const figure of entry.investigation.figures ?? []) {
+        if (!figure.evidenceIds.length) throw new Error('Figures require selected evidence')
+        assertReferences(figure.evidenceIds, evidenceIds, 'Figure references unselected evidence')
+        if (figure.basis === 'measured' && !figure.evidenceIds.some(id => evidence.some(e => e.id === id && e.kind === 'metric' && e.measurement))) throw new Error('Measured figures require measurement provenance')
+      }
       for (const statement of entry.investigation.statements) {
         assertReferences(statement.evidenceIds, evidenceIds, 'Statement references unselected evidence')
         if (statement.kind === 'unverified') throw new Error('Unverified statements cannot enter a selected investigation')

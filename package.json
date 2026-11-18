@@ -16,6 +16,8 @@
     "check:deploy": "wrangler deploy --dry-run",
     "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
     "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc",
+    "build:candidate": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-candidate && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --candidate",
+    "preview:candidate": "wrangler dev --local --config wrangler.candidate.jsonc",
     "studio:setup": "tsx scripts/studio-setup.ts",
     "studio:build": "tsc -p tsconfig.studio.json && vite build --config vite.studio.config.ts && tsx scripts/studio-assets.ts",
     "studio:migrate": "wrangler d1 execute DB --local --config wrangler.studio.jsonc --file migrations/0001_studio.sql",
@@ -23,7 +25,11 @@
     "test:studio": "playwright test --config playwright.studio.config.ts",
     "test:studio:inquiry": "playwright test --config playwright.inquiry-studio.config.ts",
     "check:studio": "wrangler deploy --dry-run --config wrangler.studio.jsonc",
-    "studio:restart-proof": "tsx scripts/studio-restart-proof.ts"
+    "studio:restart-proof": "tsx scripts/studio-restart-proof.ts",
+    "test:thoughts": "tsc -p tsconfig.thoughts.json && playwright test --config playwright.thoughts.config.ts",
+    "thoughts:migrate": "wrangler d1 migrations apply producing-curiosity-thoughts --local --config thoughts/wrangler.jsonc",
+    "thoughts:dev": "wrangler dev --local --config thoughts/wrangler.jsonc --ip 127.0.0.1 --port 4190 --var LOCAL_DEV:true --var CSRF_SECRET:local-only",
+    "check:thoughts": "wrangler deploy --dry-run --config thoughts/wrangler.jsonc"
   },
   "dependencies": {
     "react": "19.2.8",

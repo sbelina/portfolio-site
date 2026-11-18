@@ -15,3 +15,7 @@
 Two connected responses require separate accounts. Sami began unassigned, built the evidence and led the earlier salvage-review change. IAA determines document sufficiency; adjusters release payment. In parallel, Sami raised recurring problems and facilitated administrator meetings to surface practitioner knowledge, examples and procedural differences. This collaborative process informed the guide and separate onboarding/training artifacts. Error-log categories did not determine guide structure. Statewide use is owner-reported. The18% and7.6% observations require independent definitions, scopes and periods; no direct reduction claim.
 
 Exact manuscript, source/rights review and owner approval remain pending.
+
+## Publication candidate — 16 November (not approved)
+
+See [the publication candidate and approval checklist](claims-operations-publication-candidate.md). It drafts public-safe short and full versions; sources, rights and owner approval remain pending.

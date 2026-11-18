@@ -153,6 +153,7 @@ vite.config.ts.timestamp-*
 
 # Explicit local synthetic reading build
 dist-fixtures/
+dist-candidate/
 
 # Atlas review output and isolated test artifacts
 dist-atlas/
@@ -166,3 +167,6 @@ dist-studio/
 .studio-password
 studio-test-results/
 inquiry-studio-test-results/
+
+# Private thought archive test output
+thoughts-test-results/
