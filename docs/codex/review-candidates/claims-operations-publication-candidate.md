@@ -67,7 +67,7 @@ Shown on the homepage only once this case is approved (field `investigation.brie
 
 **How this was measured (`measurement`):** Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.
 
-**Figures (`figures`, each labelled “Approximate · owner estimate”):** ~30 views a month (paperwork guide access, averaged since it was shared; access, not use or effect) · ~6 new hires a quarter (onboarding audience, averaged; not who delivered the training) · 2+ years in use across several offices (which resource is still to be confirmed; use is not effectiveness). The projection now rejects any figure without selected evidence.
+**Figures (`figures`, each labelled “Approximate · owner estimate”):** 700+ views since it was shared (paperwork guide access; owner-approved headline on 18 November, estimated from about 30 views a month over 2+ years; a running total from an average, not a counted figure; access, not use or effect) · ~6 new hires a quarter (onboarding audience, averaged; not who delivered the training) · 2+ years in use across several offices (which resource is still to be confirmed; use is not effectiveness). The projection now rejects any figure without selected evidence.
 
 ### Statements
 
@@ -93,7 +93,7 @@ Owner direction, 16 November: internal figures may appear publicly as rounded or
 | Slot | Proposed estimate wording | Still required | Rule |
 | --- | --- | --- | --- |
 | F1, F2 | **Withheld** (two rework observations) | Separate definition, period, denominator, method, source | The problem is scope, not precision; rounding doesn't fix it. Never shown together or compared. |
-| F3 | Paperwork guide: roughly 30 views a month on average since it was shared | Where views are counted; date read | Access is not use or effect |
+| F3 | Paperwork guide: 700+ views since it was shared (estimated from roughly 30 a month over 2+ years) | Where views are counted; when it was first shared; date read | A total estimated from an average; access is not use or effect |
 | F4 | About six new hires a quarter on average | Source and period | Describes the audience, not who delivered training |
 | F5 | More than two years across several offices | Which resource has this scope | One resource per figure; never combined |
 
