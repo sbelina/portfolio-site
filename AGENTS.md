@@ -52,6 +52,8 @@ For documentation-only changes, validate paths, internal links, fences, factual 
 
 ## Current owner positioning — 6 November 2026
 
+Pending owner review, 16 November: the [evidence-first review branch](docs/codex/NOV-16-EVIDENCE-FIRST-REVIEW.md) proposes the homepage H1 **“I turn gaps in understanding into evidence leaders can act on.”** and a direct evidence path. If merged, it supersedes the lead sentence below for the homepage; collective agency remains a guiding purpose, not a headline or a demonstrated outcome.
+
 Use **Sami Belina**. The single professional practice is **Test. Show. Enable.** This supersedes earlier public triads and presentation. Lead with **“I investigate situations where outcomes are visible, but the explanations behind them remain unclear.”** Return useful knowledge to affected people, communities and decision-makers. Keep the separate Systems Inquiry reasoning loop; neither it nor the three professional moves is an interaction gate. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. Design adoption is not publication approval for case manuscripts, metrics, assets or inferred relationships.
 
 ## Bounded specialist collaboration

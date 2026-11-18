@@ -83,6 +83,9 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-cards li { padding: 2rem 0; border-bottom: 1px solid var(--reading-line); }
 .reading-cards h2 { margin: .5rem 0 1rem; font-size: 1.75rem; line-height: 1.25; }
 .reading-cards p, .reading-patterns li p, .reading-empty { line-height: 1.7; }
+.reading-empty h2 { margin-top: 2.5rem; }
+.reading-empty ul { padding-left: 1.2rem; }
+.reading-empty li { margin-block: .6rem; }
 .reading-patterns { margin-top: 3rem; }
 .reading-patterns li { padding: 1rem 0; border-bottom: 1px solid var(--reading-line); }
 .reading-footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 2rem 0; border-top: 1px solid var(--reading-line); color: var(--reading-muted); font-size: .8rem; line-height: 1.6; }
@@ -116,3 +119,10 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-inquiry-context summary:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 4px; }
 .reading-inquiry-context dt { font-weight: 700; }
 .reading-inquiry-context dd { margin: .4rem 0 1.2rem; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reading-candidate-notice { border-left: 3px solid var(--reading-unresolved); padding: .6rem 1rem; font-weight: 600; }
+.investigation-figures ul { list-style: none; padding: 0; margin: 1rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0 1.5rem; border-top: 1px solid var(--reading-line); }
+.investigation-figures li { padding: 1rem 0; border-bottom: 1px solid var(--reading-line); }
+.investigation-figures p { margin: 0 0 .35rem; }
+.investigation-figure-value strong { font-size: 2rem; line-height: 1.1; font-weight: 600; }
+.investigation-figure-value span, .investigation-figure-basis { color: var(--reading-muted); }
+.investigation-figure-basis { font-size: .85rem; }

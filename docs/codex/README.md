@@ -2,6 +2,8 @@ Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and
 
 # Codex context: start here
 
+Owner review branch, 16 November: [evidence-first homepage and Claims publication candidate](NOV-16-EVIDENCE-FIRST-REVIEW.md). Not merged or approved; the Claims candidate is unpublished.
+
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
 ## Current direction — 6 November 2026

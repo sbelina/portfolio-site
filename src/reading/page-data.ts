@@ -15,6 +15,8 @@ export type ReadingPageData = {
   fixture: boolean
   /** Published synthetic experiment, distinct from an unpublished fixture. */
   illustrative?: boolean
+  /** Local owner-review preview of an unapproved candidate; never part of production output. */
+  candidate?: boolean
   entry?: PublicEntry
   projection: ReadingContext
   /** Sanitized build-time HTML for current entry blocks only. */
