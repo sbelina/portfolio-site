@@ -1,0 +1,36 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  // Private thought archive, plus read-only public field notes the owner explicitly publishes (#public or the switch).
+  // Lives in its own folder so Workers Builds (root directory: thoughts) matches this name, not the public site's.
+  // Secrets (set in the dashboard, or `wrangler secret put …` from this folder; never in Git):
+  //   OWNER_EMAIL, FORWARDING_ACCOUNT, VOICE_NUMBER, SENDER_NUMBERS, CSRF_SECRET, ACCESS_TEAM_DOMAIN, ACCESS_AUD
+  // See docs/codex/THOUGHT-CAPTURE.md.
+  "name": "producing-curiosity-thoughts",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  // The private archive owns its own hostname. On the public site, only /field-notes* comes here
+  // (a route is more specific than the portfolio-site Custom Domain, so it takes precedence for that path).
+  "routes": [
+    { "pattern": "thoughts.producingcuriosity.com", "custom_domain": true },
+    { "pattern": "producingcuriosity.com/field-notes*", "zone_name": "producingcuriosity.com" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "producing-curiosity-thoughts",
+      "database_id": "2da3d1d3-7a2f-4042-a9c2-4da021d43616",
+      "migrations_dir": "../migrations-thoughts"
+    }
+  ],
+  "ai": { "binding": "AI" },
+  "triggers": { "crons": ["*/30 * * * *"] },
+  "vars": {
+    "AI_MODEL": "@cf/meta/llama-3.1-8b-instruct-fast",
+    "PUBLIC_HOSTS": "producingcuriosity.com",
+    "PUBLIC_ORIGIN": "https://producingcuriosity.com",
+    "PUBLIC_INDEXING": "false"
+  },
+  "observability": { "enabled": true }
+}
