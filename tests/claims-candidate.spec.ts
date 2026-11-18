@@ -11,7 +11,8 @@ const prose = () => [
   claimsCandidate.investigation!.visual.left, claimsCandidate.investigation!.visual.right, claimsCandidate.investigation!.visual.explanation,
   ...claimsCandidate.investigation!.statements.flatMap(statement => [statement.text, statement.limitation]),
   ...Object.values(claimsCandidate.investigation!.brief ?? {}),
-  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.value, figure.unit, figure.label, figure.qualifier]),
+  // Figure values are checked separately below: an owner-approved rounded total (700+) may have three digits.
+  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.unit, figure.label, figure.qualifier]),
   ...claimsCandidate.blocks.flatMap(block => block.type === 'callout' ? [block.label, block.markdown.replace(claimsCandidateToken, '')] : []),
 ].join('\n')
 
@@ -48,7 +49,10 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).not.toContain('IAA')
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
-  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['~30 views a month', '~6 new hires a quarter', '2+ years in use, several offices'])
+  // 700+ is the owner-approved headline for the guide (18 November): a rounded estimate, never a precise count.
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '~6 new hires a quarter', '2+ years in use, several offices'])
+  for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
+  expect(figures[0].value).toMatch(/^\d+0\+$/) // rounded to tens, with a plus
   for (const figure of figures) {
     expect(figure.basis).toBe('owner_estimate')
     expect(figure.value).toMatch(/^(?:~|\d+\+$)/)

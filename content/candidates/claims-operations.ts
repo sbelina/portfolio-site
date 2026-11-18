@@ -56,7 +56,7 @@ export const claimsCandidate: Entry = {
     notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
     measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     figures: [
-      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '~30', unit: 'views a month', label: 'Paperwork guide access, averaged since it was shared', basis: 'owner_estimate', qualifier: 'Access, not use or effect.', evidenceIds: [] },
+      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '700+', unit: 'views since it was shared', label: 'Paperwork guide access, estimated from about 30 views a month over 2+ years', basis: 'owner_estimate', qualifier: 'A running total estimated from an average, not a counted figure. Access, not use or effect.', evidenceIds: [] },
       { id: 'e2b9981c-4fbe-47a9-a2db-e3aad0d14e0e', value: '~6', unit: 'new hires a quarter', label: 'Onboarding audience, averaged', basis: 'owner_estimate', qualifier: 'The audience, not who delivered the training.', evidenceIds: [] },
       { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use, several offices', label: 'Continued use (which resource has this scope is still to be confirmed)', basis: 'owner_estimate', qualifier: 'Use is not effectiveness.', evidenceIds: [] },
     ],
