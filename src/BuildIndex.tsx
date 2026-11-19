@@ -7,7 +7,7 @@ import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 import { primaryEvidence, previousEditionHref, representativeSummaries, type InvestigationSummary } from './content/primary-evidence'
-import { professionalIdentity, practiceAreas } from './content/recruiter'
+import { professionalIdentity, practiceAreas, tagline } from './content/recruiter'
 import { RecruiterActions } from './design/RecruiterActions'
 
 const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
@@ -36,7 +36,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <h1 id="index-title">I turn gaps in understanding into evidence leaders can act on.</h1>
           <p className="pc-lead">I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.</p>
           <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
-          <p className="pc-byline">{practiceAreas.join(' · ')}. An evolving portfolio and field journal.</p>
+          <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
         <InquiryIllustration archivePath={publicPath(archive.reviewPath)}/>

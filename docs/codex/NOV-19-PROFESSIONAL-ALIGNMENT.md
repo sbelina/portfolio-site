@@ -14,7 +14,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 | --- | --- | --- |
 | D1 | Merged `main` first (`b247b7b`). The released evidence-first homepage and Investigations page replace this branch’s unreleased Phase 1 versions. | Work from the current released state. Phase 1 was never published. |
 | D2 | The H1 is unchanged: *I turn gaps in understanding into evidence leaders can act on.* | The directive keeps it pending a separate copy decision. |
-| D3 | The kicker reads **Sami Belina · Applied Research & Innovation Strategist**. Recruiting terms move to the byline and stay in the title and description. | The directive wants *who* and *value* within five seconds. Before this change, the name sat below the evidence link on a 390 px screen. |
+| D3 | The kicker reads **Sami Belina · Research & Innovation Strategist**. The byline carries the LinkedIn specialties (*Applied research · Service design · Stakeholder engagement*) and its tagline. *(Updated 19 November: the owner supplied the LinkedIn headline. The site now matches it instead of the directive’s “Applied Research & Innovation Strategist”, so visitors arriving from LinkedIn see the same terms.)* | The directive wants *who* and *value* within five seconds. Before this change, the name sat below the evidence link on a 390 px screen. |
 | D4 | The identity is a capability description, not an employment title. It lives in one constant (`src/content/recruiter.ts`) used by the homepage, and its exact text also appears in the home title and description. | Consistency across homepage, title and metadata. Formal titles stay with each investigation’s role section. |
 | D5 | The first link in the hero is still the Claims evidence link. The Atlas and Observatory are reachable only from the menu and later sections. | Evidence before exploration. |
 | D6 | A **Representative investigations** preview of Claims, trust research and enterprise AI appears only while no investigation is approved. It shows archived titles, each labelled *Previous-edition summary · full case unpublished*. It shows no figures. | The directive suggests a three-case preview, but only approved wording may be published. Archived titles are already public. |
@@ -30,7 +30,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 | Route | Before (released `main`) | After (this branch) |
 | --- | --- | --- |
 | `/` | Kicker: four role terms. Lead about designing ways for people to decide and develop capabilities. Name only in the byline. | Kicker: name and identity. Lead: unassigned inquiry, testing the accepted explanation, synthesis, evidence handed to the people who decide. Byline: role terms. New representative-investigations preview. Purpose line under How I Know. New practice wording. |
-| `/` metadata | Title: *Sami Belina — Research Strategy, Organizational Effectiveness & Service Design* | Title: *Sami Belina — Applied Research & Innovation Strategist*. The description keeps all four role terms. |
+| `/` metadata | Title: *Sami Belina — Research Strategy, Organizational Effectiveness & Service Design* | Title: *Sami Belina — Research & Innovation Strategist*. The description uses the LinkedIn specialties and tagline. |
 | `/practice/` | Earlier move definitions | Clarified definitions. Loop unchanged. |
 | `/patterns/` | Three distinctions | Seven, each with question and qualified disclosure |
 | `/investigations/` | Released empty state with six summaries | Unchanged in this commit |
@@ -38,10 +38,10 @@ The directive also calls for a reusable investigation page. The released evidenc
 
 ## Proposed exact copy (for owner approval)
 
-- **Kicker:** Sami Belina · Applied Research & Innovation Strategist
+- **Kicker:** Sami Belina · Research & Innovation Strategist
 - **H1 (unchanged):** I turn gaps in understanding into evidence leaders can act on.
 - **Lead:** I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.
-- **Byline:** Research strategy · Organizational effectiveness · Service design · Innovation. An evolving portfolio and field journal.
+- **Byline:** Applied research · Service design · Stakeholder engagement / Turning evidence into understanding, and understanding into new possibilities.
 - **Representative investigations:**
   - Heading: *Three questions, three kinds of evidence*.
   - Boundary: *Each account separates what I initiated and contributed from the decisions other people owned. These link to case summaries from the previous edition; the full investigations are not yet published.*
@@ -49,7 +49,8 @@ The directive also calls for a reusable investigation page. The released evidenc
 - **Test:** Test whether the assumptions, measures, and explanations in use are adequate to the outcome they claim to explain.
 - **Show:** Make the reasoning, evidence, and limitations inspectable: what was observed, inferred, disputed, and still unknown.
 - **Enable:** Develop conditions in which other people can use that understanding to decide, adapt, and ask new questions.
-- **Home description:** Sami Belina, applied research and innovation strategist, turns gaps in understanding into evidence leaders can act on: research strategy, organizational effectiveness, service design and innovation. Test. Show. Enable.
+- **Home description:** Sami Belina, research and innovation strategist: applied research, service design and stakeholder engagement. Turning evidence into understanding, and understanding into new possibilities.
+- **Source of the identity, specialties and tagline:** the owner’s LinkedIn headline, *“Research & Innovation Strategist | Applied Research, Service Design & Stakeholder Engagement | Turning Evidence Into Understanding, and Understanding Into New Possibilities.”*
 
 **Wording to confirm.** *“sometimes starting from a question no one had assigned”* rests on Claims, where Sami began unassigned (evidence rules, 30 October). The owner should confirm that “often” is fair across the body of work, or change it to “sometimes”.
 
@@ -113,7 +114,7 @@ Not established: real screen readers, physical devices, native zoom, or visitor 
 ## Approvals required before release
 
 1. The exact homepage copy above, including “often”.
-2. The identity *Applied Research & Innovation Strategist* in the title and metadata.
+2. The identity *Research & Innovation Strategist* (matching LinkedIn) in the kicker, title and metadata. The earlier role terms *research strategy* and *organizational effectiveness* no longer appear on the homepage. Restore them if recruiters search for them.
 3. The seven Connections distinctions and their evidence-status labels.
 4. The Practice definitions.
 5. The representative preview linking archived summaries, given the vendor-naming conflict.

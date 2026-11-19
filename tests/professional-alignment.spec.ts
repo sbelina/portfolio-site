@@ -2,19 +2,23 @@ import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import archive from '../content/build-archive.json' with { type: 'json' }
 import { homeTitle, homeDescription } from '../scripts/seo'
-import { professionalIdentity, recruiterContact } from '../src/content/recruiter'
+import { practiceAreas, professionalIdentity, recruiterContact, tagline } from '../src/content/recruiter'
 import { representativeSummaries } from '../src/content/primary-evidence'
 
 // 19 November professional alignment (docs/codex/NOV-19-PROFESSIONAL-ALIGNMENT.md).
 const origin = 'http://127.0.0.1:4175'
 
 test('identity is consistent across the homepage, title and description', async () => {
-  expect(professionalIdentity).toBe('Applied Research & Innovation Strategist')
+  // Matches the LinkedIn headline: identity, three specialties and the tagline.
+  expect(professionalIdentity).toBe('Research & Innovation Strategist')
+  expect(practiceAreas).toEqual(['Applied research', 'Service design', 'Stakeholder engagement'])
   expect(homeTitle).toBe(`Sami Belina — ${professionalIdentity}`)
-  expect(homeDescription.toLowerCase()).toContain('applied research and innovation strategist')
-  for (const term of ['research strategy', 'organizational effectiveness', 'service design', 'innovation']) expect(homeDescription).toContain(term)
+  expect(homeDescription.toLowerCase()).toContain('research and innovation strategist')
+  for (const term of practiceAreas) expect(homeDescription).toContain(term.toLowerCase())
+  expect(homeDescription).toContain(tagline)
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain(`<title>${homeTitle.replaceAll('&', '&amp;')}</title>`)
+  expect(home).toContain(tagline)
 })
 
 test('the first screen names Sami, the capability, the H1 and the evidence path', async ({ browser }) => {

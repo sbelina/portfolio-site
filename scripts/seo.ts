@@ -2,8 +2,8 @@ import { publicPath, publicBase } from '../src/public-path'
 /** Build-only metadata for the same public documents visitors can read. */
 export const siteOrigin = 'https://producingcuriosity.com'
 export const siteName = 'Producing Curiosity'
-export const homeTitle = 'Sami Belina — Applied Research & Innovation Strategist'
-export const homeDescription = 'Sami Belina, applied research and innovation strategist, turns gaps in understanding into evidence leaders can act on: research strategy, organizational effectiveness, service design and innovation. Test. Show. Enable.'
+export const homeTitle = 'Sami Belina — Research & Innovation Strategist'
+export const homeDescription = 'Sami Belina, research and innovation strategist: applied research, service design and stakeholder engagement. Turning evidence into understanding, and understanding into new possibilities.'
 const imageAlt = 'Producing Curiosity by Sami Belina. Applied human systems research and strategy. Test. Show. Enable.'
 export const escapeAttribute = (text: string) => text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
