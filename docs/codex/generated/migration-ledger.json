@@ -211,6 +211,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-representative-title",
+      "destination": "/#pc-representative-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-practice-title",
       "destination": "/#pc-practice-title",
       "source": "new reading gateway/bootstrap",

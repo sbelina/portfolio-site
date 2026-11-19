@@ -195,3 +195,15 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-observatory-index h2 a { display: inline-flex; min-height: 44px; align-items: center; }
 .pc-observatory-index p:not(.pc-kicker) { max-width: 46ch; }
 @media (max-width: 760px) { .pc-observatory-index { grid-template-columns: minmax(0,1fr); } }
+
+/* Professional identity and representative investigations (19 November). */
+.pc-identity-name { color: var(--ink); }
+.pc-representative-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; }
+.pc-representative-list li { border-top: 1px solid var(--line); padding-top: 1rem; min-width: 0; }
+.pc-representative-list a { display: inline-block; min-height: 44px; padding-block: .25rem; font-size: 1.15rem; line-height: 1.4; overflow-wrap: anywhere; }
+.pc-representative-status { color: var(--muted); font-size: .85rem; margin: .25rem 0 0; }
+.pc-purpose { max-width: 65ch; }
+@media (max-width: 760px) { .pc-representative-list { grid-template-columns: minmax(0,1fr); } }
+.pc-distinction-detail { margin: .75rem 0 0; }
+.pc-distinction-detail dt { font-weight: 600; margin-top: .6rem; }
+.pc-distinction-detail dd { margin: .15rem 0 0; }

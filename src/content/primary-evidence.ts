@@ -21,6 +21,10 @@ export const previousEditionSummaries = [
   { anchor: 'accessibility-ai', label: 'Accessibility in AI-assisted development', title: 'A person noticed a question the checks did not settle.' },
 ] as const
 
+/** The homepage preview: Claims, trust research and enterprise AI (owner priority, 19 November). */
+export const representativeSummaries = (['claims-operations', 'brand-research', 'enterprise-ai'] as const)
+  .map(anchor => previousEditionSummaries.find(item => item.anchor === anchor)!)
+
 /** Callers pass the archive's review path (content/build-archive.json) so this module stays JSON-free for tests. */
 export const previousEditionHref = (archivePath: string, anchor: string) => `${archivePath}#${anchor}`
 
