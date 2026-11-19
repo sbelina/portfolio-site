@@ -91,7 +91,9 @@ Run locally on Node 22 with `npm ci`:
 | Merge of `main` (`b247b7b`) | build passed (85 files audited); `npm test` 752 passed, 0 failed, 11 skipped |
 | This change | `tests/professional-alignment.spec.ts` (7 checks) with the evidence-first, SEO, design-system and build-archive specs: 111 passed in Chromium, WebKit and Firefox |
 | Full suite on `1de801f` (before review fixes) | 773 passed, 0 failed, 11 skipped |
-| Review fixes | the three affected specs: 72 passed in Chromium, WebKit and Firefox. A full rerun is recorded in the closing commit |
+| Review fixes | the three affected specs: 72 passed in Chromium, WebKit and Firefox |
+| Final head (`7a7ac5f`) | `npm test` 773 passed, 0 failed, 11 skipped; `check:deploy` passed; `test:atlas` 22 passed |
+| Publication safety | No sustainability figures, candidate marker or review-shell marker in `dist/`. The legacy app bundle still contains the salvage-related role wording from `src/data.ts`, as the live site already does (known issue above). |
 
 The five-second test was run as an **automated proxy**, not with people. First-screen positions with JavaScript off, as the bottom edge of each element:
 
