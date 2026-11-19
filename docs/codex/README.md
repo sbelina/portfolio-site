@@ -10,6 +10,8 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 ## Current direction — 6 November 2026
 
+Professional alignment, 19 November (review branch): [decision record, route map, proposed copy and publication queue](NOV-19-PROFESSIONAL-ALIGNMENT.md).
+
 Direction in development, 16 November: [evidence, inquiry and learning audit and Phase 1 record](NOV-16-DIRECTION-AUDIT.md), with the [publication ledger](PUBLICATION-LEDGER.md), [learning specification](LEARNING-FACILITATION-SPEC.md) and [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md). Branch work only; nothing is published.
 
 Current approved synthetic build, 16 November: [Je ne sais qu’a release scope/status](NOV-16-INQUIRY-RELEASE.md) and [fragment, pairing and local-authoring contracts](INQUIRY-SPACE.md). Atlas is already live; real cases and the later visual/SWIFT proposal remain separate.

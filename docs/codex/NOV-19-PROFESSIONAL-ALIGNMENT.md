@@ -1,0 +1,106 @@
+# Evidence-first professional alignment — 19 November 2026
+
+**Branch:** `claude/jolly-turing-noyo4q` (draft PR #17). **Status:** review only. This is not merged or deployed, and no case content is approved.
+
+## Authority and scope
+
+The owner’s 19 November directive asks the public site to show Sami’s professional value quickly, give a direct path to evidence, and state a longer-term purpose without presenting it as a result. It authorizes reversible work on a review branch. It does not authorize publishing private evidence, approving manuscripts, merging, deploying, or adding infrastructure.
+
+The directive also calls for a reusable investigation page. The released evidence-first work already provides it (`InvestigationNarrative`, brief, figures, *What I didn’t own*, *How this was measured*), so this branch adds no new template. See the publication queue below.
+
+## Decisions
+
+| # | Decision | Reason |
+| --- | --- | --- |
+| D1 | Merged `main` first (`b247b7b`). The released evidence-first homepage and Investigations page replace this branch’s unreleased Phase 1 versions. | Work from the current released state. Phase 1 was never published. |
+| D2 | The H1 is unchanged: *I turn gaps in understanding into evidence leaders can act on.* | The directive keeps it pending a separate copy decision. |
+| D3 | The kicker reads **Sami Belina · Applied Research & Innovation Strategist**. Recruiting terms move to the byline and stay in the title and description. | The directive wants *who* and *value* within five seconds. Before this change, the name sat below the evidence link on a 390 px screen. |
+| D4 | The identity is a capability description, not an employment title. It lives in one constant (`src/content/recruiter.ts`) used by the homepage, and its exact text also appears in the home title and description. | Consistency across homepage, title and metadata. Formal titles stay with each investigation’s role section. |
+| D5 | The first link in the hero is still the Claims evidence link. The Atlas and Observatory are reachable only from the menu and later sections. | Evidence before exploration. |
+| D6 | A **Representative investigations** preview of Claims, trust research and enterprise AI appears only while no investigation is approved. It shows archived titles, each labelled *Previous-edition summary · full case unpublished*. It shows no figures. | The directive suggests a three-case preview, but only approved wording may be published. Archived titles are already public. |
+| D7 | The purpose line goes under How I Know, worded as an intention: *“…not a measured result of it.”* | The directive requires the purpose but forbids presenting it as an outcome. |
+| D8 | Test. Show. Enable. use the directive’s definitions. The six-move loop is unchanged. | Directive §7. |
+| D9 | Connections grows to seven distinctions. Each has a difference, a question, and an optional disclosure for *what connects them*, *evidence status* and *where it stops*. Status is either *conceptual* or *prompted by unpublished investigation material*. No case figures or relationships are asserted. | Directive §8, within the evidence rules. |
+| D10 | The sustainability opportunity is a **private** outline only, delivered to the owner outside Git. This record contains none of its figures. | Its volumes derive from internal operational data that has not had rights review. |
+| D11 | No résumé link: `resumeHref` stays `null`. | No approved public PDF exists. |
+| D12 | The Observatory navigation (owner-confirmed 19 November) and the public Edge Case prototype remain. | Separate, earlier owner decisions. Neither is the homepage’s first action. |
+
+## Route-by-route change map
+
+| Route | Before (released `main`) | After (this branch) |
+| --- | --- | --- |
+| `/` | Kicker: four role terms. Lead about designing ways for people to decide and develop capabilities. Name only in the byline. | Kicker: name and identity. Lead: unassigned inquiry, testing the accepted explanation, synthesis, evidence handed to the people who decide. Byline: role terms. New representative-investigations preview. Purpose line under How I Know. New practice wording. |
+| `/` metadata | Title: *Sami Belina — Research Strategy, Organizational Effectiveness & Service Design* | Title: *Sami Belina — Applied Research & Innovation Strategist*. The description keeps all four role terms. |
+| `/practice/` | Earlier move definitions | Clarified definitions. Loop unchanged. |
+| `/patterns/` | Three distinctions | Seven, each with question and qualified disclosure |
+| `/investigations/` | Released empty state with six summaries | Unchanged in this commit |
+| `/lab/…`, Atlas, Je ne sais qu’a, Edge Case | — | Unchanged in this commit |
+
+## Proposed exact copy (for owner approval)
+
+- **Kicker:** Sami Belina · Applied Research & Innovation Strategist
+- **H1 (unchanged):** I turn gaps in understanding into evidence leaders can act on.
+- **Lead:** I investigate the organizational, service, and human-system conditions behind an outcome—often starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.
+- **Byline:** Research strategy · Organizational effectiveness · Service design · Innovation. An evolving portfolio and field journal.
+- **Representative investigations:**
+  - Heading: *Three questions, three kinds of evidence*.
+  - Boundary: *Each account separates what I initiated and contributed from the decisions other people owned. These link to case summaries from the previous edition; the full investigations are not yet published.*
+- **Purpose:** The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.
+- **Test:** Test whether the assumptions, measures, and explanations in use are adequate to the outcome they claim to explain.
+- **Show:** Make the reasoning, evidence, and limitations inspectable: what was observed, inferred, disputed, and still unknown.
+- **Enable:** Develop conditions in which other people can use that understanding to decide, adapt, and ask new questions.
+- **Home description:** Sami Belina, applied research and innovation strategist, turns gaps in understanding into evidence leaders can act on: research strategy, organizational effectiveness, service design and innovation. Test. Show. Enable.
+
+**Wording to confirm.** *“often starting from a question no one had assigned”* rests on Claims, where Sami began unassigned (evidence rules, 30 October). The owner should confirm that “often” is fair across the body of work, or change it to “sometimes”.
+
+## Investigation publication queue
+
+The candidate stays private until it passes the authenticated exact-revision approval.
+
+| # | Investigation | Current state | Next step |
+| --- | --- | --- | --- |
+| 1 | Claims operations | Typed candidate exists and is previewable locally (`npm run build:candidate`). The checklist in [the candidate](review-candidates/claims-operations-publication-candidate.md) §C is open. | Owner approves the exact wording; private sources attached; resource scopes stated separately; salvage-vendor naming conflict decided; authenticated approval and trusted release loader. |
+| 2 | Agreement Is Not Trust | [Review candidate](review-candidates/brand-research.md) only | Instrument wording, vendor attribution, reach source (study reach, not outcome); detractor proposal labelled as not adopted. |
+| 3 | Enterprise AI | [Review candidate](review-candidates/enterprise-ai.md) only | Separate synthesis (38 → 8), program structure, leadership and recommendations; no impact claim from counts. |
+| 4 | Telematics | [Review candidate](review-candidates/telematics.md) only; not in the previous edition’s summaries | Reconcile the five-participant recovery account with the six-session SUS/NPS summary; no retention claim. |
+| 5 | Vote Huntsville (civic) | [Review candidate](review-candidates/civic-service.md) only | Reach figures need their own provenance; no turnout effect. |
+| 6 | AI accessibility | [Review candidate](review-candidates/accessibility-ai.md) only | Keep the restored-code test separate from the human simulation review; the archived repository is not adoption. |
+
+The sustainability opportunity is a private outline (D10). It is not in the queue until its framing and rights are decided.
+
+## Known issue carried forward
+
+The homepage evidence link and the new preview both point at the archived Claims summary. That summary names the salvage vendor, which the owner asked not to name. The archive bytes cannot change; the decision is open in the Claims checklist.
+
+## Verification
+
+Run locally on Node 22 with `npm ci`:
+
+| Check | Result |
+| --- | --- |
+| Merge of `main` (`b247b7b`) | build passed (85 files audited); `npm test` 752 passed, 0 failed, 11 skipped |
+| This change | `tests/professional-alignment.spec.ts` (7 checks) with the evidence-first, SEO, design-system and build-archive specs: 111 passed in Chromium, WebKit and Firefox |
+| Full suite on the final head | recorded in the closing commit |
+
+The five-second test was run as an **automated proxy**, not with people. At 1440 × 900 and 390 × 844, with JavaScript off, the name, identity, H1 and evidence link are all in the first screen, and the hero’s first link goes to evidence. Whether a recruiter actually recognizes the value in five seconds needs real readers; see the [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md), task A.
+
+Before-and-after screenshots at 1440, 390 and 320 px were taken outside Git, so private content cannot leak through them. They show only public pages.
+
+Not established: real screen readers, physical devices, native zoom, or visitor comprehension.
+
+## Approvals required before release
+
+1. The exact homepage copy above, including “often”.
+2. The identity *Applied Research & Innovation Strategist* in the title and metadata.
+3. The seven Connections distinctions and their evidence-status labels.
+4. The Practice definitions.
+5. The representative preview linking archived summaries, given the vendor-naming conflict.
+6. The sustainability outline’s direction: keep it private, write a proposal note, or fold it into a case.
+7. A public résumé file, if one is wanted.
+8. Merge and deployment.
+
+## Rollback
+
+- Revert this record’s implementation commit (`1de801f`) to restore the released homepage, Practice and Connections copy.
+- The merge commit `b247b7b` can be reverted with `git revert -m 1 b247b7b`.
+- No production, DNS, credential or data change was made.
