@@ -18,9 +18,9 @@ The directive also calls for a reusable investigation page. The released evidenc
 | D4 | The identity is a capability description, not an employment title. It lives in one constant (`src/content/recruiter.ts`) used by the homepage, and its exact text also appears in the home title and description. | Consistency across homepage, title and metadata. Formal titles stay with each investigation’s role section. |
 | D5 | The first link in the hero is still the Claims evidence link. The Atlas and Observatory are reachable only from the menu and later sections. | Evidence before exploration. |
 | D6 | A **Representative investigations** preview of Claims, trust research and enterprise AI appears only while no investigation is approved. It shows archived titles, each labelled *Previous-edition summary · full case unpublished*. It shows no figures. | The directive suggests a three-case preview, but only approved wording may be published. Archived titles are already public. |
-| D7 | The purpose line goes under How I Know, worded as an intention: *“…not a measured result of it.”* | The directive requires the purpose but forbids presenting it as an outcome. |
+| D7 | The purpose line goes under How I Know, worded as an intention: *“…not a measured result of it.”* | The directive requires the purpose but forbids presenting it as an outcome. **This supersedes** the NOV-16 evidence-first row that kept the purpose in the record only, and NOV-16’s decision to leave Practice and Connections unchanged (D8, D9). |
 | D8 | Test. Show. Enable. use the directive’s definitions. The six-move loop is unchanged. | Directive §7. |
-| D9 | Connections grows to seven distinctions. Each has a difference, a question, and an optional disclosure for *what connects them*, *evidence status* and *where it stops*. Status is either *conceptual* or *prompted by unpublished investigation material*. No case figures or relationships are asserted. | Directive §8, within the evidence rules. |
+| D9 | Connections grows to seven distinctions. Each has a difference, a question, and an optional disclosure for *what connects them*, *evidence status* and *where it stops*. Status is either *conceptual*, or *related to a previous-edition case summary (full case unpublished)* for the three distinctions that summaries already used. No case figures, study designs or relationships are asserted. The headings are spoken as “is not”, and each disclosure has a distinct accessible name. | Directive §8, within the evidence rules. |
 | D10 | The sustainability opportunity is a **private** outline only, delivered to the owner outside Git. This record contains none of its figures. | Its volumes derive from internal operational data that has not had rights review. |
 | D11 | No résumé link: `resumeHref` stays `null`. | No approved public PDF exists. |
 | D12 | The Observatory navigation (owner-confirmed 19 November) and the public Edge Case prototype remain. | Separate, earlier owner decisions. Neither is the homepage’s first action. |
@@ -40,7 +40,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 
 - **Kicker:** Sami Belina · Applied Research & Innovation Strategist
 - **H1 (unchanged):** I turn gaps in understanding into evidence leaders can act on.
-- **Lead:** I investigate the organizational, service, and human-system conditions behind an outcome—often starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.
+- **Lead:** I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.
 - **Byline:** Research strategy · Organizational effectiveness · Service design · Innovation. An evolving portfolio and field journal.
 - **Representative investigations:**
   - Heading: *Three questions, three kinds of evidence*.
@@ -51,7 +51,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 - **Enable:** Develop conditions in which other people can use that understanding to decide, adapt, and ask new questions.
 - **Home description:** Sami Belina, applied research and innovation strategist, turns gaps in understanding into evidence leaders can act on: research strategy, organizational effectiveness, service design and innovation. Test. Show. Enable.
 
-**Wording to confirm.** *“often starting from a question no one had assigned”* rests on Claims, where Sami began unassigned (evidence rules, 30 October). The owner should confirm that “often” is fair across the body of work, or change it to “sometimes”.
+**Wording to confirm.** *“sometimes starting from a question no one had assigned”* rests on Claims, where Sami began unassigned (evidence rules, 30 October). The owner should confirm that “often” is fair across the body of work, or change it to “sometimes”.
 
 ## Investigation publication queue
 
@@ -74,15 +74,35 @@ The homepage evidence link and the new preview both point at the archived Claims
 
 ## Verification
 
+**Independent review.** A read-only evidence and accessibility review found no high-severity issues. Changes made in response:
+
+- “often” becomes “sometimes”.
+- *Usability ≠ retention* is now conceptual, with a generic limit, so it no longer hints at an unpublished study’s instruments.
+- Evidence-status labels are corrected: three distinctions relate to previous-edition summaries; the other four are conceptual.
+- Representative links carry their unpublished status as an accessible description.
+- Each disclosure has a distinct name.
+- “≠” is spoken as “is not”.
+- The kicker is tighter on very narrow screens.
+
 Run locally on Node 22 with `npm ci`:
 
 | Check | Result |
 | --- | --- |
 | Merge of `main` (`b247b7b`) | build passed (85 files audited); `npm test` 752 passed, 0 failed, 11 skipped |
 | This change | `tests/professional-alignment.spec.ts` (7 checks) with the evidence-first, SEO, design-system and build-archive specs: 111 passed in Chromium, WebKit and Firefox |
-| Full suite on the final head | recorded in the closing commit |
+| Full suite on `1de801f` (before review fixes) | 773 passed, 0 failed, 11 skipped |
+| Review fixes | the three affected specs: 72 passed in Chromium, WebKit and Firefox. A full rerun is recorded in the closing commit |
 
-The five-second test was run as an **automated proxy**, not with people. At 1440 × 900 and 390 × 844, with JavaScript off, the name, identity, H1 and evidence link are all in the first screen, and the hero’s first link goes to evidence. Whether a recruiter actually recognizes the value in five seconds needs real readers; see the [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md), task A.
+The five-second test was run as an **automated proxy**, not with people. First-screen positions with JavaScript off, as the bottom edge of each element:
+
+| Viewport | Identity | H1 | Evidence link | In first screen |
+| --- | --- | --- | --- | --- |
+| 1440 × 900 | 249 px | 541 px | 801 px | all |
+| 390 × 844 | 320 px | 484 px | 801 px | all |
+| 320 × 740 | 320 px | 484 px | 859 px | identity and H1; the evidence link is about 120 px below the first screen |
+
+The 320 px gap existed on the released site too: the two-row menu takes the top third of the screen. Reordering the hero visually would break reading order, so this is left open (see approvals).
+ At 1440 × 900 and 390 × 844, with JavaScript off, the name, identity, H1 and evidence link are all in the first screen, and the hero’s first link goes to evidence. Whether a recruiter actually recognizes the value in five seconds needs real readers; see the [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md), task A.
 
 Before-and-after screenshots at 1440, 390 and 320 px were taken outside Git, so private content cannot leak through them. They show only public pages.
 
@@ -97,7 +117,8 @@ Not established: real screen readers, physical devices, native zoom, or visitor 
 5. The representative preview linking archived summaries, given the vendor-naming conflict.
 6. The sustainability outline’s direction: keep it private, write a proposal note, or fold it into a case.
 7. A public résumé file, if one is wanted.
-8. Merge and deployment.
+8. Whether to address the 320 px fold, for example by a more compact menu on very narrow screens. That is a navigation change and needs its own test.
+9. Merge and deployment.
 
 ## Rollback
 

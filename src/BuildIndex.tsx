@@ -34,7 +34,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">I turn gaps in understanding into evidence leaders can act on.</h1>
-          <p className="pc-lead">I investigate the organizational, service, and human-system conditions behind an outcome—often starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.</p>
+          <p className="pc-lead">I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.</p>
           <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
           <p className="pc-byline">{practiceAreas.join(' · ')}. An evolving portfolio and field journal.</p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
@@ -50,8 +50,8 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <p className="pc-boundary">Each account separates what I initiated and contributed from the decisions other people owned. These link to case summaries from the previous edition; the full investigations are not yet published.</p>
         <ol className="pc-representative-list">{representativeSummaries.map(item => <li key={item.anchor}>
           <p className="pc-kicker">{item.label}</p>
-          <a href={publicPath(previousEditionHref(archive.reviewPath, item.anchor))}><strong>{item.title}</strong> <span aria-hidden="true">→</span></a>
-          <p className="pc-representative-status">Previous-edition summary · full case unpublished</p>
+          <a href={publicPath(previousEditionHref(archive.reviewPath, item.anchor))} aria-describedby={`pc-status-${item.anchor}`}><strong>{item.title}</strong> <span aria-hidden="true">→</span></a>
+          <p className="pc-representative-status" id={`pc-status-${item.anchor}`}>Previous-edition summary · full case unpublished</p>
         </li>)}</ol>
         <a className="pc-text-link" href={publicPath('/investigations/')}>All investigations and their status <span aria-hidden="true">→</span></a>
       </section> : null}

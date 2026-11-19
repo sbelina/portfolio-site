@@ -207,3 +207,5 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-distinction-detail { margin: .75rem 0 0; }
 .pc-distinction-detail dt { font-weight: 600; margin-top: .6rem; }
 .pc-distinction-detail dd { margin: .15rem 0 0; }
+.pc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (max-width: 360px) { .pc-hero .pc-identity { letter-spacing: .04em; } }

@@ -44,6 +44,7 @@ test('representative investigations are labelled summaries pointing at the froze
   await expect(links).toHaveCount(3)
   expect(await links.evaluateAll(items => items.map(item => item.getAttribute('href')))).toEqual(representativeSummaries.map(item => `${archive.reviewPath}#${item.anchor}`))
   await expect(section.getByText('Previous-edition summary · full case unpublished')).toHaveCount(3)
+  for (const link of await links.all()) await expect(link).toHaveAccessibleDescription('Previous-edition summary · full case unpublished')
   // No figures appear in the preview: only archived titles and status labels.
   expect(await section.innerText()).not.toMatch(/\d+\s*%|\d{2,}\+/)
 })
@@ -78,8 +79,12 @@ test('seven qualified distinctions each state difference, question, connection, 
   try {
     const page = await context.newPage()
     await page.goto(`${origin}/patterns/`)
-    const headings = page.locator('.pc-distinction-list h2')
-    await expect(headings).toHaveText(['Delivered ≠ complete', 'Agreement ≠ trust', 'Automation ≠ judgment', 'Usability ≠ retention', 'Compliance ≠ comprehension', 'Participation ≠ influence', 'Shared language ≠ shared understanding', 'Reuse ≠ demonstrated effectiveness'])
+    const names = ['Delivered is not complete', 'Agreement is not trust', 'Automation is not judgment', 'Usability is not retention', 'Compliance is not comprehension', 'Participation is not influence', 'Shared language is not shared understanding', 'Reuse is not demonstrated effectiveness']
+    for (const name of names) {
+      await expect(page.getByRole('heading', { level: 2, name, exact: true })).toHaveCount(1)
+      await expect(page.locator('summary', { hasText: `for ${name}` })).toHaveCount(1)
+    }
+    await expect(page.locator('.pc-distinction-list h2 [aria-hidden="true"]')).toHaveText(Array(8).fill('≠'))
     for (const section of await page.locator('.pc-distinction-list section').all()) {
       await expect(section.locator('.pc-question')).toHaveCount(1)
       await section.locator('summary').click()

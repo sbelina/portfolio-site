@@ -217,6 +217,24 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-status-claims-operations",
+      "destination": "/#pc-status-claims-operations",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-status-brand-research",
+      "destination": "/#pc-status-brand-research",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-status-enterprise-ai",
+      "destination": "/#pc-status-enterprise-ai",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-practice-title",
       "destination": "/#pc-practice-title",
       "source": "new reading gateway/bootstrap",
