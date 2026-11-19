@@ -57,7 +57,7 @@ Status: **exists** (implemented and live), **refined** (changed in Phase 1), **p
 
 **Visitor journeys.** *Evaluate the work*: home → Investigations → account → practice → contact. *Explore the questions*: home → Related. Not equivalent. → Atlas or its text → Je ne sais qu’a. Neither journey depends on the other, and neither requires the introduction or the map.
 
-**Navigation decision (updated 16 November).** The primary menu stays at five items. **Observatory\*** (`/lab/`) replaces the direct **Atlas of Inquiry\*** link, so that experiments, including Edge Case, share one section rather than one menu slot each. The reasons and rollback are in the [Edge Case record](EDGE-CASE-PROTOTYPE.md#observatory-placement-16-november). About and Learning are not added until they have approved content and the menu change has been tested at 320 px / 200 % text, which the current five links already fill.
+**Navigation decision (updated 16 November).** The primary menu stays at five items. **Observatory\*** (`/lab/`) replaces the direct **Atlas of Inquiry\*** link, so that experiments, including Edge Case, share one section rather than one menu slot each. The reasons and rollback are in the [Edge Case record](EDGE-CASE-PROTOTYPE.md#observatory-placement-16-november). The owner confirmed the structure on 19 November (“observatory fits better than atlas”). Merge and deployment still need separate approval. About and Learning are not added until they have approved content and the menu change has been tested at 320 px / 200 % text, which the current five links already fill.
 
 ## Component inventory
 

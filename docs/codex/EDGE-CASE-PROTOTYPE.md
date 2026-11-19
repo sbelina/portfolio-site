@@ -135,11 +135,28 @@ Both the review and the parent chose option 2.
 - **The game page.** It gains the global menu and a “← Observatory” link. The private play-test artifact build omits both.
 - **Indexing.** `/lab/` and `/lab/edge-case/*` send `noindex, follow`, matching the Atlas. Neither is in the sitemap.
 
-**Before going live.** The trademark check on the name “Edge Case” is still outstanding. Slice 2 still awaits owner review.
+**Owner confirmation, 19 November.** “I think observatory fits better than atlas.” The Observatory hub replacing the direct Atlas menu link is confirmed. This confirms the navigation structure only; it is not approval to merge or deploy.
+
+**Slice 2** still awaits owner review.
+
+## Name screen: “Edge Case” (19 November, preliminary)
+
+This was a web-search screen, not legal advice or a clearance search. The USPTO search system, TTAB documents and the itch.io pages were not opened directly, because this environment’s network blocks them. The findings come from search-result summaries.
+
+| Question | Finding | Risk for a free portfolio prototype |
+| --- | --- | --- |
+| Registered or applied “EDGE CASE” mark | None found. Search results show only other EDGE-formative marks, such as boats, lighting and TYPECASE EDGE. | Low, pending a direct USPTO exact search in Classes 9, 28 and 41 |
+| Edge Games (Tim Langdell) | This company has a long history of asserting “EDGE” against game titles (Mirror’s Edge, Mobigame’s *Edge*). Its core EDGE registrations were cancelled by court order in 2013. In November 2025 the TTAB ordered its EDGE GAMES registration cancelled for nonuse. An EDGE application (serial 86538581) remains under a suspended Mobigame opposition. | Low to moderate nuisance risk. Its position is much weaker, but “EDGE” in a game title has drawn letters before |
+| Same name already in use | Several free itch.io games use the name. Parachor’s **EDGE CASE** (2020, PuzzleScript) is described as a puzzle game “about navigating, linking and altering the game world”. There is also a GMTK Game Jam 2021 *Edge Case*, and Coccolithophor’s *EdgE CasE*, an in-development grid puzzler. | The legal risk looks low because these are unregistered hobby works, but the overlap is real. Searches for the title will find other puzzle games, and Parachor’s is in a close genre |
+| Strength of the name | “Edge case” is an ordinary engineering phrase. That makes it hard to register or enforce, both for us and for others. | Cuts both ways |
+
+**Recommendation.** Keeping the name for a free, noindex portfolio prototype appears low-risk. Before any commercial release, store listing or registration, get a direct USPTO search and attorney clearance. The owner may still prefer a more distinctive title, or a qualifier such as *Edge Case: Arcade_01*, to reduce confusion with the existing puzzle games. That is a naming choice, not a legal requirement found here.
+
+Sources: [TTABlog, Nov 2025](http://thettablog.blogspot.com/2025/11/ttab-orders-cancellation-of-edge-games.html); [Engadget, 2013](https://www.engadget.com/2013-04-19-langdells-edge-trademark-canceled-by-court-order.html); [TTABVUE 91266066](https://ttabvue.uspto.gov/ttabvue/v?pno=91266066); [Parachor’s EDGE CASE](https://parachor.itch.io/edgecase); [Stuffed Wombat’s Edge Case](https://stuffedwombat.itch.io/edge-case); [Coccolithophor’s EdgE CasE](https://coccolithophor.itch.io/edge-case).
 
 ## Next
 
-Slice 2 waits for owner review: levels 011–111 (including *404: Path Not Found*), Deadlock, Phase Slip (needs a timed rotation rule) and Backtrace. Then play-testing with people. Before any public name: a trademark check on "Edge Case". After Slice 1 review: resume the dependency updates and README rewrite.
+Slice 2 waits for owner review: levels 011–111 (including *404: Path Not Found*), Deadlock, Phase Slip (needs a timed rotation rule) and Backtrace. Then play-testing with people. Name: see the 19 November screen above. After Slice 1 review: resume the dependency updates and README rewrite.
 
 ## Rollback
 
