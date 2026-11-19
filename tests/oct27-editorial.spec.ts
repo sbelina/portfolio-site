@@ -13,7 +13,7 @@ test('review candidate keeps legacy identities while removing misleading public 
   expect(html).toContain(thesis)
   expect(html).toContain('I swim upstream toward the problem.')
   const current = await readFile('dist/index.html', 'utf8')
-  expect(current).toContain('I investigate situations where outcomes are visible')
+  expect(current).toContain('I turn gaps in understanding into evidence leaders can act on.')
   expect(current).toContain('Test. Show. Enable.')
   expect(html).not.toContain('18% → 7.6%')
   expect(html).not.toContain('PASS → FAIL')

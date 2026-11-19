@@ -43,16 +43,36 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-inquiry-figure figcaption .pc-kicker { margin-bottom: .6rem; }
 .pc-inquiry-figure figcaption p { font-size: 1.2rem; line-height: 1.5; max-width: 28ch; }
 .pc-inquiry-figure figcaption small { color: var(--muted); font-size: .8rem; }
+/* Interactive emphasis: conceptual only. Static baseline = data-focus="all". */
+.pc-part { transition: opacity .25s ease; }
+.pc-hit { stroke: transparent; stroke-width: 18; fill: none; pointer-events: stroke; }
+.pc-hit--gap { fill: transparent; pointer-events: all; }
+.pc-inquiry-figure[data-enhanced="true"] .pc-part { cursor: pointer; }
+.pc-inquiry-figure[data-focus="outcome"] .pc-part:not(.pc-part--outcome),
+.pc-inquiry-figure[data-focus="explanation"] .pc-part:not(.pc-part--explanation),
+.pc-inquiry-figure[data-focus="gap"] .pc-part:not(.pc-part--gap) { opacity: .25; }
+.pc-inquiry-figure[data-enhanced="true"] .pc-part:hover { opacity: 1; }
+.pc-inquiry-figure[data-focus="outcome"] .pc-observation-line,
+.pc-inquiry-figure[data-focus="explanation"] .pc-question-line { stroke-width: 3.5; }
+.pc-gap-ring { fill: none; stroke: var(--unresolved); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.pc-inquiry-figure[data-focus="gap"] .pc-gap-ring { opacity: 1; animation: pc-gap-pulse 2.4s ease-in-out infinite; }
+@keyframes pc-gap-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+.pc-inquiry-controls { display: flex; flex-wrap: wrap; gap: 0 1.1rem; border: 0; padding: 0; margin: 1.25rem 0 .25rem; min-width: 0; }
+.pc-inquiry-controls legend { padding: 0; margin-bottom: .25rem; font-size: .8rem; color: var(--muted); }
+.pc-inquiry-controls label { display: inline-flex; gap: .45rem; align-items: center; min-height: 44px; cursor: pointer; }
+.pc-inquiry-controls input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); flex-shrink: 0; }
+.pc-inquiry-figure figcaption .pc-inquiry-reading { font-size: 1rem; max-width: 36ch; min-height: 4.8em; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) {
+  .pc-part { transition: none; }
+  .pc-inquiry-figure[data-focus="gap"] .pc-gap-ring { animation: none; }
+}
 .pc-journeys { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border-block: 1px solid var(--line); margin-bottom: 4rem; }
 .pc-journeys a { display: flex; flex-direction: column; gap: .8rem; padding: 2rem 2rem 2rem 0; text-decoration: none; }
 .pc-journeys a + a { border-left: 1px solid var(--line); padding-left: 2rem; }
 .pc-journeys .pc-kicker { margin: 0; }
 .pc-journeys strong { font-size: clamp(1.25rem,2.2vw,1.8rem); font-weight: 550; line-height: 1.35; text-decoration: underline; text-underline-offset: .25em; }
 .pc-journeys a > span:last-child { color: var(--muted); max-width: 40ch; }
-.pc-observatory-links { list-style: none; padding: 0; margin: 1.5rem 0 1.5rem; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; }
-.pc-observatory-links a { display: flex; flex-direction: column; gap: .4rem; min-height: 44px; padding-top: 1rem; border-top: 1px solid var(--line); text-decoration: none; }
-.pc-observatory-links strong { font-weight: 550; text-decoration: underline; text-underline-offset: .25em; overflow-wrap: anywhere; }
-.pc-observatory-links span:not([aria-hidden]) { color: var(--muted); max-width: 34ch; }
+.pc-evidence-boundary { display: block; margin-top: .6rem; font-style: normal; font-size: .9rem; }
 .pc-section { margin-block: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
 .pc-section > p:not(.pc-kicker), .pc-document > p { max-width: 65ch; }
 .pc-section-heading { margin-bottom: 2.5rem; }
@@ -141,7 +161,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
   /* Give enlarged option words the full measure across system-font metrics. */
   .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
-  .pc-journeys, .pc-observatory-links { grid-template-columns: 1fr; }
+  .pc-journeys { grid-template-columns: 1fr; }
   .pc-journeys a + a { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .pc-inquiry-list > div { grid-template-columns: 1fr; gap: .5rem; }
   .pc-contact a + a { margin-left: 0; }
@@ -151,6 +171,16 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(prefers-reduced-motion:reduce) { .pc-site *, .pc-site *::before, .pc-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 @media(forced-colors:active) { .pc-site :is(a,summary,input):focus-visible { outline-color: Highlight; } .pc-state { border-color: CanvasText; } }
 @media print { .pc-header,.pc-footer,.pc-skip { display: none; } .pc-site { background: white; color: black; } .pc-main { width: 100%; } }
+.pc-actions { display: flex; flex-wrap: wrap; gap: 0 2rem; margin-top: 1.5rem; }
+.pc-actions a { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; font-weight: 550; }
+.pc-actions-address { font-weight: 400; color: var(--muted); }
+.pc-brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0 2rem; margin: 1.5rem 0; }
+.pc-brief > div { border-top: 1px solid var(--line); padding-block: 1rem; }
+.pc-brief dt { font-weight: 650; margin-bottom: .4rem; }
+.pc-brief dd { margin: 0; max-width: 40ch; }
+/* Same shape, different gap: case labels on the illustration (decorative; the live text carries the meaning). */
+.pc-case-labels text { font: 600 15px/1 var(--mono, ui-monospace, monospace); fill: currentColor; letter-spacing: .02em; }
+.pc-inquiry-reading strong { font-weight: 650; }
 
 /* Local owner-review shells (fixtures build only). */
 .pc-proposal-banner { border: 2px dashed var(--unresolved); padding: 1rem 1.25rem; margin-bottom: 2rem; max-width: 70ch; }
@@ -158,6 +188,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-proposal-pending { border-left: 3px solid var(--unresolved); padding-left: 1rem; color: var(--muted); }
 .pc-proposal ol, .pc-proposal ul { max-width: 65ch; }
 
+/* Observatory hub (/lab/). */
 .pc-observatory-index { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 2rem 3rem; }
 .pc-observatory-index li { border-top: 1px solid var(--line); padding-top: 1.25rem; min-width: 0; }
 .pc-observatory-index h2 { font-size: clamp(1.4rem, 2.4vw, 2rem); margin: .25rem 0 .75rem; overflow-wrap: anywhere; }

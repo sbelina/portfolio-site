@@ -223,12 +223,6 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-observatory-title",
-      "destination": "/#pc-observatory-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
       "id": "contact",
       "destination": "/#contact",
       "source": "legacy baseline",

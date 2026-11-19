@@ -10,7 +10,7 @@ const reading: HomeReading = JSON.parse(document.getElementById('home-reading')?
 // Fixtures retain the previous home for its regression suite; production uses the new index.
 const page = reading.fixture
   ? React.createElement((await import('./App')).default, { reading })
-  : React.createElement((await import('./BuildIndex')).default)
+  : React.createElement((await import('./BuildIndex')).default, { investigations: reading.entries })
 const application = <React.StrictMode>{page}</React.StrictMode>
 if (root.dataset.prerendered === 'true') ReactDOM.hydrateRoot(root, application)
 else ReactDOM.createRoot(root).render(application)

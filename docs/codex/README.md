@@ -2,6 +2,10 @@ Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and
 
 # Codex context: start here
 
+Released 17 November at the owner's request: [evidence-first homepage and Claims publication candidate](NOV-16-EVIDENCE-FIRST-REVIEW.md). The homepage changes are live; the Claims candidate stays unpublished until the authenticated review process approves its exact wording.
+
+Private tool, 17 November: [text-to-archive Thoughts page and public field notes](THOUGHT-CAPTURE.md). It runs as its own Worker (`producing-curiosity-thoughts`). Only notes the owner marks public appear at `/field-notes/`.
+
 This directory turns the portfolio strategy, design exploration, page architecture, and backend requirements into repository-readable context. The handoff documents describe the target; [implementation status](IMPLEMENTATION-STATUS.md) records the bounded features actually built on this branch.
 
 ## Current direction — 6 November 2026

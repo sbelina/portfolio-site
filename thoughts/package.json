@@ -1,0 +1,9 @@
+{
+  "name": "producing-curiosity-thoughts",
+  "private": true,
+  "type": "module",
+  "description": "Private thought archive Worker. Deployed separately from the public site; see docs/codex/THOUGHT-CAPTURE.md.",
+  "devDependencies": {
+    "wrangler": "4.152.0"
+  }
+}

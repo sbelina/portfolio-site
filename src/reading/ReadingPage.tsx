@@ -7,6 +7,7 @@ import { PublicNavigation } from '../components/PublicNavigation'
 import { inquiryForms, inquiryModes, pairingLevels } from '../inquiry-space/labels'
 import { inquirySpaceTitle } from '../inquiry-space/paths'
 import archive from '../../content/build-archive.json'
+import { previousEditionHref, previousEditionSummaries } from '../content/primary-evidence'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
@@ -146,12 +147,13 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <span aria-current="page">{entry.title}</span>
       </nav>
       <header className="reading-entry-header">
-        <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : ''}</p>
+        <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : page.candidate ? ' · unapproved candidate' : ''}</p>
         <h1 id="reading-title">{entry.title}</h1>
+        {page.candidate ? <p className="reading-candidate-notice" role="note">Owner-review preview. This candidate is not approved or published, and no statement has an attached source yet.</p> : null}
         <p className="reading-summary">{entry.summary}</p>
         {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} /> : null}
         <dl className="reading-metadata">
-          <div><dt>{page.fixture ? 'Fixture revision date' : page.illustrative ? 'Illustration revision date' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
+          <div><dt>{page.fixture ? 'Fixture revision date' : page.illustrative ? 'Illustration revision date' : page.candidate ? 'Candidate drafted' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
           {entry.updatedAt !== entry.createdAt ? <div><dt>Updated</dt><dd><time dateTime={entry.updatedAt ?? undefined}>{dateLabel(entry.updatedAt)}</time></dd></div> : null}
           <div><dt>Revision</dt><dd>{entry.revision}</dd></div>
         </dl>
@@ -185,39 +187,13 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
   )
 }
 
-const accountParts = [
-  ['Orientation', 'The question, the setting, the period and scope, and my actual role.'],
-  ['Initial interpretation', 'What people believed or expected, why that was plausible, and what called it into question.'],
-  ['Investigation', 'Sources, methods, alternative explanations, constraints and the decisions they shaped.'],
-  ['Contribution', 'What I did, what was shared, what, if anything, others adopted, and what remained a proposal.'],
-  ['What followed', 'Any documented uptake, the limits of measurement and attribution, and the next useful question.'],
-] as const
-
-/** An honest empty collection that still gives the reader somewhere to go. */
-function CollectionStatus() {
-  return <div className="reading-empty">
-    <p><strong>No reviewed investigation has been selected for this edition yet.</strong> Full case manuscripts remain subject to source and publication review. A case will appear here only after Sami approves its exact wording, sources, rights and attribution, so nothing on this page stands in for a finding.</p>
-    <section aria-labelledby="collection-structure-title"><h2 id="collection-structure-title">What each investigation will show</h2>
-      <ol className="reading-account-parts">{accountParts.map(([title, text]) => <li key={title}><strong>{title}.</strong> {text}</li>)}</ol>
-    </section>
-    <section aria-labelledby="collection-meanwhile-title"><h2 id="collection-meanwhile-title">Meanwhile</h2>
-      <ul className="reading-meanwhile">
-        <li><a href={publicPath(`${archive.reviewPath}#work`)}>Review the previous edition’s investigation summaries →</a> <span>From the previous reviewed build (4 November 2026). Not re-reviewed for this edition.</span></li>
-        <li><a href={publicPath('/practice/')}>Read the inquiry practice →</a> <span>How the investigations are approached.</span></li>
-        <li><a href={publicPath('/patterns/')}>Explore the distinctions →</a> <span>Where two things are related but not the same.</span></li>
-        <li><a href={publicPath('/#contact')}>Ask about the work directly →</a></li>
-      </ul>
-    </section>
-  </div>
-}
-
-function Collection({ projection, fixture }: { projection: ReadingContext; fixture: boolean }) {
+function Collection({ projection, fixture, candidate = false }: { projection: ReadingContext; fixture: boolean; candidate?: boolean }) {
   const investigations = projection.entries.filter(entry => entry.kind === 'investigation')
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
   return (
     <>
-      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : 'Applied human systems research & strategy'}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <CollectionStatus/>}
+      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : 'Research strategy · Organizational effectiveness · Service design'}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{candidate ? ' · unapproved candidate' : ''}</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <div className="reading-empty"><p>No full investigation has been published in this edition yet. Each case manuscript awaits source, privacy, and publication review; Claims operations is the first in that review.</p><h2 id="previous-summaries">Summaries from the previous edition</h2><p>Each summary states the question, my contribution, and what remains unverified. They are short accounts, not full cases.</p><ul aria-labelledby="previous-summaries">{previousEditionSummaries.map(summary => <li key={summary.anchor}><a href={publicPath(previousEditionHref(archive.reviewPath, summary.anchor))}><strong>{summary.label}</strong>: {summary.title} <span aria-hidden="true">→</span></a></li>)}</ul><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )
@@ -227,7 +203,7 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
   const entry = page.kind === 'entry' ? page.entry : undefined
   const current = !page.fixture || !!entry?.inquirySpace
   let content: ReactNode
-  if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} />
+  if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} candidate={page.candidate} />
   else if (entry) content = <EntryView entry={entry} page={page} />
   else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
