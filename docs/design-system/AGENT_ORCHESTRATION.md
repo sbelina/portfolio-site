@@ -32,6 +32,8 @@ The parent Codex session is the **integrator**: it owns sequencing, file integra
 
 **Gate B — Contract.** Integrator produces an implementation proposal with input, output, success criteria, impacted files, test plan, risk, user approval needed. `narrative_editor`, `semantic_cartographer`, and `identity_geometer` are consulted only for the specific changes in their domain.
 
+For expressive interaction work, `creative_technologist` can contribute three distinct concepts before the contract is selected. Its default is ideation, grounded in the actual design system and existing components. A runnable prototype or application edit needs an assigned surface; a concept record alone is not implementation or evidence of visitor benefit.
+
 **Gate C — Build.** One `interface_builder` owns the edit surface. Independent agents may draft tests or scrutinize contracts in parallel but should not edit the same files concurrently. Work in review branch/worktree.
 
 **Gate D — Falsify.** `accessibility_adversary`, `epistemic_auditor`, and `perception_researcher` inspect the result *independently* and report defects, not reassuring generalities. Integrator resolves with smallest reversible fixes.
@@ -44,6 +46,7 @@ The parent Codex session is the **integrator**: it owns sequencing, file integra
 - **narrative_editor × epistemic_auditor:** impact must be legible without inflated causality.
 - **semantic_cartographer × epistemic_auditor:** a relationship must not be smuggled into equivalence or causality.
 - **interface_builder × release_steward:** working is not the same as authorized for production.
+- **creative_technologist × interaction_scientist / accessibility_adversary:** expressive play should invite exploration, preserve a useful reading path and survive keyboard, touch and motion-off use. Agent critique does not establish improved curiosity or comprehension.
 
 ## Special agent: "counterexample pass"
 When a proposed element looks especially compelling, ask the skeptic pool to generate *three plausible failure modes* and *one boring baseline* that serves the same task. For example, compare a 38-to-8 animated cluster to a static annotated grouping table. The prototype survives only if it demonstrates a distinct benefit. This counterexample pass is an operational step, not a new persistent agent.
@@ -75,5 +78,6 @@ Decision needed from owner:
 ## Additional specialist roles
 - **visual_system_architect:** owns type/color/grid/material/motion system research, token prototypes and specimen coherence; advises builder and identity geometer.
 - **privacy_warden:** read-heavy audit of confidential material, source permissions and compiled public artifacts; separate from release stewardship because content privacy needs a specialist challenge.
+- **creative_technologist:** proposes interactive HTML, design-system expression and optional creative coding that invite curiosity. Default mode is ideation; prototypes and integration are bounded assignments. See its [role and handoff contract](CREATIVE-TECHNOLOGIST.md) and [first concept record](CREATIVE-EXPERIMENT-IDEAS.md).
 
 These roles are registered for scoped invocation, not expected to run in every task.
