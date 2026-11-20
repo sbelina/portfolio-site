@@ -9,6 +9,10 @@ export default defineConfig({
   use: { baseURL: 'http://127.0.0.1:4174', trace: 'retain-on-failure' },
   projects: [
     { name: 'chromium', use: { ...devices['Desktop Chrome'], launchOptions: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } : {} } },
+    // Every iPhone browser uses WebKit. Engine specs are browser-independent, so run once.
+    { name: 'webkit', testIgnore: /edge-case-engine|edge-case-records|edge-case-controls|icons\.spec/, use: { ...devices['Desktop Safari'] } },
+    { name: 'mobile-webkit', testMatch: /edge-case\.spec|edge-case-play\.spec/, use: { ...devices['iPhone 13'] } },
+    { name: 'firefox', testIgnore: /edge-case-engine|edge-case-records|edge-case-controls|icons\.spec/, use: { ...devices['Desktop Firefox'] } },
   ],
   webServer: [{
     command: 'npm run build:fixtures && npm run preview:fixtures -- --ip 127.0.0.1 --port 4174',

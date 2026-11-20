@@ -12,6 +12,24 @@
 
 ---
 
+## Revision 2 — 20 November: lead with what changed
+
+The owner directed that every case answer four questions — what was the problem, how did I know, what did I do, what changed — then add one line on what I’d do differently, with caveats in *How I know* at the end. The typed candidate (`content/candidates/claims-operations.ts`, revision 2) and the case page now follow that order. The *At a glance* block opens with **What changed**.
+
+**New owner-reported outcome.** The guides and training have been in use across four offices for more than two years, and the new hires who arrive every quarter learn from them. This is used in the summary, the brief, *What changed*, a figure (“2+ years in use across four offices”) and a statement. Each is labelled owner-reported, and use is not effectiveness.
+
+**Proposed *What I’d do differently*,** for the owner to replace or approve: *“I would agree a definition of an exception with the team, and record a baseline, before the change. Then the effect of moving the checkpoint could have been measured instead of estimated.”*
+
+**Still open.**
+
+- Confirm whether the four-office scope applies to both the guides and the training.
+- Reconcile the earlier “statewide” description of the guide.
+- The remaining checklist in §C still applies.
+
+Drafts for the other investigations, in the same four-question shape: [FOUR-QUESTION-DRAFTS.md](FOUR-QUESTION-DRAFTS.md).
+
+---
+
 ## A. Short version: the smallest approvable unit
 
 Intended as the first thing published if the full case needs more time. About 150 words.

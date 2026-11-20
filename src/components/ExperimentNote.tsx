@@ -27,6 +27,7 @@ export function ExperimentNote({ atlasProof = false, inquirySpace = false }: { a
         <p>An optional Atlas of Inquiry experiment presents six invented investigations through an explicit classification rubric, an approximate spatial layout, explained relationships, and an equivalent text account. Inputs and fitting error are inspectable. Those calculations do not validate the classification or establish improved understanding; reader evaluation remains to be conducted.</p>
         <p><a href={publicPath('/lab/atlas/')}>Explore the Atlas of Inquiry — experimental</a>. The asterisk marks an experiment.</p>
         <p><a href={publicPath(inquirySpacePath)}>{inquirySpaceTitle}* — curiosity before explanation</a> offers three invented fragments and one authored pairing. Its questions remain open; reader insight and comprehension have not been evaluated.</p>
+        <p><a href={publicPath('/lab/edge-case/')}>Edge Case* — a prototype game</a> asks whether play can reward noticing, testing and revising a rule. Its mechanics are specified and covered by automated tests; it has not been tested with players and is not yet playable with a screen reader alone. <a href={publicPath('/lab/')}>The Observatory</a> lists every experiment.</p>
         {atlasProof ? <p>This demonstration keeps semantic proximity, separately explained relationships and editorial reading order distinct. Every case and source passage is invented; none represents a finding from Sami’s investigations.</p> : null}
         {inquirySpace ? <>
           <h2>Curiosity before explanation</h2>

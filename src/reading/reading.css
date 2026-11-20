@@ -165,3 +165,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .checkpoint-static h3 { font-size: 1rem; margin: 0 0 .5rem; }
 .checkpoint-note { margin: 1rem 0 0; font-size: .85rem; color: var(--reading-muted); }
 @media (prefers-reduced-motion: reduce) { .evidence-note summary, .checkpoint * { transition: none !important; } }
+
+/* Four-question case layout (20 November): result first, caveats in How I know. */
+.investigation-glance { border-block: 1px solid var(--reading-line); padding-block: 1rem 1.25rem; margin-block: 1.5rem 2rem; }
+.investigation-glance dl { display: grid; gap: .75rem; margin: 0; }
+.investigation-glance dt { font-weight: 650; }
+.investigation-glance dd { margin: .15rem 0 0; max-width: 65ch; }
+.investigation-glance div:first-child dd { font-size: 1.1rem; }
+.investigation-question > h2, .investigation-how-i-know > h2 { margin-top: 2.5rem; }
+.investigation-how-i-know { border-top: 1px solid var(--reading-line); margin-top: 3rem; }
+.investigation-how-i-know h3 { font-size: 1.05rem; margin: 1.5rem 0 .4rem; }

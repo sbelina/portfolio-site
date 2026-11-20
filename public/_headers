@@ -8,7 +8,13 @@ https://:version.:subdomain.workers.dev/*
 /system/*
   X-Robots-Tag: noindex
 
+/lab/
+  X-Robots-Tag: noindex, follow
+
 /lab/atlas/*
+  X-Robots-Tag: noindex, follow
+
+/lab/edge-case/*
   X-Robots-Tag: noindex, follow
 
 /notes/illustration-folded-margin/*

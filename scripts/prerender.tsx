@@ -16,6 +16,8 @@ import { migrationLedger } from './legacy-adapter'
 import { verifyPublicAssets } from './public-assets'
 import baselineAnchors from '../content/legacy-anchors.json' with { type: 'json' }
 import { prerenderHiddenWork } from './build-experiment'
+import { prerenderEdgeCase } from './build-play'
+import { ProposalPage, proposalPages, type ProposalKind } from '../src/design/ProposalPage'
 import { prerenderAtlas } from './build-atlas'
 import { prerenderInquirySpace } from './build-inquiry-space'
 import { inquirySpacePath } from '../src/inquiry-space/paths'
@@ -60,6 +62,7 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
+await prerenderEdgeCase(output)
 await prerenderAtlas(output)
 const inquiryProjection = fixture ? projection : inquiryIllustrationProjection()
 await prerenderInquirySpace(output, inquiryProjection, fixture)
@@ -85,6 +88,15 @@ for (const [kind, metadata] of Object.entries(foundationPages)) {
   const target = path.join(output, metadata.path.slice(1), 'index.html')
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
+// Owner-review shells (About, Learning) exist only in the local fixtures build.
+const proposalRoutes: string[] = []
+if (fixture) for (const [kind, metadata] of Object.entries(proposalPages)) {
+  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: false }))
+    .replace('<!--foundation-html-->', () => renderToString(<ProposalPage kind={kind as ProposalKind}/>))
+  await mkdir(path.join(output, metadata.path), { recursive: true })
+  await writeFile(path.join(output, metadata.path, 'index.html'), html)
+  proposalRoutes.push(metadata.path)
+}
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
 if (redirects.length) await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {
@@ -96,7 +108,7 @@ for (const asset of verifyPublicAssets(projection, id => {
 await writeFile(path.join(output, 'public-content.json'), JSON.stringify(projection))
 if (preview) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
 const historicalRoutes = await mountBuildArchive(output)
-await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture: preview, ...(candidate ? { candidate: true } : {}), routes: [...routes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
+await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture: preview, ...(candidate ? { candidate: true } : {}), routes: [...routes.map(publicPath), ...proposalRoutes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
 await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title, kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
 const indexableRoutes = preview || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]

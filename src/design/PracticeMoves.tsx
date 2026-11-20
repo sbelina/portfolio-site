@@ -1,9 +1,9 @@
 import React from 'react'
 
 export const practiceMoves = [
-  { title: 'Test', text: 'Question a prevailing explanation; identify plausible alternatives; inspect the evidence.', questions: ['What else could explain this outcome?', 'What evidence would change the explanation?'] },
-  { title: 'Show', text: 'Clarify what was observed, inferred, disputed, and remains unknown.', questions: ['What was observed, and what was inferred?', 'What remains unresolved?'] },
-  { title: 'Enable', text: 'Help affected people and decision-makers use what was learned.', questions: ['Who needs this knowledge?', 'What can they do with it, and what should be checked after a change?'] },
+  { title: 'Test', text: 'Test whether the assumptions, measures, and explanations in use are adequate to the outcome they claim to explain.', questions: ['What else could explain this outcome?', 'What evidence would change the explanation?'] },
+  { title: 'Show', text: 'Make the reasoning, evidence, and limitations inspectable: what was observed, inferred, disputed, and still unknown.', questions: ['What was observed, and what was inferred?', 'What remains unresolved?'] },
+  { title: 'Enable', text: 'Develop conditions in which other people can use that understanding to decide, adapt, and ask new questions.', questions: ['Who needs this knowledge?', 'What can they do with it, and what should be checked after a change?'] },
 ] as const
 
 /** All three moves are readable at once; these are not interaction gates. */

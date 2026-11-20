@@ -57,7 +57,7 @@ test('narrative renders literal text safely and production contains no synthetic
   const output=await readFile('dist/public-content.json','utf8');expect(JSON.parse(output).entries).toEqual([])
   expect(await readFile('dist/index.html','utf8')).not.toMatch(/\bSam\b|18% → 7.6%|Investigate\. Translate\. Implement\./)
 })
-test('static reading, conceptual comparisons and inquiry disclosures work at narrow width',async({browser,baseURL})=>{
+test('static reading, conceptual comparisons and inquiry disclosures work at narrow width',async({browser,baseURL,browserName})=>{
   const context=await browser.newContext({baseURL,javaScriptEnabled:false,viewport:{width:320,height:740},reducedMotion:'reduce'})
   try{const page=await context.newPage();await page.goto('/#practice')
     const trigger=page.getByText('Inspect an illustrative model revision',{exact:true});await trigger.focus();await page.keyboard.press('Enter')
@@ -68,7 +68,8 @@ test('static reading, conceptual comparisons and inquiry disclosures work at nar
     await expect(source.locator('..')).toHaveAttribute('open','')
     await page.evaluate(()=>{document.documentElement.style.fontSize='200%'})
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true)
-    await page.screenshot({path:'/tmp/oct30-investigation-mobile.png',fullPage:true})
+    // Debug capture only; WebKit cannot capture pages taller than 32767px.
+    if(browserName==='chromium')await page.screenshot({path:'/tmp/oct30-investigation-mobile.png',fullPage:true})
   }finally{await context.close()}
 })
 test('new connections and method support touch and have no automated accessibility violations',async({browser,baseURL})=>{

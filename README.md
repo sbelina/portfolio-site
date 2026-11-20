@@ -1,106 +1,73 @@
 # Producing Curiosity
 
-React, TypeScript and Vite on the existing Cloudflare Worker. The current review edition adopts **Test. Show. Enable.**, applied human systems research and strategy, and paper/ink/orange presentation. See [design-system adoption](docs/design-system/ADOPTION.md), [verification](docs/design-system/VERIFICATION.md), and [deployment](DEPLOY.md).
+Sami Belina's applied human systems research and strategy portfolio and field journal. It is live at [producingcuriosity.com](https://producingcuriosity.com/).
 
-The build prerenders the new homepage, Practice, conceptual Connections overview, design specimen, illustrative hidden-work experiment and a truthfully empty investigation collection. The prior portfolio remains in its frozen archive with a footer review link. Reading/poetry/manuscript fixtures remain local-only; the authenticated D1 writing trial is a separate loopback-only Worker. Hosted CMS integration and publication of full new case manuscripts remain incomplete. Final asterisk artwork and candidate font files/licenses are pending; current marks and fonts are explicitly provisional.
+> I investigate situations where outcomes are visible, but the explanations behind them remain unclear.
 
-The sections below preserve original v0.5 baseline notes. The current first-visit intro requires one action per step, three total, then a separate **Dive in** action. Returning visitors use Replay introduction near the homepage statement; skip, direct links, reduced motion and no-JavaScript reading remain available. The archived experience retains its historical three-action/automatic-dive behavior. See [intro states](docs/INTRO-STATES.md) and [the 9 November release record](docs/codex/NOV-09-INTRO-RELEASE.md).
+- **Test. Show. Enable.** is the professional practice.
+- **Related. Not equivalent.** is the intellectual signature.
+- **How I Know** is the evidence commitment. Each claim on the site separates what was observed, interpreted, recommended, implemented and measured.
 
-## Codex development context
+## What is here
 
-Start with [AGENTS.md](AGENTS.md) and the [Codex context index](docs/codex/README.md). The handoff includes the product direction, full researched IA/backend brief, implementation work packages, evidence rules, open decisions, and a [copy-ready first task](docs/codex/START-CODEX.md).
+| Route | What it is |
+| --- | --- |
+| `/` | Homepage and statement, with the first-visit introduction: three authored steps, then a separate **Dive in**. See [intro states](docs/INTRO-STATES.md). |
+| `/practice/` | Test. Show. Enable., explained. |
+| `/patterns/` | Connections: **Related. Not equivalent.**, as conceptual distinctions. |
+| `/lab/` | Observatory\*: a hub for the experiments below. Their contents are invented or illustrative; `noindex`. |
+| `/lab/atlas/`, `/lab/atlas/text/` | Atlas of Inquiry\*: a semantic layout of six invented investigations, with a complete text account. |
+| `/lab/atlas/je-ne-sais-qua/` | Je ne sais qu’a: an editorial space with invented fragments. |
+| `/lab/edge-case/` | Edge Case\*: an original prototype puzzle game ([record](docs/codex/EDGE-CASE-PROTOTYPE.md), [mechanics spec](tests/EDGE-CASE-MECHANICS.md)). |
+| `/experiments/reveal-hidden-work/` | Illustrative hidden-work experiment. |
+| `/system/` | Design-system specimen (`noindex`). |
+| `/investigations/` | Investigation collection. It is truthfully empty until case manuscripts receive source, rights and exact-content approval. |
+| `/builds/2026-11-04-418efb7/` | The previous edition as a frozen, `noindex` archive. Its bytes are immutable. |
 
-These documents describe proposed multi-page architecture and an expandable private authoring/publishing workflow. They do not mean a router, CMS, database, or publishing backend is already installed. Preserve the distinction between current implementation and target behavior.
+These are still pending:
 
-## Original v0.5 changes
+- Final asterisk artwork. The typographic asterisk is a placeholder.
+- Verified font files and licences.
+- A hosted publishing workflow.
+- Publication of full case manuscripts.
 
-- Deployment-safe repository root with `.gitignore` and Node 22 pinning
-- Exact package versions instead of `latest` dependency ranges
-- Public favicon, web manifest, robots file, sitemap, and social-sharing metadata
-- 1200×630 social-preview asset using the portfolio visual system
-- Local-only unpublished research assets removed from the handoff and ignored if reintroduced
-- Coral pressure-point token lifted slightly to `#F39185` for stronger contrast on dark panels while retaining the semantic palette
-- Browser-first `DEPLOY.md` instructions for GitHub and Cloudflare Pages
+The presentation follows the adopted [design system](docs/design-system/ADOPTION.md): a paper, ink and orange scientific/editorial direction with distinct semantic colours, always paired with labels or shape.
 
-## What this version contains
+## Stack
 
-### Intro
-- First-visit interaction remembered across browser sessions using `localStorage`, with a replay option
-- Delayed **how does one produce curiosity?** opening with the entire phrase as a real button
-- One deliberate action starts three automatic authored beats: attempts, resistance and breakthrough, followed by the transition
-- Directional movement follows desktop clicks/drags, wheel/trackpad, touch-swipe, or keyboard intent
-- Geometry-led temporal echoes inspired by Austin Malerba's Element Mirror work, implemented locally for portability
-- Step 4 **dive in** pauses for 2.2 seconds, then moves automatically through a short expanding passage into the index
-- Reduced-motion behavior, skip control, live-region announcements, and a focusable non-gesture route
-- Footer **Replay introduction** control
+- React 19, TypeScript and Vite 8.
+- Served by a Cloudflare Worker, not Pages.
+- Every public route is prerendered to static HTML, so the site reads without JavaScript.
+- Each build runs a public-artifact audit (`scripts/audit-public.ts`), which fails if private, fixture-only or unpublished material reaches `dist/`.
+- Playwright covers Chromium, desktop Safari (WebKit), Firefox (plus a simulated iPhone for the game specs), including automated accessibility checks. Automated checks do not establish WCAG conformance; manual checks are recorded separately.
 
+Local-only surfaces are never deployed:
 
-### Semantic color grammar
-The deck and site use the same three-color argument. Color is never the only cue; labels, position, and shape carry the same meaning.
-- **Violet / unresolved** — observed but not yet understood; evidence without structure.
-- **Coral / pressure point** — friction, defect, failure, or the moment something has to change.
-- **Teal / what holds** — structure built, evidence that survived, and what remained.
-
-The intro uses violet for the open question, coral for resisted attempts, and teal for breakthrough / dive. Case logic uses violet → coral → teal across observed → diagnosed → structure / what remains. The graph keeps node types shape-based and reserves color for the same epistemic states, especially the core curiosity → evidence → decision → structure → transfer spine.
-
-### Portfolio
-- Dark visual system aligned to the current portfolio deck
-- Six case summaries structured as observed → diagnosed → structure → what remains
-- Current practice framing: upstream problem definition, evidence, decisions, durable structures, transfer
-- Practice / research-direction section incorporating the recurring themes of language, multimodal form, information, and sociotechnical systems
-- Delta Theory shown as an emerging research direction rather than a finished claim
-
-### Discoverable system map
-- Stable authored node graph rather than randomized force layout
-- Three levels: **Work**, **+ thinking**, and **+ archive**
-- Hashtags are navigable concepts, not decoration
-- Cases connect to methods and themes; field notes connect to the same tags; archive fragments reveal earlier versions of recurring questions
-- Suggested entry tags make the graph discoverable without requiring users to infer the interaction
-- Every graph node is a native button
-- Every trace has a text-list equivalent for nonvisual and keyboard browsing
-
-### Field notes + archive
-Curated field notes currently represented:
-- *A Spotlight on The Bends*
-- *The Calculus of Syntax*
-- *Conjunction Conjecture*
-- *AI: A Tool vs. A Toy*
-- *The mundane is evidence.*
-
-The archive preserves earlier research, essays, poetry, and prose fragments without putting them in the primary hiring-manager path.
-
-The older minimum-wage charts remain deliberately **outside this repository handoff** until their figures and sourcing receive a publication-verification pass. `.gitignore` also prevents the local `source-material/not-published/` path from being committed accidentally.
+- **Fixtures build** (`npm run build:fixtures`): reading, poetry and manuscript templates, plus local owner-review shells for About and Learning.
+- **Writing studio** (`npm run studio:*`): an authenticated, loopback-only D1 Worker for private drafting and review.
 
 ## Run
 
+Use Node 22 (see `engines` in `package.json`) and the committed lockfile.
+
 ```bash
 npm ci
-npm run dev
+npm run dev            # development server
+npm run build          # typecheck, build, prerender, public audit
+npm run check:deploy   # wrangler dry run
+npm test               # production build + full Playwright suite
 ```
 
-Production build:
-
-```bash
-npm run build
-```
-
-The generated `dist/` folder can be hosted statically.
-
-## Interaction implementation note
-
-The mirror behavior is original CSS/DOM work inspired by Element Mirror rather than a direct dependency. The semantic DOM remains the interface; visual echoes are `aria-hidden` and non-interactive. This preserves the intended feel — the surface yields in the attempted direction, temporal slices lag behind, the field returns, and the automatic breakthrough beat magnifies before resolving — without tying the prototype to a rendering dependency before the interaction is settled.
-
-## Content strategy
-
-The public path remains professional and evidence-led. The writing is not a separate silo: it becomes another route into the same system. A reader can encounter `#knowledge` in a case, select it, and discover its relationship to a field note such as *The Bends*. Conversely, someone who enters through an essay can trace back to professional work.
-
-The public portfolio preserves its curated homepage. Finite reading templates and an empty investigation collection are integrated; full case studies and field notes enter those routes only after source, rights and exact-content approval.
-
+Browser installation for tests is covered in [DEPLOY.md](DEPLOY.md).
 
 ## Deployment
 
-See `DEPLOY.md` for the existing GitHub → Cloudflare Worker build, preview and release process.
+[DEPLOY.md](DEPLOY.md) and [RELEASE.md](docs/RELEASE.md) describe the GitHub → Cloudflare Worker build, preview and release process. Production releases require explicit owner approval. [AUDIT.md](docs/AUDIT.md) records dated observations, not current production behaviour.
 
-The generated `package-lock.json` is committed. Use Node 22 and `npm ci` for repeatable installs. Run `npm test` for production-build browser and automated accessibility checks; see `DEPLOY.md` for browser installation and preview instructions.
+## Working on this repository
 
-The observed Cloudflare deployment is a Worker, not Pages. See [the audit](docs/AUDIT.md), [intro states](docs/INTRO-STATES.md), [proposed Content Studio and roadmap](docs/CONTENT-ARCHITECTURE.md), and [keyboard research brief](docs/KEYBOARD-RESEARCH.md). Architecture and content migration remain subject to owner approval.
+Start with [AGENTS.md](AGENTS.md) and the [Codex context index](docs/codex/README.md). They hold the product direction, IA/backend brief, implementation plan, [evidence rules](docs/codex/EVIDENCE-RULES.md) and open decisions.
+
+Those documents also propose architecture that is not built. Keep what is implemented separate from what is proposed: the repository has no router, CMS, database-backed public site or publishing backend.
+
+The v0.5 baseline notes this README used to carry remain in git history.

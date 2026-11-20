@@ -113,14 +113,18 @@ test('skip during a Dive cancels its animation and a replay starts at the first 
   for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the limits', 'step 3: recognize patterns']) await page.getByRole('button', { name, exact: true }).click()
   await page.getByRole('button', { name: 'Dive in to the portfolio', exact: true }).click()
   await page.clock.runFor(200)
-  await page.getByRole('button', { name: 'Skip introduction', exact: true }).click()
+  // Skip by keyboard while the Dive is moving: a pointer click waits for the button to stop
+  // moving, which the running animation prevents in WebKit on slower CI machines.
+  await page.getByRole('button', { name: 'Skip introduction', exact: true }).focus()
+  await page.keyboard.press('Enter')
   await page.getByRole('button', { name: 'Replay introduction', exact: true }).click()
   await page.clock.runFor(6000)
   await expect(page.getByRole('region', { name: introduction })).toHaveAttribute('data-intro-phase', 'question')
   await expect(page.getByRole('button', { name: 'Begin exploring the question: how does one produce curiosity?', exact: true })).toBeVisible()
 })
 
-test('enlarged touch readers can pan vertically without accidentally completing an intro step', async ({ browser }) => {
+test('enlarged touch readers can pan vertically without accidentally completing an intro step', async ({ browser, browserName }) => {
+  test.skip(browserName !== 'chromium', 'Raw touch input via CDP is Chromium-only; WebKit touch is covered by the Edge Case touch tests')
   const context = await browser.newContext({ viewport: { width: 320, height: 740 }, hasTouch: true, isMobile: true, reducedMotion: 'reduce' })
   try {
     const page = await context.newPage(); await page.goto(origin + '/')

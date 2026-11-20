@@ -1,0 +1,163 @@
+# Edge Case prototype
+
+Status, 16 November 2026: **public-build prototype on the branch**. The owner asked to add the game to the navigation, so it now builds into production output at `/lab/edge-case/`. It is noindex, outside the sitemap and labelled *Prototype*, and is reached through the Observatory* hub (see *Observatory placement* below). It goes live only when the owner approves merging the draft PR. Earlier status, 11 November: unpublished prototype, Slice 1 complete for owner review. Working title **EDGE CASE**; tagline *Every rule has an exception*. The owner approved development and testing on `claude/jolly-turing-noyo4q`. **Production deployment requires explicit owner approval and has not happened.** The authoritative rules are in [`tests/EDGE-CASE-MECHANICS.md`](../../tests/EDGE-CASE-MECHANICS.md).
+
+## Owner direction (11 November)
+
+- Goal: reward and teach critical thinking through doing and experimenting.
+- The four-pocket revolving + is the central mechanic. Shifts rotate contents clockwise, including movement state.
+- Deterministic conflicts. Controls, accessibility settings and safety information are never misleading. The interface may present incomplete interpretations.
+- Keep the binary jokes, discoveries and the permanent UNKNOWN entry. Hidden achievements reward understanding, never accidental bugs.
+- Level 000 tests whether SHIFT is found unaided, with accessible, progressive hints when stuck.
+- An element that "screenshots" outcomes, plus a log and ranking system.
+- Feel before features: three excellent levels.
+- A mechanics specification alongside the tests separates intended ambiguity from defects.
+- The original channel gate stays in as a discoverable surprise.
+
+## Push-to-turn revision (12 November)
+
+Owner direction: no button to turn doors. Push into a door and it moves, either direction. Precedents, from web search summaries (page fetches were blocked by the session's network policy, so these are not first-hand play):
+
+- **Rodger Dodger** (After Dark Games, 1998): a maze of rotating doors. Per a review, the player's sphere turns them, and so do some enemies. ([MobyGames](https://www.mobygames.com/game/4821/after-dark-games/), [Giant Bomb](https://www.giantbomb.com/after-dark-games/3030-16055/))
+- **Kwirk / Puzzle Boy** (1989–90): turnstiles you push; its arms are thick, occupying grid cells. ([Wikipedia](https://en.wikipedia.org/wiki/Kwirk), [Lexaloffle turnstile notes](https://www.lexaloffle.com/bbs/?tid=36578))
+- **Chip's Challenge 2**: swivel doors that turn when you leave through a closed side; pushed blocks also turn them. ([Bit Busters wiki](https://wiki.bitbusters.club/L-door))
+
+Implemented (spec §4a): a push builds over 8 steps (a ring fills, with an arrowhead for direction). The door then turns the way the push would spin it about its pivot. One arm of each pocket turns it clockwise, the other counter-clockwise. Holding the same push carries you through and out the far side, like a revolving door. Channel gates turn the same way, by pushing across their bars. The Shift button and keys are gone; movement is the only control. Full Circle now counts net rotation.
+
+Proposed next, not implemented (owner decision):
+1. **Tracers that push doors** (Rodger Dodger's enemies turn doors). Doors would become part of the system's pattern, and could be a distinct tracer type, introduced in one level.
+2. **Doorway jam** (Kwirk): a turn is blocked while something stands half in a doorway, instead of being clamped inside.
+3. **Thick doors** (Kwirk) as a later variant, where the arms occupy cells and can push things.
+
+## Full-screen entrance and nested menu (12 November)
+
+Owner choices: the page shows the title and text plus one Enter button. The game fills the window, with true full screen where allowed; iPhone Safari has none for pages. Exit, Escape or Back return to the page with Continue. One menu tree serves the title and Pause, with game-style keyboard navigation and breadcrumbs. Settings are grouped into Controls, Sound, Display and Gameplay. The frame is minimal and layer-aware: hints and discoveries move to their own message rail and no longer cover the arena; menus span below the frame over a veil. Spec §13 (M1–M5). New setting: offer hints when stuck (on by default).
+
+Finding while testing: in true full screen, desktop browsers keep Escape for themselves, so the page never sees the first Escape. Leaving full screen is now treated as that Escape (M2).
+
+## Dark default and layered depth (12 November)
+
+Owner direction: think layers, interactive design, an immersive puzzle experience. Dark mode matching the design system is the default; light is an option in Settings.
+
+- Dark uses the design system's **observatory** surface tokens; light uses **paper**. Switch in Settings › Display; the choice persists. The canvas, menus, focus and feedback all read the same tokens, so semantic colours (coral hazards, teal samples, violet predictions, orange interaction) hold in both themes.
+- Depth: the arena is the lit instrument, with a soft edge, a subtle surrounding glow and a shadow. The frame and controls recede to hairlines. Menus are panels over a veil, and the browser's toolbar colour matches the game while entered.
+- Bolder lines now thicken edges instead of flooding walls with ink, which works in both themes.
+- Found while testing in WebKit: Escape in true full screen is swallowed, the standard and prefixed change events both fire, and after a reload made in full screen the enter notification can be missing. Exit handling now treats each full-screen exit once (spec M2). An Escape pressed while full screen is still being entered (about 0.4 s) is a known limit.
+
+## Touch, tap, pinch and optional samples (12 November)
+
+Owner choices: samples are optional but counted; a pad appears wherever the thumb touches; a tap inspects; a pinch reveals the system, like Eagle Vision, so routes are not visible otherwise.
+
+- **Leaving (S3, S4):** the exit always lets you leave. Enough samples is *complete*; fewer is *partial*. That is logged as "left early · partial", never ranked, and does not mark the level complete. The exit circle closes when complete is available. Exception now means complete with samples left over.
+- **Floating pad (I4):** default on touch screens. Hold (150 ms) or drag anywhere on the arena and a pad appears under the thumb; it then works like the joystick. Fixed pad and joystick remain options. Version-1 saved settings that chose the fixed pad move to the device default once.
+- **Inspect (V3):** a quick tap or a click describes what is under it in the message rail and highlights it. It never moves you.
+- **Reveal (V1, V2):** routes are hidden in play. Pinching in (or holding Space) dims the world and shows every tracer's whole route, each junction's turn directions, gate axes, field timing and the exit's collected/required badge. Time keeps running. "Always show the system's paths" in Settings › Display is the accessibility alternative.
+- REVEAL and INSPECT are known operations (index `05 / 09`). Two-finger gestures never zoom the page while the game is entered.
+
+## Slowed Reveal and insufficient samples (13 November)
+
+Owner direction: Reveal slows the timer, so elements move at a fraction of their speed, like zooming out to a map's legend. Partial runs should be noted in a clever way that shows the sample wasn't fully collected.
+
+- **Reveal at ¼ speed (V2):** while revealed, the whole simulation, you included, runs at 0.25×. The arena eases back to 94% with a violet edge (no animation under reduced motion). The fixed step is unchanged, so results stay deterministic.
+- **Insufficient sample (L5):** a partial run is an *insufficient sample, n = collected/required*. A sample diamond is filled in proportion on the end card, in the field log, on the snapshot, and in the standings, where a level with no complete run shows its best n instead of a time. Never ranked.
+- **Message rail order (M5):** responses to what you just did (Inspect, then Reveal) now outrank notices the game raises (discovery, hint, intro); every message is still announced.
+- **Inspect (V3):** a tap on a junction's pivot means the junction, even where the pivot touches a tile holding the exit (found on the emulated iPhone).
+
+## Private play-test link
+
+A private claude.ai artifact, readable only by the owner: https://claude.ai/artifact/CNcjxxVTob4dmStG68FQn4. It is built by `scripts/build-edge-case-artifact.tsx` into `dist-artifact/` (git-ignored) as one self-contained page. It declares only the `downloads` capability, for saving snapshots. This is not the website and not a deployment. Progress and logs live in the viewer's own browser storage for that page.
+
+## What Slice 1 contains
+
+| Area | Implementation |
+| --- | --- |
+| Levels | 000 False Start, 001 Expected Behavior, 010 Shift Happens; two or three tested ways through each |
+| SHIFT | Revolving + on a grid corner. Members chosen by centre point. Player offset and velocity rotate 90° clockwise, then are clamped inside the arrival pocket. Tracers snap and turn right. Samples move. The exit, track, fields and gates stay (spec §4) |
+| PIVOT | The original channel gate, unannounced, in 010 (spec §5) |
+| Conflicts | Fixed order of operations (§2); hazards after shifts (H3); same-place outcomes (H4); target ties go to gates (A1) |
+| System index | Known operations 03/07 with clues; ten discoveries in binary (`0000 / 1010`); an uncounted, permanent UNKNOWN entry |
+| Hints | 000: at 15, 30 and 45 s of play without a shift (pauses excluded): observation → structure → named control. 001 and 010 have two gentler hints. All persist on screen, are announced, and can be requested from Pause. Counted in run records (§11) |
+| Touch controls | Settings → Movement control: **Pad** (default, four labelled buttons) or **Joystick that follows your finger**. The joystick is floating: the base appears where the finger lands and trails a finger that passes the rim. Direction snaps to eight ways; distance sets speed. Settings → **Control sides**: movement left with Shift right, or mirrored. Keyboard works with both (spec §12a) |
+| Run records | Every ended attempt is logged with a thumbnail. The snapshot view shows a full field record (route, end point, summary) with Save image; press and hold also works. Field log: personal, local standings (best time, fewest actions, ways found `n / ?`), recent outcomes, rank by time (§12) |
+| Isolation | Built only by `npm run build:fixtures`; absent from `dist/`; production audit rejects the marker and route |
+
+## Browser and mobile foundation
+
+- **Engines:** CI and Playwright now cover Chromium, WebKit (desktop Safari), WebKit on an iPhone 13 viewport (game specs) and Firefox. Browser-independent specs (engine, records, icons) run once, in Chromium.
+- **100vh:** investigated. The current edition's intro already overrides the legacy `100vh` lock with `min-height: 100svh; overflow: visible`. In emulated iPhone WebKit the production intro computes to the small viewport with visible overflow, so nothing is clipped. **Not confirmed for any production surface; no change made.** The raw `100vh` + `overflow: hidden` remains only in the legacy edition, which production serves solely as the immutable archive. The game page uses `100dvh` with a `100vh` fallback and sizes its arena from `visualViewport`.
+- **Icons:** temporary `apple-touch-icon.png` (180), `icon-192.png` and `icon-512.png`, rendered by `scripts/render-icons.ts` from the existing typographic placeholder mark. They are full-bleed and opaque (iOS masks corners), with the glyph centred by measured ink. Linked from every page template and listed in the manifest. Replace them when the owner-supplied asterisk is final.
+
+### Engine-specific findings in existing tests
+
+| Test | Result | Handling |
+| --- | --- | --- |
+| Two intro touch tests | Use Chromium-only CDP input | `skip` outside Chromium |
+| Narrow investigation reading | Debug screenshot exceeds WebKit's 32,767 px capture limit | Screenshot is Chromium-only |
+| Legacy hero first-screen; graph text view and no-JS menu at 200% | Legacy heading wraps taller in WebKit/Firefox | `fixme` outside Chromium (first-screen) and in WebKit (others). **Container font fallback, not a browser defect:** Iowan/Palatino are absent, and these engines fall through to the wide DejaVu Serif. Real Apple devices have Iowan. Archive bytes unchanged |
+| Header keyboard-menu modality | Safari leaves links out of the Tab order by default | `skip` in WebKit (browser preference, not a site defect) |
+| Experiment note on `/` | Intermittent in every engine, most often WebKit/Firefox: the note closes or ignores Enter on the **legacy fixture homepage** | `fixme` outside Chromium. **Open defect, needs investigation** (likely the legacy app re-mounting its footer around the intro). Production `/` is the current edition |
+
+## Verification, 11 November 2026 (automated only)
+
+- Engine: 28 tests, each citing spec rule IDs. They cover determinism; structures; every SHIFT rule (rotation of offset and velocity, clamping, centre membership, tracer turning and stranding, hazards after shift, coexisting tracers, prediction updates); target ties; all seven scripted solutions; and every discovery trigger with negative cases.
+- Records: 2 pure tests (methods; standings, ties and rank).
+- Browser (Chromium, desktop WebKit, iPhone WebKit, Firefox): the game page suite (11), plus hints and records (5): unaided start with escalating hints under a fake clock; pause excluded; on-demand hint; a failure logged; snapshot view and PNG save; standings `n / ?`.
+- Controls: 5 pure tests (dead zone, exact axis snapping, magnitude, base trailing, proportional speed), plus browser tests for side swapping with persistence and the joystick driving the player, in all four setups.
+- Icons: 6 tests.
+- Full suite after the controls change: 579 passed, 0 failed, 11 skipped (Chromium, desktop WebKit, iPhone WebKit, Firefox).
+- Full-suite totals, packaging and studio results: see the commit and the owner report for this date.
+
+**Not verified:** real iPhone/Android hardware, Safari's dynamic toolbar, VoiceOver, saving inside the artifact viewer (requires a person to accept the prompt), and anything about fun, comprehension or fairness. Those need people.
+
+## Unresolved design questions for the owner
+
+1. **Hint timing in 000.** 15/30/45 s is a guess. Should hints wait for evidence of being stuck (wall bumps) as well as time?
+2. **Exception's fairness.** Is "the counter says 0/3 while the exit opens at 2" a fair lesson, or should the exit show its requirement on approach?
+3. **Rank by time.** Time is the default rank, yet the game values understanding. Should the primary ranking be ways found, or fewest actions?
+4. **Shared rankings.** Records stay on the device. A shared leaderboard would need a backend, identity and a privacy decision.
+5. **Velocity rotation.** Carrying momentum makes shifts feel physical but can surprise. Keep it, or zero velocity?
+6. **Screen readers.** The game is real-time. A turn-based mode would make it playable with a screen reader alone.
+
+## Observatory placement (16 November)
+
+The owner asked: “Add the edge case into the navigation after determining the best IA structure.” An independent read-only IA review compared three options:
+
+1. a sixth menu link;
+2. an Observatory hub that replaces the Atlas link;
+3. no menu change.
+
+Both the review and the parent chose option 2.
+
+- **Primary menu.** It stays at five links: Investigations, Connections, Practice, **Observatory\***, Contact. The Observatory link goes to the hub at `/lab/` and has the accessible name “Observatory — experimental”.
+- **Current-page marking.** The link uses `aria-current="page"` on the hub itself. It uses `aria-current="true"` on member pages: the Atlas, the Atlas text account, Je ne sais qu’a, Edge Case and Reveal the hidden work. Members are an explicit list, not a URL prefix.
+- **Why a hub.** It scales as experiments are added. It matches the Portfolio / Practice / Observatory framing, and its label is shorter than “Atlas of Inquiry*”, which helps the menu wrap at 320 px. It also avoids a second asterisked menu item.
+- **What it changes.** It replaces the direct Atlas menu link the owner requested on 14 November. That is reversible. Atlas URLs are unchanged, and the Atlas is one activation from the hub and directly linked from the homepage observatory section.
+- **The game page.** It gains the global menu and a “← Observatory” link. The private play-test artifact build omits both.
+- **Indexing.** `/lab/` and `/lab/edge-case/*` send `noindex, follow`, matching the Atlas. Neither is in the sitemap.
+
+**Owner confirmation, 19 November.** “I think observatory fits better than atlas.” The Observatory hub replacing the direct Atlas menu link is confirmed. This confirms the navigation structure only; it is not approval to merge or deploy.
+
+**Slice 2** still awaits owner review.
+
+## Name screen: “Edge Case” (19 November, preliminary)
+
+This was a web-search screen, not legal advice or a clearance search. The USPTO search system, TTAB documents and the itch.io pages were not opened directly, because this environment’s network blocks them. The findings come from search-result summaries.
+
+| Question | Finding | Risk for a free portfolio prototype |
+| --- | --- | --- |
+| Registered or applied “EDGE CASE” mark | None found. Search results show only other EDGE-formative marks, such as boats, lighting and TYPECASE EDGE. | Low, pending a direct USPTO exact search in Classes 9, 28 and 41 |
+| Edge Games (Tim Langdell) | This company has a long history of asserting “EDGE” against game titles (Mirror’s Edge, Mobigame’s *Edge*). Its core EDGE registrations were cancelled by court order in 2013. In November 2025 the TTAB ordered its EDGE GAMES registration cancelled for nonuse. An EDGE application (serial 86538581) remains under a suspended Mobigame opposition. | Low to moderate nuisance risk. Its position is much weaker, but “EDGE” in a game title has drawn letters before |
+| Same name already in use | Several free itch.io games use the name. Parachor’s **EDGE CASE** (2020, PuzzleScript) is described as a puzzle game “about navigating, linking and altering the game world”. There is also a GMTK Game Jam 2021 *Edge Case*, and Coccolithophor’s *EdgE CasE*, an in-development grid puzzler. | The legal risk looks low because these are unregistered hobby works, but the overlap is real. Searches for the title will find other puzzle games, and Parachor’s is in a close genre |
+| Strength of the name | “Edge case” is an ordinary engineering phrase. That makes it hard to register or enforce, both for us and for others. | Cuts both ways |
+
+**Recommendation.** Keeping the name for a free, noindex portfolio prototype appears low-risk. Before any commercial release, store listing or registration, get a direct USPTO search and attorney clearance. The owner may still prefer a more distinctive title, or a qualifier such as *Edge Case: Arcade_01*, to reduce confusion with the existing puzzle games. That is a naming choice, not a legal requirement found here.
+
+Sources: [TTABlog, Nov 2025](http://thettablog.blogspot.com/2025/11/ttab-orders-cancellation-of-edge-games.html); [Engadget, 2013](https://www.engadget.com/2013-04-19-langdells-edge-trademark-canceled-by-court-order.html); [TTABVUE 91266066](https://ttabvue.uspto.gov/ttabvue/v?pno=91266066); [Parachor’s EDGE CASE](https://parachor.itch.io/edgecase); [Stuffed Wombat’s Edge Case](https://stuffedwombat.itch.io/edge-case); [Coccolithophor’s EdgE CasE](https://coccolithophor.itch.io/edge-case).
+
+## Next
+
+Slice 2 waits for owner review: levels 011–111 (including *404: Path Not Found*), Deadlock, Phase Slip (needs a timed rotation rule) and Backtrace. Then play-testing with people. Name: see the 19 November screen above. After Slice 1 review: resume the dependency updates and README rewrite.
+
+## Rollback
+
+Remove `src/play/edge-case/`, `edge-case.html`, `scripts/build-play.tsx`, `scripts/build-edge-case-artifact.tsx`, and the `edge-case*` specs, mechanics spec and bot. Then revert the `vite.config.ts`, `package.json`, `scripts/prerender.tsx`, `scripts/audit-public.ts`, `src/public-routes.ts` and `public/_headers` edits. To withdraw only the public placement while keeping the game local, revert the 16 November navigation commit; the menu returns to the Atlas link. Foundation changes revert independently: Playwright projects and CI browsers; `public/*.png`, the `apple-touch-icon` links, the manifest and `scripts/render-icons.ts`; and test skips.
