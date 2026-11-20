@@ -50,7 +50,7 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
   // 700+ is the owner-approved headline for the guide (18 November): a rounded estimate, never a precise count.
-  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '~6 new hires a quarter', '2+ years in use, several offices'])
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '~6 new hires a quarter', '2+ years in use across four offices'])
   for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
   expect(figures[0].value).toMatch(/^\d+0\+$/) // rounded to tens, with a plus
   for (const figure of figures) {
@@ -79,4 +79,21 @@ test('figures cannot be published without selected evidence, even in an otherwis
     relationships: [], evidence: [], assets: [], aliases: [],
   }
   expect(() => validateCandidateProjection(store, manifest)).toThrow('Figures require selected evidence')
+})
+
+test('a case reads result first: at a glance, the four questions, what I would do differently, then How I know', async () => {
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const React = await import('react')
+  const { InvestigationNarrative, narrativeContents } = await import('../src/reading/InvestigationNarrative')
+  const narrative = claimsCandidate.investigation!
+  const html = renderToStaticMarkup(React.createElement(InvestigationNarrative, { narrative, evidence: [] }))
+  const headings = [...html.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map(match => match[1].replace(/<[^>]+>/g, ''))
+  const order = ['At a glance', 'Figures', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know']
+  expect(headings.filter(heading => order.includes(heading))).toEqual(order)
+  // The glance opens with the result, not the method or the caveats.
+  expect(html.match(/<dl>.*?<dt>(.*?)<\/dt>/)![1]).toBe('What changed')
+  // Caveats sit inside How I know, after What changed.
+  for (const caveat of ['What I didn’t own', 'How this was measured', 'Limitations']) expect(html.indexOf(`<h3>${caveat}</h3>`)).toBeGreaterThan(html.indexOf('>What changed</h2>'))
+  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['At a glance', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
+  expect(narrative.differently).toMatch(/^I would /)
 })

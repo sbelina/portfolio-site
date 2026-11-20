@@ -16,6 +16,8 @@ export const investigationSchema = z.strictObject({
   response: narrativeText.optional(), consequence: narrativeText.optional(), limitations: narrativeText.optional(),
   /** Featured summary for home: tension → my call → result → evidence used. */
   brief: z.strictObject({ tension: narrativeText, call: narrativeText, result: narrativeText, evidence: narrativeText }).optional(),
+  /** One honest line on what the author would do differently next time (owner's own words). */
+  differently: narrativeText.optional(),
   /** What the author did not own or decide. */
   notOwned: narrativeText.optional(),
   /** How anything here was (or was not) measured. */

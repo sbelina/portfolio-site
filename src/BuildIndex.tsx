@@ -57,7 +57,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       </section> : null}
       {evidence.status === 'approved' && evidence.brief ? <section className="pc-section pc-featured-case" aria-labelledby="pc-featured-title">
         <div className="pc-section-heading"><p className="pc-kicker">Featured investigation</p><h2 id="pc-featured-title">{evidence.title}</h2></div>
-        <dl className="pc-brief">{([['Tension', evidence.brief.tension], ['My call', evidence.brief.call], ['Result', evidence.brief.result], ['Evidence', evidence.brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
+        <dl className="pc-brief">{([['What changed', evidence.brief.result], ['The problem', evidence.brief.tension], ['What I did', evidence.brief.call], ['How I knew', evidence.brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
         <a className="pc-text-link" href={publicPath(evidence.href)}>Read the full case, including what I didn’t own <span aria-hidden="true">→</span></a>
         <RecruiterActions label="Contact after the featured investigation"/>
       </section> : null}

@@ -1,6 +1,6 @@
 import { publicPath } from '../public-path'
 import { InvestigationVisual } from '../visuals/InvestigationVisual'
-import { InvestigationNarrative } from './InvestigationNarrative'
+import { InvestigationNarrative, narrativeContents } from './InvestigationNarrative'
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
@@ -168,6 +168,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <h2>In this reading</h2>
         <ol>
           {showContribution ? <li><a href="#contribution">Contribution and scope</a></li> : null}
+          {entry.investigation ? narrativeContents(entry.investigation).map(item => <li key={item.id}><a href={`#${item.id}`}>{item.title}</a></li>) : null}
           {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
           {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
           {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
