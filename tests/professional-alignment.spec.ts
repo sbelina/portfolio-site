@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import archive from '../content/build-archive.json' with { type: 'json' }
-import { homeTitle, homeDescription } from '../scripts/seo'
+import { homeTitle, homeDescription, personSchema, siteOrigin } from '../scripts/seo'
 import { practiceAreas, professionalIdentity, recruiterContact, tagline } from '../src/content/recruiter'
 import { representativeSummaries } from '../src/content/primary-evidence'
 
@@ -15,7 +15,7 @@ test('identity is consistent across the homepage, title and description', async 
   expect(homeTitle).toBe(`Sami Belina — ${professionalIdentity}`)
   expect(homeDescription.toLowerCase()).toContain('research and innovation strategist')
   for (const term of practiceAreas) expect(homeDescription).toContain(term.toLowerCase())
-  expect(homeDescription).toContain(tagline)
+  expect(homeDescription.length).toBeLessThanOrEqual(155)
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain(`<title>${homeTitle.replaceAll('&', '&amp;')}</title>`)
   expect(home).toContain(tagline)
@@ -97,4 +97,29 @@ test('seven qualified distinctions each state difference, question, connection, 
     // No distinction claims a case finding.
     await expect(page.locator('.pc-distinction-list')).not.toContainText(/\d+\s*%|SUS|NPS/)
   } finally { await context.close() }
+})
+
+test('homepage structured data names Sami as a Person linked to LinkedIn, and the site to its author', async () => {
+  const home = await readFile('dist/index.html', 'utf8')
+  const data = JSON.parse(home.match(/<script type="application\/ld\+json">(.*?)<\/script>/)![1])
+  const graph = data['@graph'] as Record<string, unknown>[]
+  const person = graph.find(node => node['@type'] === 'Person')!
+  const site = graph.find(node => node['@type'] === 'WebSite')!
+  expect(person).toEqual(personSchema)
+  expect(person).toMatchObject({ name: 'Sami Belina', jobTitle: professionalIdentity, sameAs: [recruiterContact.linkedin], url: `${siteOrigin}/` })
+  expect(site).toMatchObject({ author: { '@id': person['@id'] }, publisher: { '@id': person['@id'] } })
+  // Public, owner-supplied facts only: no email address or employer in machine-readable data.
+  expect(JSON.stringify(person)).not.toMatch(/@sbelina|mailto|employer|worksFor/i)
+  // Only the homepage carries it.
+  expect(await readFile('dist/practice/index.html', 'utf8')).not.toContain('"Person"')
+})
+
+test('the social preview carries the current positioning, not the 6 November lead', async () => {
+  const svg = await readFile('public/social-preview.svg', 'utf8')
+  for (const text of ['SAMI BELINA', 'RESEARCH &amp; INNOVATION STRATEGIST', 'I turn gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
+  expect(svg).not.toContain('I investigate situations where')
+  const home = await readFile('dist/index.html', 'utf8')
+  expect(home).toContain('content="Producing Curiosity by Sami Belina, Research &amp; Innovation Strategist.')
+  const png = await readFile('dist/social-preview.png')
+  expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630])
 })
