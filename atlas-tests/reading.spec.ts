@@ -6,6 +6,7 @@ import path from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import React from 'react'
 import { AtlasProof } from '../src/experiments/atlas/AtlasProof'
+import { externallyServedRoutes } from '../src/public-routes'
 import { fixture, fixtureMarker, layoutInput, validateFixture } from '../src/experiments/atlas/fixture'
 import { computeSemanticLayout } from '../src/experiments/atlas/layout'
 import { auditPublic } from '../scripts/audit-public'
@@ -93,6 +94,7 @@ test('all local links resolve and native navigation returns to a stable case ind
   const ids=await page.locator('[id]').evaluateAll(nodes=>nodes.map(node=>node.id))
   for(const href of new Set(links)){
     if(href.startsWith('#')) expect(ids).toContain(href.slice(1))
+    else if((externallyServedRoutes as readonly string[]).includes(href)) continue // served by another Worker in production
     else if(href.startsWith('/')) expect((await request.get(href)).status()).toBe(200)
   }
   const index=page.getByRole('navigation',{name:'Fictional case index'})

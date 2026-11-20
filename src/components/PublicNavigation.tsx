@@ -13,6 +13,8 @@ const currentDestinations = [
   { href: '/patterns/', label: 'Connections' },
   { href: '/practice/', label: 'Practice' },
   { href: '/lab/atlas/', label: 'Atlas of Inquiry' },
+  // Served by the separate Thoughts Worker (zone route producingcuriosity.com/field-notes*).
+  { href: '/field-notes/', label: 'Field notes' },
   { href: '/#contact', label: 'Contact' },
 ] as const
 
