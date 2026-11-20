@@ -67,3 +67,11 @@ test('homepage portfolio and durable experiment link are readable with JavaScrip
   await expect(page.getByRole('heading', { name: 'Reveal the hidden work', exact: true })).toBeVisible()
   await context.close()
 })
+
+test('Bing Webmaster Tools verification file is served from the site root', async ({ request }) => {
+  const response = await request.get('http://127.0.0.1:4175/BingSiteAuth.xml')
+  expect(response.status()).toBe(200)
+  expect(response.headers()['content-type']).toContain('xml')
+  expect(await response.text()).toMatch(/<user>[0-9A-F]{32}<\/user>/)
+  expect(await readFile('dist/sitemap.xml', 'utf8')).not.toContain('BingSiteAuth')
+})

@@ -113,7 +113,7 @@ The earlier recruiting terms *research strategy* and *organizational effectivene
 **Owner steps after the merge is live.** These need the owner’s accounts; no agent has access:
 
 1. **Google Search Console:** submit `https://producingcuriosity.com/sitemap.xml` under Sitemaps. Then use URL Inspection on the homepage and choose Request indexing.
-2. **Bing Webmaster Tools:** sign in and import the site from Search Console. This also covers DuckDuckGo and other Bing-backed engines.
+2. **Bing Webmaster Tools:** the owner chose XML-file verification on 20 November. `public/BingSiteAuth.xml` (the owner’s Bing token, which is meant to be public) is served at `/BingSiteAuth.xml`, and a test checks that. It goes live with the merge; click **Verify** in Bing after that, then submit the sitemap there too. Bing also covers DuckDuckGo and other Bing-backed engines.
 3. **LinkedIn Post Inspector** (linkedin.com/post-inspector): inspect `https://producingcuriosity.com/` to refresh LinkedIn’s cached title and image. Do the same in any other platform’s share debugger.
 4. **Optional:** Cloudflare *Crawler Hints* (Caching → Configuration) notifies IndexNow-based engines when pages change.
 5. **After a few days:** record Search Console *Pages* (index coverage) and *Performance* (queries, impressions, clicks) with dates. Only then can visibility claims be made.
