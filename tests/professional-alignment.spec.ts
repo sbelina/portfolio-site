@@ -135,7 +135,7 @@ test('the "How I got here" interlude sits between the evidence and the practice,
     expect(lens).toBeLessThan(headings.indexOf('Test. Show. Enable.'))
     const interlude = page.getByRole('region', { name: 'How I got here' })
     await expect(interlude.locator('blockquote')).toHaveText('Inspiration is needed in geometry, just as much as in poetry.')
-    await expect(interlude.locator('figcaption')).toHaveText('— Alexander Pushkin')
+    await expect(interlude.locator('.pc-interlude-quote figcaption')).toHaveText('— Alexander Pushkin')
     await interlude.getByText('Source', { exact: true }).click()
     await expect(interlude.locator('[lang="ru"]')).toContainText('Вдохновение нужно в геометрии, как и в поэзии')
     await expect(interlude.locator('.pc-interlude-drawing')).toHaveAttribute('aria-hidden', 'true')
