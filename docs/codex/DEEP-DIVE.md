@@ -14,6 +14,48 @@
 
 A password protects only what is not already public. Anything committed to this repository can be read on GitHub whatever the website does. That is why deep-dive text never goes into the repository, the build or the public files.
 
+## Information architecture
+
+| Address | Page | Surface | Holds |
+| --- | --- | --- | --- |
+| `/investigations/<slug>/` | the public case | Field (paper) | the four questions; links to its deep dive |
+| `/deep-dive/` | the hub | Beneath (dark) | every deep dive in order, each with its kicker, accent headline, part count and a link to its public version; *Where did it start?* begins the sequence |
+| `/deep-dive/<slug>/` | one case | Field (paper) | its parts as spreads (*Case 01, 1 of 3 · Test*…), a parts list, and links back to the public version and the hub |
+
+- **Each spread follows the deck grammar** ([deck foundation](../design-system/DECK-FOUNDATION.md) §2):
+  - kicker;
+  - headline with one accent word;
+  - *The label*, then *What the evidence showed*;
+  - `FIG. NN · TYPE · caveat`;
+  - *My role*, then *What changed*;
+  - the principle in italic serif;
+  - *— Trade-off*, the next question as a link, and `01 / 03`.
+- **The next question carries the reader onward:** part to part inside a case, then on to the next case in hub order, and from the last case back to the hub.
+- **One password opens all of it.** Signing in once sets one session cookie for the whole `/deep-dive/` path, so every case and part opens without another prompt. Signing out, or changing the password, closes all of them at once.
+- **Not in the primary menu.** Deep dives are reached from each public case’s *Deep dive* section and from the hub, so the menu stays at five items.
+
+## Writing a deep dive
+
+Write Markdown in `private/deep-dives/<slug>.md` in the format documented at the top of `scripts/deep-dive-parse.ts`.
+
+- **New part:** a `Kicker:` line, then `## Headline with *one accent* word`.
+- **Fields:** `### The label`, `### What the evidence showed`, `### Figure` (its first line is the `FIG.` label), `### My role`, `### What changed`, `### Principle`, `### Trade-off` and `### Next` (the question).
+- **Other headings:** any other `###` heading becomes an extra section.
+
+The three dummy files in `tests/fixtures/deep-dives/` are ready-made templates. Each passage says what to write there.
+
+## The dummy version (one password, all pages)
+
+`npm run deep-dive:demo` builds the site and loads the three **dummy** deep dives into a **local** store. It serves them at `http://127.0.0.1:4176/deep-dive/` and prints the demo password, `synthetic-deep-dive-test-password`.
+
+| Dummy deep dive | Parts |
+| --- | --- |
+| Claims | 3 |
+| Trust | 1 |
+| AI challenge | 1 |
+
+Sign in once, and the hub, all three cases and every part open. *Sign out* closes them all. Nothing in the demo is real case content, and nothing in it touches Cloudflare. `tests/deep-dive.spec.ts` proves the same journey automatically.
+
 ## How the wall works
 
 - `wrangler.jsonc` adds a small Worker (`worker/index.ts`) that runs first **only** for `/deep-dive` and `/deep-dive/*`. Every other request is served by the static assets exactly as before, including the 404 page.

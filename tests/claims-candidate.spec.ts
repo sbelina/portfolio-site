@@ -121,8 +121,9 @@ test('the Claims service blueprint is valid, labelled as reconstructed, result-f
   }
   // The move is the point: the check comes before payment after, and after payment before.
   const order = (id: 'before' | 'after') => blueprint.views.find(view => view.id === id)!.stages.map(stage => stage.label)
-  expect(order('before').indexOf('Payment')).toBeLessThan(order('before').indexOf('Salvage check'))
-  expect(order('after').indexOf('Salvage check')).toBeLessThan(order('after').indexOf('Payment'))
+  // Before: paid, then salvage review. After: the photo is verified before payment (the deck's documented process).
+  expect(order('before').indexOf('Paid')).toBeLessThan(order('before').indexOf('Salvage review'))
+  expect(order('after').indexOf('Photo reviewed')).toBeLessThan(order('after').indexOf('Paid once picked up'))
   // External-safe: no vendor name, no exact figures.
   expect(JSON.stringify(blueprint)).not.toMatch(/IAA|Insurance Auto Auctions|Copart/)
   expect(JSON.stringify(blueprint.views)).not.toMatch(/\d{2,}/)

@@ -31,7 +31,7 @@ export const claimsCandidate: Entry = {
   updatedAt: redrafted,
   authorIds: [],
   topicIds: [],
-  contribution: 'I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that placed salvage-partner review before payment. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter.',
+  contribution: 'I identified the problem without an assignment, built the evidence record, brought it to management, and led the change that moved verification before payment, aligning three departments on one definition of complete. I facilitated the administrator knowledge sessions and wrote the paperwork guide, the support training deck that trainers adapted, and early versions of the customer cover letter.',
   evidenceIds: [],
   investigation: {
     schemaVersion: 1,
@@ -45,14 +45,14 @@ export const claimsCandidate: Entry = {
     workingExplanation: 'Practitioner interpretation: the recorded handoff and the later acceptance check described different states. Treating “delivered” as “complete” moved the point of discovery to after payment, when correction is harder for everyone.',
     investigation: 'I began without an assignment. I kept a log of recurring exceptions, then clarified the process with the teams it touched (adjusters, administrative staff and the salvage partner) to see where each one believed the work was finished. I brought the resulting evidence about payment timing to management.',
     relationshipDiscovered: 'Delivered ≠ complete. The status the system reported and the state the next step depended on were related but not equivalent. The gap was a question of when sufficiency was checked, not who had authority.',
-    response: 'Two connected responses, kept separate. Review timing: management chose to make payment wait for the salvage partner’s acceptance of the paperwork. Decision authority did not change: the salvage partner decides sufficiency, and adjusters release payment. Shared practitioner knowledge: I facilitated meetings in which administrators surfaced the practical knowledge, examples and procedural differences behind the process. This informed three distinct resources: a paperwork guide, a total-loss support training deck and an administrative onboarding program. The error-log categories did not become the guide’s structure. Separately, I redesigned the customer cover letter to reduce the decisions customers had to make after a total loss; a later national version was produced by a process team and is not attributed to me here.',
-    consequence: 'Payment now waits for the salvage partner’s acceptance of the paperwork, so the sufficiency check happens before a claim looks finished rather than after. The guides and training I built from administrators’ knowledge have been in use across four offices for more than two years, and the new hires who arrive every quarter learn from them.',
+    response: 'Two connected responses, kept separate. Review timing: leadership chose to verify before paying. Adjusters now verify the paperwork before payment, and the salvage partner checks it when something is uncertain; the local manager backed the change and formed a training team. Decision authority did not change: the salvage partner decides sufficiency, and adjusters release payment. Shared practitioner knowledge: I facilitated meetings in which administrators surfaced the practical knowledge, examples and procedural differences behind the process. This informed three distinct resources: a paperwork guide, a total-loss support training deck and an administrative onboarding program. The error-log categories did not become the guide’s structure. Separately, I redesigned the customer cover letter to reduce the decisions customers had to make after a total loss; a later national version was produced by a process team and is not attributed to me here.',
+    consequence: '“Complete” now means verified: adjusters verify the paperwork before paying, so problems are found before a claim looks finished rather than after it closes. The guides and training I built from administrators’ knowledge have been in use across four offices for more than two years, and the new hires who arrive every quarter learn from them.',
     differently: 'I would agree a definition of an exception with the team, and record a baseline, before the change. Then the effect of moving the checkpoint could have been measured instead of estimated.',
     limitations: 'Several changes happened close together (review timing, training, the guide, the letter), so no single change can be credited with any later difference. Any change in how long payment takes has not been measured. Contributions by managers, trainers, adjusters, the salvage partner and the process team are their own.',
     brief: {
       tension: 'Paperwork could be marked delivered, and payment released, before anyone confirmed it was sufficient. Errors surfaced later, as rework for customers and staff.',
-      call: 'Without an assignment, I logged the exceptions, traced each handoff, recommended that payment wait for the salvage partner’s review, and turned administrators’ knowledge into a guide and training.',
-      result: 'Payment now waits for that review, so the check happens before a claim looks finished. The guides and training have been used across four offices for 2+ years, and every quarter’s new hires learn from them.',
+      call: 'Without an assignment, I logged the exceptions, traced each handoff, recommended verifying before paying, and turned administrators’ knowledge into a guide and training.',
+      result: 'Payment now waits for verification, so problems are found before a claim looks finished. The guides and training have been used across four offices for 2+ years, and every quarter’s new hires learn from them.',
       evidence: 'My exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. Sources are pending review.',
     },
     notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
@@ -63,10 +63,10 @@ export const claimsCandidate: Entry = {
       { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', headline: true, evidenceIds: [] },
     ],
     blueprint: {
-      title: 'Where the paperwork check happens',
-      caption: 'The same total-loss paperwork, before and after the change. The difference is where the sufficiency check sits relative to payment, and what now helps people get the paperwork right.',
-      provenance: 'Reconstructed for this portfolio from project notes and my account of the process; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they could surface, not how often they happened.',
-      shift: 'What moved: before, payment could come first and the sufficiency check after it. After, the check comes first and payment waits for it.',
+      title: 'Pay, then verify. Verify, then pay.',
+      caption: 'The same total-loss paperwork, before and after. The difference is when the paperwork is verified relative to payment, and what now helps people get it right.',
+      provenance: 'Reconstructed for this portfolio from project notes and my portfolio deck; it was not drawn at the time. A simplified documented process: roles are generic, no partner is named, and it shows where problems could enter and surface, not how often they happened.',
+      shift: 'What moved: before, payment came first and verification after it, sometimes after the claim closed. After, verification comes first and payment waits for it.',
       lanes: [
         { id: 'customer', label: 'Customer', lineAfter: 'Line of interaction' },
         { id: 'frontstage', label: 'Frontstage: letters and requests', lineAfter: 'Line of visibility' },
@@ -75,31 +75,29 @@ export const claimsCandidate: Entry = {
       ],
       views: [
         {
-          id: 'before', label: 'Before',
-          summary: 'Payment could go ahead on a delivery record. Whether the paperwork was sufficient could be confirmed only afterwards, so problems could surface when the claim already looked finished.',
+          id: 'before', label: 'Before: pay → verify',
+          summary: '“Complete” meant delivered, so payment could go out before the paperwork was verified. Problems surfaced at salvage review, sometimes after the claim had closed.',
           stages: [
             { label: 'Total loss', cells: [
               { lane: 'customer', text: 'Learns the vehicle is a total loss.' },
               { lane: 'frontstage', text: 'A cover letter and a request for the title and transfer paperwork.' },
             ] },
-            { label: 'Paperwork', cells: [
-              { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
-              { lane: 'customer', mark: 'failure', text: 'A date, the mileage or a signature is missing.' },
-              { lane: 'customer', mark: 'failure', text: 'Only one of two requests gets an answer.' },
+            { label: 'Mailed back', cells: [
+              { lane: 'customer', text: 'Completes the paperwork and mails it back.' },
+              { lane: 'customer', mark: 'failure', text: 'Missing mileage.' },
+              { lane: 'customer', mark: 'failure', text: 'Wrong or missing sections.' },
+              { lane: 'customer', mark: 'failure', text: 'Missing signatures.' },
+              { lane: 'customer', mark: 'failure', text: 'Wrong return carrier.' },
               { lane: 'frontstage', text: 'The letter leaves several decisions to the customer.' },
             ] },
-            { label: 'Review', cells: [
-              { lane: 'team', text: 'A rep reviews the documents.' },
-              { lane: 'team', text: 'A supervisor approves the claim.' },
+            { label: 'Paid', note: 'Not yet verified', cells: [
+              { lane: 'team', mark: 'failure', text: 'Delivery is recorded as complete, and payment goes out before the paperwork is verified.' },
             ] },
-            { label: 'Payment', note: 'Before the check', cells: [
-              { lane: 'team', mark: 'failure', text: 'Payment could be released once delivery was recorded, before sufficiency was confirmed.' },
+            { label: 'Salvage review', cells: [
+              { lane: 'partner', text: 'Reviews whether the paperwork is sufficient.' },
+              { lane: 'partner', mark: 'failure', text: 'Defects are caught here, after payment.' },
             ] },
-            { label: 'Salvage check', cells: [
-              { lane: 'partner', text: 'Confirms whether the documents are sufficient.' },
-              { lane: 'partner', mark: 'failure', text: 'Problems could surface here, after payment.' },
-            ] },
-            { label: 'Correction', note: 'After the claim looked finished', cells: [
+            { label: 'Rework', note: 'After the claim closed', cells: [
               { lane: 'customer', mark: 'failure', text: 'Could be asked to fix paperwork for a claim that looked finished.' },
               { lane: 'frontstage', text: 'Follow-up requests to fix the paperwork.' },
               { lane: 'team', text: 'The admin team follows up until the paperwork is fixed.' },
@@ -107,33 +105,26 @@ export const claimsCandidate: Entry = {
           ],
         },
         {
-          id: 'after', label: 'After',
-          summary: 'Payment waits until the salvage partner confirms the paperwork is sufficient, so problems are found while the claim is still open. A guide, training and a clearer cover letter aim to get the paperwork right the first time.',
+          id: 'after', label: 'After: verify → pay',
+          summary: '“Complete” now means verified. Adjusters verify the paperwork before paying, the salvage partner checks it when something is uncertain, and payment goes out once the vehicle is picked up. Trade-off: customers wait before payment, not after closing.',
           stages: [
             { label: 'Total loss', cells: [
               { lane: 'customer', text: 'Learns the vehicle is a total loss.' },
               { lane: 'frontstage', mark: 'change', text: 'A redesigned cover letter asks the customer to make fewer decisions. (My early versions; a later national version is a process team’s work.)' },
             ] },
-            { label: 'Paperwork', cells: [
-              { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
-              { lane: 'customer', mark: 'failure', text: 'The same problems can still happen: a missing date, mileage or signature, or only one of two requests answered.' },
+            { label: 'Photo reviewed', note: 'Verification moved upstream', cells: [
+              { lane: 'customer', text: 'Completes the paperwork and sends a photo of it.' },
+              { lane: 'customer', mark: 'failure', text: 'The same defects can still happen.' },
+              { lane: 'team', mark: 'change', text: 'An adjuster reviews the photo and verifies the paperwork before paying.' },
+              { lane: 'team', mark: 'change', text: 'Admins, claims reps, support teams and trainers learn from the guide and training; new hires every quarter.' },
             ] },
-            { label: 'Review', cells: [
-              { lane: 'team', text: 'A rep reviews the documents.' },
-              { lane: 'team', mark: 'change', text: 'A paperwork guide sets out what sufficient paperwork needs.' },
-              { lane: 'team', text: 'A supervisor approves the claim.' },
-              { lane: 'team', mark: 'change', text: 'New hires, every quarter, learn the process from the training.' },
+            { label: 'Salvage, if uncertain', cells: [
+              { lane: 'partner', mark: 'change', text: 'Checks the paperwork when something is uncertain.' },
+              { lane: 'customer', text: 'May be asked to fix paperwork, now before payment.' },
             ] },
-            { label: 'Salvage check', note: 'Moved before payment', cells: [
-              { lane: 'partner', mark: 'change', text: 'Confirms the documents are sufficient before payment. Who decides has not changed.' },
-              { lane: 'customer', text: 'May still be asked to fix paperwork, now before payment.' },
-              { lane: 'team', text: 'If something is missing, the admin team follows up while the claim is still open.' },
-            ] },
-            { label: 'Payment', note: 'Now waits for the check', cells: [
-              { lane: 'team', mark: 'change', text: 'Payment is released after sufficiency is confirmed. Management made this change.' },
-            ] },
-            { label: 'Claim closes', cells: [
-              { lane: 'customer', text: 'The claim closes after payment.' },
+            { label: 'Paid once picked up', note: 'Payment waits for verification', cells: [
+              { lane: 'team', mark: 'change', text: 'Payment goes out once the paperwork is verified and the vehicle is picked up.' },
+              { lane: 'customer', text: 'Waits before payment, not after closing.' },
             ] },
           ],
         },
@@ -147,7 +138,7 @@ export const claimsCandidate: Entry = {
       { id: '3fb07550-5e1f-4326-b8dd-b01b62502d25', section: 'observedCondition', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'Paperwork with missing details, details that were unreadable or changed by hand, or completion by only one of the people required was returned to customers to correct. Missing details were the most common.', limitation: 'Source pending. The ranking is my account, not a measured frequency.' },
       { id: '2f19d6f6-513f-4e67-a16b-7739f23d0334', section: 'investigation', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'I began the work unassigned and kept a log of recurring exceptions.', limitation: 'Source pending. The log’s definition and time window still need to be stated.' },
       { id: 'ae635309-53e4-4323-8609-4495f4e57fe1', section: 'workingExplanation', kind: 'practitioner_interpretation', contribution: 'identified', evidenceIds: [], text: 'The recorded handoff and the acceptance check described different states.', limitation: 'Interpretation. Other causes of rework were not examined here.' },
-      { id: '9fa22fd6-7311-4b3f-b078-159e33f558a2', section: 'response', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [], text: 'Management chose to make payment wait for the salvage partner’s acceptance; decision authority did not change.', limitation: 'Source pending. Implementation date and scope still need to be stated.' },
+      { id: '9fa22fd6-7311-4b3f-b078-159e33f558a2', section: 'response', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [], text: 'Leadership chose to verify before paying: adjusters verify the paperwork before payment, and the salvage partner checks it when uncertain.', limitation: 'Source pending. Implementation date and scope still need to be stated.' },
       { id: 'df37a6b3-f276-4fc5-81b5-026de7435747', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [], text: 'I facilitated administrator meetings that surfaced practical knowledge and procedural differences.', limitation: 'Source pending. Participation is not evidence of learning.' },
       { id: '41e8eff7-7faa-4350-8ba8-827721641966', section: 'response', kind: 'direct_observation', contribution: 'implemented', evidenceIds: [], text: 'The paperwork guide, support training deck and onboarding program are distinct resources for different audiences.', limitation: 'Source pending. The reach of one is never combined with another.' },
       { id: '22229e3b-c7e6-4193-8855-b09427098bdd', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [], text: 'Trainers teach from a deck built from my training deck.', limitation: 'Source pending. Use is not effectiveness.' },

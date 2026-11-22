@@ -25,6 +25,10 @@ Distinguish implemented behavior from proposals. This documentation package does
 - Keep source material and portable content independent of presentation. Use immutable IDs, editable slugs with aliases, explicit typed relationships, runtime validation, and versioned content.
 - Keep draft readiness separate from what is actually deployed. Editing live material creates a draft while the selected approved version remains live.
 
+## Design foundation — 22 November 2026
+
+The owner's portfolio deck is the base of the design system: [deck foundation](docs/design-system/DECK-FOUNDATION.md). Start every page, component and visual from it: one accent word per headline marking the turn; the case grammar (the label, what the evidence showed, my role, what changed, trade-off, next question); `FIG · TYPE · caveat` labels; the Beneath/Field/Signal surfaces; and its imagery vocabulary. Evidence rules still govern claims; the deck's 18% → 7.6% arrow and slide dates are not reproduced.
+
 ## Interface and accessibility
 
 - Use the adopted paper/ink/orange scientific/editorial direction for the current edition. Keep semantic violet/unresolved, coral/friction, teal/learning distinct from orange emphasis; recalculate contrast for each surface and pair color with labels or shape. Final asterisk artwork is owner-supplied and pending; a typographic asterisk is a temporary placeholder, not a finalized logo. Candidate fonts require verified files/licenses before use.

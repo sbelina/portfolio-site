@@ -106,12 +106,64 @@ ${failed ? '<p class="deep-dive-error" role="alert">That password did not work. 
 const signOut = `<form class="deep-dive-signout" method="post" action="/deep-dive/logout"><button type="submit">Sign out of deep dives</button></form>`
 const safeNext = (value: string | null) => value && /^\/deep-dive\/(?:[a-z0-9-]+\/)?$/.test(value) ? value : '/deep-dive/'
 
-type CaseRecord = { title: string; html: string }
-type IndexRecord = { slug: string; title: string; summary?: string }[]
+type LegacyRecord = { title: string; html: string }
+type Part = { id: string; kicker?: string; headline: string; label?: string; evidence?: string; role?: string; changed?: string; principle?: string; tradeoff?: string; figure?: { label: string; html: string }; next?: string; extra: { title: string; html: string }[] }
+type CaseRecord = LegacyRecord | { schema: 2; title: string; kicker?: string; summary?: string; intro?: string; parts: Part[] }
+type IndexRecord = { slug: string; title: string; summary?: string; kicker?: string; parts?: number; headline?: string }[]
 async function readJson<T>(kv: KVLike, key: string): Promise<T | null> {
   const raw = await kv.get(key)
   if (!raw) return null
   try { return JSON.parse(raw) as T } catch { return null }
+}
+
+/** The hub, on the Beneath surface: every deep dive in order, one password for all of them. */
+function hub(index: IndexRecord) {
+  const items = index.map((item, position) => `<li>
+  <p class="deep-dive-kicker">${escapeHtml(item.kicker ?? `Case ${String(position + 1).padStart(2, '0')}`)}${item.parts && item.parts > 1 ? ` · ${item.parts} parts` : ''}</p>
+  <h2><a href="/deep-dive/${escapeHtml(item.slug)}/">${item.headline ?? escapeHtml(item.title)}</a></h2>
+  ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ''}
+  <p class="deep-dive-public-link"><a href="/investigations/${escapeHtml(item.slug)}/">Public version</a></p>
+</li>`).join('')
+  return `<div class="deep-dive-beneath" data-surface="observatory">
+<p class="deep-dive-kicker">Beneath · deep dives</p>
+<h1>The longer <em>version</em>.</h1>
+<p class="deep-dive-lede">Each deep dive is the full account behind a public investigation: the label people relied on, what the evidence showed, my role, what changed, and the trade-off. One password opens all of them.</p>
+${index.length ? `<ol class="deep-dive-hub">${items}</ol>` : '<p>No deep dives have been uploaded yet.</p>'}
+${index[0] ? `<p class="deep-dive-next"><a href="/deep-dive/${escapeHtml(index[0].slug)}/"><em>Where did it start?</em> <span aria-hidden="true">→</span></a></p>` : ''}
+${signOut}
+</div>`
+}
+
+const field = (title: string, html?: string) => html ? `<section class="deep-dive-field"><h3>${title}</h3>${html}</section>` : ''
+
+/** One case as a run of spreads in the deck grammar (docs/design-system/DECK-FOUNDATION.md §2). */
+function spreads(slug: string, record: Extract<CaseRecord, { schema: 2 }>, index: IndexRecord) {
+  const position = index.findIndex(item => item.slug === slug)
+  const following = position >= 0 ? index[position + 1] : undefined
+  const contents = record.parts.length > 1 ? `<nav class="deep-dive-parts" aria-label="Parts of this deep dive"><ol>${record.parts.map(part => `<li><a href="#${part.id}">${part.kicker ? escapeHtml(part.kicker.split('·').pop()!.trim()) : part.headline.replace(/<[^>]+>/g, '')}</a></li>`).join('')}</ol></nav>` : ''
+  const body = record.parts.map((part, i) => {
+    const nextHref = i + 1 < record.parts.length ? `#${record.parts[i + 1].id}` : following ? `/deep-dive/${following.slug}/` : '/deep-dive/'
+    const nextText = part.next ?? (i + 1 < record.parts.length ? 'Next part' : following ? 'Next deep dive' : 'All deep dives')
+    return `<section class="deep-dive-spread" id="${part.id}" aria-labelledby="${part.id}-title">
+  ${part.kicker ? `<p class="deep-dive-kicker">${escapeHtml(part.kicker)}</p>` : ''}
+  <h2 id="${part.id}-title" class="deep-dive-headline">${part.headline}</h2>
+  <div class="deep-dive-top">${field('The label', part.label)}${field('What the evidence showed', part.evidence)}</div>
+  ${part.figure ? `<figure class="deep-dive-figure"><figcaption>${escapeHtml(part.figure.label)}</figcaption>${part.figure.html}</figure>` : ''}
+  ${part.extra.map(extra => field(escapeHtml(extra.title), extra.html)).join('')}
+  <div class="deep-dive-bottom">${field('My role', part.role)}${field('What changed', part.changed)}</div>
+  ${part.principle ? `<p class="deep-dive-principle">${part.principle}</p>` : ''}
+  <footer class="deep-dive-footer">
+    ${part.tradeoff ? `<div class="deep-dive-tradeoff"><span>— Trade-off:</span> ${part.tradeoff.replace(/^<p>|<\/p>$/g, '')}</div>` : ''}
+    <a class="deep-dive-onward" href="${nextHref}"><em>${escapeHtml(nextText)}</em> <span aria-hidden="true">→</span></a>
+    <span class="deep-dive-count">${String(i + 1).padStart(2, '0')} / ${String(record.parts.length).padStart(2, '0')}</span>
+  </footer>
+</section>`
+  }).join('')
+  return `<p class="deep-dive-kicker">${escapeHtml(record.kicker ?? 'Deep dive')} · the longer version</p>
+<h1>${escapeHtml(record.title)}</h1>
+<p class="deep-dive-public"><a href="/investigations/${slug}/">← The public version of this investigation</a> · <a href="/deep-dive/">All deep dives</a></p>
+${record.intro ? `<div class="deep-dive-intro">${record.intro}</div>` : ''}
+${contents}${body}${signOut}`
 }
 
 export async function handleDeepDive(request: Request, env: DeepDiveEnv): Promise<Response> {
@@ -148,14 +200,12 @@ export async function handleDeepDive(request: Request, env: DeepDiveEnv): Promis
   if (slug === undefined || (slug && !slugPattern.test(slug))) return page(env, request, 'Not found', '<h1>This deep dive is not available.</h1><p><a href="/deep-dive/">All deep dives</a></p>', 404)
   if (!(await validSession(secret, passwordHash, readCookie(request)))) return page(env, request, 'Password required', loginForm(path, false), 401)
 
-  if (!slug) {
-    const index = (await readJson<IndexRecord>(kv, 'index')) ?? []
-    const list = index.length ? `<ul class="deep-dive-index">${index.map(item => `<li><a href="/deep-dive/${escapeHtml(item.slug)}/">${escapeHtml(item.title)}</a>${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ''}</li>`).join('')}</ul>` : '<p>No deep dives have been uploaded yet.</p>'
-    return page(env, request, 'All deep dives', `<p class="pc-kicker">Deep dive</p><h1>Deep dives</h1><p>Longer versions of the public investigations.</p>${list}${signOut}`)
-  }
+  const index = (await readJson<IndexRecord>(kv, 'index')) ?? []
+  if (!slug) return page(env, request, 'All deep dives', hub(index))
   const record = await readJson<CaseRecord>(kv, `case:${slug}`)
   if (!record) return page(env, request, 'Not found', '<h1>This deep dive is not available.</h1><p><a href="/deep-dive/">All deep dives</a></p>', 404)
-  return page(env, request, record.title, `<p class="pc-kicker">Deep dive · the longer version</p><h1>${escapeHtml(record.title)}</h1>
+  if ('parts' in record) return page(env, request, record.title, spreads(slug, record, index))
+  return page(env, request, record.title, `<p class="deep-dive-kicker">Deep dive · the longer version</p><h1>${escapeHtml(record.title)}</h1>
 <p class="deep-dive-public"><a href="/investigations/${slug}/">← The public version of this investigation</a></p>
 <div class="deep-dive-body">${record.html}</div>${signOut}`)
 }
