@@ -175,3 +175,50 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .investigation-question > h2, .investigation-how-i-know > h2 { margin-top: 2.5rem; }
 .investigation-how-i-know { border-top: 1px solid var(--reading-line); margin-top: 3rem; }
 .investigation-how-i-know h3 { font-size: 1.05rem; margin: 1.5rem 0 .4rem; }
+
+/* Service blueprint (case artifact; data-only, before/after). */
+.blueprint { margin: 2.5rem 0; padding-top: 1rem; border-top: 1px solid var(--reading-line); }
+.blueprint-kicker { margin: 0 0 .25rem; font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
+.blueprint-switch { display: none; border: 0; padding: 0; margin: 1rem 0; gap: 1.25rem; }
+.blueprint-switch legend { font-weight: 600; margin-right: .75rem; float: left; }
+.blueprint-switch label { display: inline-flex; align-items: center; gap: .4rem; min-height: 44px; margin-right: 1.25rem; }
+@supports selector(:has(*)) {
+  .blueprint-switch { display: block; }
+  .blueprint:has(input[value="after"]:checked) .blueprint-view[data-view="before"],
+  .blueprint:has(input[value="before"]:checked) .blueprint-view[data-view="after"] { display: none; }
+}
+@media print { .blueprint-switch { display: none !important; } .blueprint-view { display: block !important; } }
+.blueprint-view h3 { margin: 1.25rem 0 .25rem; }
+.blueprint-summary { max-width: 65ch; }
+.blueprint-scroll { overflow-x: auto; margin: .75rem 0 1rem; border: 1px solid var(--reading-line); }
+@media (min-width: 1100px) { .blueprint-scroll { width: min(calc(100vw - 4rem), 72rem); position: relative; left: 50%; transform: translateX(-50%); background: var(--reading-paper, transparent); } }
+.blueprint-scroll:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 2px; }
+.blueprint table { border-collapse: collapse; width: 100%; min-width: 56rem; font-size: .88rem; line-height: 1.45; }
+.blueprint th, .blueprint td { border: 1px solid var(--reading-line); padding: .5rem .6rem; vertical-align: top; text-align: left; }
+.blueprint thead th { font-weight: 650; min-width: 8rem; }
+.blueprint tbody th[scope="row"] { font-weight: 650; width: 8.5rem; min-width: 8.5rem; overflow-wrap: normal; word-break: normal; hyphens: manual; background: var(--reading-panel); }
+.blueprint td p { margin: 0 0 .5rem; }
+.blueprint td p:last-child { margin-bottom: 0; }
+.blueprint td p[data-mark="failure"] { border-left: 3px solid var(--reading-pressure); padding-left: .45rem; }
+.blueprint td p[data-mark="change"] { border-left: 3px solid var(--reading-holds); padding-left: .45rem; }
+.blueprint-line th { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); border-style: dashed none; padding: .2rem .6rem; }
+.blueprint-step { display: inline-block; min-width: 1.4em; font-variant-numeric: tabular-nums; color: var(--reading-muted); }
+.blueprint-symbol { font-weight: 700; }
+.blueprint-symbol[data-mark="failure"], .blueprint td p[data-mark="failure"] .blueprint-symbol { color: var(--reading-pressure); }
+.blueprint-symbol[data-mark="change"], .blueprint td p[data-mark="change"] .blueprint-symbol { color: var(--reading-holds); }
+.blueprint-key { list-style: none; padding: 0; margin: .5rem 0; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; font-size: .88rem; }
+.blueprint-provenance { font-size: .88rem; color: var(--reading-muted); max-width: 65ch; }
+.blueprint-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.blueprint-note { display: block; margin-top: .3rem; font-style: normal; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--reading-holds); }
+.blueprint-view[data-view="before"] .blueprint-note { color: var(--reading-pressure); }
+.blueprint-stages { list-style: none; padding: 0; margin: .75rem 0 1rem; display: none; }
+.blueprint-stages > li { border-top: 1px solid var(--reading-line); padding: .75rem 0; }
+.blueprint-stages h4 { margin: 0 0 .5rem; font-size: 1rem; }
+.blueprint-stages dl { margin: 0; display: grid; gap: .6rem; }
+.blueprint-stages dt { font-size: .75rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--reading-muted); }
+.blueprint-stages dd { margin: .2rem 0 0; }
+.blueprint-stages dd[data-mark="failure"] { border-left: 3px solid var(--reading-pressure); padding-left: .45rem; }
+.blueprint-stages dd[data-mark="change"] { border-left: 3px solid var(--reading-holds); padding-left: .45rem; }
+.blueprint-stages dd[data-mark] .blueprint-symbol { color: inherit; }
+@media (max-width: 760px) { .blueprint-scroll { display: none; } .blueprint-stages { display: block; } }
+@media print { .blueprint-scroll { display: block !important; } .blueprint-stages { display: none !important; } }

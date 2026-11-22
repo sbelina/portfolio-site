@@ -2,6 +2,7 @@ import React from 'react'
 import type { PublicEvidence } from '../content/model'
 import type { Investigation } from '../content/investigation'
 import { MoveTheCheckpoint } from './MoveTheCheckpoint'
+import { ServiceBlueprint } from './ServiceBlueprint'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -62,6 +63,7 @@ export function FigureStrip({ figures }: { figures: NonNullable<Investigation['f
 export function narrativeContents(narrative: Investigation) {
   return [
     ...(narrative.brief ? [{ id: 'investigation-glance-title', title: 'At a glance' }] : []),
+    ...(narrative.blueprint ? [{ id: 'blueprint', title: 'Service blueprint: before and after' }] : []),
     ...questions.filter(question => question.fields.some(key => narrative[key])).map(({ id, title }) => ({ id, title })),
     ...(narrative.differently ? [{ id: 'differently', title: 'What I’d do differently' }] : []),
     ...(caveats.some(([key]) => narrative[key]) || narrative.statements.some(statement => !statement.section) ? [{ id: 'how-i-know', title: 'How I know' }] : []),
@@ -91,6 +93,7 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
   return <div className="investigation-narrative">
     {narrative.brief ? <CaseGlance brief={narrative.brief}/> : null}
     {narrative.figures?.length ? <FigureStrip figures={narrative.figures}/> : null}
+    {narrative.blueprint ? <ServiceBlueprint blueprint={narrative.blueprint}/> : null}
     {questions.map(question => question.fields.some(key => narrative[key])
       ? <section key={question.id} id={question.id} className="investigation-question"><h2>{question.title}</h2>{question.fields.filter(key => narrative[key]).map(key => passage(key, question.title))}</section>
       : null)}

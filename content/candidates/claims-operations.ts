@@ -62,6 +62,80 @@ export const claimsCandidate: Entry = {
       { id: 'e2b9981c-4fbe-47a9-a2db-e3aad0d14e0e', value: '~6', unit: 'new hires a quarter', label: 'Onboarding audience, averaged', basis: 'owner_estimate', qualifier: 'The audience, not who delivered the training.', evidenceIds: [] },
       { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported, 20 November)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', evidenceIds: [] },
     ],
+    blueprint: {
+      title: 'Where the paperwork check happens',
+      caption: 'The same total-loss paperwork, before and after the change. The difference is where the sufficiency check sits relative to payment, and what now helps people get the paperwork right.',
+      provenance: 'Reconstructed for this portfolio from project notes in November 2026; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they were found, not how often they happened.',
+      lanes: [
+        { id: 'customer', label: 'Customer', lineAfter: 'Line of interaction' },
+        { id: 'frontstage', label: 'What the customer receives', lineAfter: 'Line of visibility' },
+        { id: 'team', label: 'Claims team' },
+        { id: 'partner', label: 'Salvage partner' },
+      ],
+      views: [
+        {
+          id: 'before', label: 'Before',
+          summary: 'Payment could go ahead on a delivery record. Whether the paperwork was sufficient was only confirmed afterwards, so problems surfaced when the claim already looked finished.',
+          stages: [
+            { label: 'Total loss', cells: [
+              { lane: 'customer', text: 'Learns the vehicle is a total loss.' },
+              { lane: 'frontstage', text: 'A cover letter and a request for the title and transfer paperwork.' },
+            ] },
+            { label: 'Paperwork', cells: [
+              { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
+              { lane: 'customer', mark: 'failure', text: 'A date, the mileage or a signature is missing.' },
+              { lane: 'customer', mark: 'failure', text: 'Two owners are needed, but only one answers.' },
+              { lane: 'frontstage', text: 'The letter leaves several decisions to the customer.' },
+            ] },
+            { label: 'Review', cells: [
+              { lane: 'team', text: 'A rep reviews the documents.' },
+              { lane: 'team', text: 'A supervisor approves.' },
+            ] },
+            { label: 'Payment', note: 'Before the check', cells: [
+              { lane: 'team', mark: 'failure', text: 'Payment is released once delivery is recorded, before sufficiency is confirmed.' },
+            ] },
+            { label: 'Salvage check', cells: [
+              { lane: 'partner', text: 'Confirms whether the documents are sufficient.' },
+              { lane: 'partner', mark: 'failure', text: 'Problems are found here, after payment.' },
+            ] },
+            { label: 'Correction', note: 'After the claim looked finished', cells: [
+              { lane: 'customer', mark: 'failure', text: 'Is asked to fix paperwork for a claim that looked finished.' },
+              { lane: 'frontstage', text: 'Follow-up requests to fix the paperwork.' },
+              { lane: 'team', text: 'The admin team follows up until the paperwork is fixed.' },
+            ] },
+          ],
+        },
+        {
+          id: 'after', label: 'After',
+          summary: 'Payment waits until the salvage partner confirms the paperwork is sufficient, so problems are found while the claim is still open. A guide, training and a clearer cover letter aim to get the paperwork right the first time.',
+          stages: [
+            { label: 'Total loss', cells: [
+              { lane: 'customer', text: 'Learns the vehicle is a total loss.' },
+              { lane: 'frontstage', mark: 'change', text: 'A redesigned cover letter asks the customer to make fewer decisions. (My early versions; a later national version is a process team’s work.)' },
+            ] },
+            { label: 'Paperwork', cells: [
+              { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
+              { lane: 'customer', mark: 'failure', text: 'The same problems can still happen: a missing date, mileage or signature, or only one of two owners answering.' },
+            ] },
+            { label: 'Review', cells: [
+              { lane: 'team', mark: 'change', text: 'A rep reviews the documents against the paperwork guide.' },
+              { lane: 'team', text: 'A supervisor approves.' },
+              { lane: 'team', mark: 'change', text: 'New hires, every quarter, learn the process from the training.' },
+            ] },
+            { label: 'Salvage check', note: 'Moved before payment', cells: [
+              { lane: 'partner', mark: 'change', text: 'Confirms the documents are sufficient before payment. Who decides has not changed.' },
+              { lane: 'team', text: 'If something is missing, the admin team follows up while the claim is still open.' },
+            ] },
+            { label: 'Payment', note: 'Now waits for the check', cells: [
+              { lane: 'team', mark: 'change', text: 'Payment is released after sufficiency is confirmed. Management made this change.' },
+            ] },
+            { label: 'Claim closes', cells: [
+              { lane: 'customer', text: 'The claim closes after payment.' },
+            ] },
+          ],
+        },
+      ],
+    },
     interactive: 'move-the-checkpoint',
     statements: [
       { id: 'ed50dcf8-47c0-4ddd-af83-b910c458ad12', section: 'observedCondition', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'A delivery could be recorded, and payment released, before the salvage partner decided the paperwork was sufficient.', limitation: 'Source pending. Describes the earlier process, not every claim.' },

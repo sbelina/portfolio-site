@@ -7,6 +7,30 @@ export const contributionLevelSchema = z.enum(['identified', 'influenced', 'desi
 const narrativeText = z.string().min(1).max(10000)
 /** Narrative sections a statement can be threaded into. */
 export const narrativeSectionSchema = z.enum(['observedCondition', 'workingExplanation', 'investigation', 'relationshipDiscovered', 'response', 'consequence', 'notOwned', 'measurement', 'limitations'])
+const blueprintLabel = z.string().min(1).max(120)
+/**
+ * A service blueprint: lanes (who acts, and what the customer sees) by stages, shown before and after.
+ * Data only; the page decides presentation. `mark` flags a failure point or a change, always in words.
+ */
+export const blueprintSchema = z.strictObject({
+  title: blueprintLabel,
+  caption: narrativeText,
+  /** How the artifact was made, e.g. reconstructed later from notes. Always shown. */
+  provenance: narrativeText,
+  lanes: z.array(z.strictObject({ id: z.string().regex(/^[a-z][a-z0-9-]*$/), label: blueprintLabel, lineAfter: z.enum(['Line of interaction', 'Line of visibility']).optional() })).min(2).max(6),
+  views: z.tuple([
+    z.strictObject({ id: z.literal('before'), label: blueprintLabel, summary: narrativeText, stages: z.array(z.strictObject({ label: blueprintLabel, note: z.string().min(1).max(60).optional(), cells: z.array(z.strictObject({ lane: z.string(), text: narrativeText, mark: z.enum(['failure', 'change']).optional() })).max(12) })).min(2).max(8) }),
+    z.strictObject({ id: z.literal('after'), label: blueprintLabel, summary: narrativeText, stages: z.array(z.strictObject({ label: blueprintLabel, note: z.string().min(1).max(60).optional(), cells: z.array(z.strictObject({ lane: z.string(), text: narrativeText, mark: z.enum(['failure', 'change']).optional() })).max(12) })).min(2).max(8) }),
+  ]),
+}).superRefine((value, ctx) => {
+  const lanes = new Set(value.lanes.map(lane => lane.id))
+  if (lanes.size !== value.lanes.length) ctx.addIssue({ code: 'custom', path: ['lanes'], message: 'Duplicate lane' })
+  value.views.forEach((view, v) => view.stages.forEach((stage, s) => stage.cells.forEach((cell, c) => {
+    if (!lanes.has(cell.lane)) ctx.addIssue({ code: 'custom', path: ['views', v, 'stages', s, 'cells', c, 'lane'], message: 'Unknown lane' })
+  })))
+})
+export type Blueprint = z.infer<typeof blueprintSchema>
+
 export const investigationSchema = z.strictObject({
   schemaVersion: z.literal(1),
   composition: compositionSchema,
@@ -16,6 +40,8 @@ export const investigationSchema = z.strictObject({
   response: narrativeText.optional(), consequence: narrativeText.optional(), limitations: narrativeText.optional(),
   /** Featured summary for home: tension → my call → result → evidence used. */
   brief: z.strictObject({ tension: narrativeText, call: narrativeText, result: narrativeText, evidence: narrativeText }).optional(),
+  /** The case's main visual: a before/after service blueprint (reconstructed artifacts say so). */
+  blueprint: blueprintSchema.optional(),
   /** One honest line on what the author would do differently next time (owner's own words). */
   differently: narrativeText.optional(),
   /** What the author did not own or decide. */
