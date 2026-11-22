@@ -22,5 +22,10 @@ export default defineConfig({
     command: 'wrangler dev --local --ip 127.0.0.1 --port 4175',
     url: 'http://127.0.0.1:4175',
     reuseExistingServer: false,
+  }, {
+    // Deep-dive wall with a local KV store and synthetic credentials (tests/deep-dive.spec.ts).
+    command: 'npm run deep-dive:seed-test && wrangler dev --local --config wrangler.deepdive-test.jsonc --ip 127.0.0.1 --port 4176',
+    url: 'http://127.0.0.1:4176',
+    reuseExistingServer: false,
   }],
 })

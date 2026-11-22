@@ -18,6 +18,7 @@ import baselineAnchors from '../content/legacy-anchors.json' with { type: 'json'
 import { prerenderHiddenWork } from './build-experiment'
 import { prerenderEdgeCase } from './build-play'
 import { ProposalPage, proposalPages, type ProposalKind } from '../src/design/ProposalPage'
+import { DeepDiveShell } from '../src/design/DeepDiveShell'
 import { prerenderAtlas } from './build-atlas'
 import { prerenderInquirySpace } from './build-inquiry-space'
 import { inquirySpacePath } from '../src/inquiry-space/paths'
@@ -49,7 +50,8 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   if (legacyIds.has(alias.fragment)) throw new Error('A legacy fragment needs an explicitly reviewed migration before replacement')
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
-const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary, investigation }) => ({ id, path, title, summary, ...(investigation?.brief ? { brief: investigation.brief } : {}) })), fragmentRedirects }
+const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary, investigation }) => ({ id, path, title, summary, ...(investigation?.brief ? { brief: investigation.brief } : {}), ...(investigation?.status ? { status: investigation.status } : {}),
+  ...(investigation?.figures?.some(figure => figure.headline) ? { headlines: investigation.figures.filter(figure => figure.headline).map(({ id, value, unit, label, basis, qualifier }) => ({ id, value, unit, label, basis, qualifier })) } : {}) })), fragmentRedirects }
 // Production home receives only approved, projected investigations; the client hydrates from the same home-reading JSON.
 const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex investigations={reading.entries} />)
 if (!homeTemplate.includes('<!--app-start-->') || !homeTemplate.includes('<!--app-end-->')) throw new Error('Home prerender markers missing')
@@ -87,6 +89,13 @@ for (const [kind, metadata] of Object.entries(foundationPages)) {
     .replace('<!--foundation-html-->', () => renderToString(<FoundationPage kind={kind as FoundationKind}/>))
   const target = path.join(output, metadata.path.slice(1), 'index.html')
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
+}
+// Deep-dive frame: the Worker serves it only after a password check (worker/deep-dive.ts). No private content.
+{
+  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: 'Deep dive — Producing Curiosity', description: 'Password-protected deep dives.', indexable: false }))
+    .replace('<!--foundation-html-->', () => renderToString(<DeepDiveShell/>))
+  await mkdir(path.join(output, 'deep-dive', '_shell'), { recursive: true })
+  await writeFile(path.join(output, 'deep-dive', '_shell', 'index.html'), html)
 }
 // Owner-review shells (About, Learning) exist only in the local fixtures build.
 const proposalRoutes: string[] = []

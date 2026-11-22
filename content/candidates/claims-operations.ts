@@ -58,14 +58,14 @@ export const claimsCandidate: Entry = {
     notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
     measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     figures: [
-      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '700+', unit: 'views since it was shared', label: 'Paperwork guide access, estimated from about 30 views a month over 2+ years', basis: 'owner_estimate', qualifier: 'A running total estimated from an average, not a counted figure. Access, not use or effect.', evidenceIds: [] },
+      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '700+', unit: 'views since it was shared', label: 'Paperwork guide access, estimated from about 30 views a month over 2+ years', basis: 'owner_estimate', qualifier: 'A running total estimated from an average, not a counted figure. Access, not use or effect.', headline: true, evidenceIds: [] },
       { id: 'e2b9981c-4fbe-47a9-a2db-e3aad0d14e0e', value: '~6', unit: 'new hires a quarter', label: 'Onboarding audience, averaged', basis: 'owner_estimate', qualifier: 'The audience, not who delivered the training.', evidenceIds: [] },
-      { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported, 20 November)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', evidenceIds: [] },
+      { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', headline: true, evidenceIds: [] },
     ],
     blueprint: {
       title: 'Where the paperwork check happens',
       caption: 'The same total-loss paperwork, before and after the change. The difference is where the sufficiency check sits relative to payment, and what now helps people get the paperwork right.',
-      provenance: 'Reconstructed for this portfolio from project notes and my account of the process, in November 2026; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they could surface, not how often they happened.',
+      provenance: 'Reconstructed for this portfolio from project notes and my account of the process; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they could surface, not how often they happened.',
       shift: 'What moved: before, payment could come first and the sufficiency check after it. After, the check comes first and payment waits for it.',
       lanes: [
         { id: 'customer', label: 'Customer', lineAfter: 'Line of interaction' },
@@ -139,6 +139,8 @@ export const claimsCandidate: Entry = {
         },
       ],
     },
+    status: { kind: 'in_use', label: 'In use 2+ years across four offices' },
+    deepDive: true,
     interactive: 'move-the-checkpoint',
     statements: [
       { id: 'ed50dcf8-47c0-4ddd-af83-b910c458ad12', section: 'observedCondition', kind: 'direct_observation', contribution: 'identified', evidenceIds: [], text: 'A delivery could be recorded, and payment released, before the salvage partner decided the paperwork was sufficient.', limitation: 'Source pending. Describes the earlier process, not every claim.' },

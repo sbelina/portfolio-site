@@ -210,3 +210,29 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (max-width: 360px) { .pc-hero .pc-identity { letter-spacing: .04em; } }
 .pc-byline .pc-areas, .pc-byline .pc-tagline { display: block; }
+
+/* Results strip (homepage) and case status tags, 22 November. */
+.pc-results { margin: 0 0 3rem; border-block: 1px solid var(--line); padding-block: 1.25rem 1.5rem; }
+.pc-results h2 { margin: 0 0 1rem; }
+.pc-results ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2rem; }
+.pc-results li { min-width: 0; }
+.pc-result-value { margin: 0; font-size: 1rem; }
+.pc-result-value strong { display: block; font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; }
+.pc-result-label { margin: .35rem 0 0; max-width: 34ch; }
+.pc-result-basis { margin: .35rem 0 .5rem; font-size: .82rem; color: var(--muted); max-width: 40ch; }
+.pc-results a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+.pc-featured-status { margin: .75rem 0 0; }
+
+.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
+.case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
+.case-status[data-status="proposal"] { border-style: dashed; color: var(--muted); }
+
+/* Deep dive pages (served by the Worker after a password check). */
+.deep-dive .deep-dive-login { display: grid; gap: .5rem; max-width: 22rem; margin: 1.5rem 0; }
+.deep-dive .deep-dive-login input { min-height: 44px; padding: .5rem .75rem; font: inherit; border: 1px solid var(--ink); background: transparent; color: var(--ink); }
+.deep-dive button { min-height: 44px; padding: .5rem 1rem; font: inherit; border: 1px solid var(--ink); background: var(--ink); color: var(--paper, #f3efe7); cursor: pointer; }
+.deep-dive .deep-dive-signout button { background: transparent; color: var(--ink); margin-top: 2rem; }
+.deep-dive-error { border-left: 3px solid var(--pressure, currentColor); padding-left: .75rem; font-weight: 600; }
+.deep-dive-index { padding-left: 1.25rem; }
+.deep-dive-index a { display: inline-flex; min-height: 44px; align-items: center; }
+.deep-dive-body { max-width: 70ch; }

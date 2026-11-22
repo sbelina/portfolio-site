@@ -127,3 +127,29 @@ test('the Claims service blueprint is valid, labelled as reconstructed, result-f
   expect(JSON.stringify(blueprint)).not.toMatch(/IAA|Insurance Auto Auctions|Copart/)
   expect(JSON.stringify(blueprint.views)).not.toMatch(/\d{2,}/)
 })
+
+test('status tags and headline figures refuse date call-outs, and the strip shows only approved headlines', async () => {
+  const { investigationSchema } = await import('../src/content/investigation')
+  const narrative = claimsCandidate.investigation!
+  expect(narrative.status).toEqual({ kind: 'in_use', label: 'In use 2+ years across four offices' })
+  expect(narrative.deepDive).toBe(true)
+  expect(investigationSchema.safeParse({ ...narrative, status: { kind: 'adopted', label: 'Adopted by July 2026' } }).success).toBe(false)
+  const dated = structuredClone(narrative)
+  dated.figures![0] = { ...dated.figures![0], label: 'Views by November 2026' }
+  expect(investigationSchema.safeParse(dated).success).toBe(false)
+  // Renders: nothing without approved headlines; otherwise each figure keeps its basis and case link.
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const React = await import('react')
+  const { ResultsStrip } = await import('../src/design/ResultsStrip')
+  expect(renderToStaticMarkup(React.createElement(ResultsStrip, { investigations: [] }))).toBe('')
+  const headlines = narrative.figures!.filter(figure => figure.headline).map(({ id, value, unit, label, basis, qualifier }) => ({ id, value, unit, label, basis, qualifier }))
+  const html = renderToStaticMarkup(React.createElement(ResultsStrip, { investigations: [{ id: claimsCandidate.id, path: '/investigations/claims-operations/', title: claimsCandidate.title, summary: claimsCandidate.summary, headlines }] }))
+  expect(html).toContain('What changed')
+  for (const figure of headlines) expect(html).toContain(figure.value)
+  expect(html).toContain('Approximate · my estimate')
+  expect(html).toContain('href="/investigations/claims-operations/"')
+  // Production has no approved case, so the live homepage shows no strip and no status tag.
+  const home = await readFile('dist/index.html', 'utf8')
+  expect(home).not.toContain('pc-results')
+  expect(home).not.toContain('case-status')
+})

@@ -172,3 +172,6 @@ inquiry-studio-test-results/
 dist-artifact/
 # Private thought archive test output
 thoughts-test-results/
+
+# Private deep-dive sources (uploaded to private storage, never committed)
+private/

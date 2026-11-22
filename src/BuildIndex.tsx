@@ -9,6 +9,8 @@ import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduc
 import { primaryEvidence, previousEditionHref, representativeSummaries, type InvestigationSummary } from './content/primary-evidence'
 import { professionalIdentity, practiceAreas, tagline } from './content/recruiter'
 import { RecruiterActions } from './design/RecruiterActions'
+import { CaseStatus } from './reading/CaseStatus'
+import { ResultsStrip } from './design/ResultsStrip'
 
 const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
 export const archivedAnchors = archive.homeAnchors.filter(id => !currentAnchors.has(id))
@@ -41,6 +43,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         </div>
         <InquiryIllustration archivePath={publicPath(archive.reviewPath)}/>
       </section>
+      <ResultsStrip investigations={investigations}/>
       <nav className="pc-journeys" aria-label="Explore the portfolio">
         <a href={publicPath(evidence.href)} data-evidence-status={evidence.status}><span className="pc-kicker">Start with the evidence</span><strong>{evidence.title} <span aria-hidden="true">→</span></strong><span>{evidence.description}{evidence.status === 'previous-edition' ? <> <em className="pc-evidence-boundary">{evidence.boundary}</em></> : null}</span></a>
         <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore my questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood.</span></a>
@@ -56,7 +59,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <a className="pc-text-link" href={publicPath('/investigations/')}>All investigations and their status <span aria-hidden="true">→</span></a>
       </section> : null}
       {evidence.status === 'approved' && evidence.brief ? <section className="pc-section pc-featured-case" aria-labelledby="pc-featured-title">
-        <div className="pc-section-heading"><p className="pc-kicker">Featured investigation</p><h2 id="pc-featured-title">{evidence.title}</h2></div>
+        <div className="pc-section-heading"><p className="pc-kicker">Featured investigation</p><h2 id="pc-featured-title">{evidence.title}</h2>{evidence.caseStatus ? <p className="pc-featured-status"><CaseStatus status={evidence.caseStatus}/></p> : null}</div>
         <dl className="pc-brief">{([['What changed', evidence.brief.result], ['The problem', evidence.brief.tension], ['What I did', evidence.brief.call], ['How I knew', evidence.brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
         <a className="pc-text-link" href={publicPath(evidence.href)}>Read the full case, including what I didn’t own <span aria-hidden="true">→</span></a>
         <RecruiterActions label="Contact after the featured investigation"/>

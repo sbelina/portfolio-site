@@ -10,6 +10,8 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 ## Current direction — 6 November 2026
 
+Public cases and password-protected deep dives, status tags and the results strip, 22 November (review branch): [setup and design](DEEP-DIVE.md).
+
 Professional alignment, 19 November (review branch): [decision record, route map, proposed copy and publication queue](NOV-19-PROFESSIONAL-ALIGNMENT.md).
 
 Direction in development, 16 November: [evidence, inquiry and learning audit and Phase 1 record](NOV-16-DIRECTION-AUDIT.md), with the [publication ledger](PUBLICATION-LEDGER.md), [learning specification](LEARNING-FACILITATION-SPEC.md) and [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md). Branch work only; nothing is published.

@@ -224,3 +224,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 @media print { .blueprint-scroll { display: block !important; } .blueprint-stages { display: none !important; } }
 .blueprint-shift { font-weight: 600; max-width: 65ch; border-left: 3px solid var(--reading-holds); padding-left: .75rem; }
 .blueprint thead th:first-child { color: var(--reading-muted); font-weight: 600; }
+
+.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
+.case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
+.case-status[data-status="proposal"] { border-style: dashed; color: var(--reading-muted); }
+.reading-card-status, .reading-case-status { margin: .25rem 0 .5rem; }
+.reading-case-status-label { font-size: .85rem; color: var(--reading-muted); margin-right: .35rem; }
+.reading-deep-dive { margin: 3rem 0; padding: 1.25rem; border: 1px solid var(--reading-line); }
+.reading-deep-dive h2 { margin-top: 0; }
+.reading-deep-dive a { display: inline-flex; align-items: center; min-height: 44px; }
+.reading-deep-dive-note { color: var(--reading-muted); font-size: .9rem; margin-left: .5rem; }
