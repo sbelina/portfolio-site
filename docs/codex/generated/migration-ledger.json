@@ -235,6 +235,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-interlude-title",
+      "destination": "/#pc-interlude-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-practice-title",
       "destination": "/#pc-practice-title",
       "source": "new reading gateway/bootstrap",

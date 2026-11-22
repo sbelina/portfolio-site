@@ -123,3 +123,29 @@ test('the social preview carries the current positioning, not the 6 November lea
   const png = await readFile('dist/social-preview.png')
   expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630])
 })
+
+test('the "How I got here" interlude sits between the evidence and the practice, with its source', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 740 } })
+  try {
+    const page = await context.newPage()
+    await page.goto(`${origin}/`)
+    const headings = await page.locator('main h2').allInnerTexts()
+    const lens = headings.findIndex(text => /how i got here/i.test(text))
+    expect(lens).toBeGreaterThan(headings.findIndex(text => text.startsWith('Three questions')))
+    expect(lens).toBeLessThan(headings.indexOf('Test. Show. Enable.'))
+    const interlude = page.getByRole('region', { name: 'How I got here' })
+    await expect(interlude.locator('blockquote')).toHaveText('Inspiration is needed in geometry, just as much as in poetry.')
+    await expect(interlude.locator('figcaption')).toHaveText('— Alexander Pushkin')
+    await interlude.getByText('Source', { exact: true }).click()
+    await expect(interlude.locator('[lang="ru"]')).toContainText('Вдохновение нужно в геометрии, как и в поэзии')
+    await expect(interlude.locator('.pc-interlude-drawing')).toHaveAttribute('aria-hidden', 'true')
+  } finally { await context.close() }
+  const enlarged = await browser.newContext({ viewport: { width: 320, height: 740 }, reducedMotion: 'reduce' })
+  try {
+    const page = await enlarged.newPage()
+    await page.goto(`${origin}/`)
+    await page.addStyleTag({ content: ':root{font-size:200%}' })
+    await expect(page.getByRole('region', { name: 'How I got here' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  } finally { await enlarged.close() }
+})

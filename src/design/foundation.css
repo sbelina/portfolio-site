@@ -236,3 +236,25 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive-index { padding-left: 1.25rem; }
 .deep-dive-index a { display: inline-flex; min-height: 44px; align-items: center; }
 .deep-dive-body { max-width: 70ch; }
+
+/* "How I got here" interlude: a full-width observatory band between what changed and the practice. */
+.pc-interlude { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 100vmax var(--paper); clip-path: inset(0 -100vmax); margin-block: 4rem; padding-block: 3.5rem; }
+.pc-interlude-inner { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 3rem; align-items: center; }
+.pc-interlude .pc-kicker { margin: 0 0 1.25rem; }
+.pc-interlude-quote { margin: 0; }
+.pc-interlude-quote blockquote { margin: 0; }
+.pc-interlude-quote blockquote p { margin: 0; font-size: clamp(1.75rem, 3.6vw, 3rem); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 22ch; }
+.pc-interlude-quote figcaption { margin-top: 1rem; color: var(--muted); }
+.pc-interlude .pc-interlude-lens { margin: 2.25rem 0 0; max-width: 56ch; }
+.pc-interlude-source { margin-top: 1.25rem; color: var(--muted); font-size: .9rem; }
+.pc-interlude-source summary { cursor: pointer; display: list-item; padding-block: .65rem; }
+.pc-interlude-source p { margin: .25rem 0 0; max-width: 60ch; }
+.pc-interlude-drawing svg { display: block; width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1; }
+.pc-interlude-geometry { stroke: var(--holds); stroke-width: 2; }
+.pc-interlude-poetry { stroke: var(--unresolved); stroke-width: 2; stroke-dasharray: 6 5; }
+.pc-interlude-meet { fill: var(--signal); stroke: none; }
+.pc-interlude-legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: .75rem 0 0; font-size: .8rem; color: var(--muted); }
+.pc-interlude-legend span::before { content: ""; display: inline-block; width: 1.25rem; height: 0; margin-right: .4rem; vertical-align: middle; border-top: 2px solid var(--holds); }
+.pc-interlude-legend span:nth-child(2)::before { border-top: 2px dashed var(--unresolved); }
+.pc-interlude-legend span:nth-child(3)::before { width: .6rem; height: .6rem; border: 0; border-radius: 50%; background: var(--signal); }
+@media (max-width: 760px) { .pc-interlude-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; } .pc-interlude-drawing { max-width: 18rem; } }

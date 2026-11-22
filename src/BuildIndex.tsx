@@ -11,6 +11,7 @@ import { professionalIdentity, practiceAreas, tagline } from './content/recruite
 import { RecruiterActions } from './design/RecruiterActions'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
+import { LensInterlude } from './design/LensInterlude'
 
 const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
 export const archivedAnchors = archive.homeAnchors.filter(id => !currentAnchors.has(id))
@@ -64,6 +65,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <a className="pc-text-link" href={publicPath(evidence.href)}>Read the full case, including what I didn’t own <span aria-hidden="true">→</span></a>
         <RecruiterActions label="Contact after the featured investigation"/>
       </section> : null}
+      <LensInterlude/>
       <section className="pc-section" aria-labelledby="pc-practice-title">
         <div className="pc-section-heading"><p className="pc-kicker">The practice</p><h2 id="pc-practice-title">Test. Show. Enable.</h2></div>
         <PracticeMoves/>

@@ -12,7 +12,7 @@ html[data-edition="current"], .pc-site, .pc-sample {
   --reading-unresolved: var(--unresolved); --reading-pressure: var(--pressure); --reading-holds: var(--holds);
 }
 html[data-edition="current"] { background: var(--paper); color: var(--ink); }
-.pc-site[data-surface="observatory"], .pc-sample[data-surface="observatory"] {
+.pc-site[data-surface="observatory"], .pc-sample[data-surface="observatory"], .pc-interlude[data-surface="observatory"] {
   color-scheme: dark;
   --paper: #111716; --panel: #202925; --panel-2: #28332c;
   --ink: #f3efe7; --muted: #b9c0b6; --line: #87978a; --soft-line: #344039;
