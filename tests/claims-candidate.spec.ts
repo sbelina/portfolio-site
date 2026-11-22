@@ -94,6 +94,36 @@ test('a case reads result first: at a glance, the four questions, what I would d
   expect(html.match(/<dl>.*?<dt>(.*?)<\/dt>/)![1]).toBe('What changed')
   // Caveats sit inside How I know, after What changed.
   for (const caveat of ['What I didn’t own', 'How this was measured', 'Limitations']) expect(html.indexOf(`<h3>${caveat}</h3>`)).toBeGreaterThan(html.indexOf('>What changed</h2>'))
-  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['At a glance', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
+  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['At a glance', 'Service blueprint: before and after', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
   expect(narrative.differently).toMatch(/^I would /)
+})
+
+test('the Claims service blueprint is valid, labelled as reconstructed, result-first and safe to show', async () => {
+  const { blueprintSchema } = await import('../src/content/investigation')
+  const { renderToStaticMarkup } = await import('react-dom/server')
+  const React = await import('react')
+  const { ServiceBlueprint } = await import('../src/reading/ServiceBlueprint')
+  const blueprint = claimsCandidate.investigation!.blueprint!
+  expect(blueprintSchema.parse(blueprint)).toEqual(blueprint)
+  // A cell that names a lane that does not exist is rejected.
+  const broken = structuredClone(blueprint)
+  broken.views[0].stages[0].cells[0].lane = 'nobody'
+  expect(blueprintSchema.safeParse(broken).success).toBe(false)
+  // Made now, not at the time: the artifact says so, and the page always shows it.
+  expect(blueprint.provenance).toMatch(/^Reconstructed for this portfolio from project notes/)
+  const html = renderToStaticMarkup(React.createElement(ServiceBlueprint, { blueprint }))
+  expect(html).toContain(blueprint.provenance)
+  // What changed comes first; both views are in the HTML for no-JavaScript and print.
+  expect(html.indexOf('data-view="after"')).toBeLessThan(html.indexOf('data-view="before"'))
+  // Every mark is spoken in words, not only by colour or symbol.
+  for (const cell of blueprint.views.flatMap(view => view.stages.flatMap(stage => stage.cells)).filter(cell => cell.mark)) {
+    expect(html).toContain(`<strong>${cell.mark === 'failure' ? 'Failure point' : 'Changed'}:</strong> ${cell.text.replaceAll('’', '’')}`)
+  }
+  // The move is the point: the check comes before payment after, and after payment before.
+  const order = (id: 'before' | 'after') => blueprint.views.find(view => view.id === id)!.stages.map(stage => stage.label)
+  expect(order('before').indexOf('Payment')).toBeLessThan(order('before').indexOf('Salvage check'))
+  expect(order('after').indexOf('Salvage check')).toBeLessThan(order('after').indexOf('Payment'))
+  // External-safe: no vendor name, no exact figures.
+  expect(JSON.stringify(blueprint)).not.toMatch(/IAA|Insurance Auto Auctions|Copart/)
+  expect(JSON.stringify(blueprint.views)).not.toMatch(/\d{2,}/)
 })
