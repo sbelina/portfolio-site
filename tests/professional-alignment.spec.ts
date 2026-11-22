@@ -149,3 +149,26 @@ test('the "How I got here" interlude sits between the evidence and the practice,
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   } finally { await enlarged.close() }
 })
+
+test('the interlude drawing is a real Euclidean construction, and its stated numbers match it', async () => {
+  const geometry = await import('../src/design/lens-geometry')
+  const { A, B, C, centre, radius, angleAtC, measures, constructionSteps, freehandPath } = geometry
+  // C lies on the circle, directly above O.
+  expect(geometry.length(centre, C)).toBeCloseTo(radius, 10)
+  expect(C.x).toBe(centre.x)
+  // Thales: the angle ACB is right (dot product zero).
+  expect(angleAtC).toBe(0)
+  // Pythagoras: AC² + BC² = AB², and AC = r√2.
+  expect(measures.ACsquared + measures.BCsquared).toBeCloseTo(measures.ABsquared, 10)
+  expect(measures.AC).toBeCloseTo(radius * Math.SQRT2, 10)
+  expect(measures.AB).toBe(2 * radius)
+  // The freehand line passes exactly through C.
+  expect(freehandPath).toContain(`${C.x} ${C.y}`)
+  // The text readers see states the same numbers.
+  const text = constructionSteps.map(step => step.text).join(' ')
+  expect(text).toContain(`r = ${radius}`)
+  expect(text).toContain(`2r = ${2 * radius}`)
+  expect(text).toContain(measures.AC.toFixed(1))
+  expect(text).toContain(`= ${Math.round(measures.ABsquared).toLocaleString('en-US')} = AB²`)
+  expect(B.x - A.x).toBe(2 * radius)
+})
