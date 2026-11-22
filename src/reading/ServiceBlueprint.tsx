@@ -2,24 +2,24 @@ import React from 'react'
 import type { Blueprint } from '../content/investigation'
 
 const markLabel = { failure: 'Failure point', change: 'Changed' } as const
-const markSymbol = { failure: '⚠', change: '✦' } as const
+const markSymbol = { failure: '⚠\uFE0E', change: '✦' } as const
 
 function View({ blueprint, view }: { blueprint: Blueprint; view: Blueprint['views'][number] }) {
   const titleId = `blueprint-${view.id}-title`
   return <div className="blueprint-view" data-view={view.id}>
     <h3 id={titleId}>{view.label}</h3>
     <p className="blueprint-summary">{view.summary}</p>
-    <div className="blueprint-scroll" role="region" tabIndex={0} aria-labelledby={titleId}>
+    <div className="blueprint-scroll" role="region" tabIndex={0} aria-label={`${view.label}: who acts, stage by stage`}>
       <table>
         <caption className="blueprint-sr">{blueprint.title}: {view.label}. Rows are who acts; columns are stages, in order.</caption>
-        <thead><tr><td/>{view.stages.map((stage, index) => <th key={stage.label} scope="col"><span className="blueprint-step">{index + 1}</span> {stage.label}{stage.note ? <em className="blueprint-note">{stage.note}</em> : null}</th>)}</tr></thead>
+        <thead><tr><th scope="col">Who acts</th>{view.stages.map((stage, index) => <th key={stage.label} scope="col"><span className="blueprint-step">{index + 1}</span> {stage.label}{stage.note ? <em className="blueprint-note">{stage.note}</em> : null}</th>)}</tr></thead>
         <tbody>{blueprint.lanes.map(lane => <React.Fragment key={lane.id}>
           <tr data-lane={lane.id}>
             <th scope="row">{lane.label}</th>
             {view.stages.map(stage => <td key={stage.label}>{stage.cells.filter(cell => cell.lane === lane.id).map(cell =>
               <p key={cell.text} data-mark={cell.mark}>{cell.mark ? <><span aria-hidden="true" className="blueprint-symbol">{markSymbol[cell.mark]}</span> <strong>{markLabel[cell.mark]}:</strong> </> : null}{cell.text}</p>)}</td>)}
           </tr>
-          {lane.lineAfter ? <tr className="blueprint-line"><th colSpan={view.stages.length + 1} scope="colgroup">{lane.lineAfter}</th></tr> : null}
+          {lane.lineAfter ? <tr className="blueprint-line"><td colSpan={view.stages.length + 1}>{lane.lineAfter}</td></tr> : null}
         </React.Fragment>)}</tbody>
       </table>
     </div>
@@ -44,14 +44,15 @@ export function ServiceBlueprint({ blueprint }: { blueprint: Blueprint }) {
     <p className="blueprint-kicker">Service blueprint · before and after</p>
     <h2 id="blueprint-title">{blueprint.title}</h2>
     <p>{blueprint.caption}</p>
+    {blueprint.shift ? <p className="blueprint-shift">{blueprint.shift}</p> : null}
+    <ul className="blueprint-key" aria-label="Key">
+      <li><span aria-hidden="true" className="blueprint-symbol" data-mark="failure">{markSymbol.failure}</span> Failure point: where a problem could enter or surface</li>
+      <li><span aria-hidden="true" className="blueprint-symbol" data-mark="change">{markSymbol.change}</span> Changed: what is different after</li>
+    </ul>
     <fieldset className="blueprint-switch"><legend>Show</legend>
       {blueprint.views.map(view => <label key={view.id}><input type="radio" name="blueprint-view" value={view.id} defaultChecked={view.id === 'after'}/> {view.label}</label>)}
     </fieldset>
     {[...blueprint.views].reverse().map(view => <View key={view.id} blueprint={blueprint} view={view}/>)}
-    <ul className="blueprint-key" aria-label="Key">
-      <li><span aria-hidden="true" className="blueprint-symbol" data-mark="failure">⚠</span> Failure point: where a problem could enter or was found</li>
-      <li><span aria-hidden="true" className="blueprint-symbol" data-mark="change">✦</span> Changed: what is different after</li>
-    </ul>
     <p className="blueprint-provenance">{blueprint.provenance}</p>
   </section>
 }

@@ -17,6 +17,8 @@ export const blueprintSchema = z.strictObject({
   caption: narrativeText,
   /** How the artifact was made, e.g. reconstructed later from notes. Always shown. */
   provenance: narrativeText,
+  /** The one change to see first, in plain words (e.g. what moved). */
+  shift: narrativeText.optional(),
   lanes: z.array(z.strictObject({ id: z.string().regex(/^[a-z][a-z0-9-]*$/), label: blueprintLabel, lineAfter: z.enum(['Line of interaction', 'Line of visibility']).optional() })).min(2).max(6),
   views: z.tuple([
     z.strictObject({ id: z.literal('before'), label: blueprintLabel, summary: narrativeText, stages: z.array(z.strictObject({ label: blueprintLabel, note: z.string().min(1).max(60).optional(), cells: z.array(z.strictObject({ lane: z.string(), text: narrativeText, mark: z.enum(['failure', 'change']).optional() })).max(12) })).min(2).max(8) }),

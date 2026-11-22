@@ -65,17 +65,18 @@ export const claimsCandidate: Entry = {
     blueprint: {
       title: 'Where the paperwork check happens',
       caption: 'The same total-loss paperwork, before and after the change. The difference is where the sufficiency check sits relative to payment, and what now helps people get the paperwork right.',
-      provenance: 'Reconstructed for this portfolio from project notes in November 2026; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they were found, not how often they happened.',
+      provenance: 'Reconstructed for this portfolio from project notes and my account of the process, in November 2026; it was not drawn at the time. Roles are generic and no partner is named. It shows where problems could enter and where they could surface, not how often they happened.',
+      shift: 'What moved: before, payment could come first and the sufficiency check after it. After, the check comes first and payment waits for it.',
       lanes: [
         { id: 'customer', label: 'Customer', lineAfter: 'Line of interaction' },
-        { id: 'frontstage', label: 'What the customer receives', lineAfter: 'Line of visibility' },
+        { id: 'frontstage', label: 'Frontstage: letters and requests', lineAfter: 'Line of visibility' },
         { id: 'team', label: 'Claims team' },
         { id: 'partner', label: 'Salvage partner' },
       ],
       views: [
         {
           id: 'before', label: 'Before',
-          summary: 'Payment could go ahead on a delivery record. Whether the paperwork was sufficient was only confirmed afterwards, so problems surfaced when the claim already looked finished.',
+          summary: 'Payment could go ahead on a delivery record. Whether the paperwork was sufficient could be confirmed only afterwards, so problems could surface when the claim already looked finished.',
           stages: [
             { label: 'Total loss', cells: [
               { lane: 'customer', text: 'Learns the vehicle is a total loss.' },
@@ -84,22 +85,22 @@ export const claimsCandidate: Entry = {
             { label: 'Paperwork', cells: [
               { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
               { lane: 'customer', mark: 'failure', text: 'A date, the mileage or a signature is missing.' },
-              { lane: 'customer', mark: 'failure', text: 'Two owners are needed, but only one answers.' },
+              { lane: 'customer', mark: 'failure', text: 'Only one of two requests gets an answer.' },
               { lane: 'frontstage', text: 'The letter leaves several decisions to the customer.' },
             ] },
             { label: 'Review', cells: [
               { lane: 'team', text: 'A rep reviews the documents.' },
-              { lane: 'team', text: 'A supervisor approves.' },
+              { lane: 'team', text: 'A supervisor approves the claim.' },
             ] },
             { label: 'Payment', note: 'Before the check', cells: [
-              { lane: 'team', mark: 'failure', text: 'Payment is released once delivery is recorded, before sufficiency is confirmed.' },
+              { lane: 'team', mark: 'failure', text: 'Payment could be released once delivery was recorded, before sufficiency was confirmed.' },
             ] },
             { label: 'Salvage check', cells: [
               { lane: 'partner', text: 'Confirms whether the documents are sufficient.' },
-              { lane: 'partner', mark: 'failure', text: 'Problems are found here, after payment.' },
+              { lane: 'partner', mark: 'failure', text: 'Problems could surface here, after payment.' },
             ] },
             { label: 'Correction', note: 'After the claim looked finished', cells: [
-              { lane: 'customer', mark: 'failure', text: 'Is asked to fix paperwork for a claim that looked finished.' },
+              { lane: 'customer', mark: 'failure', text: 'Could be asked to fix paperwork for a claim that looked finished.' },
               { lane: 'frontstage', text: 'Follow-up requests to fix the paperwork.' },
               { lane: 'team', text: 'The admin team follows up until the paperwork is fixed.' },
             ] },
@@ -115,15 +116,17 @@ export const claimsCandidate: Entry = {
             ] },
             { label: 'Paperwork', cells: [
               { lane: 'customer', text: 'Completes the paperwork and sends it, with a photo.' },
-              { lane: 'customer', mark: 'failure', text: 'The same problems can still happen: a missing date, mileage or signature, or only one of two owners answering.' },
+              { lane: 'customer', mark: 'failure', text: 'The same problems can still happen: a missing date, mileage or signature, or only one of two requests answered.' },
             ] },
             { label: 'Review', cells: [
-              { lane: 'team', mark: 'change', text: 'A rep reviews the documents against the paperwork guide.' },
-              { lane: 'team', text: 'A supervisor approves.' },
+              { lane: 'team', text: 'A rep reviews the documents.' },
+              { lane: 'team', mark: 'change', text: 'A paperwork guide sets out what sufficient paperwork needs.' },
+              { lane: 'team', text: 'A supervisor approves the claim.' },
               { lane: 'team', mark: 'change', text: 'New hires, every quarter, learn the process from the training.' },
             ] },
             { label: 'Salvage check', note: 'Moved before payment', cells: [
               { lane: 'partner', mark: 'change', text: 'Confirms the documents are sufficient before payment. Who decides has not changed.' },
+              { lane: 'customer', text: 'May still be asked to fix paperwork, now before payment.' },
               { lane: 'team', text: 'If something is missing, the admin team follows up while the claim is still open.' },
             ] },
             { label: 'Payment', note: 'Now waits for the check', cells: [
