@@ -51,29 +51,37 @@ The typed candidate is authoritative; this is the at-a-glance version.
 
 ---
 
-## 2. Agreement Is Not Trust — research framing and measurement
+## 2. Agreement Is Not Trust — the owner’s final version (22 November)
 
-- **What changed:** Stakeholders used the study’s statistics in their briefs, and the work supported an enterprise measurement framework. The study reached 800+ respondents in nine days. *(Brief use is described only where corroborated.)*
-- **The problem:** The organization wanted to know what builds trust. The usual survey asked whether people *agreed* with statements about the organization, which is a different question from what *influences* their trust.
+The owner supplied a final Trust case: *Designing Better Questions About Trust*, five spreads.
+
+- **Deep dive:** the full version is prepared as a private deep dive (`private/deep-dives/trust-research.md`, not in Git).
+- **Public version:** below, in four questions, using only the owner’s final wording. It is not approved; approval and sources are still required.
+
+- **What changed:**
+  - The adopted survey measured agreement and trust influence separately.
+  - The readout was discussed by 13 people across four functions, two of them directors.
+  - A year later it is still cited in strategy briefs.
+  - It narrowed plans toward life stages, away from weak scenarios.
+  - A marketing lead’s follow-up took up drivers and proof points.
+- **The problem:** trust can read as one attitude, how favorably people rate a company. But people may agree with an attribute without it shaping their trust. Agreement is not trust.
 - **What I did:**
-  - I proposed the study and co-designed it live with two peers.
-  - I separated the two questions in the instrument, so agreement and reported influence on trust were measured apart.
-  - I built a general-to-specific interview guide with an open-ended start, to keep the cognitive load low.
-  - A vendor fielded it.
-- **How I knew:** The instrument design itself: two questions asked separately, so agreement and reported influence on trust could be read apart.
-- **What I’d do differently (proposed):** Argue earlier and with evidence for including detractors, a proposal that was not adopted, because the people least likely to trust you are the ones the measure most needs.
+  - Set the general-to-specific interview sequence, so participants defined trust before the brand appeared. The external research partner conducted and synthesized the interviews.
+  - Proposed perception mapping (drivers, moments and proof points across audiences), one of three designs, co-built with two marketing and analytics leads.
+  - Separated agreement from trust impact in the survey, broke up complex questions, and kept an open-ended opening.
+- **How I knew:**
+  - The instrument design itself.
+  - Fieldwork: 800+ responses, target exceeded, closed early by the partner.
+  - The measures are self-report, not causal.
+- **What I’d do differently:** use the owner’s own words. The final deck’s *Whose experience is missing?* suggests: “Include detractors from the start; distrust can reveal what retains, repairs, and grows trust.”
 - **How I know (caveats):**
-  - 800+ responses is reach, not an outcome.
-  - Reported influence is not a causal effect; nothing here shows trust increased.
-  - The full perception-mapping framework was not implemented.
-  - Vendor attribution is retained.
-  - No participant quotations or raw findings are public.
+  - Proposals are recommendations, not completed outcomes.
+  - The full framework was not implemented.
+  - Detractors were championed but not sampled.
+  - No revenue or retention impact is claimed.
+- **Status tag (proposed):** *Adopted: two measures, kept apart.*
 
-**Open for the owner:**
-
-- The source and definition of 800+ responses in nine days.
-- What “supported an enterprise measurement framework” means in practice, and its source.
-- Confirm the detractor proposal wording.
+**Supersedes** the earlier draft’s “800+ responses in nine days”: the final says the partner closed fieldwork 5 days early. It also supersedes “Stakeholders used the study’s statistics in their briefs”: the final says “still cited in strategy briefs”.
 
 ---
 

@@ -269,14 +269,14 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 
 /* Deep dives in the deck grammar (docs/design-system/DECK-FOUNDATION.md). */
 .deep-dive { max-width: none; }
-.deep-dive-kicker { margin: 0 0 .75rem; font-size: .75rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+.deep-dive-kicker { margin: 0 0 .75rem; font-size: .75rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--signal); }
 .deep-dive h1, .deep-dive .deep-dive-headline, .deep-dive .deep-dive-hub h2 { font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
 .deep-dive h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 1rem; }
 .deep-dive-headline { font-size: clamp(2rem, 4.4vw, 3.4rem); margin: 0 0 1.75rem; position: relative; padding-bottom: .9rem; max-width: 18ch; }
 .deep-dive-headline::after { content: ""; position: absolute; left: 0; bottom: 0; width: 3.5rem; border-top: 3px solid currentColor; opacity: .7; }
 .deep-dive h1 em, .deep-dive-headline em, .deep-dive-hub h2 em { font-style: normal; color: var(--signal); }
 .deep-dive-public { margin: 0 0 2rem; }
-.deep-dive-public a, .deep-dive-public-link a, .deep-dive-onward, .deep-dive-parts a { display: inline-flex; align-items: center; min-height: 44px; }
+.deep-dive-public a, .deep-dive-public-link a, .deep-dive-onward, .deep-dive-parts a { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; }
 /* Headline links keep their word spacing (no flex), and still offer a 44px target. */
 .deep-dive-hub h2 a { display: inline-block; padding-block: .35rem; }
 .deep-dive-parts ol { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; padding: 0; list-style: none; margin: 0 0 2rem; border-block: 1px solid var(--line); }
@@ -292,12 +292,12 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive-field p { margin: 0 0 .5rem; max-width: 60ch; }
 .deep-dive-figure { margin: 1.75rem 0 0; padding: 1rem 1.25rem; border: 1px dashed var(--line); }
 .deep-dive-figure figcaption { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; margin-bottom: .5rem; }
-.deep-dive-principle { font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 1.2rem; margin: 1.5rem 0 0; max-width: 50ch; }
+.deep-dive-principle { font-style: italic; font-size: 1.2rem; margin: 1.5rem 0 0; max-width: 60ch; }
 .deep-dive-footer { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1.5rem; border-top: 1px solid var(--line); margin-top: 1.5rem; padding-top: .75rem; font-size: .9rem; }
 .deep-dive-tradeoff { flex: 1 1 22rem; letter-spacing: .02em; }
 .deep-dive-tradeoff span { font-weight: 700; }
 .deep-dive-tradeoff p { display: inline; margin: 0; }
-.deep-dive-onward em { font-family: Georgia, "Times New Roman", serif; }
+
 .deep-dive-count { font-variant-numeric: tabular-nums; letter-spacing: .12em; font-weight: 600; }
 .deep-dive-beneath { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 100vmax var(--paper); clip-path: inset(0 -100vmax); padding-block: 2.5rem 3rem; }
 .deep-dive-lede { max-width: 60ch; font-size: 1.1rem; }
@@ -308,3 +308,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive-hub h2 a:hover, .deep-dive-hub h2 a:focus-visible { text-decoration: underline; }
 .deep-dive-next { margin-top: 1.5rem; }
 @media (max-width: 760px) { .deep-dive-top, .deep-dive-bottom { grid-template-columns: minmax(0, 1fr); } }
+.deep-dive-field--held h3 { color: var(--signal); }
+.deep-dive-bottom { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.deep-dive-limits { color: var(--muted); }

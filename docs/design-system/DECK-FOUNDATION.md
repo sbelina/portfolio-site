@@ -11,6 +11,33 @@ New pages and components start from these rules. Where an earlier document confl
 
 The deck file itself is **not** stored in this public repository. It contains figures that need source review (see *Guardrails*). These rules describe it in words.
 
+## The final version: *Designing Better Questions About Trust*, 22 November
+
+The owner supplied the Trust case interview deck (*Sami Belina · Designing Better Questions About Trust*: five spreads and two appendices) as **the final version**. Where it differs from the nine-slide deck below, **the final version wins.** The file is not stored here.
+
+| Element | Final version |
+| --- | --- |
+| Spread labels | **The first view** (muted) and **What held** (accent colour), replacing *The label* and *What the evidence showed* |
+| Lower row | **My role** with a case-specific partner: *Who did what*, *Whose experience is missing?*, *Fieldwork*, or *What changed* |
+| Kickers | numbered and accent-coloured: `01 · THE RESEARCH CHALLENGE` |
+| Footer | a series line, `Sami Belina · Designing Better Questions About Trust`, then `01 / 05` |
+| Type | one sans-serif family, including italic sans for principles and asides (no serif) |
+| Cover statement | “I diagnose gaps in understanding and design the conditions that empower people to make **informed** decisions.” Kicker: *Research leadership*. Owner decision pending: this versus the site H1 |
+| Test. Show. Enable. | “Diagnose the gap, then design the conditions that close it.” **Test:** diagnose the gap, where a measure, definition, or category has drifted. **Show:** make evidence and uncertainty visible so people reach defensible interpretations. **Enable:** design the conditions people need to make informed decisions. *(Now used on the site.)* |
+| Across cases | agreement ≠ trust · delivered ≠ verified · 38 proposals ≠ 38 needs · passing checks ≠ accessible |
+| Honest closing line | “Proposals are recommendations, not completed outcomes. The full framework was not implemented; no revenue or retention impact is claimed.” A *Limits* line in deep dives |
+
+**Imagery added by the final version:**
+
+- Fog strands from different starting points cross an orange *designed conditions* line, braid as “held together, still distinct”, and end at an orange *informed decision* bar.
+- A shaded band between two curves, marked ≠ *the gap*.
+- A funnel spiral for question order, labelled “shapes are not data”.
+- Audience lanes for the framework, with the unsampled group dashed and labelled “championed; not sampled”.
+- A timeline with a dashed, proposed future.
+- A filled-squares bar for fieldwork reach.
+
+The figure types now include *The sequence I set*, *My proposed framework*, *Sanitized instrument* and *Timeline*. Each still states its caveat.
+
 ## 1. Headlines: one word carries the turn
 
 Every headline is two short lines. The first states the familiar reading (the label); the second turns it. **One word is set in the accent colour: the word that carries the change**, the one that would be different if the old assumption were still true.
@@ -42,8 +69,8 @@ Each case or case part is laid out the same way. This is the site’s *four ques
 | --- | --- | --- |
 | Kicker: `FIELD · CASE 01, 1 OF 3 · TEST — DIAGNOSING A CROSS-DEPARTMENT FAILURE` | section · position · move — topic | — |
 | Headline with accent (§1) | the label, then the turn | — |
-| **The label** | the proxy or definition people relied on, in quotation marks | What was the problem |
-| **What the evidence showed** | what testing the label revealed | How I knew |
+| **The first view** (was *The label*) | the familiar reading or proxy people relied on | What was the problem |
+| **What held** (was *What the evidence showed*) | what testing it revealed | How I knew |
 | `FIG. NN · TYPE · caveat` | the visual and its evidence status (§4) | — |
 | **My role** | what I did, unassigned or not | What I did |
 | **What leadership changed** / **What changed** | the decision and what lasted | What changed |

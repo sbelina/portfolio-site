@@ -107,7 +107,7 @@ const signOut = `<form class="deep-dive-signout" method="post" action="/deep-div
 const safeNext = (value: string | null) => value && /^\/deep-dive\/(?:[a-z0-9-]+\/)?$/.test(value) ? value : '/deep-dive/'
 
 type LegacyRecord = { title: string; html: string }
-type Part = { id: string; kicker?: string; headline: string; label?: string; evidence?: string; role?: string; changed?: string; principle?: string; tradeoff?: string; figure?: { label: string; html: string }; next?: string; extra: { title: string; html: string }[] }
+type Part = { id: string; kicker?: string; headline: string; label?: string; evidence?: string; role?: string; changed?: string; principle?: string; tradeoff?: string; limits?: string; figure?: { label: string; html: string }; next?: string; extra: { title: string; html: string }[]; lower?: { title: string; html: string }[] }
 type CaseRecord = LegacyRecord | { schema: 2; title: string; kicker?: string; summary?: string; intro?: string; parts: Part[] }
 type IndexRecord = { slug: string; title: string; summary?: string; kicker?: string; parts?: number; headline?: string }[]
 async function readJson<T>(kv: KVLike, key: string): Promise<T | null> {
@@ -127,14 +127,14 @@ function hub(index: IndexRecord) {
   return `<div class="deep-dive-beneath" data-surface="observatory">
 <p class="deep-dive-kicker">Beneath · deep dives</p>
 <h1>The longer <em>version</em>.</h1>
-<p class="deep-dive-lede">Each deep dive is the full account behind a public investigation: the label people relied on, what the evidence showed, my role, what changed, and the trade-off. One password opens all of them.</p>
+<p class="deep-dive-lede">Each deep dive is the full account behind a public investigation: the first view, what held, my role, who did what, and what changed. One password opens all of them.</p>
 ${index.length ? `<ol class="deep-dive-hub">${items}</ol>` : '<p>No deep dives have been uploaded yet.</p>'}
 ${index[0] ? `<p class="deep-dive-next"><a href="/deep-dive/${escapeHtml(index[0].slug)}/"><em>Where did it start?</em> <span aria-hidden="true">→</span></a></p>` : ''}
 ${signOut}
 </div>`
 }
 
-const field = (title: string, html?: string) => html ? `<section class="deep-dive-field"><h3>${title}</h3>${html}</section>` : ''
+const field = (title: string, html?: string, modifier = '') => html ? `<section class="deep-dive-field${modifier ? ` ${modifier}` : ''}"><h3>${title}</h3>${html}</section>` : ''
 
 /** One case as a run of spreads in the deck grammar (docs/design-system/DECK-FOUNDATION.md §2). */
 function spreads(slug: string, record: Extract<CaseRecord, { schema: 2 }>, index: IndexRecord) {
@@ -147,13 +147,14 @@ function spreads(slug: string, record: Extract<CaseRecord, { schema: 2 }>, index
     return `<section class="deep-dive-spread" id="${part.id}" aria-labelledby="${part.id}-title">
   ${part.kicker ? `<p class="deep-dive-kicker">${escapeHtml(part.kicker)}</p>` : ''}
   <h2 id="${part.id}-title" class="deep-dive-headline">${part.headline}</h2>
-  <div class="deep-dive-top">${field('The label', part.label)}${field('What the evidence showed', part.evidence)}</div>
+  <div class="deep-dive-top">${field('The first view', part.label)}${field('What held', part.evidence, 'deep-dive-field--held')}</div>
   ${part.figure ? `<figure class="deep-dive-figure"><figcaption>${escapeHtml(part.figure.label)}</figcaption>${part.figure.html}</figure>` : ''}
   ${part.extra.map(extra => field(escapeHtml(extra.title), extra.html)).join('')}
-  <div class="deep-dive-bottom">${field('My role', part.role)}${field('What changed', part.changed)}</div>
+  <div class="deep-dive-bottom">${field('My role', part.role)}${(part.lower ?? []).map(item => field(escapeHtml(item.title), item.html)).join('')}${field('What changed', part.changed)}</div>
   ${part.principle ? `<p class="deep-dive-principle">${part.principle}</p>` : ''}
   <footer class="deep-dive-footer">
     ${part.tradeoff ? `<div class="deep-dive-tradeoff"><span>— Trade-off:</span> ${part.tradeoff.replace(/^<p>|<\/p>$/g, '')}</div>` : ''}
+    ${part.limits ? `<div class="deep-dive-tradeoff deep-dive-limits"><span>— Limits:</span> ${part.limits.replace(/^<p>|<\/p>$/g, '')}</div>` : ''}
     <a class="deep-dive-onward" href="${nextHref}"><em>${escapeHtml(nextText)}</em> <span aria-hidden="true">→</span></a>
     <span class="deep-dive-count">${String(i + 1).padStart(2, '0')} / ${String(record.parts.length).padStart(2, '0')}</span>
   </footer>

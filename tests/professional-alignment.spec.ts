@@ -71,9 +71,10 @@ test('practice moves use the clarified definitions on the homepage and Practice 
   for (const route of ['/', '/practice/']) {
     await page.goto(`${origin}${route}`)
     const moves = page.locator('.pc-moves')
-    await expect(moves).toContainText('assumptions, measures, and explanations')
-    await expect(moves).toContainText('reasoning, evidence, and limitations inspectable')
-    await expect(moves).toContainText('decide, adapt, and ask new questions')
+    // The owner's final wording (Trust case, Appendix A).
+    await expect(moves).toContainText('Diagnose the gap: where a measure, definition, or category has drifted.')
+    await expect(moves).toContainText('Make evidence and uncertainty visible so people reach defensible interpretations.')
+    await expect(moves).toContainText('Design the conditions people need to make informed decisions.')
   }
   await expect(page.getByRole('heading', { name: /Notice → Frame → Model → Test → Interrogate → Revise/ })).toBeVisible()
 })

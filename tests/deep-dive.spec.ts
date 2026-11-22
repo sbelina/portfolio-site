@@ -55,7 +55,7 @@ test('one password opens every deep dive: hub, spreads in the deck grammar, and 
   const spreads = page.locator('.deep-dive-spread')
   await expect(spreads).toHaveCount(3)
   await expect(spreads.first().locator('.deep-dive-headline em')).toHaveText('Timing')
-  for (const label of ['The label', 'What the evidence showed', 'My role', 'What changed']) await expect(spreads.first().getByRole('heading', { level: 3, name: label })).toBeVisible()
+  for (const label of ['The first view', 'What held', 'My role', 'What changed']) await expect(spreads.first().getByRole('heading', { level: 3, name: label })).toBeVisible()
   await expect(spreads.first().locator('figcaption')).toHaveText('FIG. 02 · Conceptual illustration · positions illustrative')
   await expect(spreads.first().locator('.deep-dive-tradeoff')).toContainText('Trade-off:')
   await expect(spreads.first().locator('.deep-dive-count')).toHaveText('01 / 03')

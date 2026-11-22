@@ -4,9 +4,9 @@
 
 Kicker: Field · Case 02 · Measurement and decision quality
 ## Trust *separate* from agreement.
-### The label
+### The first view
 [Placeholder] What “trust” was being measured as.
-### What the evidence showed
+### What held
 [Placeholder] Why agreement and trust are different questions.
 ### Figure
 FIG. 05 · Artifact · condensed view of the instrument

@@ -4,9 +4,9 @@
 
 Kicker: Field · Case 03 · Prioritization without authority
 ## 38 proposals. *8* shared challenges.
-### The label
+### The first view
 [Placeholder] How the proposals were being read.
-### What the evidence showed
+### What held
 [Placeholder] How the proposals overlapped.
 ### Figure
 FIG. 06 · Conceptual illustration · counts observed, grouping illustrated

@@ -4,9 +4,9 @@
 
 Kicker: Field · Case 01, 1 of 3 · Test — Diagnosing a cross-department failure
 ## Errors repeated. *Timing* was the problem.
-### The label
+### The first view
 [Placeholder] The word people relied on, in quotation marks, and what it was taken to mean.
-### What the evidence showed
+### What held
 [Placeholder] What testing that label revealed, and how you know.
 ### Figure
 FIG. 02 · Conceptual illustration · positions illustrative
@@ -24,9 +24,9 @@ So what changed?
 
 Kicker: Field · Case 01, 2 of 3 · Show — Accountability and handoffs
 ## “Complete” now means *verified*.
-### The label
+### The first view
 [Placeholder] The definition that was being used, in quotation marks.
-### What the evidence showed
+### What held
 [Placeholder] Where verification broke down.
 ### Figure
 FIG. 03 · Documented process · simplified comparison
@@ -42,9 +42,9 @@ How did it last?
 
 Kicker: Field · Case 01, 3 of 3 · Enable — Capability others carry
 ## What admins knew became *teachable*.
-### The label
+### The first view
 [Placeholder] The informal standard people learned by chance.
-### What the evidence showed
+### What held
 [Placeholder] What the knowledge sessions surfaced.
 ### Figure
 FIG. 04 · Artifact · condensed from my guide

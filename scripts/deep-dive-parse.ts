@@ -6,9 +6,9 @@
  *
  *   Kicker: FIELD · CASE 01, 1 OF 3 · TEST — Diagnosing a cross-department failure
  *   ## Errors repeated. *Timing* was the problem.
- *   ### The label
+ *   ### The first view        (alias: The label)
  *   …
- *   ### What the evidence showed
+ *   ### What held             (alias: What the evidence showed)
  *   …
  *   ### Figure
  *   FIG. 02 · Conceptual illustration · positions illustrative
@@ -17,10 +17,12 @@
  *   ### What changed
  *   ### Principle
  *   ### Trade-off
+ *   ### Limits                 (what is not claimed)
  *   ### Next
  *   So what changed?
  *
- * Any other ### heading becomes an extra section in that part. Text before the first part is the
+ * Any other ### heading becomes an extra section: before ### My role it sits in the upper part of the
+ * spread; after it, it joins My role in the lower row (e.g. Who did what, Fieldwork). Text before the first part is the
  * deep dive's introduction. In a headline, *one word* is the accent (the word that carries the turn).
  */
 import { marked } from 'marked'
@@ -29,16 +31,18 @@ export type DeepDivePart = {
   id: string
   kicker?: string
   headline: string // inline HTML; <em> is the accent word
-  label?: string; evidence?: string; role?: string; changed?: string; principle?: string; tradeoff?: string
+  label?: string; evidence?: string; role?: string; changed?: string; principle?: string; tradeoff?: string; limits?: string
   figure?: { label: string; html: string }
   next?: string // the question that leads onward (plain text)
   extra: { title: string; html: string }[]
+  /** Sections written after My role: shown beside it in the spread's lower row. */
+  lower: { title: string; html: string }[]
 }
 export type DeepDiveRecord = { schema: 2; title: string; kicker?: string; summary?: string; intro?: string; parts: DeepDivePart[] }
 
-const known: Record<string, keyof Pick<DeepDivePart, 'label' | 'evidence' | 'role' | 'changed' | 'principle' | 'tradeoff'>> = {
-  'the label': 'label', 'what the evidence showed': 'evidence', 'my role': 'role',
-  'what changed': 'changed', 'what leadership changed': 'changed', 'principle': 'principle', 'trade-off': 'tradeoff',
+const known: Record<string, keyof Pick<DeepDivePart, 'label' | 'evidence' | 'role' | 'changed' | 'principle' | 'tradeoff' | 'limits'>> = {
+  'the first view': 'label', 'the label': 'label', 'what held': 'evidence', 'what the evidence showed': 'evidence', 'my role': 'role',
+  'what changed': 'changed', 'what leadership changed': 'changed', 'principle': 'principle', 'trade-off': 'tradeoff', 'limits': 'limits',
 }
 const block = (markdown: string) => (marked.parse(markdown.trim(), { async: false }) as string).trim()
 const inline = (markdown: string) => (marked.parseInline(markdown.trim(), { async: false }) as string).trim()
@@ -62,7 +66,7 @@ export function parseDeepDive(markdown: string, meta: { title: string; kicker?: 
       const [first, ...rest] = text.split('\n')
       part.figure = { label: first.trim(), html: block(rest.join('\n') || ' ') }
     } else if (section.toLowerCase() === 'next') part.next = text.split('\n')[0].trim()
-    else part.extra.push({ title: section, html: block(text) })
+    else (part.role ? part.lower : part.extra).push({ title: section, html: block(text) })
   }
   for (const line of lines) {
     const kicker = line.match(/^Kicker:\s*(.+)$/)
@@ -71,7 +75,7 @@ export function parseDeepDive(markdown: string, meta: { title: string; kicker?: 
     if (kicker) { flush(); section = null; pendingKicker = kicker[1].trim(); continue }
     if (headline) {
       flush(); section = null
-      part = { id: `part-${parts.length + 1}`, ...(pendingKicker ? { kicker: pendingKicker } : {}), headline: inline(headline[1]), extra: [] }
+      part = { id: `part-${parts.length + 1}`, ...(pendingKicker ? { kicker: pendingKicker } : {}), headline: inline(headline[1]), extra: [], lower: [] }
       parts.push(part); pendingKicker = undefined; continue
     }
     if (heading && part) { flush(); section = heading[1].trim(); continue }
