@@ -36,13 +36,13 @@ test('new code sits in cascade layers, so it cannot override existing components
 
 test('derived tokens resolve on paper and observatory surfaces', async ({ page }) => {
   await page.goto(`${origin}/`)
-  const paper = await page.locator('.pc-site').first().evaluate(element => getComputedStyle(element).getPropertyValue('--signal-3').trim())
+  const paper = await page.locator('.pc-hero').evaluate(element => getComputedStyle(element).getPropertyValue('--signal-3').trim())
   const dark = await page.locator('.pc-interlude').evaluate(element => getComputedStyle(element).getPropertyValue('--signal-3').trim())
   expect(paper).toContain('color-mix')
   expect(dark).toContain('color-mix')
   // The same token resolves differently on the dark surface, because it derives from that surface's own colors.
   expect(dark).not.toBe(paper)
-  expect(await page.locator('.pc-site').first().evaluate(element => getComputedStyle(element).getPropertyValue('--space-4').trim())).toBe('1rem')
+  expect(await page.locator('.pc-hero').evaluate(element => getComputedStyle(element).getPropertyValue('--space-4').trim())).toBe('1rem')
 })
 
 test('without JavaScript every new element reads completely', async ({ browser }) => {
@@ -143,7 +143,8 @@ test('the pattern illustration sits after the cases, with every case distinction
 
 test('conceptual drawings use the deck palette: ink, orange, sage, not the status colours', async ({ page }) => {
   const stroke = (selector: string) => page.locator(selector).first().evaluate(element => getComputedStyle(element).stroke)
-  const token = (name: string) => page.locator('.pc-site').first().evaluate((element, token) => {
+  // Read each token where the drawing sits: the first-visit intro is a dark surface and may come first in the page.
+  const token = (name: string) => page.locator('.pc-pattern').evaluate((element, token) => {
     const probe = document.createElement('span'); probe.style.color = `var(${token})`; element.appendChild(probe)
     const value = getComputedStyle(probe).color; probe.remove(); return value
   }, name)

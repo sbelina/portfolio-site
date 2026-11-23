@@ -96,7 +96,7 @@ test('unknown pages and unknown slugs return real HTTP 404 with useful HTML', as
     expect(response.status(), path).toBe(404)
     const html = await response.text()
     expect(html).toContain('This reading is not available.')
-    expect(html).toContain('Browse investigations')
+    expect(html).toContain('Browse case studies')
     expect(html).toContain('noindex')
   }
 })
