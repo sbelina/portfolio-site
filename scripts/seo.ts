@@ -6,7 +6,7 @@ export const siteName = 'Producing Curiosity'
 export const homeTitle = 'Sami Belina — Research & Innovation Strategist'
 /** Kept under ~155 characters so search results show it whole. */
 export const homeDescription = 'Sami Belina, research and innovation strategist: applied research, service design and stakeholder engagement that turns evidence into understanding.'
-const imageAlt = 'Producing Curiosity by Sami Belina, Research & Innovation Strategist. I turn gaps in understanding into evidence leaders can act on. Test. Show. Enable.'
+const imageAlt = 'Producing Curiosity by Sami Belina, Research & Innovation Strategist. I diagnose gaps in understanding and design the conditions that empower leaders to make informed decisions. Test. Show. Enable.'
 const personId = `${siteOrigin}/#sami-belina`
 /**
  * Who the site is about, for search engines: name, the LinkedIn identity, the profile it

@@ -13,7 +13,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 | # | Decision | Reason |
 | --- | --- | --- |
 | D1 | Merged `main` first (`b247b7b`). The released evidence-first homepage and Investigations page replace this branch’s unreleased Phase 1 versions. | Work from the current released state. Phase 1 was never published. |
-| D2 | The H1 is unchanged: *I turn gaps in understanding into evidence leaders can act on.* | The directive keeps it pending a separate copy decision. |
+| D2 | **Updated 23 November (owner decision):** the H1 is *I diagnose gaps in understanding and design the conditions that empower leaders to make **informed** decisions.* It is the final Trust deck’s cover, with “leaders”, because anyone can be a leader; *informed* is the accent. Earlier: the released H1 was kept. | The directive keeps it pending a separate copy decision. |
 | D3 | The kicker reads **Sami Belina · Research & Innovation Strategist**. The byline carries the LinkedIn specialties (*Applied research · Service design · Stakeholder engagement*) and its tagline. *(Updated 19 November: the owner supplied the LinkedIn headline. The site now matches it instead of the directive’s “Applied Research & Innovation Strategist”, so visitors arriving from LinkedIn see the same terms.)* | The directive wants *who* and *value* within five seconds. Before this change, the name sat below the evidence link on a 390 px screen. |
 | D4 | The identity is a capability description, not an employment title. It lives in one constant (`src/content/recruiter.ts`) used by the homepage, and its exact text also appears in the home title and description. | Consistency across homepage, title and metadata. Formal titles stay with each investigation’s role section. |
 | D5 | The first link in the hero is still the Claims evidence link. The Atlas and Observatory are reachable only from the menu and later sections. | Evidence before exploration. |
@@ -39,7 +39,7 @@ The directive also calls for a reusable investigation page. The released evidenc
 ## Proposed exact copy (for owner approval)
 
 - **Kicker:** Sami Belina · Research & Innovation Strategist
-- **H1 (unchanged):** I turn gaps in understanding into evidence leaders can act on.
+- **H1 (owner decision, 23 November):** I diagnose gaps in understanding and design the conditions that empower leaders to make *informed* decisions.
 - **Lead:** I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.
 - **Byline:** Applied research · Service design · Stakeholder engagement / Turning evidence into understanding, and understanding into new possibilities.
 - **Representative investigations:**

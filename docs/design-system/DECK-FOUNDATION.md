@@ -22,7 +22,7 @@ The owner supplied the Trust case interview deck (*Sami Belina · Designing Bett
 | Kickers | numbered and accent-coloured: `01 · THE RESEARCH CHALLENGE` |
 | Footer | a series line, `Sami Belina · Designing Better Questions About Trust`, then `01 / 05` |
 | Type | one sans-serif family, including italic sans for principles and asides (no serif) |
-| Cover statement | “I diagnose gaps in understanding and design the conditions that empower people to make **informed** decisions.” Kicker: *Research leadership*. Owner decision pending: this versus the site H1 |
+| Cover statement | “I diagnose gaps in understanding and design the conditions that empower people to make **informed** decisions.” Kicker: *Research leadership*. **Adopted as the site H1 on 23 November, with “leaders” for “people”, because anyone can be a leader.** |
 | Test. Show. Enable. | “Diagnose the gap, then design the conditions that close it.” **Test:** diagnose the gap, where a measure, definition, or category has drifted. **Show:** make evidence and uncertainty visible so people reach defensible interpretations. **Enable:** design the conditions people need to make informed decisions. *(Now used on the site.)* |
 | Across cases | agreement ≠ trust · delivered ≠ verified · 38 proposals ≠ 38 needs · passing checks ≠ accessible |
 | Honest closing line | “Proposals are recommendations, not completed outcomes. The full framework was not implemented; no revenue or retention impact is claimed.” A *Limits* line in deep dives |

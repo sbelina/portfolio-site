@@ -29,7 +29,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-byline, .pc-meta { color: var(--muted); font-size: .85rem; }
 .pc-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; padding-block: clamp(3rem, 7vw, 6rem); }
 .pc-hero > *, .pc-moves > *, .pc-journeys > * { min-width: 0; }
-.pc-hero-copy h1 { font-size: clamp(2.2rem, 4.25vw, 4.35rem); max-width: 19ch; }
+.pc-hero-copy h1 { font-size: clamp(1.8rem, 3.4vw, 3.5rem); max-width: 22ch; }
 .pc-inquiry-figure { margin: 0; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .pc-inquiry-drawing { aspect-ratio: 42/33; }
 .pc-inquiry-drawing svg { display: block; width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1; }
@@ -146,7 +146,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-site.pc-reading .reading-site-header { border-bottom: 1px solid var(--line); }
 @media(max-width:760px) {
   .pc-hero { grid-template-columns: minmax(0,1fr); gap: 1rem; }
-  .pc-hero-copy h1 { max-width: 21ch; }
+  .pc-hero-copy h1 { max-width: 24ch; }
   .pc-inquiry-figure { max-width: 30rem; width: 100%; }
   .pc-inquiry-drawing { max-width: 21rem; }
   .pc-header { align-items: flex-start; flex-direction: column; }
@@ -156,6 +156,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(max-width:540px) {
   .pc-main { padding-inline: 5vw; }
   .pc-main h1 { font-size: 2rem; }
+  /* The homepage statement is a sentence, not a slogan: smaller on phones so the evidence link stays in the first screen. */
+  .pc-hero-copy h1 { font-size: 1.6rem; line-height: 1.18; }
   .pc-intro :is(.question,.step-prompt,.mirror) { font-size: 1.25rem; }
   .pc-intro .intro-field { touch-action: pan-y; }
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
@@ -311,3 +313,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive-field--held h3 { color: var(--signal); }
 .deep-dive-bottom { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
 .deep-dive-limits { color: var(--muted); }
+
+/* The accent word that carries a headline's turn (DECK-FOUNDATION §1). Still <em> for assistive tech and print. */
+.pc-accent { font-style: normal; color: var(--signal); }

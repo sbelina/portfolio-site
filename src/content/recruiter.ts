@@ -9,6 +9,13 @@ export const practiceAreas = ['Applied research', 'Service design', 'Stakeholder
 /** The LinkedIn headline's tagline. */
 export const tagline = 'Turning evidence into understanding, and understanding into new possibilities.'
 
+/**
+ * Homepage headline (owner decision, 23 November 2026): the final Trust deck's cover statement,
+ * with "leaders" for "people" because anyone can be a leader. The accent word carries the turn.
+ */
+export const homeHeadline = { lead: 'I diagnose gaps in understanding and design the conditions that empower leaders to make ', accent: 'informed', end: ' decisions.' } as const
+export const homeHeadlineText = `${homeHeadline.lead}${homeHeadline.accent}${homeHeadline.end}`
+
 /** Public contact actions repeated on the homepage. */
 export const recruiterContact = {
   email: 'hello@sbelina.com',

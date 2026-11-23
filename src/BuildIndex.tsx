@@ -7,7 +7,7 @@ import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 import { primaryEvidence, previousEditionHref, representativeSummaries, type InvestigationSummary } from './content/primary-evidence'
-import { professionalIdentity, practiceAreas, tagline } from './content/recruiter'
+import { homeHeadline, professionalIdentity, practiceAreas, tagline } from './content/recruiter'
 import { RecruiterActions } from './design/RecruiterActions'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
@@ -36,7 +36,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
-          <h1 id="index-title">I turn gaps in understanding into evidence leaders can act on.</h1>
+          <h1 id="index-title">{homeHeadline.lead}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
           <p className="pc-lead">I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.</p>
           <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>

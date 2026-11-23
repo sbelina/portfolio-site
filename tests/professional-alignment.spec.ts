@@ -117,7 +117,7 @@ test('homepage structured data names Sami as a Person linked to LinkedIn, and th
 
 test('the social preview carries the current positioning, not the 6 November lead', async () => {
   const svg = await readFile('public/social-preview.svg', 'utf8')
-  for (const text of ['SAMI BELINA', 'RESEARCH &amp; INNOVATION STRATEGIST', 'I turn gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
+  for (const text of ['SAMI BELINA', 'RESEARCH &amp; INNOVATION STRATEGIST', 'I diagnose gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
   expect(svg).not.toContain('I investigate situations where')
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain('content="Producing Curiosity by Sami Belina, Research &amp; Innovation Strategist.')
