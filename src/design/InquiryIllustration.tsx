@@ -19,7 +19,7 @@ export const inquiryViews: readonly { value: Focus; label: string; description: 
  */
 export const gapCases: readonly { value: string; label: string; solid: string; dashed: string; description: string; anchor?: string }[] = [
   { value: 'general', label: 'In general', solid: 'Outcome', dashed: 'Explanation', description: 'An outcome and its explanation start together, then part ways. The gap is where an investigation starts.' },
-  { value: 'claims', label: 'Claims', solid: 'Delivered', dashed: 'Complete', description: 'In claims operations, paperwork recorded as delivered looked like paperwork that was complete. “Complete” still generated work.', anchor: 'claims-operations' },
+  { value: 'claims', label: 'Claims', solid: 'Delivered', dashed: 'Verified', description: 'In claims operations, paperwork recorded as delivered looked like paperwork that had been verified. “Complete” still generated work.', anchor: 'claims-operations' },
   { value: 'trust', label: 'Trust research', solid: 'Agreement', dashed: 'Trust', description: 'In perception mapping and trust research, agreeing with a message and trusting its source looked like one measure. They were different questions.', anchor: 'brand-research' },
   { value: 'civic', label: 'Civic service', solid: 'Service categories', dashed: 'Voting questions', description: 'In a civic service, people’s voting questions did not follow the categories the service was organized by.', anchor: 'civic-service' },
   { value: 'accessibility', label: 'Accessibility', solid: 'Checks passed', dashed: 'Question settled', description: 'In AI-assisted development, the automated checks passed, and a person still noticed a question they did not settle.', anchor: 'accessibility-ai' },

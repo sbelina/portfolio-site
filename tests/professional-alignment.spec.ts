@@ -84,7 +84,7 @@ test('seven qualified distinctions each state difference, question, connection, 
   try {
     const page = await context.newPage()
     await page.goto(`${origin}/patterns/`)
-    const names = ['Delivered is not complete', 'Agreement is not trust', 'Automation is not judgment', 'Usability is not retention', 'Compliance is not comprehension', 'Participation is not influence', 'Shared language is not shared understanding', 'Reuse is not demonstrated effectiveness']
+    const names = ['Delivered is not verified', 'Agreement is not trust', 'Automation is not judgment', 'Usability is not retention', 'Compliance is not comprehension', 'Participation is not influence', 'Shared language is not shared understanding', 'Reuse is not demonstrated effectiveness']
     for (const name of names) {
       await expect(page.getByRole('heading', { level: 2, name, exact: true })).toHaveCount(1)
       await expect(page.locator('summary', { hasText: `for ${name}` })).toHaveCount(1)
