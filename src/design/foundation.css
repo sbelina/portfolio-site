@@ -297,6 +297,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 
 /* The accent word that carries a headline's turn (DECK-FOUNDATION §1). Still <em> for assistive tech and print. */
 .pc-accent { font-style: normal; color: var(--signal); }
+/* The second headline emphasis: the cost, in ink at a heavier weight. Never orange, never underlined. */
+.pc-main :is(h1, h2, h3) .pc-weight { font-weight: 720; color: inherit; }
 
 /* Institutional value homepage (23 November). */
 .pc-value { font-size: 1.05rem; max-width: 52ch; margin: 0 0 1.25rem; }
@@ -350,3 +352,5 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-hero.pc-hero--text { grid-template-columns: minmax(0, 1fr); }
 .pc-hero--text .pc-hero-copy { max-width: 52rem; }
 .pc-pattern-pairs .pc-kicker { margin: 0; }
+
+.pc-selected-list .pc-selected-domain { margin: 0 0 .35rem; }

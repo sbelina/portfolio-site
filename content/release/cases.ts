@@ -54,6 +54,7 @@ const claimsInvestigation = claimsCandidate.investigation!
 const claims: Entry = {
   ...claimsCandidate,
   revision: 3,
+  title: '“Complete” now means ==verified==.',
   editorialState: 'approved', visibility: 'public', authorIds: [owner], updatedAt: reviewed,
   summary: 'Total-loss claims could be paid *before* anyone confirmed the paperwork was sufficient. I traced where problems surfaced, **leadership moved the check before payment**, and the guides and training I built from administrators’ knowledge are used statewide.',
   evidenceIds: [caseEvidence.claims.id],
@@ -99,7 +100,7 @@ const claims: Entry = {
 
 const trust: Entry = {
   ...base('4c5ececa-e308-4a31-9566-b3cd2fc7a0b2', 'brand-research', '2026-11-22T00:00:00Z'),
-  title: 'Agreement is not trust.',
+  title: 'Two measures, kept ==apart==.',
   summary: 'A trust study could have produced one favorability score. I designed the survey’s measures so **agreement and trust influence were asked separately**, and a year later the readout is still cited in strategy briefs.',
   contribution: 'I set the general-to-specific interview sequence, proposed the perception-mapping framework and co-built it with two marketing and analytics leads, and separated agreement from trust influence in the survey. The external research partner conducted the interviews and fielded the survey.',
   evidenceIds: [caseEvidence.trust.id],
@@ -156,7 +157,7 @@ const trust: Entry = {
 
 const ai: Entry = {
   ...base('8a218cf2-1ad6-461a-af6e-3f7ccadd9429', 'enterprise-ai', '2026-11-20T00:00:00Z'),
-  title: '38 proposals. Eight shared challenges.',
+  title: '38 proposals. ==8== shared challenges.',
   summary: 'Nearly forty AI requests arrived without a shared way to compare them. I led a synthesis into eight challenge areas that teams could discuss and choose among, then coached in the sprint, which now runs every year.',
   contribution: 'I recognized the need for a synthesis and led it, tested the groupings with the sprint facilitator, then walked them through with innovation leadership, and was a lead and coach in the sprint, leading two ideas with one combined team. The innovation team owned the program.',
   evidenceIds: [caseEvidence.ai.id],
@@ -209,7 +210,7 @@ const ai: Entry = {
 
 const telematics: Entry = {
   ...base('1bb43e26-f27a-4493-b16f-e68682838023', 'telematics', '2026-11-20T00:00:00Z'),
-  title: 'Usability is not recommendation.',
+  title: 'Usability is ==not== recommendation.',
   summary: 'I was asked why participants were leaving a large discount program built around a usage-based insurance app. With unreliable audio, I recovered findings from on-screen behavior, and showed that a usable app and a recommended program are different questions.',
   contribution: 'I analyzed moderated sessions that others conducted, recovered findings from on-screen behavior, wrote the report and confirmed both scores, made opportunity recommendations, and took the report to the marketing analytics team.',
   evidenceIds: [caseEvidence.telematics.id],
@@ -262,7 +263,7 @@ const telematics: Entry = {
 
 const civic: Entry = {
   ...base('873dde95-923f-41a0-bd19-55041eb4aae1', 'civic-service', '2026-11-20T00:00:00Z'),
-  title: 'Organized by office. Asked by step.',
+  title: 'Organized by office. Asked by ==step==.',
   summary: 'Residents’ voting questions followed the steps in front of them, not the offices that publish the answers. As a volunteer co-founder of Vote Huntsville, I helped build one plain-language answer source used across every channel.',
   contribution: 'I co-founded the nonpartisan Vote Huntsville with other directors and volunteers, all unpaid. We gathered residents’ questions and built one shared, plain-language answer source used across channels.',
   evidenceIds: [caseEvidence.civic.id],
@@ -311,7 +312,7 @@ const civic: Entry = {
 
 const accessibility: Entry = {
   ...base('36e61934-b32a-4b04-a9c2-d6f99b73b5a2', 'accessibility-ai', '2026-11-20T00:00:00Z'),
-  title: 'Passing checks. A separate question.',
+  title: 'Passing checks. A ==separate== question.',
   summary: 'In an AI-assisted development experiment I originated, the accessibility agent restored code we removed on purpose. A planned human review still raised a question the automated checks did not settle.',
   contribution: 'I originated the experiment and co-facilitated it, the only participant from outside the department. A colleague advocated the idea to the organizer, and a developer conducted the human review.',
   evidenceIds: [caseEvidence.accessibility.id],

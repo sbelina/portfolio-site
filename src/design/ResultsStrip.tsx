@@ -1,6 +1,7 @@
 import React from 'react'
 import { publicPath } from '../public-path'
 import type { InvestigationSummary } from '../content/primary-evidence'
+import { plainText } from '../content/emphasis'
 
 const basisLabels = { owner_estimate: 'Approximate · my estimate', approximate: 'Approximate', platform_reported: 'Platform-reported', measured: 'Measured' } as const
 
@@ -18,7 +19,7 @@ export function ResultsStrip({ investigations }: { investigations: readonly Inve
       <p className="pc-result-value"><strong>{figure.value}</strong> <span>{figure.unit}</span></p>
       <p className="pc-result-label">{figure.label}</p>
       <p className="pc-result-basis">{basisLabels[figure.basis]}. {figure.qualifier}</p>
-      <a href={publicPath(entry.path)}>{entry.title} <span aria-hidden="true">→</span></a>
+      <a href={publicPath(entry.path)}>{plainText(entry.title)} <span aria-hidden="true">→</span></a>
     </li>)}</ul>
   </section>
 }

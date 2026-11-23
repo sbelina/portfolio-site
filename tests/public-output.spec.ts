@@ -22,7 +22,7 @@ test('default production output contains no local fixtures or private drafts', a
   await expect(access('dist/studio/index.html')).rejects.toThrow()
   await expect(access('dist/api/workspace')).rejects.toThrow()
   const home = await readFile('dist/index.html', 'utf8')
-  expect(home).toContain('I help organizations avoid costly solutions to <em class="pc-accent">misunderstood</em> problems.')
+  expect(home).toContain('I help organizations avoid <strong class="pc-weight">costly solutions</strong> to <em class="pc-accent">misunderstood problems</em>.')
   expect(home).toContain('Test. Show. Enable.')
   expect(home).not.toContain('I swim upstream toward the problem.')
 })

@@ -34,7 +34,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
   const introduction = useHomeIntroduction()
   const evidenceHref = primaryEvidenceHref(investigations)
   const selected = selectedInvestigations(investigations)
-  const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? entry.title, left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), href: publicPath(entry.path) }))
+  const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? plainText(entry.title), left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), href: publicPath(entry.path) }))
   useEffect(() => {
     const followLegacyFragment = () => {
       let fragment: string
@@ -50,7 +50,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       <section className="pc-hero pc-hero--text" aria-labelledby="index-title">
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
-          <h1 id="index-title">{homeHeadline.lead}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
+          <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
           <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
           <p className="pc-hero-action pc-cluster"><a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'Examine the investigations' : 'Read the Claims investigation'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
           <p className="pc-value">{valueLine}</p>
@@ -64,10 +64,11 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       </section>
       <ResultsStrip investigations={investigations}/>
       {selected.length ? <section className="pc-section pc-selected" aria-labelledby="pc-selected-title">
-        <div className="pc-section-heading"><p className="pc-kicker">Selected investigations</p><h2 id="pc-selected-title">What becomes possible when we investigate the problem first?</h2></div>
+        <div className="pc-section-heading"><p className="pc-kicker">Selected investigations</p><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
         <ol className="pc-selected-list">{selected.map(entry => <li key={entry.id}>
+          {entry.slug && caseLabels[entry.slug] ? <p className="pc-kicker pc-selected-domain">{caseLabels[entry.slug]}</p> : null}
           {entry.status ? <p className="pc-selected-status"><CaseStatus status={entry.status}/></p> : null}
-          <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}>{entry.title}</a></h3>
+          <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>
           {entry.stakes ? <p className="pc-selected-stakes"><span className="pc-selected-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}
           {entry.brief ? <p><span className="pc-selected-label">What changed:</span> <Stressed text={entry.brief.result}/></p> : <p><Stressed text={entry.summary}/></p>}
           <p className="pc-selected-links"><a href={publicPath(entry.path)}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
@@ -101,7 +102,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       </nav>
       <LensInterlude compact/>
       <section id="contact" className="pc-section pc-contact" aria-labelledby="contact-title">
-        <p className="pc-kicker">Work together</p><h2 id="contact-title">What needs a better explanation?</h2>
+        <p className="pc-kicker">Work together</p><h2 id="contact-title">Have a problem that keeps <em className="pc-accent">coming back</em>?</h2>
         <p>If an organization is investing time, money, or attention in a persistent problem without understanding why it continues, that is where my work begins.</p>
         <RecruiterActions label="Contact Sami Belina"/>
         <p className="pc-contact-secondary"><a href="https://www.linkedin.com/in/transplantsam">Professional experience on LinkedIn <ExternalArrow/></a></p>

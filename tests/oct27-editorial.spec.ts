@@ -11,7 +11,7 @@ test('review candidate keeps legacy identities while removing misleading public 
   // The retired archive held the previous thesis; the current edition publishes only approved cases (23 November).
   void thesis
   const current = await readFile('dist/index.html', 'utf8')
-  expect(current).toContain('I help organizations avoid costly solutions to <em class="pc-accent">misunderstood</em> problems.')
+  expect(current).toContain('I help organizations avoid <strong class="pc-weight">costly solutions</strong> to <em class="pc-accent">misunderstood problems</em>.')
   expect(current).toContain('Test. Show. Enable.')
   const everything = (await Promise.all(['dist/index.html', 'dist/public-content.json', 'dist/investigations/index.html'].map(file => readFile(file, 'utf8')))).join('\n')
   for (const withdrawn of ['18% → 7.6%', 'PASS → FAIL', 'agent was adopted', 'research recovery method for claims']) expect(everything).not.toContain(withdrawn)

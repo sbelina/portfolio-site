@@ -134,7 +134,7 @@ test('the pattern illustration sits after the cases, with every case distinction
     await page.goto(`${origin}/`)
     await expect(page.locator('.pc-hero .pc-inquiry-figure')).toHaveCount(0)
     const headings = await page.locator('main h2').allInnerTexts()
-    expect(headings.indexOf('Related. Not equivalent.')).toBeGreaterThan(headings.indexOf('What becomes possible when we investigate the problem first?'))
+    expect(headings.indexOf('Related. Not equivalent.')).toBeGreaterThan(headings.indexOf('Three problems, and what changed.'))
     const pairs = page.getByRole('list', { name: "Each investigation's distinction" }).getByRole('link')
     await expect(pairs).toHaveCount(6)
     await expect(pairs.first()).toHaveAccessibleName('Delivered is not Verified')

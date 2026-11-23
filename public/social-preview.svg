@@ -6,9 +6,9 @@
     <text x="70" y="100" font-size="36" font-weight="600"><tspan fill="#a33a0c">*</tspan> Producing Curiosity</text>
     <text x="70" y="160" font-size="18" letter-spacing="2"><tspan fill="#111716">SAMI BELINA</tspan><tspan fill="#a33a0c"> · APPLIED RESEARCH &amp; SYSTEMS STRATEGIST</tspan></text>
     <g font-size="44" letter-spacing="-1">
-      <text x="70" y="236">I help organizations avoid costly</text>
-      <text x="70" y="292">solutions to <tspan fill="#a33a0c">misunderstood</tspan></text>
-      <text x="70" y="348">problems.</text>
+      <text x="70" y="236">I help organizations avoid <tspan font-weight="700">costly</tspan></text>
+      <text x="70" y="292"><tspan font-weight="700">solutions</tspan> to <tspan fill="#a33a0c">misunderstood</tspan></text>
+      <text x="70" y="348"><tspan fill="#a33a0c">problems</tspan>.</text>
     </g>
     <g font-size="24" fill="#555d58">
       <text x="70" y="420">Increasing understanding, effectiveness, and adaptability</text>

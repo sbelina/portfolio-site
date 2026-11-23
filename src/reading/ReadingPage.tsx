@@ -11,7 +11,8 @@ import { inquirySpaceTitle } from '../inquiry-space/paths'
 import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
-import { Stressed } from '../content/emphasis'
+import { plainText, Stressed } from '../content/emphasis'
+import { caseLabels } from '../content/primary-evidence'
 export type { ReadingPageData } from './page-data'
 
 type Block = PublicEntry['blocks'][number]
@@ -124,7 +125,7 @@ function Connections({ entry, projection }: { entry: PublicEntry; projection: Re
                 const evidence = projection.evidence.find(item => item.id === id)
                 return evidence ? <EvidenceDisclosure evidence={evidence} key={id}/> : null
               })}
-              <a className="reading-related-link" href={publicPath(other.path)}>{other.title} <span aria-hidden="true">→</span></a>
+              <a className="reading-related-link" href={publicPath(other.path)}>{plainText(other.title)} <span aria-hidden="true">→</span></a>
             </li>
           )
         })}
@@ -145,11 +146,11 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <a href={publicPath("/")}>Home</a><span aria-hidden="true">/</span>
         {entry.kind === 'investigation' ? <><a href={publicPath("/investigations/")}>Investigations</a><span aria-hidden="true">/</span></> : null}
         {inquiry && page.inquirySpacePath ? <><a href={publicPath(page.inquirySpacePath)}>{inquirySpaceTitle}</a><span aria-hidden="true">/</span></> : null}
-        <span aria-current="page">{entry.title}</span>
+        <span aria-current="page">{plainText(entry.title)}</span>
       </nav>
       <header className="reading-entry-header">
         <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : page.candidate ? ' · unapproved candidate' : ''}</p>
-        <h1 id="reading-title" style={entry.kind === 'investigation' && !page.fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}>{entry.title}</h1>
+        <h1 id="reading-title" style={entry.kind === 'investigation' && !page.fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><Stressed text={entry.title} heading/></h1>
         {page.candidate ? <p className="reading-candidate-notice" role="note">Owner-review preview. This candidate is not approved or published, and no statement has an attached source yet.</p> : null}
         <p className="reading-summary"><Stressed text={entry.summary}/></p>
         {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} /> : null}
@@ -182,7 +183,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <h2 id="deep-dive-title">Deep dive</h2>
         <p>This page is the public version. A longer version, with the process, working artifacts and sources in more detail, is available on request.</p>
         <p><a href={publicPath(`/deep-dive/${entry.slug}/`)}>Open the deep dive <span aria-hidden="true">→</span></a> <span className="reading-deep-dive-note">Password required.</span></p>
-        <p><a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent(`Deep dive access: ${entry.title}`)}`}>Request access by email</a></p>
+        <p><a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent(`Deep dive access: ${plainText(entry.title)}`)}`}>Request access by email</a></p>
       </section> : null}
       <div className="reading-body">
         {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
@@ -203,7 +204,7 @@ function Collection({ projection, fixture, candidate = false }: { projection: Re
   return (
     <>
       <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{candidate ? ' · unapproved candidate' : ''}</p><h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}>{entry.title}</a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p><p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Public version: ${entry.title}`}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${entry.title}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p></li>)}</ul> : <div className="reading-empty"><p>No investigation is published in this edition yet. Each case awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{entry.slug && caseLabels[entry.slug] ? ` · ${caseLabels[entry.slug]}` : ''}{candidate ? ' · unapproved candidate' : ''}</p><h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p><p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Public version: ${plainText(entry.title)}`}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p></li>)}</ul> : <div className="reading-empty"><p>No investigation is published in this edition yet. Each case awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )

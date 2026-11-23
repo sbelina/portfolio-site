@@ -14,7 +14,8 @@ export const tagline = 'Increasing understanding, effectiveness, and adaptabilit
  * institutional value. It supersedes "I diagnose gaps in understanding and design the conditions that
  * empower leaders to make informed decisions." The accent word carries the turn.
  */
-export const homeHeadline = { lead: 'I help organizations avoid costly solutions to ', accent: 'misunderstood', end: ' problems.' } as const
+/** Two emphases, two meanings (owner direction, 23 November): the cost to avoid in bold ink, the turn in orange. */
+export const homeHeadline = { lead: 'I help organizations avoid ', cost: 'costly solutions', middle: ' to ', accent: 'misunderstood problems', end: '.' } as const
 /** What the work makes possible for an institution: positioning, not a measured saving. */
 export const valueLine = 'My work helps institutions determine what needs to change, what existing resources can accomplish, and where further investment is justified.'
 export const possibilities = [
@@ -22,7 +23,7 @@ export const possibilities = [
   { title: 'Better choices', question: 'Which response is justified?' },
   { title: 'Better implementation', question: 'How can the change work in practice?' },
 ] as const
-export const homeHeadlineText = `${homeHeadline.lead}${homeHeadline.accent}${homeHeadline.end}`
+export const homeHeadlineText = `${homeHeadline.lead}${homeHeadline.cost}${homeHeadline.middle}${homeHeadline.accent}${homeHeadline.end}`
 
 /** Public contact actions repeated on the homepage. */
 export const recruiterContact = {

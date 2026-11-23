@@ -42,7 +42,7 @@ test('the first screen names Sami, the capability, the H1 and the evidence path'
 
 test('selected investigations show stakes, what changed, and the public and deep-dive versions side by side', async ({ page }) => {
   await page.goto(`${origin}/`)
-  const section = page.getByRole('region', { name: 'What becomes possible when we investigate the problem first?' })
+  const section = page.getByRole('region', { name: 'Three problems, and what changed.' })
   const items = section.getByRole('listitem')
   await expect(items).toHaveCount(3)
   for (const [index, slug] of selectedSlugs.entries()) {
@@ -136,7 +136,7 @@ test('the compact "How I got here" interlude sits at the base of the homepage, a
     const headings = await page.locator('main h2').allInnerTexts()
     const lens = headings.findIndex(text => /how i got here/i.test(text))
     expect(lens).toBeGreaterThan(headings.indexOf('Test. Show. Enable.'))
-    expect(lens).toBeLessThan(headings.indexOf('What needs a better explanation?'))
+    expect(lens).toBeLessThan(headings.indexOf('Have a problem that keeps coming back?'))
     const interlude = page.getByRole('region', { name: 'How I got here' })
     await expect(interlude.locator('blockquote')).toHaveText('Inspiration is needed in geometry, just as much as in poetry.')
     await expect(interlude.locator('.pc-interlude-quote figcaption')).toHaveText('— Alexander Pushkin')

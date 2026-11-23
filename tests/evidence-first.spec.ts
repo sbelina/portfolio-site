@@ -7,7 +7,7 @@ import { digestRecord } from '../src/content/projection'
 const origin = 'http://127.0.0.1:4175'
 // Owner decision, 23 November (second): lead with the institutional value.
 const h1 = 'I help organizations avoid costly solutions to misunderstood problems.'
-const h1Markup = 'I help organizations avoid costly solutions to <em class="pc-accent">misunderstood</em> problems.'
+const h1Markup = 'I help organizations avoid <strong class="pc-weight">costly solutions</strong> to <em class="pc-accent">misunderstood problems</em>.'
 const claimsPath = '/investigations/claims-operations/'
 const candidateCanary = 'CLAIMS_CANDIDATE_UNAPPROVED_16NOV'
 const entry = (id: string, slug: string) => ({ id, slug, path: `/investigations/${slug}/`, title: slug, summary: `${slug} summary` })
@@ -76,7 +76,7 @@ test('one click reaches the Claims investigation from the first screen, by keybo
       await action.focus()
       await page.keyboard.press('Enter')
       await expect(page).toHaveURL(`${origin}${claimsPath}`)
-      await expect(page.getByRole('heading', { level: 1 })).toHaveText('When “complete” still generated work.')
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('“Complete” now means verified.')
     } finally { await context.close() }
   }
 })
