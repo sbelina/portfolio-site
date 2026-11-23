@@ -37,7 +37,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">{homeHeadline.lead}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
-          <p className="pc-lead">I investigate the organizational, service, and human-system conditions behind an outcome—sometimes starting from a question no one had assigned. I test the accepted explanation, synthesize what the evidence supports, and make it usable by the people who decide what happens next.</p>
+          <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover overlooked problems, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
           <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}

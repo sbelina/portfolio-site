@@ -1,13 +1,13 @@
 /**
- * Capability-based identity, matching the owner's LinkedIn headline (19 November 2026)
+ * Capability-based identity (owner decision, 23 November 2026; earlier the LinkedIn headline)
  * so visitors arriving from LinkedIn or the résumé see the same terms. It describes the
  * work, not a formal employment title; formal titles stay with each investigation's role.
  */
-export const professionalIdentity = 'Research & Innovation Strategist'
+export const professionalIdentity = 'Applied Research & Systems Strategist'
 /** The LinkedIn headline's specialties, kept consistent across the homepage, title and metadata. */
 export const practiceAreas = ['Applied research', 'Service design', 'Stakeholder engagement'] as const
-/** The LinkedIn headline's tagline. */
-export const tagline = 'Turning evidence into understanding, and understanding into new possibilities.'
+/** The line under the identity (owner decision, 23 November 2026). */
+export const tagline = 'Increasing understanding, effectiveness, and adaptability in complex systems.'
 
 /**
  * Homepage headline (owner decision, 23 November 2026): the final Trust deck's cover statement,

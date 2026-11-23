@@ -9,12 +9,13 @@ import { representativeSummaries } from '../src/content/primary-evidence'
 const origin = 'http://127.0.0.1:4175'
 
 test('identity is consistent across the homepage, title and description', async () => {
-  // Matches the LinkedIn headline: identity, three specialties and the tagline.
-  expect(professionalIdentity).toBe('Research & Innovation Strategist')
+  // Owner decision, 23 November: identity and the line under it.
+  expect(professionalIdentity).toBe('Applied Research & Systems Strategist')
+  expect(tagline).toBe('Increasing understanding, effectiveness, and adaptability in complex systems.')
   expect(practiceAreas).toEqual(['Applied research', 'Service design', 'Stakeholder engagement'])
   expect(homeTitle).toBe(`Sami Belina — ${professionalIdentity}`)
-  expect(homeDescription.toLowerCase()).toContain('research and innovation strategist')
-  for (const term of practiceAreas) expect(homeDescription).toContain(term.toLowerCase())
+  expect(homeDescription.toLowerCase()).toContain('applied research and systems strategist')
+  expect(homeDescription).toContain('complex systems')
   expect(homeDescription.length).toBeLessThanOrEqual(155)
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain(`<title>${homeTitle.replaceAll('&', '&amp;')}</title>`)
@@ -117,10 +118,10 @@ test('homepage structured data names Sami as a Person linked to LinkedIn, and th
 
 test('the social preview carries the current positioning, not the 6 November lead', async () => {
   const svg = await readFile('public/social-preview.svg', 'utf8')
-  for (const text of ['SAMI BELINA', 'RESEARCH &amp; INNOVATION STRATEGIST', 'I diagnose gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
+  for (const text of ['SAMI BELINA', 'APPLIED RESEARCH &amp; SYSTEMS STRATEGIST', 'I diagnose gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
   expect(svg).not.toContain('I investigate situations where')
   const home = await readFile('dist/index.html', 'utf8')
-  expect(home).toContain('content="Producing Curiosity by Sami Belina, Research &amp; Innovation Strategist.')
+  expect(home).toContain('content="Producing Curiosity by Sami Belina, Applied Research &amp; Systems Strategist.')
   const png = await readFile('dist/social-preview.png')
   expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630])
 })
