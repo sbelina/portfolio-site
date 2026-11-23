@@ -88,3 +88,30 @@ Not established: how readers understand the new homepage (see the reader evaluat
 ## Rollback
 
 Revert the merge commit on `main`. The previous release had no approved content, so reverting restores the earlier homepage and the archive mount. The private KV copy is unaffected either way.
+
+## Visual and interaction system (owner decision, 23 November: no Tailwind, add all proposals)
+
+The owner reviewed a teardown of five reference sites and chose to keep plain CSS and add every proposed technique. The new code lives in `src/design/system.css`, `src/design/motion.css` and `src/design/Interactions.tsx`.
+
+| Technique | Where | Fallback |
+| --- | --- | --- |
+| Spacing and type scale, 12-step accent scale (`--signal-1…12` via `color-mix`), layered shadows (`--elevation-1/2`) | `system.css`, `pc-tokens` layer | Tints are decorative; unsupported `color-mix` leaves them unset |
+| Cascade layers `pc-tokens, pc-components, pc-motion, pc-utilities` | all new CSS | Existing CSS stays unlayered and so always wins; migrate a component only when it is rewritten |
+| Utilities `.pc-stack`, `.pc-cluster`, `.pc-flow` | new components | — |
+| Scroll reveal (movement only, never opacity, so measured contrast never changes) | sections, cards, case sections, spreads | No movement |
+| Accent word underlines itself | every h1 and h2 with an accent word | Underlined at rest |
+| Reading progress bar | case pages, deep dives | Hidden |
+| Cross-page view transitions; case titles share `view-transition-name: case-<slug>` | homepage card, collection card → case h1 | Normal navigation |
+| Smooth `<details>` | all disclosures | Opens instantly |
+| One card forward (`:has()`) | selected cases, Explore further, collection | Pointer devices only |
+| Snapping deep-dive hub | deep dives, phones only | Stacked list |
+| Strand line, drawn thread, travelling mark | homepage practice section, Practice page | Fully drawn; mark paused under reduced motion |
+| Observed / interpreted / decided layers | every case with a decision layer; text drawn from the case's own approved statements | Readable list |
+| Annotated plate with leader lines | Practice: the anatomy of a case page (structural, no case claims) | Plain list |
+| Source popovers | each case's *At a glance → How I knew* | Native `popover`, works without JavaScript |
+| A count that resolves (38 → 8) | Enterprise AI visual only; rounded figures are never counted | Shows 8 |
+| Pinned before/after figure | Claims, beside the four questions | Both states shown |
+
+Removed as dead: six unused rule groups in `foundation.css` (the earlier journeys, brief, representative-list, featured-status, evidence-boundary and deep-dive-index styles). `tests/interactions.spec.ts` now fails on any unused class in the current-edition stylesheets.
+
+Not built: the deep-dive figures as SVG plates. Their text is private content in KV, and drawing each figure is a separate piece of work.

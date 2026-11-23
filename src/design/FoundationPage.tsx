@@ -3,6 +3,7 @@ import { CurrentShell } from './CurrentShell'
 import { PracticeMoves } from './PracticeMoves'
 import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
+import { AnnotatedPlate, StrandLine } from './Interactions'
 import { archiveItems, writings } from '../content/writing'
 
 export const foundationPages = {
@@ -30,6 +31,15 @@ const practiceOutputs = [
   { move: 'Enable', output: 'A change people can carry out and keep using: a checkpoint, a resource, a format.', example: 'Claims: guides and training built from administrators’ knowledge, in use statewide.', href: '/investigations/claims-operations/' },
 ] as const
 
+/** The anatomy of a public case page, for the annotated plate on Practice. Structural, with no case claims. */
+const caseAnatomy = [
+  { pin: 'At a glance', note: 'What changed, first.', detail: ' The result, then the problem, what I did and how I knew.' },
+  { pin: 'The decision', note: 'What was at stake.', detail: ' The explanation people held, the options and what became of each, and who decided.' },
+  { pin: 'Observed, interpreted, decided', note: 'How I Know, in layers.', detail: ' What was seen, what it was taken to mean, and what was chosen, kept apart.' },
+  { pin: 'The four questions', note: 'The full account.', detail: ' What was the problem, how I knew, what I did, what changed.' },
+  { pin: 'How I know', note: 'The limits, last but always there.', detail: ' What I didn’t own, how anything was measured, and what remains unproven.' },
+] as const
+
 function Practice() {
   return <>
     <p className="pc-kicker">The practice</p><h1>Test. Show. Enable.</h1>
@@ -37,8 +47,13 @@ function Practice() {
     <PracticeMoves/>
     <section className="pc-section"><h2>Investigate the system. Examine the explanation.</h2><p>One line of inquiry examines the structures and mechanisms producing observed behavior. Another examines the assumptions, categories, frameworks, and evidence shaping our explanation of that behavior.</p><blockquote>What way of looking at this makes it appear true?</blockquote><p>This question applies to my own interpretations and development decisions, too.</p></section>
     <section className="pc-section" aria-labelledby="inquiry-title"><p className="pc-kicker">A recurring reasoning practice</p><h2 id="inquiry-title">Notice → Frame → Model → Test → Interrogate → Revise</h2><p>Test. Show. Enable. describes what the work delivers to other people. This loop describes how the reasoning moves along the way; they are not competing processes to memorize.</p><p>A flexible loop, not a rigid sequence. Evidence can send the inquiry back to an earlier question. All six moves are available to read here without operating a model.</p><dl className="pc-inquiry-list">{inquiry.map(([name, text]) => <div key={name}><dt>{name}</dt><dd>{text}</dd></div>)}</dl></section>
+    <StrandLine caption="FIG · Conceptual illustration · the thread I follow through the strands; not data"/>
     <section className="pc-section" aria-labelledby="practice-outputs-title"><p className="pc-kicker">What each move produces</p><h2 id="practice-outputs-title">Decisions, not only findings.</h2>
       <dl className="pc-inquiry-list">{practiceOutputs.map(item => <div key={item.move}><dt>{item.move}</dt><dd>{item.output} <a href={publicPath(item.href)}>{item.example} <span aria-hidden="true">→</span></a></dd></div>)}</dl>
+    </section>
+    <section className="pc-section" aria-labelledby="case-anatomy-title"><p className="pc-kicker">How a case is read</p><h2 id="case-anatomy-title">Every case, the same <em className="pc-accent">order</em>.</h2>
+      <p>Each investigation answers the same questions in the same order, so a reader can compare cases and find the limits quickly.</p>
+      <AnnotatedPlate title="The parts of an investigation page" caption="FIG · Artifact · the structure of every public case; schematic" parts={caseAnatomy}/>
     </section>
     <section className="pc-section"><p className="pc-kicker">How I Know</p><h2>Keep the account inspectable.</h2><p>Separate what was observed from what is inferred, proposed, implemented, or measured. Name the source, contribution, and limitation. Treat a connection as an editorial claim that needs its own explanation—not proof of equivalence or causation.</p><a className="pc-text-link" href={publicPath('/patterns/')}>Connections: explore the distinctions →</a></section>
   </>

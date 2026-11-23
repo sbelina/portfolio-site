@@ -4,6 +4,7 @@ import type { Investigation } from '../content/investigation'
 import { MoveTheCheckpoint } from './MoveTheCheckpoint'
 import { ServiceBlueprint } from './ServiceBlueprint'
 import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
+import { LayerStack, PinnedStory, SourceCites } from '../design/Interactions'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -60,6 +61,9 @@ export function FigureStrip({ figures }: { figures: NonNullable<Investigation['f
   </section>
 }
 
+/** Which part of the story each question tells, for the pinned before-and-after figure. */
+const pinnedStates = { problem: 'before', 'how-i-knew': 'before', 'what-i-did': 'after', 'what-changed': 'after' } as const
+
 const optionLabels = { considered: 'Considered', recommended: 'Recommended', chosen: 'Chosen', not_chosen: 'Not chosen' } as const
 /** How far each implication is established. Shown in words beside every item, never by colour alone. */
 export const implicationLabels = { resource: 'Resource implication', observed_change: 'Observed change', measured: 'Measured result', unproven: 'Not established' } as const
@@ -96,11 +100,19 @@ export function narrativeContents(narrative: Investigation) {
 }
 
 /** The case at a glance, result first: what changed, then the problem, what I did and how I knew. */
-export function CaseGlance({ brief }: { brief: NonNullable<Investigation['brief']> }) {
+export function CaseGlance({ brief, sources = [] }: { brief: NonNullable<Investigation['brief']>; sources?: PublicEvidence[] }) {
   return <section className="investigation-glance" aria-labelledby="investigation-glance-title">
     <h2 id="investigation-glance-title">At a glance</h2>
-    <dl>{([['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
+    <dl>{([['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}{term === 'How I knew' && sources.length ? <> <SourceCites sources={sources} idPrefix="glance-source"/></> : null}</dd></div>)}</dl>
   </section>
+}
+
+/** The three layers of How I Know, drawn from the case's own approved statements and decision. */
+function caseLayers(narrative: Investigation) {
+  const observed = narrative.statements.find(statement => statement.kind === 'direct_observation')?.text
+  const interpreted = narrative.statements.find(statement => statement.kind === 'practitioner_interpretation')?.text ?? narrative.workingExplanation
+  const chosen = narrative.decision?.alternatives.filter(item => item.status === 'chosen' || item.status === 'recommended')[0]
+  return observed && interpreted && chosen ? { observed, interpreted, decided: `${chosen.option}. ${chosen.note}` } : null
 }
 
 export function InvestigationNarrative({ narrative, evidence }: { narrative: Investigation; evidence: PublicEvidence[] }) {
@@ -117,14 +129,20 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
     </React.Fragment>
   }
   const hasCaveats = caveats.some(([key]) => narrative[key]) || loose.length > 0
+  const layers = narrative.decision ? caseLayers(narrative) : null
+  const questionSections = questions.map(question => question.fields.some(key => narrative[key])
+    ? <section key={question.id} id={question.id} className="investigation-question"><h2>{question.title}</h2>{question.fields.filter(key => narrative[key]).map(key => passage(key, question.title))}</section>
+    : null)
+  const before = narrative.blueprint?.views[0], after = narrative.blueprint?.views[1]
   return <div className="investigation-narrative">
-    {narrative.brief ? <CaseGlance brief={narrative.brief}/> : null}
+    {narrative.brief ? <CaseGlance brief={narrative.brief} sources={evidence}/> : null}
     {narrative.decision ? <DecisionLayer decision={narrative.decision}/> : null}
+    {layers ? <LayerStack {...layers}/> : null}
     {narrative.figures?.length ? <FigureStrip figures={narrative.figures}/> : null}
     {narrative.blueprint ? <ServiceBlueprint blueprint={narrative.blueprint}/> : null}
-    {questions.map(question => question.fields.some(key => narrative[key])
-      ? <section key={question.id} id={question.id} className="investigation-question"><h2>{question.title}</h2>{question.fields.filter(key => narrative[key]).map(key => passage(key, question.title))}</section>
-      : null)}
+    {before && after
+      ? <PinnedStory states={[{ id: 'before', label: before.label, summary: before.summary }, { id: 'after', label: after.label, summary: after.summary }]} sectionState={pinnedStates}>{questionSections}</PinnedStory>
+      : questionSections}
     {narrative.differently ? <section id="differently" className="investigation-question investigation-differently"><h2>What I’d do differently</h2><p>{narrative.differently}</p></section> : null}
     {hasCaveats ? <section id="how-i-know" className="investigation-how-i-know" aria-labelledby="how-i-know-title"><h2 id="how-i-know-title">How I know</h2>
       {caveats.map(([key, label]) => narrative[key] ? <section key={key}><h3>{label}</h3>{passage(key, label)}</section> : null)}

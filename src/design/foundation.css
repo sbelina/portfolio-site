@@ -1,4 +1,6 @@
 @import './tokens.css';
+@import './system.css';
+@import './motion.css';
 @import '../components/public-navigation.css';
 @import '../components/experiment-note.css';
 
@@ -28,7 +30,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-lead { max-width: 44rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.65; }
 .pc-byline, .pc-meta { color: var(--muted); font-size: .85rem; }
 .pc-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; padding-block: clamp(3rem, 7vw, 6rem); }
-.pc-hero > *, .pc-moves > *, .pc-journeys > * { min-width: 0; }
+.pc-hero > *, .pc-moves > * { min-width: 0; }
 .pc-hero-copy h1 { font-size: clamp(1.8rem, 3.4vw, 3.5rem); max-width: 22ch; }
 .pc-inquiry-figure { margin: 0; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .pc-inquiry-drawing { aspect-ratio: 42/33; }
@@ -66,13 +68,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-part { transition: none; }
   .pc-inquiry-figure[data-focus="gap"] .pc-gap-ring { animation: none; }
 }
-.pc-journeys { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border-block: 1px solid var(--line); margin-bottom: 4rem; }
-.pc-journeys a { display: flex; flex-direction: column; gap: .8rem; padding: 2rem 2rem 2rem 0; text-decoration: none; }
-.pc-journeys a + a { border-left: 1px solid var(--line); padding-left: 2rem; }
-.pc-journeys .pc-kicker { margin: 0; }
-.pc-journeys strong { font-size: clamp(1.25rem,2.2vw,1.8rem); font-weight: 550; line-height: 1.35; text-decoration: underline; text-underline-offset: .25em; }
-.pc-journeys a > span:last-child { color: var(--muted); max-width: 40ch; }
-.pc-evidence-boundary { display: block; margin-top: .6rem; font-style: normal; font-size: .9rem; }
 .pc-section { margin-block: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--line); }
 .pc-section > p:not(.pc-kicker), .pc-document > p { max-width: 65ch; }
 .pc-section-heading { margin-bottom: 2.5rem; }
@@ -163,8 +158,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
   /* Give enlarged option words the full measure across system-font metrics. */
   .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
-  .pc-journeys { grid-template-columns: 1fr; }
-  .pc-journeys a + a { border-left: 0; border-top: 1px solid var(--line); padding-left: 0; }
   .pc-inquiry-list > div { grid-template-columns: 1fr; gap: .5rem; }
   .pc-contact a + a { margin-left: 0; }
   .pc-contact { display: flex; flex-direction: column; align-items: flex-start; }
@@ -176,10 +169,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-actions { display: flex; flex-wrap: wrap; gap: 0 2rem; margin-top: 1.5rem; }
 .pc-actions a { display: inline-flex; align-items: center; gap: .45rem; min-height: 44px; font-weight: 550; }
 .pc-actions-address { font-weight: 400; color: var(--muted); }
-.pc-brief { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 0 2rem; margin: 1.5rem 0; }
-.pc-brief > div { border-top: 1px solid var(--line); padding-block: 1rem; }
-.pc-brief dt { font-weight: 650; margin-bottom: .4rem; }
-.pc-brief dd { margin: 0; max-width: 40ch; }
 /* Same shape, different gap: case labels on the illustration (decorative; the live text carries the meaning). */
 .pc-case-labels text { font: 600 15px/1 var(--mono, ui-monospace, monospace); fill: currentColor; letter-spacing: .02em; }
 .pc-inquiry-reading strong { font-weight: 650; }
@@ -200,12 +189,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 
 /* Professional identity and representative investigations (19 November). */
 .pc-identity-name { color: var(--ink); }
-.pc-representative-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; }
-.pc-representative-list li { border-top: 1px solid var(--line); padding-top: 1rem; min-width: 0; }
-.pc-representative-list a { display: inline-block; min-height: 44px; padding-block: .25rem; font-size: 1.15rem; line-height: 1.4; overflow-wrap: anywhere; }
-.pc-representative-status { color: var(--muted); font-size: .85rem; margin: .25rem 0 0; }
 .pc-purpose { max-width: 65ch; }
-@media (max-width: 760px) { .pc-representative-list { grid-template-columns: minmax(0,1fr); } }
 .pc-distinction-detail { margin: .75rem 0 0; }
 .pc-distinction-detail dt { font-weight: 600; margin-top: .6rem; }
 .pc-distinction-detail dd { margin: .15rem 0 0; }
@@ -223,7 +207,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-result-label { margin: .35rem 0 0; max-width: 34ch; }
 .pc-result-basis { margin: .35rem 0 .5rem; font-size: .82rem; color: var(--muted); max-width: 40ch; }
 .pc-results a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
-.pc-featured-status { margin: .75rem 0 0; }
 
 .case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
 .case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
@@ -235,8 +218,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive button { min-height: 44px; padding: .5rem 1rem; font: inherit; border: 1px solid var(--ink); background: var(--ink); color: var(--paper, #f3efe7); cursor: pointer; }
 .deep-dive .deep-dive-signout button { background: transparent; color: var(--ink); margin-top: 2rem; }
 .deep-dive-error { border-left: 3px solid var(--pressure, currentColor); padding-left: .75rem; font-weight: 600; }
-.deep-dive-index { padding-left: 1.25rem; }
-.deep-dive-index a { display: inline-flex; min-height: 44px; align-items: center; }
 .deep-dive-body { max-width: 70ch; }
 
 /* "How I got here" interlude: a full-width observatory band between what changed and the practice. */

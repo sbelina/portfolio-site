@@ -235,6 +235,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-strand-title",
+      "destination": "/#pc-strand-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-explore-title",
       "destination": "/#pc-explore-title",
       "source": "new reading gateway/bootstrap",

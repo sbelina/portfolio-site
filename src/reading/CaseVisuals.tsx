@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Count } from '../design/Interactions'
 
 /**
  * Case visuals (owner direction, 23 November): visual-first readings that never stand in for data.
@@ -68,6 +69,7 @@ export function ProposalsToProblems() {
   return <section className="case-visual" aria-labelledby="proposals-title">
     <p className="case-visual-kicker">Try it</p>
     <h2 id="proposals-title">From proposals to problems</h2>
+    <p className="case-visual-count"><Count from={38} to={8} label="8 challenge areas"/> <span>challenge areas, from 38 proposals</span></p>
     <p>Thirty-eight proposals read as thirty-eight separate needs. Grouped by the challenge each one addressed, they became eight areas teams could discuss and choose among.</p>
     {enhanced ? <>
       <fieldset className="case-visual-controls"><legend>Show the proposals</legend>{[false, true].map(value => <label key={String(value)}><input type="radio" name="proposals-view" checked={grouped === value} onChange={() => setGrouped(value)}/>{value ? 'Grouped into challenge areas' : 'One by one'}</label>)}</fieldset>

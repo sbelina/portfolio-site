@@ -1,0 +1,53 @@
+/*
+ * System layer (owner decision, 23 November 2026: no Tailwind; adopt its good habits in plain CSS).
+ *
+ * New code lives in cascade layers. Existing component CSS stays unlayered, and unlayered rules beat
+ * layered ones, so nothing here can override a component that already renders. Migrate a component
+ * into `pc-components` only when it is rewritten, and recheck it visually.
+ */
+@layer pc-tokens, pc-components, pc-motion, pc-utilities;
+
+@layer pc-tokens {
+  /* Derived tokens recompute on every surface that redefines --signal, --paper or --ink. */
+  html[data-edition="current"], .pc-site, .pc-sample, .pc-interlude, .deep-dive-beneath, .pc-site[data-surface="observatory"] {
+    /* Spacing: one scale, no one-off values in new code. */
+    --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
+    --space-5: 1.5rem; --space-6: 2rem; --space-7: 3rem; --space-8: 4rem;
+    /* Type: a fluid modular scale. */
+    --step--1: clamp(.82rem, .8rem + .1vw, .88rem);
+    --step-0: clamp(1rem, .96rem + .2vw, 1.1rem);
+    --step-1: clamp(1.2rem, 1.1rem + .45vw, 1.4rem);
+    --step-2: clamp(1.45rem, 1.25rem + .9vw, 1.9rem);
+    --step-3: clamp(1.8rem, 1.45rem + 1.6vw, 2.6rem);
+    --step-4: clamp(2.2rem, 1.6rem + 2.8vw, 3.6rem);
+    --step-5: clamp(2.6rem, 1.7rem + 4.2vw, 4.7rem);
+    /* A 12-step accent scale derived from --signal, each step with a job (after Radix):
+       1–2 backgrounds · 3–5 fills and hover · 6–8 borders · 9 solid · 10–12 text. */
+    --signal-1: color-mix(in oklch, var(--signal) 4%, var(--paper));
+    --signal-2: color-mix(in oklch, var(--signal) 8%, var(--paper));
+    --signal-3: color-mix(in oklch, var(--signal) 12%, var(--paper));
+    --signal-4: color-mix(in oklch, var(--signal) 18%, var(--paper));
+    --signal-5: color-mix(in oklch, var(--signal) 26%, var(--paper));
+    --signal-6: color-mix(in oklch, var(--signal) 36%, var(--paper));
+    --signal-7: color-mix(in oklch, var(--signal) 50%, var(--paper));
+    --signal-8: color-mix(in oklch, var(--signal) 68%, var(--paper));
+    --signal-9: var(--signal);
+    --signal-10: color-mix(in oklch, var(--signal) 85%, var(--ink));
+    --signal-11: color-mix(in oklch, var(--signal) 70%, var(--ink));
+    --signal-12: color-mix(in oklch, var(--signal) 45%, var(--ink));
+    --signal-veil: oklch(from var(--signal) l c h / .5);
+    /* Layered shadows from one warm hue (after Josh Comeau and Maxime Heckel). */
+    --shadow-color: 32deg 18% 35%;
+    --elevation-1: 0 .5px .5px hsl(var(--shadow-color) / .18), 0 1px 1px hsl(var(--shadow-color) / .14);
+    --elevation-2: 0 1px 1px hsl(var(--shadow-color) / .11), 0 2px 2px hsl(var(--shadow-color) / .11), 0 4px 4px hsl(var(--shadow-color) / .11), 0 8px 8px hsl(var(--shadow-color) / .11);
+    --ease-out: cubic-bezier(.215, .61, .355, 1);
+  }
+  .pc-site[data-surface="observatory"], .pc-interlude[data-surface="observatory"], .deep-dive-beneath[data-surface="observatory"] { --shadow-color: 160deg 20% 2%; }
+}
+
+@layer pc-utilities {
+  /* A handful of layout utilities, not hundreds. */
+  .pc-stack { display: flex; flex-direction: column; gap: var(--stack-space, var(--space-4)); }
+  .pc-cluster { display: flex; flex-wrap: wrap; align-items: center; gap: var(--cluster-space, var(--space-2) var(--space-4)); }
+  .pc-flow > * + * { margin-block-start: var(--flow-space, 1em); }
+}
