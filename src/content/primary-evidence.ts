@@ -9,6 +9,7 @@ export type InvestigationSummary = {
   slug?: string; stakes?: string; deepDive?: boolean
   /** The case's own distinction (approved visual): left ≠ right, and why. */
   visual?: { left: string; right: string; explanation: string }
+  composition?: 'boundary' | 'comparison' | 'network' | 'revision'
   brief?: CaseBrief; status?: CaseStatusSummary; headlines?: HeadlineFigure[]
 }
 

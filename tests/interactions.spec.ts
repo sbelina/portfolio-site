@@ -91,7 +91,7 @@ test('reduced motion: no running animations, no progress bar, a paused travellin
     await expect(page.locator('.pc-progress')).toBeHidden()
     expect(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length)).toBe(0)
     await page.goto(`${origin}/practice/`)
-    expect(await page.locator('.pc-strand svg').evaluate(svg => (svg as SVGSVGElement).animationsPaused())).toBe(true)
+    expect(await page.locator('.pc-strand > svg').evaluate(svg => (svg as SVGSVGElement).animationsPaused())).toBe(true)
     expect(await page.locator('.pc-strand-thread').evaluate(path => getComputedStyle(path).strokeDashoffset)).toMatch(/^0(px)?$/)
   } finally { await context.close() }
 })
@@ -158,4 +158,35 @@ test('conceptual drawings use the deck palette: ink, orange, sage, not the statu
   expect(await page.locator('.investigation-visual').evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe('rgb(21, 21, 27)')
   await page.goto(`${origin}/writing/`)
   expect(await stroke('.pc-interlude-geometry')).not.toBe(holds)
+})
+
+test('case figures: method profile, process dial, legend and card thumbnails read without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  try {
+    const page = await context.newPage()
+    await page.goto(claims)
+    const method = page.getByRole('region', { name: 'How the evidence was gathered' })
+    await expect(method.locator('.pc-method-row')).toHaveCount(4)
+    for (const name of ['How it was gathered', 'When', 'From whom', 'What it could establish']) await expect(method.getByRole('heading', { level: 3, name: new RegExp(`^${name}`) })).toBeVisible()
+    const dial = page.getByRole('region', { name: 'Walk the process' })
+    await expect(dial.locator('.pc-dial-static h3')).toHaveText(['Before: pay → verify', 'After: verify → pay'])
+    await expect(dial.getByRole('list', { name: 'Key to this figure' })).toBeVisible()
+    await page.goto(`${origin}/investigations/brand-research/`)
+    await expect(page.locator('.pc-method-tags li[data-unknown]')).toContainText(['Survey mode not stated'])
+    await page.goto(`${origin}/investigations/`)
+    await expect(page.locator('.reading-cards .pc-thumb-pair')).toHaveCount(6)
+    await expect(page.locator('.reading-cards .pc-thumb-pair').first()).toHaveText(/Delivered\s*≠\s*is not\s*Verified/)
+  } finally { await context.close() }
+})
+
+test('the process dial steps through each stage by keyboard and switches between before and after', async ({ page }) => {
+  await page.goto(claims)
+  const dial = page.getByRole('region', { name: 'Walk the process' })
+  await expect(dial.locator('.pc-dial-count')).toHaveText('01 / 04')
+  await dial.getByRole('button', { name: 'Next step' }).focus(); await page.keyboard.press('Enter')
+  await expect(dial.locator('.pc-dial-center strong')).toHaveText('Photo reviewed')
+  await expect(dial.locator('.pc-dial-segment[data-current]')).toHaveAttribute('data-mark', 'change')
+  await dial.getByRole('radio', { name: 'Before: pay → verify' }).check()
+  await expect(dial.locator('.pc-dial-count')).toHaveText('01 / 05')
+  await expect(dial.getByRole('button', { name: 'Previous step' })).toBeDisabled()
 })

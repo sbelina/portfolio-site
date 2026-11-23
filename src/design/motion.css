@@ -66,6 +66,78 @@
 }
 
 @layer pc-components {
+  /* Shared figure legend: the deck's vocabulary, explained under each figure. */
+  .pc-legend { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .pc-legend svg, .pc-thumb svg, .pc-method-glyph { overflow: visible; }
+  .pc-legend-ink { fill: none; stroke: var(--reading-ink, var(--ink)); stroke-width: 2; }
+  .pc-legend-thread { fill: none; stroke: var(--signal); stroke-width: 2.5; }
+  .pc-legend-check { fill: none; stroke: var(--reading-sage, var(--sage)); stroke-width: 2; }
+  .pc-legend-turn { fill: var(--reading-paper, var(--paper)); stroke: var(--signal); stroke-width: 2; }
+
+  /* Method profile: four decisions as bands (after a survey-types infographic), in the deck palette. */
+  .pc-method { margin: var(--space-6) 0; }
+  .pc-method-lead { color: var(--reading-muted, var(--muted)); }
+  .pc-method-rows { display: grid; gap: 2px; border: 1px solid var(--reading-line, var(--line)); }
+  .pc-method-row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: var(--space-4); align-items: start; padding: var(--space-4); }
+  .pc-method-row:nth-child(odd) { background: var(--signal-1); }
+  .pc-method-row:nth-child(even) { background: var(--reading-panel, var(--panel)); }
+  .pc-method-glyph { width: 4rem; height: auto; fill: none; stroke: var(--reading-ink, var(--ink)); stroke-width: 1.5; }
+  .pc-method-glyph .pc-glyph-fill { fill: var(--signal); stroke: var(--signal); }
+  .pc-method-body { min-width: 0; }
+  .pc-method-body h3 { margin: 0 0 var(--space-2); font-size: var(--step-1); }
+  .pc-method-tag { margin-left: var(--space-2); font: 600 .7rem/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-method-tags { list-style: none; margin: 0 0 var(--space-2); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .pc-method-tags li { padding: .15rem .65rem; border: 1px solid var(--reading-ink, var(--ink)); border-radius: 999px; font-size: var(--step--1); }
+  .pc-method-tags li[data-unknown] { border-style: dashed; color: var(--reading-muted, var(--muted)); }
+  .pc-method-body p { margin: 0; }
+  @media (max-width: 560px) { .pc-method-row { grid-template-columns: minmax(0, 1fr); } .pc-method-glyph { width: 3rem; } }
+
+  /* Process dial (after a "typical day" clock): one segment per stage. */
+  .pc-dial { margin: var(--space-6) 0; padding: var(--space-5); border: 1px solid var(--reading-line, var(--line)); }
+  .pc-dial h2 { margin-top: 0; }
+  .pc-dial-controls { border: 0; margin: 0 0 var(--space-4); padding: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  .pc-dial-controls legend { padding: 0; font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-dial-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; cursor: pointer; }
+  .pc-dial-controls input { accent-color: var(--signal); width: 1.1rem; height: 1.1rem; }
+  .pc-dial-stage { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: var(--space-6); align-items: center; }
+  .pc-dial-face { position: relative; max-width: 18rem; width: 100%; aspect-ratio: 1; }
+  .pc-dial-face svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pc-dial-track { fill: none; stroke: var(--reading-line, var(--soft-line)); stroke-width: 1; }
+  .pc-dial-tick { stroke: var(--reading-muted, var(--muted)); stroke-width: 1; }
+  .pc-dial-segment { fill: none; stroke: var(--reading-line, var(--soft-line)); stroke-width: 14; transition: stroke .3s var(--ease-out); }
+  .pc-dial-segment[data-mark="failure"] { stroke: var(--signal-6); }
+  .pc-dial-segment[data-mark="change"] { stroke: var(--reading-sage, var(--sage)); stroke-opacity: .55; }
+  .pc-dial-segment[data-current] { stroke-width: 20; stroke-opacity: 1; }
+  .pc-dial-segment[data-current]:not([data-mark]) { stroke: var(--reading-ink, var(--ink)); }
+  .pc-dial-segment[data-current][data-mark="failure"] { stroke: var(--signal); }
+  .pc-dial-segment[data-current][data-mark="change"] { stroke: var(--reading-sage, var(--sage)); }
+  .pc-dial-center { position: absolute; inset: 22%; display: grid; place-content: center; text-align: center; gap: var(--space-1); }
+  .pc-dial-center strong { font-size: var(--step-1); line-height: 1.2; }
+  .pc-dial-count { font: 600 .75rem ui-monospace, monospace; letter-spacing: .08em; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-note { font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-dial-side { min-width: 0; }
+  .pc-dial-summary { margin-top: 0; }
+  .pc-dial-cells { list-style: none; margin: 0 0 var(--space-4); padding: 0; display: grid; gap: var(--space-2); }
+  .pc-dial-cells li { padding: var(--space-2) var(--space-3); border-left: 3px solid var(--reading-line, var(--line)); }
+  .pc-dial-cells li[data-mark="failure"] { border-left-color: var(--signal); }
+  .pc-dial-cells li[data-mark="change"] { border-left-color: var(--reading-sage, var(--sage)); }
+  .pc-dial-lane { display: block; font: 600 .7rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-steps { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .pc-dial-steps button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+  .pc-dial-steps button:disabled { opacity: .45; cursor: default; }
+  .pc-dial-static { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-5); }
+  .pc-dial-static ol { margin: 0; padding-left: 1.25rem; display: grid; gap: var(--space-3); }
+  .pc-dial-static li[data-mark="failure"] > strong { color: var(--signal); }
+  .pc-dial-caption { margin: var(--space-3) 0 0; font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  @media (max-width: 700px) { .pc-dial-stage { grid-template-columns: minmax(0, 1fr); } .pc-dial-face { margin-inline: auto; max-width: 15rem; } }
+  @media (prefers-reduced-motion: reduce) { .pc-dial-segment { transition: none; } }
+
+  /* Card thumbnails: the case's own distinction, drawn small, with the pair as text. */
+  .pc-thumb { display: grid; gap: var(--space-1); margin-bottom: var(--space-3); padding: var(--space-3); border: 1px solid var(--reading-line, var(--soft-line)); background: var(--signal-1); }
+  .pc-thumb svg { width: 100%; max-width: 12rem; height: auto; }
+  .pc-thumb-pair { font: 600 .78rem/1.4 ui-monospace, monospace; letter-spacing: .02em; }
+
   /* Verbal stress (src/content/emphasis.tsx): orange + bold for the turn, bold for the finding,
      italics for a label or spoken stress. Underlines belong to links only. */
   .pc-turn { color: var(--signal); font-weight: 650; }
@@ -83,7 +155,7 @@
 
   /* 2 + E · Strand line: faint strands, a lens, and the orange thread that draws itself. */
   .pc-strand { margin: var(--space-6) 0 0; }
-  .pc-strand svg { display: block; width: 100%; height: auto; }
+  .pc-strand > svg { display: block; width: 100%; height: auto; }
   .pc-strand .pc-strand-faint { fill: none; stroke: var(--soft-line); stroke-width: 1.5; }
   .pc-strand .pc-strand-lens { fill: none; stroke: var(--sage); stroke-width: 2; }
   .pc-strand .pc-strand-plane { fill: var(--signal-4); stroke: var(--signal); stroke-width: 1; }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FigureLegend } from './CaseFigures'
 
 type Focus = 'all' | 'outcome' | 'explanation' | 'gap'
 const outcomePath = 'M40 225C110 225 110 102 210 102S310 225 380 225'
@@ -58,7 +59,7 @@ export function InquiryIllustration({ cases = [] }: { cases?: readonly CasePair[
         {enhanced && caseValue !== 'general' ? <g className="pc-case-labels"><text x="380" y="252" textAnchor="end">{gapCase.solid}</text><text x="380" y="60" textAnchor="end">{gapCase.dashed}</text></g> : null}
       </svg>
     </div>
-    <figcaption><span className="pc-kicker">A way of looking</span><p>In each case study, two related things were taken for one. Choose a case to see which.</p><small>Conceptual illustration · not measured data</small>
+    <figcaption><span className="pc-kicker">A way of looking</span><p>In each case study, two related things were taken for one. Choose a case to see which.</p><small>Conceptual illustration · not measured data</small><FigureLegend items={[{ kind: 'thread', label: 'What was observed' }, { kind: 'inferred', label: 'The explanation people held' }, { kind: 'turn', label: 'Where they part' }]}/>
       {enhanced ? <>
         <fieldset className="pc-inquiry-controls"><legend>Look at</legend>
           {inquiryViews.map(view => <label key={view.value}><input type="radio" name="pc-inquiry-focus" value={view.value} checked={focus === view.value} onChange={() => setFocus(view.value)}/>{view.label}</label>)}

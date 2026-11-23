@@ -66,6 +66,15 @@ export const investigationSchema = z.strictObject({
     implementation: narrativeText,
     implications: z.array(z.strictObject({ kind: z.enum(['resource', 'observed_change', 'measured', 'unproven']), text: narrativeText })).min(1).max(6),
   }).optional(),
+  /**
+   * The method profile (owner direction, 23 November; after the "four decisions" survey-type infographic):
+   * how the evidence was gathered, when, from whom, and what it could and could not establish.
+   * Facts only; a decision that was not recorded says so instead of guessing.
+   */
+  method: z.strictObject(Object.fromEntries((['how', 'when', 'who', 'learn'] as const).map(key => [key, z.strictObject({
+    tags: z.array(z.string().min(1).max(60)).min(1).max(8),
+    note: narrativeText,
+  })])) as Record<'how' | 'when' | 'who' | 'learn', z.ZodObject<{ tags: z.ZodArray<z.ZodString>; note: z.ZodString }, z.core.$strict>>).optional(),
   /** One honest line on what the author would do differently next time (owner's own words). */
   differently: narrativeText.optional(),
   /** What the author did not own or decide. */

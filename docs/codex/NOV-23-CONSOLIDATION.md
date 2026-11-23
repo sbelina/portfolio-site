@@ -141,3 +141,11 @@ Owner note: “Investigations” and “Claims” were not helping readers find 
   | Accessibility | AI-assisted development · Accessibility evaluation |
 - **Addresses:** `/investigations/` stays the canonical address, so existing links keep working. `/work/` and `/case-studies/` redirect there with a 301.
 - **Unchanged:** the internal model name (`investigation`) and the fixtures edition.
+
+## Follow-up, 23 November: four case figures from the owner's references
+
+- **Method profile** (after a survey-types infographic): *how it was gathered, when, from whom, what it could establish*. Each has tags and one sentence. Facts only; a dashed tag marks what was not recorded, such as *Survey mode not stated*.
+- **Process dial** (after a “typical day” clock): Claims as a dial with one segment per stage, before and after, stepped with buttons. Orange marks where problems can surface; sage marks where verification moved. Without JavaScript, both processes are shown as step lists.
+- **Shared legend**: solid ink established, dotted inferred, orange thread, sage check, orange ring where two things part. It sits under the pattern drawing, the strand line and the dial.
+- **Card thumbnails** (after case-study galleries): each card shows the case's own distinction as a small drawing with the pair as text, for example *Delivered ≠ Verified*. No images that don't exist.
+- Left for later: filter chips (worth it at about ten cases); the constellation, network graph and 3D references (Observatory only, or not yet); a case-study video (owner to record).

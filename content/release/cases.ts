@@ -88,6 +88,12 @@ const claims: Entry = {
       ],
     },
     measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    method: {
+      how: { tags: ['Exception log', 'Walk-throughs', 'Knowledge sessions'], note: 'I logged recurring exceptions, then walked the process with each group the handoff touched.' },
+      when: { tags: ['Four months of logging', 'Before the change'], note: 'The log ran for four months. No baseline was recorded before the change.' },
+      who: { tags: ['Adjusters', 'Administrative staff', 'Salvage partner', 'Administrators'], note: 'Everyone who handled the paperwork, from first request to salvage review.' },
+      learn: { tags: ['Descriptive', 'Process tracing'], note: 'It could show where and when problems surfaced. It could not measure rework, payment time or cost.' },
+    },
     statements: claimsInvestigation.statements.map(statement => ({
       ...statement,
       ...(claimsLimitations[statement.id] ? { limitation: claimsLimitations[statement.id] } : {}),
@@ -147,6 +153,12 @@ const trust: Entry = {
         { kind: 'unproven', text: 'No revenue, retention or trust change is claimed.' },
       ],
     },
+    method: {
+      how: { tags: ['Interviews', 'Survey', 'Survey mode not stated'], note: 'The external partner conducted the interviews and fielded the survey. I set the interview sequence and designed the measures.' },
+      when: { tags: ['One study', 'A baseline'], note: 'A single study, kept as a baseline for a comparable follow-up.' },
+      who: { tags: ['800+ survey respondents', 'Sample set by the partner', 'Detractors not sampled'], note: 'Sampling was the partner’s. Detractors were championed but not included.' },
+      learn: { tags: ['Descriptive', 'Two separate measures'], note: 'It could compare agreement with reported trust influence. Self-report cannot show what produces trust.' },
+    },
     statements: [
       { id: '0e5d8098-297b-4fe9-b2a1-5362db15d04f', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.trust.id], text: 'I set the general-to-specific interview sequence that the final guide followed.', limitation: 'The partner conducted the interviews.' },
       { id: 'b54030f9-6a8d-4003-a61b-96bd9f14c3a4', section: 'consequence', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [caseEvidence.trust.id], text: 'A year later, the readout is still cited in strategy briefs.', limitation: 'Owner-reported. Citation is use, not evidence of effect.' },
@@ -201,6 +213,12 @@ const ai: Entry = {
         { kind: 'unproven', text: 'No financial return, implementation or business impact is claimed.' },
       ],
     },
+    method: {
+      how: { tags: ['Document synthesis', 'AI-assisted parsing', 'Checked by hand'], note: 'I read every proposal against the others and checked the AI-assisted groupings myself.' },
+      when: { tags: ['Before the sprint', 'As teams formed'], note: 'The groupings were walked through while the sprint teams were being defined.' },
+      who: { tags: ['38 proposals', 'Sprint facilitator', 'Innovation leadership', 'Stakeholders'], note: 'Tested with the facilitator first, then with leadership and stakeholders.' },
+      learn: { tags: ['Synthesis', 'Grouping'], note: 'It could organize the requests into shared challenges. It could not show which would succeed, or any business impact.' },
+    },
     statements: [
       { id: '620fa637-dd52-47f3-8ae0-19e75f918ca9', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.ai.id], text: 'I synthesized 38 proposals into eight challenge areas, checking AI-assisted groupings by hand.', limitation: 'The grouping is my interpretation, not a count of distinct needs.' },
       { id: '04ccc97b-8007-406f-b6f5-b7d8283b6c48', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.ai.id], text: 'The innovation team chose to run the sprint every year after the first one.', limitation: 'A program decision; it does not show my synthesis caused it.' },
@@ -254,6 +272,12 @@ const telematics: Entry = {
         { kind: 'unproven', text: 'No retention, churn or cost effect is claimed.' },
       ],
     },
+    method: {
+      how: { tags: ['Moderated sessions', 'Behavior analysis', 'SUS', 'NPS'], note: 'Others ran the sessions. With the audio unreliable, I read on-screen behavior, and confirmed both scores in the report.' },
+      when: { tags: ['One round of sessions', 'Timing not stated'], note: 'A single round; the dates are not part of the public account.' },
+      who: { tags: ['Five participants', 'Program members'], note: 'The same five people gave both scores.' },
+      learn: { tags: ['Descriptive', 'Two instruments'], note: 'It could describe how people used the app and how they rated the program. It could not show why people left.' },
+    },
     statements: [
       { id: '308e9680-09d1-43fe-b372-eec1deef1d03', section: 'investigation', kind: 'direct_observation', contribution: 'identified', evidenceIds: [caseEvidence.telematics.id], text: 'With the audio unreliable, I recovered findings from on-screen behavior.', limitation: 'The sessions were conducted by others; the method is described in the deep dive.' },
       { id: '94e0af76-25b0-430b-b5fb-5f88a4a5d865', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.telematics.id], text: 'After I took the report to marketing analytics, that team ran a follow-up survey of about 2,000 respondents.', limitation: 'Sequence, not proof that my recommendations were adopted.' },
@@ -303,6 +327,12 @@ const civic: Entry = {
         { kind: 'unproven', text: 'No reach figure, turnout effect or policy effect is claimed.' },
       ],
     },
+    method: {
+      how: { tags: ['Door to door', 'Phone', 'Social media', 'Events', 'Partner organizations'], note: 'Volunteers gathered residents’ questions wherever residents were.' },
+      when: { tags: ['Ongoing', 'Not systematically dated'], note: 'Questions were gathered continuously through the project’s work.' },
+      who: { tags: ['Residents', 'Volunteers', 'Partner organizations'], note: 'Anyone the volunteers met in person, online or through partners.' },
+      learn: { tags: ['Descriptive', 'Comparison'], note: 'It could compare residents’ questions with how official information was organized. It could not show any effect on turnout.' },
+    },
     statements: [
       { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort; owner-reported.' },
       { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.civic.id], text: 'The grant Vote Huntsville was asked to co-sign was awarded.', limitation: 'Recognition of a partnership, not of one person.' },
@@ -350,6 +380,12 @@ const accessibility: Entry = {
         { kind: 'resource', text: 'Earlier, repeatable checking could reduce later remediation. This is an intended benefit, not a measured one.' },
         { kind: 'unproven', text: 'No production deployment or measured saving is claimed.' },
       ],
+    },
+    method: {
+      how: { tags: ['Prototype experiment', 'Deliberate removal', 'Agent check', 'Planned human review'], note: 'Accessibility code was removed on purpose to test the agent; a separate human review was planned.' },
+      when: { tags: ['One experiment'], note: 'A single prototype, iterated between two agents.' },
+      who: { tags: ['Coding agent', 'Accessibility agent', 'One developer reviewer'], note: 'The review used simulated deuteranopia, not people with that vision.' },
+      learn: { tags: ['Test of a check', 'Simulation'], note: 'It could show the agent restoring removed code, and raise a visual question. It could not show user failure or a standards violation.' },
     },
     statements: [
       { id: 'd41ba4f0-7c7b-482d-bb94-7272375d2868', section: 'relationshipDiscovered', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.accessibility.id], text: 'The accessibility agent detected and restored code removed on purpose.', limitation: 'One prototype; not a general claim about the agent.' },

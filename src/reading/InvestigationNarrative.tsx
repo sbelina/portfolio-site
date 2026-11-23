@@ -6,6 +6,7 @@ import { ServiceBlueprint } from './ServiceBlueprint'
 import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
 import { LayerStack, PinnedStory, SourceCites } from '../design/Interactions'
 import { Stressed } from '../content/emphasis'
+import { MethodProfile, ProcessDial } from '../design/CaseFigures'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -93,6 +94,7 @@ export function narrativeContents(narrative: Investigation) {
   return [
     ...(narrative.brief ? [{ id: 'investigation-glance-title', title: 'At a glance' }] : []),
     ...(narrative.decision ? [{ id: 'decision', title: 'The decision' }] : []),
+    ...(narrative.method ? [{ id: 'method', title: 'How the evidence was gathered' }] : []),
     ...(narrative.blueprint ? [{ id: 'blueprint', title: 'Service blueprint: before and after' }] : []),
     ...questions.filter(question => question.fields.some(key => narrative[key])).map(({ id, title }) => ({ id, title })),
     ...(narrative.differently ? [{ id: 'differently', title: 'What I’d do differently' }] : []),
@@ -139,7 +141,9 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
     {narrative.brief ? <CaseGlance brief={narrative.brief} sources={evidence}/> : null}
     {narrative.decision ? <DecisionLayer decision={narrative.decision}/> : null}
     {layers ? <LayerStack {...layers}/> : null}
+    {narrative.method ? <MethodProfile method={narrative.method}/> : null}
     {narrative.figures?.length ? <FigureStrip figures={narrative.figures}/> : null}
+    {narrative.blueprint ? <ProcessDial blueprint={narrative.blueprint}/> : null}
     {narrative.blueprint ? <ServiceBlueprint blueprint={narrative.blueprint}/> : null}
     {before && after
       ? <PinnedStory states={[{ id: 'before', label: before.label, summary: before.summary }, { id: 'after', label: after.label, summary: after.summary }]} sectionState={pinnedStates}>{questionSections}</PinnedStory>

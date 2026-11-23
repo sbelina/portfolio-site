@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Stressed } from '../content/emphasis'
+import { FigureLegend } from './CaseFigures'
 
 /**
  * Interaction components (owner decision, 23 November 2026). Each renders its complete meaning as HTML
@@ -26,6 +27,7 @@ export function StrandLine({ caption = 'FIG · Conceptual illustration · strand
       <circle className="pc-strand-mark" r="5"><animateMotion dur="6s" repeatCount="indefinite" path={thread}/></circle>
       <text x="232" y="180">LENS · A CHECK</text><text x="362" y="180">PLANE · A COMMITMENT</text><text x="12" y="180">THE THREAD I FOLLOWED</text>
     </svg>
+    <FigureLegend items={[{ kind: 'thread', label: 'The thread followed' }, { kind: 'check', label: 'A check' }, { kind: 'inferred', label: 'Strands: variation, not data' }]}/>
     <figcaption>{caption}</figcaption>
   </figure>
 }

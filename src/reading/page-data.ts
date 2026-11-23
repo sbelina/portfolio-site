@@ -3,7 +3,7 @@ import { diagramEvidenceIds } from '../content/assumed-observed'
 import type { PublicEntry, PublicProjection } from '../content/model'
 import { renderBlocks } from './render-blocks'
 
-export type LinkedEntry = Pick<PublicEntry, 'id' | 'path' | 'title'> & Partial<Pick<PublicEntry, 'kind' | 'summary' | 'slug'>> & { status?: NonNullable<NonNullable<PublicEntry['investigation']>['status']>; stakes?: string; deepDive?: boolean }
+export type LinkedEntry = Pick<PublicEntry, 'id' | 'path' | 'title'> & Partial<Pick<PublicEntry, 'kind' | 'summary' | 'slug'>> & { status?: NonNullable<NonNullable<PublicEntry['investigation']>['status']>; stakes?: string; deepDive?: boolean; thumb?: { composition: NonNullable<PublicEntry['investigation']>['composition']; left: string; right: string } }
 export type ReadingContext = {
   entries: LinkedEntry[]
   relationships: PublicProjection['relationships']
@@ -24,7 +24,7 @@ export type ReadingPageData = {
   /** Explicit build context; private entry previews need not expose a collection. */
   inquirySpacePath?: string
 }
-const metadata = ({ id, kind, path, slug, title, summary, investigation }: PublicEntry): LinkedEntry => ({ id, kind, path, slug, title, summary, ...(investigation?.status ? { status: investigation.status } : {}), ...(investigation?.decision ? { stakes: investigation.decision.stakes } : {}), ...(investigation?.deepDive ? { deepDive: true } : {}) })
+const metadata = ({ id, kind, path, slug, title, summary, investigation }: PublicEntry): LinkedEntry => ({ id, kind, path, slug, title, summary, ...(investigation?.status ? { status: investigation.status } : {}), ...(investigation?.decision ? { stakes: investigation.decision.stakes } : {}), ...(investigation?.deepDive ? { deepDive: true } : {}), ...(investigation ? { thumb: { composition: investigation.composition, left: investigation.visual.left, right: investigation.visual.right } } : {}) })
 
 export function readingPageData(projection: PublicProjection, kind: ReadingPageData['kind'], fixture: boolean, entryId?: string, inquirySpacePath?: string): ReadingPageData {
   const empty: ReadingContext = { entries: [], relationships: [], evidence: [], assets: [] }

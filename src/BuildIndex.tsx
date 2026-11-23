@@ -14,6 +14,7 @@ import { ResultsStrip } from './design/ResultsStrip'
 import { LensInterlude } from './design/LensInterlude'
 import { StrandLine } from './design/Interactions'
 import { plainText, Stressed } from './content/emphasis'
+import { CaseThumb } from './design/CaseFigures'
 
 /** Old homepage anchors kept as targets, so a no-JavaScript visitor following an old link can still find its new home. */
 const movedSections = Object.entries(legacyFragments)
@@ -66,6 +67,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       {selected.length ? <section className="pc-section pc-selected" aria-labelledby="pc-selected-title">
         <div className="pc-section-heading"><p className="pc-kicker">Selected case studies</p><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
         <ol className="pc-selected-list">{selected.map(entry => <li key={entry.id}>
+          {entry.visual && entry.composition ? <CaseThumb composition={entry.composition} left={plainText(entry.visual.left)} right={plainText(entry.visual.right)}/> : null}
           {caseLabel(entry.slug) ? <p className="pc-kicker pc-selected-domain">{caseLabel(entry.slug)}</p> : null}
           {entry.status ? <p className="pc-selected-status"><CaseStatus status={entry.status}/></p> : null}
           <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>

@@ -293,3 +293,8 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .pc-reading .investigation-visual .visual-friction { stroke: var(--signal); }
 .pc-reading .investigation-visual .visual-learning { stroke: var(--reading-sage); }
 .pc-reading .investigation-visual figcaption span { color: var(--reading-muted); }
+/* The legacy narrative list and section spacing must not reach the new figures. */
+.investigation-narrative :is(.pc-method, .pc-dial, .pc-layers, .pc-legend, .pc-pin) li { margin: 0; }
+.investigation-narrative :is(.pc-method-row, .pc-method) { margin-block: 0; }
+.investigation-narrative .pc-method { margin-block: 2rem; }
+.investigation-narrative .pc-dial { margin-block: 2rem; }
