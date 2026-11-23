@@ -3,6 +3,7 @@ import type { PublicEvidence } from '../content/model'
 import type { Investigation } from '../content/investigation'
 import { MoveTheCheckpoint } from './MoveTheCheckpoint'
 import { ServiceBlueprint } from './ServiceBlueprint'
+import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -59,10 +60,34 @@ export function FigureStrip({ figures }: { figures: NonNullable<Investigation['f
   </section>
 }
 
+const optionLabels = { considered: 'Considered', recommended: 'Recommended', chosen: 'Chosen', not_chosen: 'Not chosen' } as const
+/** How far each implication is established. Shown in words beside every item, never by colour alone. */
+export const implicationLabels = { resource: 'Resource implication', observed_change: 'Observed change', measured: 'Measured result', unproven: 'Not established' } as const
+
+/** The institutional decision layer: stakes, options, ownership, what changed and how far each implication is established. */
+export function DecisionLayer({ decision }: { decision: NonNullable<Investigation['decision']> }) {
+  return <section id="decision" className="investigation-decision" aria-labelledby="investigation-decision-title">
+    <h2 id="investigation-decision-title">The decision</h2>
+    <dl className="investigation-decision-facts">
+      <div><dt>What was at stake</dt><dd>{decision.stakes}</dd></div>
+      <div><dt>The explanation people held</dt><dd>{decision.prevailing}</dd></div>
+    </dl>
+    <h3>Options, and what became of each</h3>
+    <ul className="investigation-options">{decision.alternatives.map(item => <li key={item.option} data-status={item.status}><span className="investigation-option-status">{optionLabels[item.status]}</span> <strong>{item.option}.</strong> {item.note}</li>)}</ul>
+    <dl className="investigation-decision-facts">
+      <div><dt>Who decided</dt><dd>{decision.ownership}</dd></div>
+      <div><dt>What changed in practice</dt><dd>{decision.implementation}</dd></div>
+    </dl>
+    <h3>Resource implications</h3>
+    <ul className="investigation-implications">{decision.implications.map(item => <li key={item.text} data-kind={item.kind}><span className="investigation-implication-kind">{implicationLabels[item.kind]}</span> {item.text}</li>)}</ul>
+  </section>
+}
+
 /** Contents for the reading's table of contents, in the order the case is told. */
 export function narrativeContents(narrative: Investigation) {
   return [
     ...(narrative.brief ? [{ id: 'investigation-glance-title', title: 'At a glance' }] : []),
+    ...(narrative.decision ? [{ id: 'decision', title: 'The decision' }] : []),
     ...(narrative.blueprint ? [{ id: 'blueprint', title: 'Service blueprint: before and after' }] : []),
     ...questions.filter(question => question.fields.some(key => narrative[key])).map(({ id, title }) => ({ id, title })),
     ...(narrative.differently ? [{ id: 'differently', title: 'What I’d do differently' }] : []),
@@ -87,11 +112,14 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
       <p>{narrative[key]}</p>
       {threaded.length ? <EvidenceThread statements={threaded} evidence={evidence} label={label}/> : null}
       {key === 'relationshipDiscovered' && narrative.interactive === 'move-the-checkpoint' ? <MoveTheCheckpoint/> : null}
+      {key === 'relationshipDiscovered' && narrative.interactive === 'ask-it-differently' ? <AskItDifferently/> : null}
+      {key === 'relationshipDiscovered' && narrative.interactive === 'proposals-to-problems' ? <ProposalsToProblems/> : null}
     </React.Fragment>
   }
   const hasCaveats = caveats.some(([key]) => narrative[key]) || loose.length > 0
   return <div className="investigation-narrative">
     {narrative.brief ? <CaseGlance brief={narrative.brief}/> : null}
+    {narrative.decision ? <DecisionLayer decision={narrative.decision}/> : null}
     {narrative.figures?.length ? <FigureStrip figures={narrative.figures}/> : null}
     {narrative.blueprint ? <ServiceBlueprint blueprint={narrative.blueprint}/> : null}
     {questions.map(question => question.fields.some(key => narrative[key])

@@ -211,32 +211,20 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-representative-title",
-      "destination": "/#pc-representative-title",
+      "id": "pc-possible-title",
+      "destination": "/#pc-possible-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-status-claims-operations",
-      "destination": "/#pc-status-claims-operations",
+      "id": "pc-results-title",
+      "destination": "/#pc-results-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-status-brand-research",
-      "destination": "/#pc-status-brand-research",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "pc-status-enterprise-ai",
-      "destination": "/#pc-status-enterprise-ai",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "pc-interlude-title",
-      "destination": "/#pc-interlude-title",
+      "id": "pc-selected-title",
+      "destination": "/#pc-selected-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
@@ -247,8 +235,14 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-know-title",
-      "destination": "/#pc-know-title",
+      "id": "pc-explore-title",
+      "destination": "/#pc-explore-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-interlude-title",
+      "destination": "/#pc-interlude-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
@@ -261,42 +255,6 @@
     {
       "id": "contact-title",
       "destination": "/#contact-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "connections",
-      "destination": "/#connections",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "system-map",
-      "destination": "/#system-map",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "connections-title",
-      "destination": "/#connections-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "map-text",
-      "destination": "/#map-text",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work",
-      "destination": "/#work",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work-title",
-      "destination": "/#work-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
@@ -319,12 +277,6 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "documentation-recovery",
-      "destination": "/#documentation-recovery",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
       "id": "civic-service",
       "destination": "/#civic-service",
       "source": "legacy baseline",
@@ -337,9 +289,9 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "distinctions-title",
-      "destination": "/#distinctions-title",
-      "source": "new reading gateway/bootstrap",
+      "id": "documentation-recovery",
+      "destination": "/#documentation-recovery",
+      "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },
     {
@@ -361,20 +313,62 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "distinction-accessibility-ai",
-      "destination": "/#distinction-accessibility-ai",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
       "id": "distinction-civic-service",
       "destination": "/#distinction-civic-service",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
+      "id": "distinction-accessibility-ai",
+      "destination": "/#distinction-accessibility-ai",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work",
+      "destination": "/#work",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "work-title",
+      "destination": "/#work-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "reading-gateway-title",
       "destination": "/#reading-gateway-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "connections",
+      "destination": "/#connections",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "connections-title",
+      "destination": "/#connections-title",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "system-map",
+      "destination": "/#system-map",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "map-text",
+      "destination": "/#map-text",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "distinctions-title",
+      "destination": "/#distinctions-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
@@ -433,6 +427,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "archive",
+      "destination": "/#archive",
+      "source": "legacy baseline",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "the-bends",
       "destination": "/#the-bends",
       "source": "legacy baseline",
@@ -459,12 +459,6 @@
     {
       "id": "mundane-evidence",
       "destination": "/#mundane-evidence",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive",
-      "destination": "/#archive",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },

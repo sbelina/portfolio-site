@@ -10,10 +10,18 @@ export const practiceAreas = ['Applied research', 'Service design', 'Stakeholder
 export const tagline = 'Increasing understanding, effectiveness, and adaptability in complex systems.'
 
 /**
- * Homepage headline (owner decision, 23 November 2026): the final Trust deck's cover statement,
- * with "leaders" for "people" because anyone can be a leader. The accent word carries the turn.
+ * Homepage headline (owner decision, 23 November 2026, second decision that day): lead with the
+ * institutional value. It supersedes "I diagnose gaps in understanding and design the conditions that
+ * empower leaders to make informed decisions." The accent word carries the turn.
  */
-export const homeHeadline = { lead: 'I diagnose gaps in understanding and design the conditions that empower leaders to make ', accent: 'informed', end: ' decisions.' } as const
+export const homeHeadline = { lead: 'I help organizations avoid costly solutions to ', accent: 'misunderstood', end: ' problems.' } as const
+/** What the work makes possible for an institution: positioning, not a measured saving. */
+export const valueLine = 'My work helps institutions determine what needs to change, what existing resources can accomplish, and where further investment is justified.'
+export const possibilities = [
+  { title: 'Better explanations', question: 'What is really causing the problem?' },
+  { title: 'Better choices', question: 'Which response is justified?' },
+  { title: 'Better implementation', question: 'How can the change work in practice?' },
+] as const
 export const homeHeadlineText = `${homeHeadline.lead}${homeHeadline.accent}${homeHeadline.end}`
 
 /** Public contact actions repeated on the homepage. */

@@ -3,7 +3,8 @@
   "name": "portfolio-site",
   "compatibility_date": "2026-10-22",
   "preview_urls": true,
-  // The Worker runs first only for password-protected deep dives; everything else is static assets.
+  // The Worker runs first only for password-protected deep dives and retired /builds/* addresses (410 Gone);
+  // everything else is static assets.
   // Deep dives stay closed ("not open yet") until a DEEP_DIVE KV binding and the two secrets exist.
   // See docs/codex/DEEP-DIVE.md for the owner's one-time setup.
   "main": "./worker/index.ts",
@@ -12,7 +13,7 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "force-trailing-slash",
-    "run_worker_first": ["/deep-dive", "/deep-dive/*"]
+    "run_worker_first": ["/deep-dive", "/deep-dive/*", "/builds", "/builds/*"]
   },
   // Private deep-dive store (namespace "portfolio-site-deep-dive", created 23 November 2026).
   // Holds rendered deep dives only; never commit their text. Still closed until both secrets exist.

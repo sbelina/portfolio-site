@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
-import archive from '../content/build-archive.json' with { type: 'json' }
 import { homeTitle, homeDescription, personSchema, siteOrigin } from '../scripts/seo'
 import { practiceAreas, professionalIdentity, recruiterContact, tagline } from '../src/content/recruiter'
-import { representativeSummaries } from '../src/content/primary-evidence'
+import { selectedSlugs } from '../src/content/primary-evidence'
 
 // 19 November professional alignment (docs/codex/NOV-19-PROFESSIONAL-ALIGNMENT.md).
 const origin = 'http://127.0.0.1:4175'
@@ -15,7 +14,7 @@ test('identity is consistent across the homepage, title and description', async 
   expect(practiceAreas).toEqual(['Applied research', 'Service design', 'Stakeholder engagement'])
   expect(homeTitle).toBe(`Sami Belina — ${professionalIdentity}`)
   expect(homeDescription.toLowerCase()).toContain('applied research and systems strategist')
-  expect(homeDescription).toContain('complex systems')
+  expect(homeDescription).toContain('misunderstood problems')
   expect(homeDescription.length).toBeLessThanOrEqual(155)
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain(`<title>${homeTitle.replaceAll('&', '&amp;')}</title>`)
@@ -31,27 +30,30 @@ test('the first screen names Sami, the capability, the H1 and the evidence path'
       const identity = page.locator('.pc-hero .pc-identity')
       await expect(identity).toContainText('Sami Belina')
       await expect(identity).toContainText(professionalIdentity)
-      for (const target of [identity, page.getByRole('heading', { level: 1 }), page.locator('.pc-hero').getByRole('link', { name: 'Read the Claims case summary' })]) {
+      for (const target of [identity, page.getByRole('heading', { level: 1 }), page.locator('.pc-hero').getByRole('link', { name: 'Read the Claims investigation' })]) {
         const box = (await target.boundingBox())!
         expect(box.y + box.height, `${viewport.width}px`).toBeLessThanOrEqual(viewport.height)
       }
       // The first link inside the hero goes to evidence, not to the Atlas or Observatory.
-      expect(await page.locator('.pc-hero a').first().getAttribute('href')).toBe(`${archive.reviewPath}#claims-operations`)
+      expect(await page.locator('.pc-hero a').first().getAttribute('href')).toBe('/investigations/claims-operations/')
     } finally { await context.close() }
   }
 })
 
-test('representative investigations are labelled summaries pointing at the frozen archive', async ({ page }) => {
+test('selected investigations show stakes, what changed, and the public and deep-dive versions side by side', async ({ page }) => {
   await page.goto(`${origin}/`)
-  const section = page.getByRole('region', { name: 'Three questions, three kinds of evidence' })
-  await expect(section).toContainText('the full investigations are not yet published')
-  const links = section.getByRole('listitem').getByRole('link')
-  await expect(links).toHaveCount(3)
-  expect(await links.evaluateAll(items => items.map(item => item.getAttribute('href')))).toEqual(representativeSummaries.map(item => `${archive.reviewPath}#${item.anchor}`))
-  await expect(section.getByText('Previous-edition summary · full case unpublished')).toHaveCount(3)
-  for (const link of await links.all()) await expect(link).toHaveAccessibleDescription('Previous-edition summary · full case unpublished')
-  // No figures appear in the preview: only archived titles and status labels.
-  expect(await section.innerText()).not.toMatch(/\d+\s*%|\d{2,}\+/)
+  const section = page.getByRole('region', { name: 'What becomes possible when we investigate the problem first?' })
+  const items = section.getByRole('listitem')
+  await expect(items).toHaveCount(3)
+  for (const [index, slug] of selectedSlugs.entries()) {
+    const item = items.nth(index)
+    await expect(item).toContainText('At stake:')
+    await expect(item).toContainText('What changed:')
+    await expect(item.getByRole('link', { name: /Public version/ })).toHaveAttribute('href', `/investigations/${slug}/`)
+    await expect(item.getByRole('link', { name: /Deep dive/ })).toHaveAttribute('href', `/deep-dive/${slug}/`)
+  }
+  // No link anywhere on the homepage reaches a retired build.
+  expect(await page.locator('a[href*="/builds/"]').count()).toBe(0)
 })
 
 test('the purpose is stated as an intention, never as a result', async ({ page }) => {
@@ -118,7 +120,7 @@ test('homepage structured data names Sami as a Person linked to LinkedIn, and th
 
 test('the social preview carries the current positioning, not the 6 November lead', async () => {
   const svg = await readFile('public/social-preview.svg', 'utf8')
-  for (const text of ['SAMI BELINA', 'APPLIED RESEARCH &amp; SYSTEMS STRATEGIST', 'I diagnose gaps in understanding', 'Test. Show. Enable.']) expect(svg).toContain(text)
+  for (const text of ['SAMI BELINA', 'APPLIED RESEARCH &amp; SYSTEMS STRATEGIST', 'I help organizations avoid costly', 'Test. Show. Enable.']) expect(svg).toContain(text)
   expect(svg).not.toContain('I investigate situations where')
   const home = await readFile('dist/index.html', 'utf8')
   expect(home).toContain('content="Producing Curiosity by Sami Belina, Applied Research &amp; Systems Strategist.')
@@ -126,21 +128,24 @@ test('the social preview carries the current positioning, not the 6 November lea
   expect([png.readUInt32BE(16), png.readUInt32BE(20)]).toEqual([1200, 630])
 })
 
-test('the "How I got here" interlude sits between the evidence and the practice, with its source', async ({ browser }) => {
+test('the compact "How I got here" interlude sits at the base of the homepage, above the call to action', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 320, height: 740 } })
   try {
     const page = await context.newPage()
     await page.goto(`${origin}/`)
     const headings = await page.locator('main h2').allInnerTexts()
     const lens = headings.findIndex(text => /how i got here/i.test(text))
-    expect(lens).toBeGreaterThan(headings.findIndex(text => text.startsWith('Three questions')))
-    expect(lens).toBeLessThan(headings.indexOf('Test. Show. Enable.'))
+    expect(lens).toBeGreaterThan(headings.indexOf('Test. Show. Enable.'))
+    expect(lens).toBeLessThan(headings.indexOf('What needs a better explanation?'))
     const interlude = page.getByRole('region', { name: 'How I got here' })
     await expect(interlude.locator('blockquote')).toHaveText('Inspiration is needed in geometry, just as much as in poetry.')
     await expect(interlude.locator('.pc-interlude-quote figcaption')).toHaveText('— Alexander Pushkin')
     await interlude.getByText('Source', { exact: true }).click()
     await expect(interlude.locator('[lang="ru"]')).toContainText('Вдохновение нужно в геометрии, как и в поэзии')
-    await expect(interlude.locator('.pc-interlude-drawing')).toHaveAttribute('aria-hidden', 'true')
+    await expect(interlude.getByRole('link', { name: /See the geometry behind it/ })).toHaveAttribute('href', '/writing/#how-i-got-here')
+    // The full construction lives in Field Notes.
+    await page.goto(`${origin}/writing/`)
+    await expect(page.locator('#how-i-got-here .pc-interlude-drawing')).toHaveAttribute('aria-hidden', 'true')
   } finally { await context.close() }
   const enlarged = await browser.newContext({ viewport: { width: 320, height: 740 }, reducedMotion: 'reduce' })
   try {

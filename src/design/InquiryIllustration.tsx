@@ -32,7 +32,8 @@ export const gapCases: readonly { value: string; label: string; solid: string; d
  * which part is emphasized; the drawing itself stays aria-hidden because the radio group
  * and the live description carry the same meaning in text.
  */
-export function InquiryIllustration({ archivePath }: { archivePath?: string } = {}) {
+/** publishedPaths maps a case slug to its public page; cases without an approved page get no link. */
+export function InquiryIllustration({ publishedPaths = {} }: { publishedPaths?: Readonly<Record<string, string>> } = {}) {
   const [enhanced, setEnhanced] = useState(false)
   const [focus, setFocus] = useState<Focus>('all')
   const [caseValue, setCaseValue] = useState('general')
@@ -69,7 +70,7 @@ export function InquiryIllustration({ archivePath }: { archivePath?: string } = 
         <fieldset className="pc-inquiry-controls pc-gap-cases"><legend>Same shape, different gap</legend>
           {gapCases.map(item => <label key={item.value}><input type="radio" name="pc-gap-case" value={item.value} checked={caseValue === item.value} onChange={() => setCaseValue(item.value)}/>{item.label}</label>)}
         </fieldset>
-        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dashed). {gapCase.description}{gapCase.anchor && archivePath ? <> <a href={`${archivePath}#${gapCase.anchor}`}>Read the summary <span aria-hidden="true">→</span></a></> : null}</>}</p>
+        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dashed). {gapCase.description}{gapCase.anchor && publishedPaths[gapCase.anchor] ? <> <a href={publishedPaths[gapCase.anchor]}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
       </> : null}
       <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dashed line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
     </figcaption>

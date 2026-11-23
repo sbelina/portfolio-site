@@ -60,13 +60,17 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(claimsCandidate.investigation!.notOwned).toContain('I didn’t own the decision')
 })
 
-test('preview projection is local-only and production output excludes the Claims page', async () => {
+test('the preview projection stays local; production publishes only the approved revision of Claims', async () => {
   expect(claimsCandidatePreviewProjection().entries.map(entry => entry.path)).toEqual(['/investigations/claims-operations/'])
-  await expect(access('dist/investigations/claims-operations/index.html')).rejects.toThrow()
+  await access('dist/investigations/claims-operations/index.html')
   const content = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
-  expect(content.entries).toEqual([])
+  const claims = content.entries.find((entry: { slug: string }) => entry.slug === 'claims-operations')
+  // The approved release carries revision 3, never the unapproved candidate's revision or its review scaffolding.
+  expect(claims.revision).toBe(3)
+  expect(claims.blocks).toEqual([])
+  expect(JSON.stringify(content)).not.toContain('CLAIMS_CANDIDATE_UNAPPROVED_16NOV')
   const release = JSON.parse(await readFile('content/public-release.json', 'utf8'))
-  expect(release.status).toBe('no-approved-content')
+  expect(release.status).toBe('approved')
 })
 
 test('figures cannot be published without selected evidence, even in an otherwise approved entry', () => {
@@ -149,8 +153,9 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   for (const figure of headlines) expect(html).toContain(figure.value)
   expect(html).toContain('Approximate · my estimate')
   expect(html).toContain('href="/investigations/claims-operations/"')
-  // Production has no approved case, so the live homepage shows no strip and no status tag.
+  // Production shows the strip only for approved headline figures, each linked to its case.
   const home = await readFile('dist/index.html', 'utf8')
-  expect(home).not.toContain('pc-results')
-  expect(home).not.toContain('case-status')
+  const strip = home.slice(home.indexOf('class="pc-results"'), home.indexOf('</section>', home.indexOf('class="pc-results"')))
+  const approved = JSON.parse(await readFile('dist/public-content.json', 'utf8')).entries.flatMap((entry: { investigation: { figures?: { value: string; headline?: boolean }[] } }) => (entry.investigation.figures ?? []).filter(figure => figure.headline).map(figure => figure.value))
+  for (const value of [...strip.matchAll(/<strong>([^<]+)<\/strong>/g)].map(match => match[1].replaceAll('&gt;', '>'))) expect(approved).toContain(value)
 })

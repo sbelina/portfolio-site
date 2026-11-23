@@ -1,7 +1,6 @@
 import React, { type ReactNode } from 'react'
 import { PublicNavigation } from '../components/PublicNavigation'
 import { ExperimentNote } from '../components/ExperimentNote'
-import { BuildArchiveLink } from '../components/BuildArchiveLink'
 import { usePublicHeader } from '../components/usePublicHeader'
 import { publicPath } from '../public-path'
 
@@ -17,7 +16,7 @@ export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, 
     </header>
     <main id={mainId} className="pc-main" tabIndex={-1}>{children}</main>
     <footer className="pc-footer site-footer build-index-footer">
-      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><BuildArchiveLink/><a href={`#${mainId}`}>Back to top ↑</a></div>
+      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><a href={`#${mainId}`}>Back to top ↑</a></div>
       <ExperimentNote inquirySpace={inquirySpace}/>
     </footer>
   </div>

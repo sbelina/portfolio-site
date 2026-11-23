@@ -10,8 +10,8 @@ const legacyDestinations = [
 ] as const
 const currentDestinations = [
   { href: '/investigations/', label: 'Investigations' },
-  { href: '/patterns/', label: 'Connections' },
   { href: '/practice/', label: 'Practice' },
+  { href: '/writing/', label: 'Field Notes' },
   { href: '/lab/', label: 'Observatory' },
   { href: '/#contact', label: 'Contact' },
 ] as const
@@ -19,7 +19,9 @@ const currentDestinations = [
 /** Pages that belong to the Observatory section; its menu link marks them aria-current="true". */
 export const observatoryMembers = ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/experiments/reveal-hidden-work/'] as const
 const currentState = (href: string, currentPath?: string) => href === currentPath ? 'page' as const
-  : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const : undefined
+  : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const
+  // Connections belongs to Practice in the menu (23 November): five items, no Connections link of its own.
+  : href === '/practice/' && currentPath === '/patterns/' ? 'true' as const : undefined
 
 /** Native links remain available without hydration, including on unavailable URLs. */
 export function PublicNavigation({ currentPath, home = false, legacy = false }: { currentPath?: string; home?: boolean; legacy?: boolean }) {

@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { readFile, access } from 'node:fs/promises'
 import { projects, graphNodes } from '../src/data'
-import archive from '../content/build-archive.json' with { type: 'json' }
 
 const thesis = 'The visible problem is rarely the one producing the outcome.'
 const legacyCases = ['claims-operations', 'brand-research', 'enterprise-ai', 'documentation-recovery', 'civic-service', 'accessibility-ai']
@@ -9,20 +8,17 @@ const legacyCases = ['claims-operations', 'brand-research', 'enterprise-ai', 'do
 test('review candidate keeps legacy identities while removing misleading public claims', async () => {
   expect(projects.map(project => project.id)).toEqual(legacyCases)
   for (const id of legacyCases) expect(graphNodes.find(node => node.id === id)?.href).toBe(`#${id}`)
-  const html = await readFile(`dist${archive.reviewPath}index.html`, 'utf8')
-  expect(html).toContain(thesis)
-  expect(html).toContain('I swim upstream toward the problem.')
+  // The retired archive held the previous thesis; the current edition publishes only approved cases (23 November).
+  void thesis
   const current = await readFile('dist/index.html', 'utf8')
-  expect(current).toContain('I diagnose gaps in understanding and design the conditions that empower leaders to make <em class="pc-accent">informed</em> decisions.')
+  expect(current).toContain('I help organizations avoid costly solutions to <em class="pc-accent">misunderstood</em> problems.')
   expect(current).toContain('Test. Show. Enable.')
-  expect(html).not.toContain('18% → 7.6%')
-  expect(html).not.toContain('PASS → FAIL')
-  expect(html).not.toContain('agent was adopted')
-  expect(html).not.toContain('research recovery method for claims')
-  await expect(access('dist/investigations/telematics/index.html')).rejects.toThrow()
+  const everything = (await Promise.all(['dist/index.html', 'dist/public-content.json', 'dist/investigations/index.html'].map(file => readFile(file, 'utf8')))).join('\n')
+  for (const withdrawn of ['18% → 7.6%', 'PASS → FAIL', 'agent was adopted', 'research recovery method for claims']) expect(everything).not.toContain(withdrawn)
+  await access('dist/investigations/telematics/index.html')
   await expect(access('dist/patterns/related-not-equivalent/index.html')).rejects.toThrow()
   const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
-  expect(projection.entries).toEqual([])
+  expect(projection.entries.map((entry: { slug: string }) => entry.slug)).toEqual(['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai'])
   expect(projection.relationships).toEqual([])
   const ledger = JSON.parse(await readFile('docs/codex/generated/migration-ledger.json', 'utf8'))
   expect(ledger.content).toHaveLength(17)
