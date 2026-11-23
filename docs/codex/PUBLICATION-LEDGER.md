@@ -49,3 +49,23 @@ The learning-design case is not yet chosen. See the [specification](LEARNING-FAC
 - About facts: institution, degree name, job titles and periods.
 - The proposed secondary homepage line (see the [audit](NOV-16-DIRECTION-AUDIT.md)).
 - Authenticated owner approval bound to exact revisions under the existing publication contract. Agent review is not approval.
+
+## Deep dives published behind the password — 23 November 2026
+
+The owner answered the open questions and authorized publication (“publish what’s good”). Six deep dives were uploaded to the private Cloudflare KV store (`portfolio-site-deep-dive`) from `private/deep-dives/`. That folder is ignored by Git, so no deep-dive text is in this repository.
+
+| Order | Slug | Parts | Source file (private) |
+| --- | --- | --- | --- |
+| 01 | `claims-operations` | 3 | `claims-operations.md` |
+| 02 | `brand-research` | 5 | `trust-research.md` (owner’s final Trust version, unchanged) |
+| 03 | `enterprise-ai` | 2 | `ai-challenge.md` |
+| 04 | `telematics` | 3 | `telematics.md` |
+| 05 | `civic-service` | 2 | `vote-huntsville.md` |
+| 06 | `accessibility-ai` | 2 | `accessibility-ai.md` |
+
+- **Wording settled without an owner answer:** neutral wording or removal. *innovation leadership*, *took the report to*, no named initiative, and no reach figure for Vote Huntsville.
+- **Checks:**
+  - Signed out, every `/deep-dive/` address answers 401 with the password page, and no case text appears in it.
+  - A local copy with the test password renders all six, with every part and figure.
+  - Signing in on the live site was not tested, because only the owner knows the password.
+- **Not published:** the public versions of these cases at `/investigations/<slug>/`. They still need approval. Until then, a deep dive’s link back to “the public version” leads to a missing page.
