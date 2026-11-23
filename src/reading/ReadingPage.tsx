@@ -12,7 +12,7 @@ import React, { type ReactNode } from 'react'
 import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
 import { plainText, Stressed } from '../content/emphasis'
-import { caseLabels } from '../content/primary-evidence'
+import { caseLabel } from '../content/primary-evidence'
 export type { ReadingPageData } from './page-data'
 
 type Block = PublicEntry['blocks'][number]
@@ -149,7 +149,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <span aria-current="page">{plainText(entry.title)}</span>
       </nav>
       <header className="reading-entry-header">
-        <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : page.candidate ? ' · unapproved candidate' : ''}</p>
+        <p className="reading-kicker">{inquiry ? inquiryForms[inquiry.form] : poetry ? 'Poetry' : entry.kind === 'investigation' ? (page.fixture ? 'Investigation' : `Case study${caseLabel(entry.slug) ? ` · ${caseLabel(entry.slug)}` : ''}`) : entry.kind}{page.fixture ? ' · synthetic fixture' : page.illustrative ? ' · invented example' : page.candidate ? ' · unapproved candidate' : ''}</p>
         <h1 id="reading-title" style={entry.kind === 'investigation' && !page.fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><Stressed text={entry.title} heading/></h1>
         {page.candidate ? <p className="reading-candidate-notice" role="note">Owner-review preview. This candidate is not approved or published, and no statement has an attached source yet.</p> : null}
         <p className="reading-summary"><Stressed text={entry.summary}/></p>
@@ -193,7 +193,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
       ] as const).filter(([, value]) => value?.trim()).map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></details> : null}
       {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
-      <p className="reading-back">{inquiry && page.inquirySpacePath ? <a href={publicPath(page.inquirySpacePath)}>← Return to {inquirySpaceTitle}</a> : <a href={publicPath("/investigations/")}>← All investigations</a>}</p>
+      <p className="reading-back">{inquiry && page.inquirySpacePath ? <a href={publicPath(page.inquirySpacePath)}>← Return to {inquirySpaceTitle}</a> : <a href={publicPath("/investigations/")}>← All case studies</a>}</p>
     </article>
   )
 }
@@ -203,8 +203,8 @@ function Collection({ projection, fixture, candidate = false }: { projection: Re
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
   return (
     <>
-      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{entry.slug && caseLabels[entry.slug] ? ` · ${caseLabels[entry.slug]}` : ''}{candidate ? ' · unapproved candidate' : ''}</p><h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p><p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Public version: ${plainText(entry.title)}`}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p></li>)}</ul> : <div className="reading-empty"><p>No investigation is published in this edition yet. Each case awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
+      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">{fixture ? 'Investigations' : 'Case studies'}</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">{caseLabel(entry.slug) ?? 'Case study'}{candidate ? ' · unapproved candidate' : ''}</p><h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p><p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Public version: ${plainText(entry.title)}`}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p></li>)}</ul> : <div className="reading-empty"><p>No case study is published in this edition yet. Each awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )
@@ -216,7 +216,7 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
   let content: ReactNode
   if (page.kind === 'collection') content = <Collection projection={page.projection} fixture={page.fixture} candidate={page.candidate} />
   else if (entry) content = <EntryView entry={entry} page={page} />
-  else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse investigations</a> or <a href={publicPath("/")}>return home</a>.</p></section>
+  else content = <section className="reading-not-found"><p className="reading-kicker">404 · Page not found</p><h1 id="reading-title">This reading is not available.</h1><p>The address may have changed, or this page may not be selected for public reading.</p><p><a href={publicPath("/investigations/")}>Browse case studies</a> or <a href={publicPath("/")}>return home</a>.</p></section>
   return (
     <div className={`reading-page${current ? ' pc-site pc-reading' : ''}`}>
       <a className="reading-skip" href="#reading-main">Skip to reading</a>

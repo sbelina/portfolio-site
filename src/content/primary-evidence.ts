@@ -12,11 +12,21 @@ export type InvestigationSummary = {
   brief?: CaseBrief; status?: CaseStatusSummary; headlines?: HeadlineFigure[]
 }
 
-/** Short names for each case in the pattern illustration. */
+/**
+ * How readers find work (owner direction, 23 November): by the setting they recognize and the kind of work
+ * they hire for, not by internal shorthand. "Claims" alone read as claims-as-assertions on an evidence site.
+ */
 export const caseLabels: Readonly<Record<string, string>> = {
-  'claims-operations': 'Claims', 'brand-research': 'Trust research', 'enterprise-ai': 'Enterprise AI',
-  telematics: 'Insurance app research', 'civic-service': 'Vote Huntsville', 'accessibility-ai': 'AI and accessibility',
+  'claims-operations': 'Insurance operations', 'brand-research': 'Customer research', 'enterprise-ai': 'Enterprise innovation',
+  telematics: 'Product research', 'civic-service': 'Civic engagement', 'accessibility-ai': 'AI-assisted development',
 }
+/** The kind of work each case shows, in the terms job descriptions use. */
+export const caseWork: Readonly<Record<string, string>> = {
+  'claims-operations': 'Process & service design', 'brand-research': 'Survey & measurement design', 'enterprise-ai': 'Opportunity synthesis & facilitation',
+  telematics: 'Usability research & findings recovery', 'civic-service': 'Service & content design', 'accessibility-ai': 'Accessibility evaluation',
+}
+/** "Setting · kind of work", for card labels. */
+export const caseLabel = (slug?: string) => slug && caseLabels[slug] ? [caseLabels[slug], caseWork[slug]].filter(Boolean).join(' · ') : undefined
 
 /** The homepage's three selected investigations (owner priority): Claims, trust research, enterprise AI. */
 export const selectedSlugs = ['claims-operations', 'brand-research', 'enterprise-ai'] as const

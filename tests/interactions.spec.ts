@@ -63,7 +63,7 @@ test('without JavaScript every new element reads completely', async ({ browser }
     await page.goto(`${origin}/investigations/enterprise-ai/`)
     await expect(page.getByRole('img', { name: '8 challenge areas' })).toBeVisible()
     await page.goto(`${origin}/practice/`)
-    await expect(page.getByRole('region', { name: 'The parts of an investigation page' }).getByRole('listitem')).toHaveCount(5)
+    await expect(page.getByRole('region', { name: 'The parts of a case study page' }).getByRole('listitem')).toHaveCount(5)
     await expect(page.locator('.pc-strand svg title')).toHaveText(/one orange thread/i)
   } finally { await context.close() }
 })
@@ -135,7 +135,7 @@ test('the pattern illustration sits after the cases, with every case distinction
     await expect(page.locator('.pc-hero .pc-inquiry-figure')).toHaveCount(0)
     const headings = await page.locator('main h2').allInnerTexts()
     expect(headings.indexOf('Related. Not equivalent.')).toBeGreaterThan(headings.indexOf('Three problems, and what changed.'))
-    const pairs = page.getByRole('list', { name: "Each investigation's distinction" }).getByRole('link')
+    const pairs = page.getByRole('list', { name: "Each case study's distinction" }).getByRole('link')
     await expect(pairs).toHaveCount(6)
     await expect(pairs.first()).toHaveAccessibleName('Delivered is not Verified')
   } finally { await context.close() }

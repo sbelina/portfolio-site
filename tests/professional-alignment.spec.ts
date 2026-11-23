@@ -30,7 +30,7 @@ test('the first screen names Sami, the capability, the H1 and the evidence path'
       const identity = page.locator('.pc-hero .pc-identity')
       await expect(identity).toContainText('Sami Belina')
       await expect(identity).toContainText(professionalIdentity)
-      for (const target of [identity, page.getByRole('heading', { level: 1 }), page.locator('.pc-hero').getByRole('link', { name: 'Read the Claims investigation' })]) {
+      for (const target of [identity, page.getByRole('heading', { level: 1 }), page.locator('.pc-hero').getByRole('link', { name: 'Read the insurance operations case study' })]) {
         const box = (await target.boundingBox())!
         expect(box.y + box.height, `${viewport.width}px`).toBeLessThanOrEqual(viewport.height)
       }

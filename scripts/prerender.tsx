@@ -78,7 +78,7 @@ async function page(file: string, data: ReadingPageData, title: string, descript
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
+await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies — Producing Curiosity', 'Case studies by Sami Belina: the problem, the evidence, what changed, and my part and its limits.', '/investigations/', reading.entries.length > 0)
 for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) }, `${plainText(entry.title)}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, plainText(entry.summary), entry.path)
 for (const entry of illustrativeEntries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(inquiryProjection, 'entry', false, entry.id, inquirySpacePath), illustrative: true }, `${entry.title} — synthetic illustration · Producing Curiosity`, entry.summary, entry.path, false)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
@@ -106,7 +106,9 @@ if (fixture) for (const [kind, metadata] of Object.entries(proposalPages)) {
   proposalRoutes.push(metadata.path)
 }
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
-if (redirects.length) await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
+// Readers look for “work” and “case studies”; both names lead to the collection (23 November).
+redirects.push('/work/ /investigations/ 301', '/work /investigations/ 301', '/case-studies/ /investigations/ 301', '/case-studies /investigations/ 301')
+await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {
   const asset = projection.assets.find(item => item.id === id)!
   return readFileSync(path.join('content/public-media', path.basename(asset.url)))

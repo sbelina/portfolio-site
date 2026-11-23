@@ -68,7 +68,7 @@ test('one click reaches the Claims investigation from the first screen, by keybo
       const page = await context.newPage()
       await page.goto(`${origin}/`)
       await expect(page.getByRole('heading', { level: 1 })).toHaveText(h1)
-      const action = page.locator('.pc-hero').getByRole('link', { name: 'Read the Claims investigation' })
+      const action = page.locator('.pc-hero').getByRole('link', { name: 'Read the insurance operations case study' })
       await expect(action).toHaveAttribute('href', claimsPath)
       const bounds = await action.boundingBox()
       expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height)

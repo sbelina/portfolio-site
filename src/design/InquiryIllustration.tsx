@@ -58,7 +58,7 @@ export function InquiryIllustration({ cases = [] }: { cases?: readonly CasePair[
         {enhanced && caseValue !== 'general' ? <g className="pc-case-labels"><text x="380" y="252" textAnchor="end">{gapCase.solid}</text><text x="380" y="60" textAnchor="end">{gapCase.dashed}</text></g> : null}
       </svg>
     </div>
-    <figcaption><span className="pc-kicker">A way of looking</span><p>In each investigation, two related things were taken for one. Choose a case to see which.</p><small>Conceptual illustration · not measured data</small>
+    <figcaption><span className="pc-kicker">A way of looking</span><p>In each case study, two related things were taken for one. Choose a case to see which.</p><small>Conceptual illustration · not measured data</small>
       {enhanced ? <>
         <fieldset className="pc-inquiry-controls"><legend>Look at</legend>
           {inquiryViews.map(view => <label key={view.value}><input type="radio" name="pc-inquiry-focus" value={view.value} checked={focus === view.value} onChange={() => setFocus(view.value)}/>{view.label}</label>)}
@@ -66,7 +66,7 @@ export function InquiryIllustration({ cases = [] }: { cases?: readonly CasePair[
         <fieldset className="pc-inquiry-controls pc-gap-cases"><legend>Same shape, different case</legend>
           {gapCases.map(item => <label key={item.value}><input type="radio" name="pc-gap-case" value={item.value} checked={caseValue === item.value} onChange={() => setCaseValue(item.value)}/>{item.label}</label>)}
         </fieldset>
-        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dotted). {gapCase.description}{gapCase.href ? <> <a href={gapCase.href}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
+        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dotted). {gapCase.description}{gapCase.href ? <> <a href={gapCase.href}>Read the case study <span aria-hidden="true">→</span></a></> : null}</>}</p>
       </> : null}
       <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dotted line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
     </figcaption>

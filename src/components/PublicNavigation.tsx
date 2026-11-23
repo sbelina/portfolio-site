@@ -9,7 +9,7 @@ const legacyDestinations = [
   { href: '/#contact', label: 'Contact' },
 ] as const
 const currentDestinations = [
-  { href: '/investigations/', label: 'Investigations' },
+  { href: '/investigations/', label: 'Work' },
   { href: '/practice/', label: 'Practice' },
   { href: '/writing/', label: 'Field Notes' },
   { href: '/lab/', label: 'Observatory' },

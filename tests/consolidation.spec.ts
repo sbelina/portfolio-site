@@ -83,5 +83,21 @@ test('Field Notes keeps the writing from the previous edition, without date call
   for (const id of ['the-bends', 'calculus-of-syntax', 'conjunction-conjecture', 'tool-vs-toy', 'mundane-evidence', 'archive-wage', 'archive-left']) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
   await expect(page.locator('#earlier-work')).not.toContainText(/\b20\d{2}\b/)
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link')
-  await expect(navigation).toHaveText(['Investigations', 'Practice', 'Field Notes', 'Observatory*', 'Contact'])
+  await expect(navigation).toHaveText(['Work', 'Practice', 'Field Notes', 'Observatory*', 'Contact'])
+})
+
+test('readers find the work by the words they use: Work, case studies, setting and kind of work', async ({ page, request }) => {
+  for (const path of ['/work/', '/case-studies/']) {
+    const response = await request.get(`${origin}${path}`, { maxRedirects: 0 })
+    expect(response.status(), path).toBe(301)
+    expect(response.headers().location).toMatch(/\/investigations\/$/)
+  }
+  await page.goto(`${origin}/investigations/`)
+  await expect(page).toHaveTitle('Case studies — Producing Curiosity')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Case studies')
+  await expect(page.locator('.reading-cards .reading-kicker').first()).toHaveText('Insurance operations · Process & service design')
+  // "Claims" alone reads as claims-as-assertions on an evidence site; it never labels the work.
+  await page.goto(`${origin}/`)
+  await expect(page.locator('.pc-selected-domain').first()).toHaveText('Insurance operations · Process & service design')
+  await expect(page.locator('.pc-selected-domain, .pc-pattern-pairs .pc-kicker, .pc-hero a')).not.toContainText(['Claims'])
 })

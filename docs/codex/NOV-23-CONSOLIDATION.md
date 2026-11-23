@@ -121,3 +121,23 @@ Not built: the deep-dive figures as SVG plates. Their text is private content in
 - **“A way of looking”** moved out of the hero, which is now text only, into a new section after the selected investigations: *Related. Not equivalent. The pattern across the work.* The drawing now takes its pairs from the six approved case visuals and opens on Claims. Beside it, a text list gives every case's distinction as a link, as the text equivalent of the graph.
 - **Verbal stress:** the turn, the finding and the label are marked in case copy (see the deck foundation). The self-underlining accent word was removed, because underlines belong to links. The source markers are no longer underlined either. The intro's step prompt keeps its underline, as part of the owner-specified intro.
 - **Release:** the case text changed, so the release was prepared again.
+
+## Follow-up, 23 November: the reader's words for the work
+
+Owner note: “Investigations” and “Claims” were not helping readers find the work.
+
+- **Why:** readers looking at a portfolio scan for **Work** (in the menu) and **case studies** (on the page). They place each piece by its **setting** and the **kind of work** they hire for. “Investigations” needed decoding, and “Claims” alone reads as claims-as-assertions on an evidence site.
+- **Menu:** *Work*.
+- **Collection page:** title and heading are *Case studies*.
+- **Cards and case kickers:** *setting · kind of work*.
+
+  | Case | Label |
+  | --- | --- |
+  | Claims | Insurance operations · Process & service design |
+  | Trust | Customer research · Survey & measurement design |
+  | AI | Enterprise innovation · Opportunity synthesis & facilitation |
+  | Telematics | Product research · Usability research & findings recovery |
+  | Vote Huntsville | Civic engagement · Service & content design |
+  | Accessibility | AI-assisted development · Accessibility evaluation |
+- **Addresses:** `/investigations/` stays the canonical address, so existing links keep working. `/work/` and `/case-studies/` redirect there with a 301.
+- **Unchanged:** the internal model name (`investigation`) and the fixtures edition.

@@ -26,9 +26,9 @@ const inquiry = [
 
 /** Each move's output, with an example from a published investigation. */
 const practiceOutputs = [
-  { move: 'Test', output: 'A better explanation of what is causing the problem, tested against the record.', example: 'Claims: the errors were real, but when they were found was the problem.', href: '/investigations/claims-operations/' },
-  { move: 'Show', output: 'The evidence, alternatives and uncertainty laid out so a decision-maker can weigh them.', example: 'Trust: agreement and trust influence, measured and reported separately.', href: '/investigations/brand-research/' },
-  { move: 'Enable', output: 'A change people can carry out and keep using: a checkpoint, a resource, a format.', example: 'Claims: guides and training built from administrators’ knowledge, in use statewide.', href: '/investigations/claims-operations/' },
+  { move: 'Test', output: 'A better explanation of what is causing the problem, tested against the record.', example: 'Insurance operations: the errors were real, but when they were found was the problem.', href: '/investigations/claims-operations/' },
+  { move: 'Show', output: 'The evidence, alternatives and uncertainty laid out so a decision-maker can weigh them.', example: 'Customer research: agreement and trust influence, measured and reported separately.', href: '/investigations/brand-research/' },
+  { move: 'Enable', output: 'A change people can carry out and keep using: a checkpoint, a resource, a format.', example: 'Insurance operations: guides and training built from administrators’ knowledge, in use statewide.', href: '/investigations/claims-operations/' },
 ] as const
 
 /** The anatomy of a public case page, for the annotated plate on Practice. Structural, with no case claims. */
@@ -52,15 +52,15 @@ function Practice() {
       <dl className="pc-inquiry-list">{practiceOutputs.map(item => <div key={item.move}><dt>{item.move}</dt><dd>{item.output} <a href={publicPath(item.href)}>{item.example} <span aria-hidden="true">→</span></a></dd></div>)}</dl>
     </section>
     <section className="pc-section" aria-labelledby="case-anatomy-title"><p className="pc-kicker">How a case is read</p><h2 id="case-anatomy-title">Every case, the same <em className="pc-accent">order</em>.</h2>
-      <p>Each investigation answers the same questions in the same order, so a reader can compare cases and find the limits quickly.</p>
-      <AnnotatedPlate title="The parts of an investigation page" caption="FIG · Artifact · the structure of every public case; schematic" parts={caseAnatomy}/>
+      <p>Each case study answers the same questions in the same order, so a reader can compare cases and find the limits quickly.</p>
+      <AnnotatedPlate title="The parts of a case study page" caption="FIG · Artifact · the structure of every public case; schematic" parts={caseAnatomy}/>
     </section>
     <section className="pc-section"><p className="pc-kicker">How I Know</p><h2>Keep the account inspectable.</h2><p>Separate what was observed from what is inferred, proposed, implemented, or measured. Name the source, contribution, and limitation. Treat a connection as an editorial claim that needs its own explanation—not proof of equivalence or causation.</p><a className="pc-text-link" href={publicPath('/patterns/')}>Connections: explore the distinctions →</a></section>
   </>
 }
 
 const conceptual = 'Conceptual distinction. No case relationship is asserted here.'
-const caseRelated = 'Related to a published investigation, which shows one instance. The distinction itself is conceptual, not a general finding.'
+const caseRelated = 'Related to a published case study, which shows one instance. The distinction itself is conceptual, not a general finding.'
 const distinctions = [
   { title: 'Delivered ≠ verified', connection: 'Both describe the end of a handoff.', difference: 'A delivered status records that something arrived. It does not establish that anyone checked it was sufficient and ready for the next step.', case: '/investigations/claims-operations/', evidence: caseRelated, limits: 'A delivered item can also be verified; the distinction only matters where the two are assumed to coincide.', question: 'What does this status establish—and what does it leave unverified?' },
   { title: 'Agreement ≠ trust', connection: 'Both are responses to the same statement about an organization.', difference: 'Agreeing that an attribute is true is a different question from reporting that the attribute influences trust.', case: '/investigations/brand-research/', evidence: caseRelated, limits: 'Neither answer, alone, identifies what produces trust or shows that trust changed.', question: 'Are we asking about agreement, or about its reported influence on trust?' },
@@ -82,8 +82,8 @@ function Patterns() {
   return <>
     <p className="pc-kicker">Explore connections</p><h1>Related. Not equivalent.</h1>
     <p className="pc-lead">A useful connection preserves the difference between the things it brings together.</p>
-    <p className="pc-boundary">These are conceptual starting questions, not universal findings or a map of verified case relationships. Three link to a published investigation that shows one instance.</p>
-    <div className="pc-distinction-list">{distinctions.map(item => <section key={item.title}><h2><Distinction title={item.title}/></h2><p>{item.difference}</p><p className="pc-question">{item.question}</p><details className="pc-layer"><summary>Connection, evidence and limits<span className="pc-sr-only"> for {item.title.replace(' ≠ ', ' is not ')}</span></summary><dl className="pc-distinction-detail"><div><dt>What connects them</dt><dd>{item.connection}</dd></div><div><dt>Evidence status</dt><dd>{item.evidence}{'case' in item ? <> <a href={publicPath(item.case)}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</dd></div><div><dt>Where it stops</dt><dd>{item.limits}</dd></div></dl></details></section>)}</div>
+    <p className="pc-boundary">These are conceptual starting questions, not universal findings or a map of verified case relationships. Three link to a published case study that shows one instance.</p>
+    <div className="pc-distinction-list">{distinctions.map(item => <section key={item.title}><h2><Distinction title={item.title}/></h2><p>{item.difference}</p><p className="pc-question">{item.question}</p><details className="pc-layer"><summary>Connection, evidence and limits<span className="pc-sr-only"> for {item.title.replace(' ≠ ', ' is not ')}</span></summary><dl className="pc-distinction-detail"><div><dt>What connects them</dt><dd>{item.connection}</dd></div><div><dt>Evidence status</dt><dd>{item.evidence}{'case' in item ? <> <a href={publicPath(item.case)}>Read the case study <span aria-hidden="true">→</span></a></> : null}</dd></div><div><dt>Where it stops</dt><dd>{item.limits}</dd></div></dl></details></section>)}</div>
     <section className="pc-section"><h2>What makes a connection useful?</h2><p>Name what is connected, why the distinction matters, what supports the relationship, and where it stops explaining. Keep interpretations and hypotheses visible as such.</p><p>This overview does not generate or approve graph edges between investigations.</p><a className="pc-text-link" href={publicPath('/practice/')}>Read the inquiry practice →</a></section>
   </>
 }
@@ -99,7 +99,7 @@ function Observatory() {
   return <>
     <p className="pc-kicker">The observatory · experimental</p><h1>Observatory<span aria-hidden="true">*</span></h1>
     <p className="pc-lead">A separate place for curiosity to operate: experiments that test ways of exploring questions and connections.</p>
-    <p className="pc-boundary">Everything here is invented or illustrative. None of it is my investigations or evidence, and none of it is needed to read the rest of the site. The asterisk marks an experiment.</p>
+    <p className="pc-boundary">Everything here is invented or illustrative. None of it is my case studies or evidence, and none of it is needed to read the rest of the site. The asterisk marks an experiment.</p>
     <ul className="pc-observatory-index">{observatory.map(item => <li key={item.href}>
       <p className="pc-kicker">{item.kind}</p>
       <h2><a href={publicPath(item.href)} aria-label={item.experimental ? `${item.title} — experimental` : undefined}>{item.title}{item.experimental ? <span aria-hidden="true">*</span> : null}</a></h2>
@@ -113,7 +113,7 @@ function Observatory() {
 function Writing() {
   return <>
     <p className="pc-kicker">Field Notes</p><h1>Questions still being <em className="pc-accent">worked</em> out.</h1>
-    <p className="pc-lead">Essays, notes and earlier work: the thinking behind the investigations, kept separate from them.</p>
+    <p className="pc-lead">Essays, notes and earlier work: the thinking behind the case studies, kept separate from them.</p>
     <p className="pc-boundary">These are descriptions and excerpts. The full texts will be published here once they are recovered from their originals; nothing is reconstructed from summaries.</p>
     <LensInterlude/>
     <section className="pc-section" aria-labelledby="writing-notes-title"><h2 id="writing-notes-title">Field notes and essays</h2>
