@@ -3,7 +3,7 @@ import { CurrentShell } from './CurrentShell'
 import { PracticeMoves } from './PracticeMoves'
 import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
-import { archiveItems, writings } from '../data'
+import { archiveItems, writings } from '../content/writing'
 
 export const foundationPages = {
   practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
@@ -27,7 +27,7 @@ const inquiry = [
 const practiceOutputs = [
   { move: 'Test', output: 'A better explanation of what is causing the problem, tested against the record.', example: 'Claims: the errors were real, but when they were found was the problem.', href: '/investigations/claims-operations/' },
   { move: 'Show', output: 'The evidence, alternatives and uncertainty laid out so a decision-maker can weigh them.', example: 'Trust: agreement and trust influence, measured and reported separately.', href: '/investigations/brand-research/' },
-  { move: 'Enable', output: 'A change people can carry out and keep using: a checkpoint, a resource, a format.', example: 'Enterprise AI: eight shared challenge areas, and a sprint now run every year.', href: '/investigations/enterprise-ai/' },
+  { move: 'Enable', output: 'A change people can carry out and keep using: a checkpoint, a resource, a format.', example: 'Claims: guides and training built from administrators’ knowledge, in use statewide.', href: '/investigations/claims-operations/' },
 ] as const
 
 function Practice() {

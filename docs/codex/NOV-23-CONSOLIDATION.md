@@ -79,6 +79,9 @@ Preparing the release is not approval. **The owner approves by merging the pull 
 | Chromium suite | 293 passed, 0 failed |
 | Reflow at 320 px and 200% text | Failed at first: the results strip's fixed 14rem column, never rendered before. Fixed with `min(100%, …)` in every such grid |
 | Private archive copy | 52 of 52 checksums match |
+| Full suite, all browsers (before the review fixes) | 796 passed, 4 failed, 11 skipped. Three failures were the release tamper check, which fired because cases were edited during the run; one was an Edge Case gesture flake on mobile WebKit that passed on rerun |
+| Independent evidence review (read-only) | Four high-priority findings, all fixed or put to the owner: inherited “Source pending” notes, the salvage vendor's name in a bundled legacy module (moved out; vendor removed), approval of agent-written decision blocks (the owner must read them word for word), and the $20K grant figure (owner-reported on 20 and 23 November). Medium wording issues fixed |
+| After the fixes: affected specs, all browsers | 156 passed, 0 failed |
 
 Not established: how readers understand the new homepage (see the reader evaluation protocol), real screen readers and devices, and Cloudflare's live response once deployed.
 

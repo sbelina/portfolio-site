@@ -39,6 +39,16 @@ const base = (id: string, slug: string, createdAt: string) => ({
   authorIds: [owner], topicIds: [], blocks: [],
 })
 
+/** Limitations for the inherited Claims statements, now that the owner's account is the attached evidence. */
+const claimsLimitations: Record<string, string> = {
+  'ed50dcf8-47c0-4ddd-af83-b910c458ad12': 'Owner-reported. Describes the earlier process, not every claim.',
+  '3fb07550-5e1f-4326-b8dd-b01b62502d25': 'Owner-reported. The ranking is my account, not a measured frequency.',
+  '9fa22fd6-7311-4b3f-b078-159e33f558a2': 'Owner-reported. Leadership made the decision; who decides sufficiency and who releases payment did not change.',
+  'df37a6b3-f276-4fc5-81b5-026de7435747': 'Owner-reported. Taking part is not evidence of learning.',
+  '41e8eff7-7faa-4350-8ba8-827721641966': 'Owner-reported. The reach of one resource is never combined with another.',
+  '22229e3b-c7e6-4193-8855-b09427098bdd': 'Owner-reported. Use is not effectiveness.',
+}
+
 // Claims: revision 3 of the reviewed candidate, with the owner's 23 November answers and the decision layer.
 const claimsInvestigation = claimsCandidate.investigation!
 const claims: Entry = {
@@ -51,7 +61,7 @@ const claims: Entry = {
   internalNotes: undefined,
   investigation: {
     ...claimsInvestigation,
-    consequence: '“Complete” now means verified: adjusters verify the paperwork before paying, so problems are found before a claim looks finished rather than after it closes. The guides and training I built from administrators’ knowledge have been in use statewide, across all four offices, for more than two years, and the new hires who arrive every quarter learn from them.',
+    consequence: '“Complete” now means verified: adjusters check the paperwork before paying, and the salvage partner still decides whether it is sufficient, so problems are found before a claim looks finished rather than after it closes. The guides and training I built from administrators’ knowledge have been in use statewide, across all four offices, for more than two years, and the new hires who arrive every quarter learn from them.',
     brief: { ...claimsInvestigation.brief!, result: 'Payment now waits for verification, so problems are found before a claim looks finished. The guides and training have been used statewide, across all four offices, for 2+ years, and every quarter’s new hires learn from them.', evidence: 'My four-month exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. The records stay private.' },
     status: { kind: 'in_use', label: 'In use statewide 2+ years' },
     figures: claimsInvestigation.figures!.map(figure => ({
@@ -75,8 +85,10 @@ const claims: Entry = {
         { kind: 'unproven', text: 'Any change in rework volume, payment time or cost has not been measured. Two rework observations have different scopes and are never compared.' },
       ],
     },
+    measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     statements: claimsInvestigation.statements.map(statement => ({
       ...statement,
+      ...(claimsLimitations[statement.id] ? { limitation: claimsLimitations[statement.id] } : {}),
       ...(statement.id === 'f3a8f704-380a-45f6-a9b7-2ced77765186' ? { text: 'The guides and training have been in use statewide, across all four offices, for more than two years, and new hires learn from them every quarter.', limitation: 'Owner-reported; the four offices are the whole state. Use is not effectiveness.' } : {}),
       ...(statement.id === '2f19d6f6-513f-4e67-a16b-7739f23d0334' ? { text: 'I began the work unassigned and kept a log of recurring exceptions over four months.', limitation: 'A working record, not a controlled measure.' } : {}),
       evidenceIds: ['direct_observation', 'documented_outcome', 'measured_result'].includes(statement.kind) ? [caseEvidence.claims.id] : [],
@@ -87,7 +99,7 @@ const claims: Entry = {
 const trust: Entry = {
   ...base('4c5ececa-e308-4a31-9566-b3cd2fc7a0b2', 'brand-research', '2026-11-22T00:00:00Z'),
   title: 'Agreement is not trust.',
-  summary: 'A trust study could have produced one favorability score. I designed it to measure agreement and trust influence separately, and a year later the readout is still cited in strategy briefs.',
+  summary: 'A trust study could have produced one favorability score. I designed the survey’s measures so agreement and trust influence were asked separately, and a year later the readout is still cited in strategy briefs.',
   contribution: 'I set the general-to-specific interview sequence, proposed the perception-mapping framework and co-built it with two marketing and analytics leads, and separated agreement from trust influence in the survey. The external research partner conducted the interviews and fielded the survey.',
   evidenceIds: [caseEvidence.trust.id],
   investigation: {
@@ -122,7 +134,7 @@ const trust: Entry = {
       alternatives: [
         { option: 'One trust score', status: 'not_chosen', note: 'It shows how much, not why or for whom.' },
         { option: 'Measure agreement and trust influence separately', status: 'chosen', note: 'Both asked and reported separately in the adopted survey.' },
-        { option: 'A perception-mapping framework', status: 'recommended', note: 'One of three designs I proposed. It shaped the survey, but the full framework was not implemented.' },
+        { option: 'A perception-mapping framework', status: 'recommended', note: 'One of three designs I proposed, co-built with two marketing and analytics leads. The full framework was not implemented; a later follow-up took up drivers and proof points.' },
         { option: 'Include detractors as a distinct group', status: 'recommended', note: 'Not adopted.' },
       ],
       ownership: 'Marketing and analytics leads owned the study and its use. The research partner ran the fieldwork. I set the interview sequence and designed the measurement split.',
@@ -145,7 +157,7 @@ const ai: Entry = {
   ...base('8a218cf2-1ad6-461a-af6e-3f7ccadd9429', 'enterprise-ai', '2026-11-20T00:00:00Z'),
   title: '38 proposals. Eight shared challenges.',
   summary: 'Nearly forty AI requests arrived without a shared way to compare them. I led a synthesis into eight challenge areas that teams could discuss and choose among, then coached in the sprint, which now runs every year.',
-  contribution: 'I recognized the need for a synthesis and led it, tested the groupings with the sprint facilitator and innovation leadership, and was a lead and coach in the sprint, leading two ideas with one combined team. The innovation team owned the program.',
+  contribution: 'I recognized the need for a synthesis and led it, tested the groupings with the sprint facilitator, then walked them through with innovation leadership, and was a lead and coach in the sprint, leading two ideas with one combined team. The innovation team owned the program.',
   evidenceIds: [caseEvidence.ai.id],
   investigation: {
     schemaVersion: 1, composition: 'network',
@@ -162,7 +174,7 @@ const ai: Entry = {
     limitations: 'The yearly sprint shows the format lasted; it does not show that my synthesis caused it. No proposal’s implementation or business impact is claimed.',
     brief: {
       tension: 'Nearly forty AI requests arrived with no shared way to compare them, so each read as a separate need.',
-      call: 'I led a synthesis into eight challenge areas, tested it with the facilitator and innovation leadership, and coached in the sprint.',
+      call: 'I led a synthesis into eight challenge areas, tested it with the sprint facilitator, walked it through with innovation leadership, and coached in the sprint.',
       result: 'Teams chose among eight shared challenge areas, and the innovation team now runs the sprint every year.',
       evidence: 'Reading every proposal against the others, checking AI-assisted groupings by hand, and testing them with the people defining the sprint.',
     },
@@ -183,7 +195,7 @@ const ai: Entry = {
       ownership: 'The innovation team owned the program, its design and the decision to repeat it. I led the synthesis and coached teams.',
       implementation: 'The eight areas were walked through with innovation leadership and stakeholders as the sprint teams formed. The sprint now runs every year.',
       implications: [
-        { kind: 'resource', text: 'Effort was organized around eight shared problems instead of nearly forty separate requests.' },
+        { kind: 'resource', text: 'The synthesis gave teams eight shared areas to choose among instead of nearly forty separate requests.' },
         { kind: 'unproven', text: 'No financial return, implementation or business impact is claimed.' },
       ],
     },
@@ -227,12 +239,11 @@ const telematics: Entry = {
       { id: 'c0d2aaf6-5ed1-46dc-bdd2-505d55415bca', value: '~2,000', unit: 'respondents', label: 'Follow-up survey run by marketing analytics', basis: 'owner_estimate', qualifier: 'Another team’s work; not adoption of my recommendations.', evidenceIds: [caseEvidence.telematics.id] },
     ],
     decision: {
-      stakes: 'A large discount program was losing participants. Treating that as an app problem risked spending on interface fixes while the program’s value went unexamined.',
+      stakes: 'A large discount program was losing participants. Treating that as an app problem risked fixing the interface while the program’s value went unexamined.',
       prevailing: 'Update the application.',
       alternatives: [
         { option: 'Update the app only', status: 'considered', note: 'It addresses the interface findings, not the program’s value.' },
         { option: 'Examine the program with marketing analytics', status: 'recommended', note: 'I took the report to that team, and they ran a follow-up survey.' },
-        { option: 'Research future-state needs', status: 'not_chosen', note: 'The follow-up described current users only.' },
       ],
       ownership: 'Marketing analytics decided the follow-up’s scope. Product teams owned changes to the app.',
       implementation: 'A follow-up survey of about 2,000 respondents defined personas for the current user base.',
@@ -243,7 +254,7 @@ const telematics: Entry = {
     },
     statements: [
       { id: '308e9680-09d1-43fe-b372-eec1deef1d03', section: 'investigation', kind: 'direct_observation', contribution: 'identified', evidenceIds: [caseEvidence.telematics.id], text: 'With the audio unreliable, I recovered findings from on-screen behavior.', limitation: 'The sessions were conducted by others; the method is described in the deep dive.' },
-      { id: '94e0af76-25b0-430b-b5fb-5f88a4a5d865', section: 'consequence', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [caseEvidence.telematics.id], text: 'After I took the report to marketing analytics, that team ran a follow-up survey of about 2,000 respondents.', limitation: 'Sequence, not proof that my recommendations were adopted.' },
+      { id: '94e0af76-25b0-430b-b5fb-5f88a4a5d865', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.telematics.id], text: 'After I took the report to marketing analytics, that team ran a follow-up survey of about 2,000 respondents.', limitation: 'Sequence, not proof that my recommendations were adopted.' },
     ],
   },
 }
@@ -291,8 +302,8 @@ const civic: Entry = {
       ],
     },
     statements: [
-      { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort; questions were not systematically recorded.' },
-      { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [caseEvidence.civic.id], text: 'The grant Vote Huntsville was asked to co-sign was awarded.', limitation: 'Recognition of a partnership, not of one person.' },
+      { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort; owner-reported.' },
+      { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.civic.id], text: 'The grant Vote Huntsville was asked to co-sign was awarded.', limitation: 'Recognition of a partnership, not of one person.' },
     ],
   },
 }
@@ -331,7 +342,7 @@ const accessibility: Entry = {
         { option: 'Rely on the accessibility agent alone', status: 'not_chosen', note: 'It restored the code, but could not settle the visual question.' },
         { option: 'Pair agent checks with planned human review', status: 'recommended', note: 'The review raised a question the checks did not settle.' },
       ],
-      ownership: 'The organizer and the department owned the initiative. A developer conducted the review.',
+      ownership: 'The separate initiative and its decisions belong to others. A developer conducted the review.',
       implementation: 'The experiment informed a separate initiative already under way.',
       implications: [
         { kind: 'resource', text: 'Earlier, repeatable checking could reduce later remediation. This is an intended benefit, not a measured one.' },
