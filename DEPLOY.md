@@ -27,11 +27,11 @@ npx wrangler dev --local --ip 127.0.0.1 --port 4175
 In another terminal, request the root and its referenced JS/CSS. Expect HTTP 200, JS with a JavaScript MIME type, and compiled `/assets/` references, not `/src/main.tsx`. Then verify mounting and interaction in a browser; status codes alone are insufficient.
 
 ```sh
-npx playwright install --with-deps chromium
+npx playwright install --with-deps chromium webkit
 npm test
 ```
 
-Tests build production output and start the isolated fixture Worker on port 4174, run Chromium and axe checks, and retain traces on failure. When using an already installed compatible Chromium in this cloud environment:
+Tests build production output and start the isolated fixture Worker on port 4174, run Chromium, desktop WebKit (Safari engine) and iPhone-emulated WebKit projects with axe checks, and retain traces on failure. When using an already installed compatible Chromium in this cloud environment:
 
 ```sh
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm test
@@ -100,3 +100,7 @@ A normal hosted branch preview contains only the production-safe empty selection
 ## Integrated release scope
 
 See [the integrated release record](docs/codex/INTEGRATED-SEO-RELEASE.md). The normal public build excludes manuscript fixtures, private studio output and local state. The existing hidden-work illustration is intentionally public. SEO metadata and sitemap are generated from the public route inventory; alternate workers.dev hosts receive noindex headers. A Vite preview is useful for layout but does not establish Worker404/redirect/header behavior.
+
+## Deep-dive Worker (22 November, review branch)
+
+`wrangler.jsonc` now includes a small Worker (`worker/index.ts`). It runs first only for `/deep-dive` and `/deep-dive/*`; all other paths are static assets as before. With no `DEEP_DIVE` KV binding or secrets, deep dives answer *not open yet*, so deploying this change opens nothing. Follow [the deep-dive setup](docs/codex/DEEP-DIVE.md) before sharing a password, including the rate-limiting rule. After deploying, check `/deep-dive/` on the live domain.

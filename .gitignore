@@ -168,5 +168,10 @@ dist-studio/
 studio-test-results/
 inquiry-studio-test-results/
 
+# Private artifact test builds
+dist-artifact/
 # Private thought archive test output
 thoughts-test-results/
+
+# Private deep-dive sources (uploaded to private storage, never committed)
+private/

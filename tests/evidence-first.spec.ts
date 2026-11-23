@@ -5,7 +5,9 @@ import { claimsInvestigationId, previousEditionSummaries, primaryEvidence } from
 import { forbiddenPublicMarkers } from '../scripts/audit-public'
 
 const origin = 'http://127.0.0.1:4175'
-const h1 = 'I turn gaps in understanding into evidence leaders can act on.'
+// Owner decision, 23 November: the final Trust deck's cover statement, with "leaders".
+const h1 = 'I diagnose gaps in understanding and design the conditions that empower leaders to make informed decisions.'
+const h1Markup = 'I diagnose gaps in understanding and design the conditions that empower leaders to make <em class="pc-accent">informed</em> decisions.'
 const claimsSummary = `${archive.reviewPath}#claims-operations`
 const unpublished = 'The full case has not been published; it awaits source and publication review.'
 const candidateCanary = 'CLAIMS_CANDIDATE_UNAPPROVED_16NOV'
@@ -34,8 +36,9 @@ test('interim summaries point only at anchors preserved in the immutable archive
 
 test('production home leads with the new H1 and an honest one-click evidence path', async () => {
   const home = await readFile('dist/index.html', 'utf8')
-  expect(home).toContain(h1)
+  expect(home).toContain(h1Markup)
   expect(home).not.toContain('I investigate situations where outcomes are visible')
+  expect(home).not.toContain('I turn gaps in understanding into evidence leaders can act on.')
   expect(home).toContain(`data-evidence-status="previous-edition"`)
   expect(home).toContain(`href="${claimsSummary}"`)
   expect(home).toContain(unpublished)

@@ -2,9 +2,11 @@
 export const claimsInvestigationId = '6c2f9e3e-23c0-4362-ada4-7d18a6ed998a'
 
 export type CaseBrief = { tension: string; call: string; result: string; evidence: string }
-export type InvestigationSummary = { id: string; path: string; title: string; summary: string; brief?: CaseBrief }
+export type CaseStatusSummary = { kind: 'in_use' | 'adopted' | 'recurring' | 'follow_on' | 'recognized' | 'proposal'; label: string }
+export type HeadlineFigure = { id: string; value: string; unit: string; label: string; basis: 'owner_estimate' | 'approximate' | 'platform_reported' | 'measured'; qualifier: string }
+export type InvestigationSummary = { id: string; path: string; title: string; summary: string; brief?: CaseBrief; status?: CaseStatusSummary; headlines?: HeadlineFigure[] }
 export type PrimaryEvidence =
-  | { status: 'approved'; href: string; title: string; description: string; brief?: CaseBrief }
+  | { status: 'approved'; href: string; title: string; description: string; brief?: CaseBrief; caseStatus?: CaseStatusSummary }
   | { status: 'previous-edition'; href: string; title: string; description: string; boundary: string }
 
 /**
@@ -21,6 +23,10 @@ export const previousEditionSummaries = [
   { anchor: 'accessibility-ai', label: 'Accessibility in AI-assisted development', title: 'A person noticed a question the checks did not settle.' },
 ] as const
 
+/** The homepage preview: Claims, trust research and enterprise AI (owner priority, 19 November). */
+export const representativeSummaries = (['claims-operations', 'brand-research', 'enterprise-ai'] as const)
+  .map(anchor => previousEditionSummaries.find(item => item.anchor === anchor)!)
+
 /** Callers pass the archive's review path (content/build-archive.json) so this module stays JSON-free for tests. */
 export const previousEditionHref = (archivePath: string, anchor: string) => `${archivePath}#${anchor}`
 
@@ -33,7 +39,7 @@ export const previousEditionHref = (archivePath: string, anchor: string) => `${a
  */
 export function primaryEvidence(investigations: readonly InvestigationSummary[], archivePath: string): PrimaryEvidence {
   const approved = investigations.find(entry => entry.id === claimsInvestigationId) ?? investigations[0]
-  if (approved) return { status: 'approved', href: approved.path, title: approved.title, description: approved.summary, ...(approved.brief ? { brief: approved.brief } : {}) }
+  if (approved) return { status: 'approved', href: approved.path, title: approved.title, description: approved.summary, ...(approved.brief ? { brief: approved.brief } : {}), ...(approved.status ? { caseStatus: approved.status } : {}) }
   return {
     status: 'previous-edition',
     href: previousEditionHref(archivePath, 'claims-operations'),

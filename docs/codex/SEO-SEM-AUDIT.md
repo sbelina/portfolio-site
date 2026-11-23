@@ -80,3 +80,45 @@ Independent verified-HTTPS preview checks against [immutable version `f29915d6`]
 The reviewer also inspected the integration lead's logs:96 public tests and10 local private-workflow tests passed; a real local Worker restart preserved the synthetic D1 draft across fresh login; seven final affected footer/SEO checks and deployment packaging passed. These are technical checks. Remote CI and the final merged production response, including the production Worker hostname's new noindex header and the apex's absence of it, must still be verified by the integration lead. A documentation-only approval record does not change the approved runtime.
 
 No Search Console submission, verified live search-index status, keyword-volume data, Google Ads campaign, paid spend, tracking installation, ranking lift or conversion result is claimed. The SEM brief above remains proposed research requiring owner-authorized account data. This approval does not publish private manuscripts or establish a hosted CMS workflow, human accessibility conformance or reader-comprehension outcome.
+
+## On-page SEO completion — 19 November 2026 (review branch, not yet live)
+
+The owner asked to “do all the SEO”, including adding Person structured data. This work is on `claude/jolly-turing-noyo4q` (draft PR #17) and reaches search engines only after an approved merge and deployment.
+
+**Live state checked on 19 November.** Verified over HTTPS against producingcuriosity.com:
+
+- `robots.txt` allows search and lists the sitemap. Cloudflare-managed rules block AI-training crawlers but not Googlebot or Bingbot.
+- The sitemap lists `/`, `/practice/`, `/patterns/` and `/experiments/reveal-hidden-work/`.
+- The homepage has a canonical address, `index, follow`, Open Graph and Twitter tags, and WebSite structured data.
+- `workers.dev` hosts send `X-Robots-Tag: noindex`.
+- The social image loads.
+
+**Changed on the branch:**
+
+| Item | Before | After |
+| --- | --- | --- |
+| Home title | Sami Belina — Research Strategy, Organizational Effectiveness & Service Design | Sami Belina — Research & Innovation Strategist (matches LinkedIn) |
+| Home description | 180 characters (truncated in results), older role terms | 148 characters, LinkedIn specialties. Kept under about 155 characters so results show it whole (a test enforces this). |
+| Structured data | WebSite only | `@graph`: WebSite, with author and publisher set to a **Person** (Sami Belina, `jobTitle` Research & Innovation Strategist, `sameAs` LinkedIn, `knowsAbout` the LinkedIn specialties plus research strategy, organizational effectiveness, innovation strategy and human systems research). No email address or employer. |
+| Social preview (1200 × 630) | 6 November positioning and lead | Name and identity, the H1, the LinkedIn tagline and specialties, Test. Show. Enable. Alt text updated to match. |
+
+The earlier recruiting terms *research strategy* and *organizational effectiveness* now appear in the Person `knowsAbout` list, so they stay machine-readable without changing the visible LinkedIn-matched header.
+
+**Page audit on the built output:**
+
+- Every page has one `<title>`, one description, one H1, and a unique title.
+- Indexable pages: `/`, `/practice/`, `/patterns/` and `/experiments/reveal-hidden-work/`, each with a canonical address and in the sitemap.
+- Deliberately `noindex`: the Investigations collection (empty until a case is approved), the Observatory, Atlas, Je ne sais qu’a, Edge Case, the specimen, illustrations and the 404 page.
+
+**Owner steps after the merge is live.** These need the owner’s accounts; no agent has access:
+
+1. **Google Search Console:** submit `https://producingcuriosity.com/sitemap.xml` under Sitemaps. Then use URL Inspection on the homepage and choose Request indexing.
+2. **Bing Webmaster Tools:** the owner chose XML-file verification on 20 November. `public/BingSiteAuth.xml` (the owner’s Bing token, which is meant to be public) is served at `/BingSiteAuth.xml`, and a test checks that. It goes live with the merge; click **Verify** in Bing after that, then submit the sitemap there too. Bing also covers DuckDuckGo and other Bing-backed engines.
+3. **LinkedIn Post Inspector** (linkedin.com/post-inspector): inspect `https://producingcuriosity.com/` to refresh LinkedIn’s cached title and image. Do the same in any other platform’s share debugger.
+4. **Optional:** Cloudflare *Crawler Hints* (Caching → Configuration) notifies IndexNow-based engines when pages change.
+5. **After a few days:** record Search Console *Pages* (index coverage) and *Performance* (queries, impressions, clicks) with dates. Only then can visibility claims be made.
+
+**Not done, and why.**
+
+- No search-index status, ranking or traffic is claimed; there is no account access.
+- SEM remains the proposed brief above. No campaign, spend, tracking or keyword-volume data exists, and none should be created without the owner’s explicit approval and account access.

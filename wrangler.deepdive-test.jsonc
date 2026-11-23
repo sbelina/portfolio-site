@@ -1,0 +1,17 @@
+{
+  // TEST ONLY: the production site plus a local KV store and synthetic credentials, so
+  // tests/deep-dive.spec.ts can prove the password wall. Never deploy this configuration.
+  // The password behind this hash is "synthetic-deep-dive-test-password"; it unlocks nothing real.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio-site-deep-dive-test",
+  "compatibility_date": "2026-10-22",
+  "workers_dev": false,
+  "preview_urls": false,
+  "main": "./worker/index.ts",
+  "assets": { "directory": "./dist", "binding": "ASSETS", "not_found_handling": "404-page", "html_handling": "force-trailing-slash", "run_worker_first": ["/deep-dive", "/deep-dive/*"] },
+  "kv_namespaces": [{ "binding": "DEEP_DIVE", "id": "deep-dive-local-test-only" }],
+  "vars": {
+    "DEEP_DIVE_PASSWORD_HASH": "pbkdf2-sha256$100000$7e57d1fe7e57d1fe7e57d1fe7e57d1fe$8245a5bdb6354e08a063d956d4f531ec7bf006703b34369c674498e6d65e61d7",
+    "DEEP_DIVE_SESSION_SECRET": "synthetic-deep-dive-session-secret-not-a-credential"
+  }
+}

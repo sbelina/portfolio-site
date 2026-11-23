@@ -1,6 +1,8 @@
 import { publicPath } from '../public-path'
 import { InvestigationVisual } from '../visuals/InvestigationVisual'
-import { InvestigationNarrative } from './InvestigationNarrative'
+import { InvestigationNarrative, narrativeContents } from './InvestigationNarrative'
+import { CaseStatus } from './CaseStatus'
+import { practiceAreas, recruiterContact } from '../content/recruiter'
 import { AssumedObserved } from '../visuals/AssumedObserved'
 import { ExperimentNote } from '../components/ExperimentNote'
 import { PublicNavigation } from '../components/PublicNavigation'
@@ -168,12 +170,20 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <h2>In this reading</h2>
         <ol>
           {showContribution ? <li><a href="#contribution">Contribution and scope</a></li> : null}
+          {entry.investigation ? narrativeContents(entry.investigation).map(item => <li key={item.id}><a href={`#${item.id}`}>{item.title}</a></li>) : null}
           {entry.blocks.map((block, index) => <li key={block.id}><a href={`#${blockAnchor(block, entry)}`}>{blockLabel(block, index, page.projection)}</a></li>)}
           {!poetry && extraEvidence.length ? <li><a href="#evidence">Evidence and provenance</a></li> : null}
           {page.projection.relationships.some(item => item.fromId === entry.id || item.toId === entry.id) ? <li><a href="#connections">Explained connections</a></li> : null}
         </ol>
       </nav> : null}
+      {entry.investigation?.status ? <p className="reading-case-status"><span className="reading-case-status-label">What became of it:</span> <CaseStatus status={entry.investigation.status}/></p> : null}
       {entry.investigation ? <InvestigationNarrative narrative={entry.investigation} evidence={page.projection.evidence} /> : null}
+      {entry.investigation?.deepDive ? <section className="reading-deep-dive" id="deep-dive" aria-labelledby="deep-dive-title">
+        <h2 id="deep-dive-title">Deep dive</h2>
+        <p>This page is the public version. A longer version, with the process, working artifacts and sources in more detail, is available on request.</p>
+        <p><a href={publicPath(`/deep-dive/${entry.slug}/`)}>Open the deep dive <span aria-hidden="true">→</span></a> <span className="reading-deep-dive-note">Password required.</span></p>
+        <p><a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent(`Deep dive access: ${entry.title}`)}`}>Request access by email</a></p>
+      </section> : null}
       <div className="reading-body">
         {entry.blocks.map(block => <section className={`reading-block reading-block--${block.type}`} id={blockAnchor(block, entry)} key={block.id}><ContentBlock block={block} page={page} /></section>)}
       </div>
@@ -192,8 +202,8 @@ function Collection({ projection, fixture, candidate = false }: { projection: Re
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
   return (
     <>
-      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : 'Research strategy · Organizational effectiveness · Service design'}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{candidate ? ' · unapproved candidate' : ''}</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2><p>{entry.summary}</p></li>)}</ul> : <div className="reading-empty"><p>No full investigation has been published in this edition yet. Each case manuscript awaits source, privacy, and publication review; Claims operations is the first in that review.</p><h2 id="previous-summaries">Summaries from the previous edition</h2><p>Each summary states the question, my contribution, and what remains unverified. They are short accounts, not full cases.</p><ul aria-labelledby="previous-summaries">{previousEditionSummaries.map(summary => <li key={summary.anchor}><a href={publicPath(previousEditionHref(archive.reviewPath, summary.anchor))}><strong>{summary.label}</strong>: {summary.title} <span aria-hidden="true">→</span></a></li>)}</ul><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
+      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">Investigations</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
+      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}><p className="reading-kicker">Investigation{candidate ? ' · unapproved candidate' : ''}</p><h2><a href={publicPath(entry.path)}>{entry.title}</a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}<p>{entry.summary}</p></li>)}</ul> : <div className="reading-empty"><p>No full investigation has been published in this edition yet. Each case manuscript awaits source, privacy, and publication review; Claims operations is the first in that review.</p><h2 id="previous-summaries">Summaries from the previous edition</h2><p>Each summary states the question, my contribution, and what remains unverified. They are short accounts, not full cases.</p><ul aria-labelledby="previous-summaries">{previousEditionSummaries.map(summary => <li key={summary.anchor}><a href={publicPath(previousEditionHref(archive.reviewPath, summary.anchor))}><strong>{summary.label}</strong>: {summary.title} <span aria-hidden="true">→</span></a></li>)}</ul><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )

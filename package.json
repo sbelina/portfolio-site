@@ -8,13 +8,17 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && tsc -p tsconfig.tools.json && vite build && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx && tsx --tsconfig tsconfig.app.json scripts/audit-public.ts",
+    "build": "tsc -b && tsc -p tsconfig.tools.json && tsc -p tsconfig.worker.json && vite build && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx && tsx --tsconfig tsconfig.app.json scripts/audit-public.ts",
     "preview": "vite preview",
     "test": "npm run build && playwright test",
     "test:ui": "playwright test --ui",
     "test:atlas": "tsc -p tsconfig.atlas.json && playwright test --config playwright.atlas.config.ts",
     "check:deploy": "wrangler deploy --dry-run",
-    "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
+    "deep-dive:hash": "tsx scripts/deep-dive-hash.ts",
+    "deep-dive:upload": "tsx scripts/deep-dive-upload.ts",
+    "deep-dive:seed-test": "tsx scripts/deep-dive-seed-dummy.ts",
+    "deep-dive:demo": "npm run build && tsx scripts/deep-dive-seed-dummy.ts && echo \"Demo password: synthetic-deep-dive-test-password  →  http://127.0.0.1:4176/deep-dive/\" && wrangler dev --local --config wrangler.deepdive-test.jsonc --ip 127.0.0.1 --port 4176",
+    "build:fixtures": "tsc -b && tsc -p tsconfig.tools.json && vite build --mode fixtures --outDir dist-fixtures && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --fixtures",
     "preview:fixtures": "wrangler dev --local --config wrangler.fixtures.jsonc",
     "build:candidate": "tsc -b && tsc -p tsconfig.tools.json && vite build --outDir dist-candidate && tsx --tsconfig tsconfig.app.json scripts/prerender.tsx --candidate",
     "preview:candidate": "wrangler dev --local --config wrangler.candidate.jsonc",
@@ -32,15 +36,16 @@
     "check:thoughts": "wrangler deploy --dry-run --config thoughts/wrangler.jsonc"
   },
   "dependencies": {
+    "p5": "1.11.13",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "4.6.7",
-    "p5": "1.11.13"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
     "@playwright/test": "1.64.1",
     "@types/node": "22.20.5",
+    "@types/p5": "1.7.7",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.7",
     "@types/sanitize-html": "2.16.2",
@@ -51,8 +56,7 @@
     "sanitize-html": "2.18.1",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
-    "wrangler": "4.152.0",
-    "@types/p5": "1.7.7"
+    "vite": "8.2.4",
+    "wrangler": "4.156.0"
   }
 }

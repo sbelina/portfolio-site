@@ -1,6 +1,6 @@
 export type HomeReading = {
   fixture: boolean
-  entries: { id: string; path: string; title: string; summary: string; brief?: { tension: string; call: string; result: string; evidence: string } }[]
+  entries: import('./content/primary-evidence').InvestigationSummary[]
   fragmentRedirects: Record<string, string>
 }
 

@@ -10,7 +10,15 @@ This directory turns the portfolio strategy, design exploration, page architectu
 
 ## Current direction — 6 November 2026
 
+Public cases and password-protected deep dives, status tags and the results strip, 22 November (review branch): [setup and design](DEEP-DIVE.md).
+
+Professional alignment, 19 November (review branch): [decision record, route map, proposed copy and publication queue](NOV-19-PROFESSIONAL-ALIGNMENT.md).
+
+Direction in development, 16 November: [evidence, inquiry and learning audit and Phase 1 record](NOV-16-DIRECTION-AUDIT.md), with the [publication ledger](PUBLICATION-LEDGER.md), [learning specification](LEARNING-FACILITATION-SPEC.md) and [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md). Branch work only; nothing is published.
+
 Current approved synthetic build, 16 November: [Je ne sais qu’a release scope/status](NOV-16-INQUIRY-RELEASE.md) and [fragment, pairing and local-authoring contracts](INQUIRY-SPACE.md). Atlas is already live; real cases and the later visual/SWIFT proposal remain separate.
+
+Prototype in development, 11 November; placed in the Observatory on 16 November: [Edge Case](EDGE-CASE-PROTOTYPE.md), an original browser game, now at `/lab/edge-case/` in the branch's public build. It goes live only when the owner approves the merge. The same work added WebKit (Safari) browser testing.
 
 Current interaction/release update, 9 November: [three deliberate intro steps plus a separate Dive action, optional nested context and publication record](NOV-09-INTRO-RELEASE.md). The owner explicitly requested the correction and publication. The new edition's positioning/design remain adopted; historical archive bytes, private drafts and exact-candidate content boundaries remain intact.
 

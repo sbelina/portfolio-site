@@ -16,7 +16,8 @@ test('home header stays available and condenses without removing menu links', as
   await expect(header).toHaveAttribute('data-compact', 'false')
 })
 
-test('keyboard menu activation leaves the destination clear of the sticky header', async ({ page }) => {
+test('keyboard menu activation leaves the destination clear of the sticky header', async ({ page, browserName }) => {
+  test.skip(browserName === 'webkit', "Safari's default keyboard preference leaves links out of the Tab order, so this test's Tab/Shift+Tab modality setup does not apply")
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/#index')
   // Wait for the retained fixture's initial reading-focus effect.
@@ -60,7 +61,8 @@ test('home menu supports narrow touch and enlarged reduced-motion reading', asyn
   } finally { await context.close() }
 })
 
-test('no-JavaScript enlarged narrow menu cannot obscure reading destinations', async ({ browser, baseURL }) => {
+test('no-JavaScript enlarged narrow menu cannot obscure reading destinations', async ({ browser, baseURL, browserName }) => {
+  test.fixme(browserName === 'webkit', 'Linux WebKit renders the legacy hero in a wider fallback serif (Iowan/Palatino absent); not a Safari defect. See docs/codex/EDGE-CASE-PROTOTYPE.md')
   const context = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 320, height: 800 } })
   try {
     const page = await context.newPage()

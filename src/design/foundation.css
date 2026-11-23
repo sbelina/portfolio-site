@@ -29,7 +29,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-byline, .pc-meta { color: var(--muted); font-size: .85rem; }
 .pc-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; padding-block: clamp(3rem, 7vw, 6rem); }
 .pc-hero > *, .pc-moves > *, .pc-journeys > * { min-width: 0; }
-.pc-hero-copy h1 { font-size: clamp(2.2rem, 4.25vw, 4.35rem); max-width: 19ch; }
+.pc-hero-copy h1 { font-size: clamp(1.8rem, 3.4vw, 3.5rem); max-width: 22ch; }
 .pc-inquiry-figure { margin: 0; padding: 1rem 0; border-bottom: 1px solid var(--line); }
 .pc-inquiry-drawing { aspect-ratio: 42/33; }
 .pc-inquiry-drawing svg { display: block; width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1; }
@@ -146,7 +146,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-site.pc-reading .reading-site-header { border-bottom: 1px solid var(--line); }
 @media(max-width:760px) {
   .pc-hero { grid-template-columns: minmax(0,1fr); gap: 1rem; }
-  .pc-hero-copy h1 { max-width: 21ch; }
+  .pc-hero-copy h1 { max-width: 24ch; }
   .pc-inquiry-figure { max-width: 30rem; width: 100%; }
   .pc-inquiry-drawing { max-width: 21rem; }
   .pc-header { align-items: flex-start; flex-direction: column; }
@@ -156,6 +156,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media(max-width:540px) {
   .pc-main { padding-inline: 5vw; }
   .pc-main h1 { font-size: 2rem; }
+  /* The homepage statement is a sentence, not a slogan: smaller on phones so the evidence link stays in the first screen. */
+  .pc-hero-copy h1 { font-size: 1.6rem; line-height: 1.18; }
   .pc-intro :is(.question,.step-prompt,.mirror) { font-size: 1.25rem; }
   .pc-intro .intro-field { touch-action: pan-y; }
   .pc-surface-control, .pc-sample, .pc-disclosure { padding: .75rem .5rem; }
@@ -181,3 +183,136 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 /* Same shape, different gap: case labels on the illustration (decorative; the live text carries the meaning). */
 .pc-case-labels text { font: 600 15px/1 var(--mono, ui-monospace, monospace); fill: currentColor; letter-spacing: .02em; }
 .pc-inquiry-reading strong { font-weight: 650; }
+
+/* Local owner-review shells (fixtures build only). */
+.pc-proposal-banner { border: 2px dashed var(--unresolved); padding: 1rem 1.25rem; margin-bottom: 2rem; max-width: 70ch; }
+.pc-proposal-banner p { margin: 0; }
+.pc-proposal-pending { border-left: 3px solid var(--unresolved); padding-left: 1rem; color: var(--muted); }
+.pc-proposal ol, .pc-proposal ul { max-width: 65ch; }
+
+/* Observatory hub (/lab/). */
+.pc-observatory-index { list-style: none; padding: 0; margin: 2rem 0 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 2rem 3rem; }
+.pc-observatory-index li { border-top: 1px solid var(--line); padding-top: 1.25rem; min-width: 0; }
+.pc-observatory-index h2 { font-size: clamp(1.4rem, 2.4vw, 2rem); margin: .25rem 0 .75rem; overflow-wrap: anywhere; }
+.pc-observatory-index h2 a { display: inline-flex; min-height: 44px; align-items: center; }
+.pc-observatory-index p:not(.pc-kicker) { max-width: 46ch; }
+@media (max-width: 760px) { .pc-observatory-index { grid-template-columns: minmax(0,1fr); } }
+
+/* Professional identity and representative investigations (19 November). */
+.pc-identity-name { color: var(--ink); }
+.pc-representative-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1.5rem; }
+.pc-representative-list li { border-top: 1px solid var(--line); padding-top: 1rem; min-width: 0; }
+.pc-representative-list a { display: inline-block; min-height: 44px; padding-block: .25rem; font-size: 1.15rem; line-height: 1.4; overflow-wrap: anywhere; }
+.pc-representative-status { color: var(--muted); font-size: .85rem; margin: .25rem 0 0; }
+.pc-purpose { max-width: 65ch; }
+@media (max-width: 760px) { .pc-representative-list { grid-template-columns: minmax(0,1fr); } }
+.pc-distinction-detail { margin: .75rem 0 0; }
+.pc-distinction-detail dt { font-weight: 600; margin-top: .6rem; }
+.pc-distinction-detail dd { margin: .15rem 0 0; }
+.pc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (max-width: 360px) { .pc-hero .pc-identity { letter-spacing: .04em; } }
+.pc-byline .pc-areas, .pc-byline .pc-tagline { display: block; }
+
+/* Results strip (homepage) and case status tags, 22 November. */
+.pc-results { margin: 0 0 3rem; border-block: 1px solid var(--line); padding-block: 1.25rem 1.5rem; }
+.pc-results h2 { margin: 0 0 1rem; }
+.pc-results ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 1.5rem 2rem; }
+.pc-results li { min-width: 0; }
+.pc-result-value { margin: 0; font-size: 1rem; }
+.pc-result-value strong { display: block; font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 600; line-height: 1.1; letter-spacing: -.02em; }
+.pc-result-label { margin: .35rem 0 0; max-width: 34ch; }
+.pc-result-basis { margin: .35rem 0 .5rem; font-size: .82rem; color: var(--muted); max-width: 40ch; }
+.pc-results a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
+.pc-featured-status { margin: .75rem 0 0; }
+
+.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
+.case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
+.case-status[data-status="proposal"] { border-style: dashed; color: var(--muted); }
+
+/* Deep dive pages (served by the Worker after a password check). */
+.deep-dive .deep-dive-login { display: grid; gap: .5rem; max-width: 22rem; margin: 1.5rem 0; }
+.deep-dive .deep-dive-login input { min-height: 44px; padding: .5rem .75rem; font: inherit; border: 1px solid var(--ink); background: transparent; color: var(--ink); }
+.deep-dive button { min-height: 44px; padding: .5rem 1rem; font: inherit; border: 1px solid var(--ink); background: var(--ink); color: var(--paper, #f3efe7); cursor: pointer; }
+.deep-dive .deep-dive-signout button { background: transparent; color: var(--ink); margin-top: 2rem; }
+.deep-dive-error { border-left: 3px solid var(--pressure, currentColor); padding-left: .75rem; font-weight: 600; }
+.deep-dive-index { padding-left: 1.25rem; }
+.deep-dive-index a { display: inline-flex; min-height: 44px; align-items: center; }
+.deep-dive-body { max-width: 70ch; }
+
+/* "How I got here" interlude: a full-width observatory band between what changed and the practice. */
+.pc-interlude { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 100vmax var(--paper); clip-path: inset(0 -100vmax); margin-block: 4rem; padding-block: 3.5rem; }
+.pc-interlude-inner { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 3rem; align-items: center; }
+.pc-interlude .pc-kicker { margin: 0 0 1.25rem; }
+.pc-interlude-quote { margin: 0; }
+.pc-interlude-quote blockquote { margin: 0; }
+.pc-interlude-quote blockquote p { margin: 0; font-size: clamp(1.75rem, 3.6vw, 3rem); line-height: 1.15; letter-spacing: -.02em; font-weight: 500; max-width: 22ch; }
+.pc-interlude-quote figcaption { margin-top: 1rem; color: var(--muted); }
+.pc-interlude .pc-interlude-lens { margin: 2.25rem 0 0; max-width: 56ch; }
+.pc-interlude-source { margin-top: 1.25rem; color: var(--muted); font-size: .9rem; }
+.pc-interlude-source summary { cursor: pointer; display: list-item; padding-block: .65rem; }
+.pc-interlude-source p { margin: .25rem 0 0; max-width: 60ch; }
+.pc-interlude-drawing svg { display: block; width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1; }
+.pc-interlude-geometry { stroke: var(--holds); stroke-width: 2; }
+.pc-interlude-poetry { stroke: var(--unresolved); stroke-width: 2; stroke-dasharray: 6 5; }
+.pc-interlude-meet { fill: var(--signal); stroke: none; }
+.pc-interlude-legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: .75rem 0 0; font-size: .8rem; color: var(--muted); }
+.pc-interlude-legend span::before { content: ""; display: inline-block; width: 1.25rem; height: 0; margin-right: .4rem; vertical-align: middle; border-top: 2px solid var(--holds); }
+.pc-interlude-legend span:nth-child(2)::before { border-top: 2px dashed var(--unresolved); }
+.pc-interlude-legend span:nth-child(3)::before { width: .6rem; height: .6rem; border: 0; border-radius: 50%; background: var(--signal); }
+@media (max-width: 760px) { .pc-interlude-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; } .pc-interlude-drawing { max-width: 18rem; } }
+.pc-interlude-figure { margin: 0; }
+.pc-interlude-right-angle { stroke: var(--holds); stroke-width: 1.25; }
+.pc-interlude-labels text { fill: var(--muted); stroke: none; font: 600 12px ui-monospace, Menlo, Consolas, monospace; }
+.pc-interlude-steps { margin-top: 1rem; font-size: .88rem; color: var(--muted); }
+.pc-interlude-steps summary { cursor: pointer; display: list-item; padding-block: .65rem; color: var(--ink); }
+.pc-interlude-steps ol { margin: .25rem 0 0; padding-left: 1.25rem; display: grid; gap: .4rem; }
+.pc-interlude-step-source { display: block; font-size: .78rem; opacity: .85; }
+.pc-interlude-steps p { margin: .6rem 0 0; }
+
+/* Deep dives in the deck grammar (docs/design-system/DECK-FOUNDATION.md). */
+.deep-dive { max-width: none; }
+.deep-dive-kicker { margin: 0 0 .75rem; font-size: .75rem; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--signal); }
+.deep-dive h1, .deep-dive .deep-dive-headline, .deep-dive .deep-dive-hub h2 { font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+.deep-dive h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); margin: 0 0 1rem; }
+.deep-dive-headline { font-size: clamp(2rem, 4.4vw, 3.4rem); margin: 0 0 1.75rem; position: relative; padding-bottom: .9rem; max-width: 18ch; }
+.deep-dive-headline::after { content: ""; position: absolute; left: 0; bottom: 0; width: 3.5rem; border-top: 3px solid currentColor; opacity: .7; }
+.deep-dive h1 em, .deep-dive-headline em, .deep-dive-hub h2 em { font-style: normal; color: var(--signal); }
+.deep-dive-public { margin: 0 0 2rem; }
+.deep-dive-public a, .deep-dive-public-link a, .deep-dive-onward, .deep-dive-parts a { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; }
+/* Headline links keep their word spacing (no flex), and still offer a 44px target. */
+.deep-dive-hub h2 a { display: inline-block; padding-block: .35rem; }
+.deep-dive-parts ol { display: flex; flex-wrap: wrap; gap: .25rem 1.5rem; padding: 0; list-style: none; margin: 0 0 2rem; border-block: 1px solid var(--line); }
+.deep-dive-parts li { counter-increment: part; }
+.deep-dive-parts li::before { content: counter(part, decimal-leading-zero) " · "; color: var(--muted); font-size: .8rem; letter-spacing: .1em; }
+.deep-dive-spread { border: 1px solid var(--line); padding: clamp(1.25rem, 3vw, 2.5rem); margin: 0 0 2.5rem; position: relative; scroll-margin-top: 5rem; }
+.deep-dive-spread::before, .deep-dive-spread::after { content: "+"; position: absolute; font: 300 1.1rem/1 ui-monospace, Menlo, monospace; color: var(--muted); }
+.deep-dive-spread::before { top: -.6rem; left: -.35rem; }
+.deep-dive-spread::after { bottom: -.55rem; right: -.35rem; }
+.deep-dive-top, .deep-dive-bottom { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem 2.5rem; }
+.deep-dive-bottom { border-top: 1px solid var(--line); padding-top: 1.25rem; margin-top: 1.5rem; }
+.deep-dive-field h3 { margin: 0 0 .4rem; font-size: .72rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+.deep-dive-field p { margin: 0 0 .5rem; max-width: 60ch; }
+.deep-dive-figure { margin: 1.75rem 0 0; padding: 1rem 1.25rem; border: 1px dashed var(--line); }
+.deep-dive-figure figcaption { font-size: .72rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; margin-bottom: .5rem; }
+.deep-dive-principle { font-style: italic; font-size: 1.2rem; margin: 1.5rem 0 0; max-width: 60ch; }
+.deep-dive-footer { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .5rem 1.5rem; border-top: 1px solid var(--line); margin-top: 1.5rem; padding-top: .75rem; font-size: .9rem; }
+.deep-dive-tradeoff { flex: 1 1 22rem; letter-spacing: .02em; }
+.deep-dive-tradeoff span { font-weight: 700; }
+.deep-dive-tradeoff p { display: inline; margin: 0; }
+
+.deep-dive-count { font-variant-numeric: tabular-nums; letter-spacing: .12em; font-weight: 600; }
+.deep-dive-beneath { background: var(--paper); color: var(--ink); box-shadow: 0 0 0 100vmax var(--paper); clip-path: inset(0 -100vmax); padding-block: 2.5rem 3rem; }
+.deep-dive-lede { max-width: 60ch; font-size: 1.1rem; }
+.deep-dive-hub { list-style: none; padding: 0; margin: 2rem 0; display: grid; gap: 1.5rem; counter-reset: case; }
+.deep-dive-hub li { border-top: 1px solid var(--line); padding-top: 1rem; }
+.deep-dive-hub h2 { margin: .25rem 0 .5rem; font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 750; letter-spacing: -.02em; line-height: 1.1; }
+.deep-dive-hub h2 a { text-decoration: none; }
+.deep-dive-hub h2 a:hover, .deep-dive-hub h2 a:focus-visible { text-decoration: underline; }
+.deep-dive-next { margin-top: 1.5rem; }
+@media (max-width: 760px) { .deep-dive-top, .deep-dive-bottom { grid-template-columns: minmax(0, 1fr); } }
+.deep-dive-field--held h3 { color: var(--signal); }
+.deep-dive-bottom { grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+.deep-dive-limits { color: var(--muted); }
+
+/* The accent word that carries a headline's turn (DECK-FOUNDATION §1). Still <em> for assistive tech and print. */
+.pc-accent { font-style: normal; color: var(--signal); }

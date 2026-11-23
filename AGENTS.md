@@ -25,6 +25,10 @@ Distinguish implemented behavior from proposals. This documentation package does
 - Keep source material and portable content independent of presentation. Use immutable IDs, editable slugs with aliases, explicit typed relationships, runtime validation, and versioned content.
 - Keep draft readiness separate from what is actually deployed. Editing live material creates a draft while the selected approved version remains live.
 
+## Design foundation — 22 November 2026
+
+The owner's portfolio deck is the base of the design system: [deck foundation](docs/design-system/DECK-FOUNDATION.md). Start every page, component and visual from it: one accent word per headline marking the turn; the case grammar (the label, what the evidence showed, my role, what changed, trade-off, next question); `FIG · TYPE · caveat` labels; the Beneath/Field/Signal surfaces; and its imagery vocabulary. Evidence rules still govern claims; the deck's 18% → 7.6% arrow and slide dates are not reproduced.
+
 ## Interface and accessibility
 
 - Use the adopted paper/ink/orange scientific/editorial direction for the current edition. Keep semantic violet/unresolved, coral/friction, teal/learning distinct from orange emphasis; recalculate contrast for each surface and pair color with labels or shape. Final asterisk artwork is owner-supplied and pending; a typographic asterisk is a temporary placeholder, not a finalized logo. Candidate fonts require verified files/licenses before use.
@@ -52,7 +56,13 @@ For documentation-only changes, validate paths, internal links, fences, factual 
 
 ## Current owner positioning — 6 November 2026
 
-Pending owner review, 16 November: the [evidence-first review branch](docs/codex/NOV-16-EVIDENCE-FIRST-REVIEW.md) proposes the homepage H1 **“I turn gaps in understanding into evidence leaders can act on.”** and a direct evidence path. If merged, it supersedes the lead sentence below for the homepage; collective agency remains a guiding purpose, not a headline or a demonstrated outcome.
+Owner decision, 23 November: the homepage H1 is **“I diagnose gaps in understanding and design the conditions that empower leaders to make *informed* decisions.”** It adopts the final Trust deck’s cover statement with “leaders” in place of “people”, because anyone can be a leader. *Informed* is the accent word. It supersedes the 16 November H1 below. Also decided on 23 November:
+
+- **Title:** *Applied Research & Systems Strategist*.
+- **Line under it:** “Increasing understanding, effectiveness, and adaptability in complex systems.”
+- **Lead paragraph:** “I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover overlooked problems, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.”
+- **Kept as an alternative lead:** “I help institutions uncover what their systems overlook, redesign the conditions shaping human and organizational performance, and build the capacity to make better decisions in complex and changing environments.”
+ Earlier: pending owner review, 16 November, the [evidence-first review branch](docs/codex/NOV-16-EVIDENCE-FIRST-REVIEW.md) proposes the homepage H1 **“I turn gaps in understanding into evidence leaders can act on.”** and a direct evidence path. If merged, it supersedes the lead sentence below for the homepage; collective agency remains a guiding purpose, not a headline or a demonstrated outcome.
 
 Use **Sami Belina**. The single professional practice is **Test. Show. Enable.** This supersedes earlier public triads and presentation. Lead with **“I investigate situations where outcomes are visible, but the explanations behind them remain unclear.”** Return useful knowledge to affected people, communities and decision-makers. Keep the separate Systems Inquiry reasoning loop; neither it nor the three professional moves is an interaction gate. Latest evidence corrections in EVIDENCE-RULES.md govern older shorthand. Design adoption is not publication approval for case manuscripts, metrics, assets or inferred relationships.
 

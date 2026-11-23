@@ -12,6 +12,62 @@
 
 ---
 
+## Revision 2 — 20 November: lead with what changed
+
+The owner directed that every case answer four questions — what was the problem, how did I know, what did I do, what changed — then add one line on what I’d do differently, with caveats in *How I know* at the end. The typed candidate (`content/candidates/claims-operations.ts`, revision 2) and the case page now follow that order. The *At a glance* block opens with **What changed**.
+
+**New owner-reported outcome.** The guides and training have been in use across four offices for more than two years, and the new hires who arrive every quarter learn from them. This is used in the summary, the brief, *What changed*, a figure (“2+ years in use across four offices”) and a statement. Each is labelled owner-reported, and use is not effectiveness.
+
+**Proposed *What I’d do differently*,** for the owner to replace or approve: *“I would agree a definition of an exception with the team, and record a baseline, before the change. Then the effect of moving the checkpoint could have been measured instead of estimated.”*
+
+**Still open.**
+
+- Confirm whether the four-office scope applies to both the guides and the training.
+- Reconcile the earlier “statewide” description of the guide.
+- The remaining checklist in §C still applies.
+
+Drafts for the other investigations, in the same four-question shape: [FOUR-QUESTION-DRAFTS.md](FOUR-QUESTION-DRAFTS.md).
+
+---
+
+## Service blueprint — 22 November: draft, critique, craft
+
+The case’s main visual is a before/after **service blueprint**, stored as data in the typed candidate (`investigation.blueprint`) and drawn by `src/reading/ServiceBlueprint.tsx`.
+
+- **Lanes:** customer; frontstage letters and requests; claims team; salvage partner. They are separated by the line of interaction and the line of visibility.
+- **Stages:** total loss → paperwork → review → payment and the salvage check → correction or close.
+- **Marks:** failure points and changes are marked in words, not only by colour or symbol.
+- **What moved, stated up front:** before, payment could come first; after, the check comes first and payment waits for it.
+- **Layout:** wide screens get a lane-by-stage table. Phones get the same content stage by stage.
+- **Provenance:** labelled *reconstructed for this portfolio from project notes and my account of the process, in November 2026*.
+
+**Draft → critique → craft.**
+
+1. **The agent's own critique of the first draft:**
+   - At reading width, the decisive *Correction* stage was off-screen with no cue to scroll.
+   - Row labels broke mid-word.
+   - The swap of payment and the check was not called out.
+   - Phones showed two of six stages.
+
+   **Fixes:** a wider table on large screens, a stage-by-stage list on phones, stage tags (*Moved before payment*, *Now waits for the check*, *After the claim looked finished*), and fixed label widths.
+2. **An independent read-only critique** found two high evidence issues and several medium ones. All were applied:
+   - The Before view now says *could* (“payment could be released”, “problems could surface”), matching the candidate’s “could” and its “not every claim” limit.
+   - The two-owner reading of the owner’s phrase is replaced by the neutral *“only one of two requests gets an answer”* until the owner confirms the meaning.
+   - *“A supervisor approves the claim”*, so it is not read as payment or sufficiency authority.
+   - The guide cell no longer asserts that reps check against it.
+   - The After view says the customer *may still be asked to fix paperwork, now before payment*.
+   - A *What moved* line, a standard frontstage lane label, plain table cells for the line rows, a *Who acts* corner header, the key moved above the tables, and a text-style ⚠.
+   - Kept deliberately: the After view first in the page, matching *lead with what changed*.
+
+**Questions for the owner** before this artifact can be approved:
+
+- **“An owner answering only one of two requests”:** does it mean one of two co-owners responding, or one person answering one of two separate requests?
+- **Roles:** the blueprint uses the owner’s 20 November description (a rep reviews, a supervisor approves the claim, the admin team follows up, the salvage partner confirms). The candidate’s earlier text says adjusters release payment. Confirm whether “rep” means adjuster, and who releases payment.
+- **Audiences:** confirm the audience of each resource (guide, training, cover letter) as shown in the After lanes.
+- **The photo:** is it of the completed paperwork?
+
+---
+
 ## A. Short version: the smallest approvable unit
 
 Intended as the first thing published if the full case needs more time. About 150 words.
