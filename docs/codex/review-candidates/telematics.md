@@ -12,6 +12,6 @@
 
 ## Latest owner direction — 30 October (not publication approval)
 
-Owner reports SUS≈70 and program NPS≈−20 among the same six participants. Preserve instrument definitions, sample limits and reported precision; these are neither interchangeable nor a causal equation. Research recovery belongs here; later independent research is not adoption of recommendations. Usability ≠ retention is an inquiry framing, not a demonstrated retention effect.
+Owner reports SUS≈70 and program NPS≈−20 among the same six participants. *(Corrected 23 November: five participants, no separate six-session set. See the evidence rules.)* Preserve instrument definitions, sample limits and reported precision; these are neither interchangeable nor a causal equation. Research recovery belongs here; later independent research is not adoption of recommendations. Usability ≠ retention is an inquiry framing, not a demonstrated retention effect.
 
 Exact manuscript, source/rights review and owner approval remain pending.

@@ -55,3 +55,13 @@ The owner agreed that the incoming design examples must retain these stronger ru
 ## Atlas evidence review — 16 November 2026
 
 The latest owner-supplied review supersedes the earlier shorthand combining telematics accounts: retain the five-participant behavioral-recovery narrative separately from the six-session SUS/NPS summary until study identifiers, instruments and denominators are reconciled. Neither measures retention. Claims guide access, administrative onboarding reach and adapted-training continued use describe different resources; do not combine their populations or assign a four-office/two-year scope to each without source evidence. Workflow adoption, resource sustainment and effectiveness remain distinct. The synthetic Atlas/curiosity approval publishes none of these real-case claims.
+
+## Owner corrections — 23 November 2026
+
+- **Claims:** the four offices are the whole state, so “statewide” and “four offices” describe the same scope. The exception log covered four months.
+- **Telematics:** there were five participants. There is no separate six-session set, and the SUS (about 70) and NPS (about −20) scores come from the same five. This supersedes the 16 November instruction to keep a five-participant account apart from a six-session summary. The findings were recovered from on-screen behavior, because the audio was unreliable and the transcripts only semi-reliable. The method is described in the private deep dive.
+- **Enterprise AI:**
+  - Sami noticed the synthesis was needed after recognizing patterns in nearly forty requests, and led it.
+  - The groupings were tested with the experienced sprint facilitator who brought the idea to the innovation team. They were then walked through with the innovation principal and stakeholders while the sprint teams were defined.
+  - Sami was a lead and coach in the sprint and led two ideas with one combined team. This replaces “led the largest sprint team”.
+  - The innovation team chose to run the sprint every year after the first one.

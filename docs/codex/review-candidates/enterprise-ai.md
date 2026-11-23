@@ -12,6 +12,6 @@
 
 ## Latest owner direction — 30 October (not publication approval)
 
-Owner reports38 proposals synthesized into eight challenge areas, involvement with seven teams and leadership of the largest sprint team. Distinguish these activities and their records; do not claim implementation of all proposals, enterprise strategy ownership or measured impact.
+Owner reports38 proposals synthesized into eight challenge areas, involvement with seven teams and leadership of the largest sprint team. *(Corrected 23 November: lead and coach, leading two ideas with one combined team. See the evidence rules.)* Distinguish these activities and their records; do not claim implementation of all proposals, enterprise strategy ownership or measured impact.
 
 Exact manuscript, source/rights review and owner approval remain pending.
