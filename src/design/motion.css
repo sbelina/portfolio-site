@@ -85,7 +85,7 @@
   .pc-strand { margin: var(--space-6) 0 0; }
   .pc-strand svg { display: block; width: 100%; height: auto; }
   .pc-strand .pc-strand-faint { fill: none; stroke: var(--soft-line); stroke-width: 1.5; }
-  .pc-strand .pc-strand-lens { fill: none; stroke: var(--holds); stroke-width: 2; }
+  .pc-strand .pc-strand-lens { fill: none; stroke: var(--sage); stroke-width: 2; }
   .pc-strand .pc-strand-plane { fill: var(--signal-4); stroke: var(--signal); stroke-width: 1; }
   .pc-strand .pc-strand-thread { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
   .pc-strand .pc-strand-mark { fill: var(--signal); }
@@ -105,7 +105,8 @@
   .pc-layers-stack { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); transform-style: preserve-3d; transition: transform .6s var(--ease-out); }
   .pc-layers-stack li { padding: var(--space-3) var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-paper, var(--paper)); transition: transform .6s var(--ease-out); }
   .pc-layers-stack li[data-layer="observed"] { border-left: 4px solid currentColor; }
-  .pc-layers-stack li[data-layer="interpreted"] { border-left: 4px dashed var(--reading-holds, var(--holds)); }
+  .pc-layers-stack li[data-layer="interpreted"] { border-left: 4px dotted var(--reading-ink, var(--ink)); }
+  .pc-layers-stack li[data-layer="observed"] { border-left-color: var(--reading-sage, var(--sage)); }
   .pc-layers-stack li[data-layer="decided"] { border-left: 4px solid var(--signal); }
   .pc-layers-name { display: block; font: 600 .72rem/1.5 ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   /* Resting: a readable list. Pulled apart: the same rows, tilted and lifted to separate depths. */

@@ -142,6 +142,18 @@ A figure drawn later is also captioned *reconstructed for this portfolio*.
 | Fan-in to a block, fan-out to audiences | knowledge pooled, then transferred |
 | ≠ chip between two terms | the gap: definition, representation or measurement |
 
+**Colours in drawings (23 November):** conceptual images use only the deck palette.
+
+| Colour | Means |
+| --- | --- |
+| Ink, solid | established |
+| Ink, dotted | inferred or an explanation |
+| Orange | the thread, the turn, or a failure point |
+| Sage (`--sage`) | a check or verification: the lens, the geometry, a change that moved verification |
+| Pale line | faint strands and construction |
+
+The violet, coral and teal status colours stay for labelled text states, not for imagery. `tests/interactions.spec.ts` checks this.
+
 Before and after are shown as two parallel lines, Before above After, with the moved element connected by a dotted line. This is the deck’s *Pay → Verify* over *Verify → Pay*.
 
 ## 6. Language

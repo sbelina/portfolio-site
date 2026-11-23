@@ -199,13 +199,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .blueprint tbody th[scope="row"] { font-weight: 650; width: 8.5rem; min-width: 8.5rem; overflow-wrap: normal; word-break: normal; hyphens: manual; background: var(--reading-panel); }
 .blueprint td p { margin: 0 0 .5rem; }
 .blueprint td p:last-child { margin-bottom: 0; }
-.blueprint td p[data-mark="failure"] { border-left: 3px solid var(--reading-pressure); padding-left: .45rem; }
-.blueprint td p[data-mark="change"] { border-left: 3px solid var(--reading-holds); padding-left: .45rem; }
+.blueprint td p[data-mark="failure"] { border-left: 3px solid var(--signal, var(--reading-pressure)); padding-left: .45rem; }
+.blueprint td p[data-mark="change"] { border-left: 3px solid var(--reading-sage, var(--reading-holds)); padding-left: .45rem; }
 .blueprint-line td { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); border-style: dashed none; padding: .2rem .6rem; }
 .blueprint-step { display: inline-block; min-width: 1.4em; font-variant-numeric: tabular-nums; color: var(--reading-muted); }
 .blueprint-symbol { font-weight: 700; }
-.blueprint-symbol[data-mark="failure"], .blueprint td p[data-mark="failure"] .blueprint-symbol { color: var(--reading-pressure); }
-.blueprint-symbol[data-mark="change"], .blueprint td p[data-mark="change"] .blueprint-symbol { color: var(--reading-holds); }
+.blueprint-symbol[data-mark="failure"], .blueprint td p[data-mark="failure"] .blueprint-symbol { color: var(--signal, var(--reading-pressure)); }
+.blueprint-symbol[data-mark="change"], .blueprint td p[data-mark="change"] .blueprint-symbol { color: var(--reading-sage, var(--reading-holds)); }
 .blueprint-key { list-style: none; padding: 0; margin: .5rem 0; display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; font-size: .88rem; }
 .blueprint-provenance { font-size: .88rem; color: var(--reading-muted); max-width: 65ch; }
 .blueprint-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -284,3 +284,12 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-version-switch a { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; }
 .case-visual-count { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; margin: .5rem 0 1rem; }
 .case-visual-count .pc-count { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+
+/* Case-header visual in the deck palette (23 November): paper panel, ink lines, orange for the turn or friction,
+   sage for the check. The legacy dark-violet styling stays for the fixtures edition only. */
+.pc-reading .investigation-visual { background: var(--reading-panel); border-color: var(--reading-line); color: var(--reading-ink); }
+.pc-reading .investigation-visual svg { stroke: var(--reading-ink); }
+.pc-reading .investigation-visual svg circle { fill: var(--reading-panel); }
+.pc-reading .investigation-visual .visual-friction { stroke: var(--signal); }
+.pc-reading .investigation-visual .visual-learning { stroke: var(--reading-sage); }
+.pc-reading .investigation-visual figcaption span { color: var(--reading-muted); }

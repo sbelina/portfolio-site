@@ -38,9 +38,9 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-construction { stroke: var(--line); }
 .pc-construction path { stroke-dasharray: 2 6; }
 .pc-observation-line { stroke: var(--signal); stroke-width: 2; }
-.pc-question-line { stroke: var(--unresolved); stroke-dasharray: 6 5; stroke-width: 2; }
+.pc-question-line { stroke: var(--ink); stroke-dasharray: 2 6; stroke-linecap: round; stroke-width: 2; } /* deck: dotted ink = the explanation, inferred */
 .pc-observation-points { fill: var(--signal); stroke: none; }
-.pc-open-question { stroke: var(--unresolved); stroke-width: 2; fill: var(--paper); }
+.pc-open-question { stroke: var(--signal); stroke-width: 2; fill: var(--paper); } /* deck: the turn, where they part */
 .pc-inquiry-figure figcaption { padding-top: 1.5rem; }
 .pc-inquiry-figure figcaption .pc-kicker { margin-bottom: .6rem; }
 .pc-inquiry-figure figcaption p { font-size: 1.2rem; line-height: 1.5; max-width: 28ch; }
@@ -56,7 +56,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-inquiry-figure[data-enhanced="true"] .pc-part:hover { opacity: 1; }
 .pc-inquiry-figure[data-focus="outcome"] .pc-observation-line,
 .pc-inquiry-figure[data-focus="explanation"] .pc-question-line { stroke-width: 3.5; }
-.pc-gap-ring { fill: none; stroke: var(--unresolved); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.pc-gap-ring { fill: none; stroke: var(--signal); stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; }
 .pc-inquiry-figure[data-focus="gap"] .pc-gap-ring { opacity: 1; animation: pc-gap-pulse 2.4s ease-in-out infinite; }
 @keyframes pc-gap-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
 .pc-inquiry-controls { display: flex; flex-wrap: wrap; gap: 0 1.1rem; border: 0; padding: 0; margin: 1.25rem 0 .25rem; min-width: 0; }
@@ -233,16 +233,16 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-interlude-source summary { cursor: pointer; display: list-item; padding-block: .65rem; }
 .pc-interlude-source p { margin: .25rem 0 0; max-width: 60ch; }
 .pc-interlude-drawing svg { display: block; width: 100%; height: auto; fill: none; stroke: currentColor; stroke-width: 1; }
-.pc-interlude-geometry { stroke: var(--holds); stroke-width: 2; }
-.pc-interlude-poetry { stroke: var(--unresolved); stroke-width: 2; stroke-dasharray: 6 5; }
+.pc-interlude-geometry { stroke: var(--sage); stroke-width: 2; } /* deck: sage = the check */
+.pc-interlude-poetry { stroke: var(--signal); stroke-width: 2; stroke-dasharray: 6 5; } /* deck: orange = the thread */
 .pc-interlude-meet { fill: var(--signal); stroke: none; }
 .pc-interlude-legend { display: flex; flex-wrap: wrap; gap: .25rem 1rem; margin: .75rem 0 0; font-size: .8rem; color: var(--muted); }
-.pc-interlude-legend span::before { content: ""; display: inline-block; width: 1.25rem; height: 0; margin-right: .4rem; vertical-align: middle; border-top: 2px solid var(--holds); }
-.pc-interlude-legend span:nth-child(2)::before { border-top: 2px dashed var(--unresolved); }
+.pc-interlude-legend span::before { content: ""; display: inline-block; width: 1.25rem; height: 0; margin-right: .4rem; vertical-align: middle; border-top: 2px solid var(--sage); }
+.pc-interlude-legend span:nth-child(2)::before { border-top: 2px dashed var(--signal); }
 .pc-interlude-legend span:nth-child(3)::before { width: .6rem; height: .6rem; border: 0; border-radius: 50%; background: var(--signal); }
 @media (max-width: 760px) { .pc-interlude-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; } .pc-interlude-drawing { max-width: 18rem; } }
 .pc-interlude-figure { margin: 0; }
-.pc-interlude-right-angle { stroke: var(--holds); stroke-width: 1.25; }
+.pc-interlude-right-angle { stroke: var(--sage); stroke-width: 1.25; }
 .pc-interlude-labels text { fill: var(--muted); stroke: none; font: 600 12px ui-monospace, Menlo, Consolas, monospace; }
 .pc-interlude-steps { margin-top: 1rem; font-size: .88rem; color: var(--muted); }
 .pc-interlude-steps summary { cursor: pointer; display: list-item; padding-block: .65rem; color: var(--ink); }

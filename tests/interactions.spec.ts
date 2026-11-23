@@ -140,3 +140,22 @@ test('the pattern illustration sits after the cases, with every case distinction
     await expect(pairs.first()).toHaveAccessibleName('Delivered is not Verified')
   } finally { await context.close() }
 })
+
+test('conceptual drawings use the deck palette: ink, orange, sage, not the status colours', async ({ page }) => {
+  const stroke = (selector: string) => page.locator(selector).first().evaluate(element => getComputedStyle(element).stroke)
+  const token = (name: string) => page.locator('.pc-site').first().evaluate((element, token) => {
+    const probe = document.createElement('span'); probe.style.color = `var(${token})`; element.appendChild(probe)
+    const value = getComputedStyle(probe).color; probe.remove(); return value
+  }, name)
+  await page.goto(`${origin}/`)
+  const [ink, signal, sage, unresolved, holds] = await Promise.all(['--ink', '--signal', '--sage', '--unresolved', '--holds'].map(token))
+  expect(await stroke('.pc-pattern .pc-question-line')).toBe(ink)
+  expect(await stroke('.pc-pattern .pc-observation-line')).toBe(signal)
+  expect(await stroke('.pc-pattern .pc-open-question')).toBe(signal)
+  expect(await stroke('.pc-strand-lens')).toBe(sage)
+  await page.goto(claims)
+  for (const selector of ['.investigation-visual svg path', '.investigation-visual .visual-friction']) expect([unresolved, holds]).not.toContain(await stroke(selector))
+  expect(await page.locator('.investigation-visual').evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe('rgb(21, 21, 27)')
+  await page.goto(`${origin}/writing/`)
+  expect(await stroke('.pc-interlude-geometry')).not.toBe(holds)
+})

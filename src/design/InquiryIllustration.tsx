@@ -6,9 +6,9 @@ const explanationPath = 'M40 225C130 225 120 288 210 241S300 75 380 75'
 
 /** Every view describes the drawing's meaning; none adds data, scale or causal claims. */
 export const inquiryViews: readonly { value: Focus; label: string; description: string }[] = [
-  { value: 'all', label: 'Both', description: 'The solid line stands for an outcome; the dashed line stands for a working explanation. They start together, then part ways.' },
+  { value: 'all', label: 'Both', description: 'The solid line stands for an outcome; the dotted line stands for a working explanation. They start together, then part ways.' },
   { value: 'outcome', label: 'Outcome', description: 'The solid line is what was observed. A visible result can be accurate and still leave its cause unexplained.' },
-  { value: 'explanation', label: 'Explanation', description: 'The dashed line is the account given for the outcome. It can sound convincing and still follow a different path.' },
+  { value: 'explanation', label: 'Explanation', description: 'The dotted line is the account given for the outcome. It can sound convincing and still follow a different path.' },
   { value: 'gap', label: 'The gap', description: 'The open circle marks where the explanation stops accounting for what happened. That gap is where an investigation starts.' },
 ]
 
@@ -66,9 +66,9 @@ export function InquiryIllustration({ cases = [] }: { cases?: readonly CasePair[
         <fieldset className="pc-inquiry-controls pc-gap-cases"><legend>Same shape, different case</legend>
           {gapCases.map(item => <label key={item.value}><input type="radio" name="pc-gap-case" value={item.value} checked={caseValue === item.value} onChange={() => setCaseValue(item.value)}/>{item.label}</label>)}
         </fieldset>
-        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dashed). {gapCase.description}{gapCase.href ? <> <a href={gapCase.href}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
+        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dotted). {gapCase.description}{gapCase.href ? <> <a href={gapCase.href}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
       </> : null}
-      <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dashed line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
+      <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dotted line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
     </figcaption>
   </figure>
 }
