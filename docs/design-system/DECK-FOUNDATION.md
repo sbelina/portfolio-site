@@ -61,6 +61,19 @@ Every headline is two short lines. The first states the familiar reading (the la
 4. In a subhead, accent the verbs of action (“so leaders can **decide** … teams can put it into **practice**”).
 5. In markup, the accent is `<em>` (Markdown `*word*`), styled in the accent colour at the headline’s weight. Its meaning never relies on colour alone, because the word is still emphasized for screen readers and in print.
 
+### Verbal stress in running text (owner direction, 23 November)
+
+Text formatting carries the emphasis a speaker would give. Use it sparingly: at most one *turn* per passage.
+
+| Mark | Written | Use | Example |
+| --- | --- | --- | --- |
+| **The turn** | `==Delivered ≠ verified.==` | The distinction a passage hinges on. Orange and bold, the body-text partner of the headline accent | ==Agreement ≠ trust.== |
+| **The finding** | `**still cited in strategy briefs**` | What a reader should keep. Bold | **The grant was awarded.** |
+| **A label or spoken stress** | `*the app needed updating*` | A word people used, or one stressed when said aloud. Italics | “Complete” now means *verified* |
+| **A link** | a real link | Underlined. **Underlines belong to links only**; never underline for emphasis | — |
+
+`src/content/emphasis.tsx` renders these marks safely (no HTML passes through) and strips them from titles, metadata and search. Orange in body text still needs a contrast check on each surface.
+
 ## 2. The case grammar (one case, one spread)
 
 Each case or case part is laid out the same way. This is the site’s *four questions* in the deck’s own vocabulary:

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Stressed } from '../content/emphasis'
 
 /**
  * Interaction components (owner decision, 23 November 2026). Each renders its complete meaning as HTML
@@ -38,7 +39,7 @@ export function LayerStack({ observed, interpreted, decided }: { observed: strin
   return <section className="pc-layers" aria-labelledby="pc-layers-title" data-enhanced={enhanced ? 'true' : undefined} data-open={open ? 'true' : undefined}>
     <h2 id="pc-layers-title">Observed, interpreted, decided</h2>
     <p>Three layers of the same case, kept apart: what was seen, what it was taken to mean, and what was chosen.</p>
-    <div className="pc-layers-stage"><ol className="pc-layers-stack">{layers.map(([key, label, text]) => <li key={key} data-layer={key}><span className="pc-layers-name">{label}</span>{text}</li>)}</ol></div>
+    <div className="pc-layers-stage"><ol className="pc-layers-stack">{layers.map(([key, label, text]) => <li key={key} data-layer={key}><span className="pc-layers-name">{label}</span><Stressed text={text}/></li>)}</ol></div>
     {enhanced ? <button type="button" aria-pressed={open} onClick={() => setOpen(value => !value)}>{open ? 'Stack the layers' : 'Pull the layers apart'}</button> : null}
   </section>
 }
@@ -94,7 +95,7 @@ export function PinnedStory({ children, states, sectionState }: { children: Reac
     <div className="pc-pinned-text" ref={text}>{children}</div>
     <aside className="pc-pin pc-stack" aria-label="The process, before and after" data-state={state} data-enhanced={state ? 'true' : undefined}>
       <span className="pc-pin-kicker">Where the case is</span>
-      {states.map(item => <p key={item.id} className="pc-pin-state" data-state={item.id} aria-current={state === item.id ? 'step' : undefined}><strong>{item.label}</strong>{item.summary}</p>)}
+      {states.map(item => <p key={item.id} className="pc-pin-state" data-state={item.id} aria-current={state === item.id ? 'step' : undefined}><strong>{item.label}</strong><Stressed text={item.summary}/></p>)}
     </aside>
   </div>
 }

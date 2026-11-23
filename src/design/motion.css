@@ -29,18 +29,6 @@
   }
   @keyframes pc-settle { from { transform: translateY(14px) } to { transform: none } }
 
-  /* G · The accent word underlines itself as its heading arrives. Resting state: underlined. */
-  :is(.pc-main, .deep-dive) :is(h1, h2) em {
-    background: linear-gradient(currentColor, currentColor) 0 100% / 100% .08em no-repeat;
-    padding-bottom: .04em;
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      :is(.pc-main, .deep-dive) :is(h1, h2) em { animation: pc-underline linear both; animation-timeline: view(); animation-range: entry 30% cover 40%; }
-    }
-  }
-  @keyframes pc-underline { from { background-size: 0% .08em } to { background-size: 100% .08em } }
-
   /* B · Reading progress from the page's own scroll. Hidden where unsupported. */
   .pc-progress { display: none; }
   @supports (animation-timeline: scroll()) {
@@ -78,6 +66,21 @@
 }
 
 @layer pc-components {
+  /* Verbal stress (src/content/emphasis.tsx): orange + bold for the turn, bold for the finding,
+     italics for a label or spoken stress. Underlines belong to links only. */
+  .pc-turn { color: var(--signal); font-weight: 650; }
+
+  /* The pattern across the work: the drawing beside a text list of every case's distinction. */
+  .pc-pattern-lead { max-width: 44rem; font-size: var(--step-1); }
+  .pc-pattern-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-6); align-items: start; margin-block: var(--space-5); }
+  .pc-pattern-pairs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .pc-pattern-pairs li { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-bottom: 1px solid var(--soft-line); min-width: 0; }
+  .pc-pattern-pairs .pc-kicker { margin: 0; }
+  .pc-pattern-pairs a { font-size: var(--step-1); text-decoration-thickness: 1px; }
+  .pc-pattern-why { color: var(--muted); font-size: var(--step--1); }
+  @media (max-width: 860px) { .pc-pattern-grid { grid-template-columns: minmax(0, 1fr); } }
+  :is(.pc-site, .reading-page) :is(strong, b):not(.pc-turn) { font-weight: 650; }
+
   /* 2 + E · Strand line: faint strands, a lens, and the orange thread that draws itself. */
   .pc-strand { margin: var(--space-6) 0 0; }
   .pc-strand svg { display: block; width: 100%; height: auto; }
@@ -127,8 +130,8 @@
   @media (max-width: 700px) { .pc-plate { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); } .pc-plate-notes li::after { display: none; } }
 
   /* D · Source popovers: native [popover], no library. */
-  .pc-cite { font: inherit; font-size: .8em; vertical-align: super; line-height: 0; color: var(--reading-ink, var(--ink)); background: none; border: 0; padding: 0 .15em; min-width: 24px; min-height: 24px; cursor: pointer; text-decoration: underline dotted; text-underline-offset: .2em; }
-  .pc-cite:hover { color: var(--signal); }
+  .pc-cite { font: inherit; font-size: .8em; vertical-align: super; line-height: 0; color: var(--reading-ink, var(--ink)); background: none; border: 0; padding: 0 .15em; min-width: 24px; min-height: 24px; cursor: pointer; text-decoration: none; font-weight: 650; color: var(--signal); }
+  .pc-cite:hover { color: var(--reading-ink, var(--ink)); }
   [popover].pc-source { margin: auto; max-width: min(92vw, 26rem); padding: var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-panel, var(--panel)); color: var(--reading-ink, var(--ink)); box-shadow: var(--elevation-2); font-size: .95rem; line-height: 1.55; }
   [popover].pc-source p { margin: 0 0 var(--space-2); }
   [popover].pc-source button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }

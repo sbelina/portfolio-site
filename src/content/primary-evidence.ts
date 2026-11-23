@@ -7,7 +7,15 @@ export type HeadlineFigure = { id: string; value: string; unit: string; label: s
 export type InvestigationSummary = {
   id: string; path: string; title: string; summary: string
   slug?: string; stakes?: string; deepDive?: boolean
+  /** The case's own distinction (approved visual): left ≠ right, and why. */
+  visual?: { left: string; right: string; explanation: string }
   brief?: CaseBrief; status?: CaseStatusSummary; headlines?: HeadlineFigure[]
+}
+
+/** Short names for each case in the pattern illustration. */
+export const caseLabels: Readonly<Record<string, string>> = {
+  'claims-operations': 'Claims', 'brand-research': 'Trust research', 'enterprise-ai': 'Enterprise AI',
+  telematics: 'Insurance app research', 'civic-service': 'Vote Huntsville', 'accessibility-ai': 'AI and accessibility',
 }
 
 /** The homepage's three selected investigations (owner priority): Claims, trust research, enterprise AI. */

@@ -5,6 +5,7 @@ import { MoveTheCheckpoint } from './MoveTheCheckpoint'
 import { ServiceBlueprint } from './ServiceBlueprint'
 import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
 import { LayerStack, PinnedStory, SourceCites } from '../design/Interactions'
+import { Stressed } from '../content/emphasis'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -41,7 +42,7 @@ function Sources({ statement, evidence }: { statement: Statement; evidence: Publ
 function EvidenceThread({ statements, evidence, label }: { statements: Statement[]; evidence: PublicEvidence[]; label: string }) {
   return <aside className="evidence-thread" aria-label={`How I know: ${label}`}>
     {statements.map(statement => <details key={statement.id} className="evidence-note" data-kind={statement.kind}>
-      <summary><span className="evidence-kind">{kindLabels[statement.kind]}</span> <span className="evidence-text">{statement.text}</span></summary>
+      <summary><span className="evidence-kind">{kindLabels[statement.kind]}</span> <span className="evidence-text"><Stressed text={statement.text}/></span></summary>
       <p className="evidence-detail"><span>{contributionLabels[statement.contribution]}.</span> {statement.limitation}</p>
       <Sources statement={statement} evidence={evidence}/>
     </details>)}
@@ -73,17 +74,17 @@ export function DecisionLayer({ decision }: { decision: NonNullable<Investigatio
   return <section id="decision" className="investigation-decision" aria-labelledby="investigation-decision-title">
     <h2 id="investigation-decision-title">The decision</h2>
     <dl className="investigation-decision-facts">
-      <div><dt>What was at stake</dt><dd>{decision.stakes}</dd></div>
-      <div><dt>The explanation people held</dt><dd>{decision.prevailing}</dd></div>
+      <div><dt>What was at stake</dt><dd><Stressed text={decision.stakes}/></dd></div>
+      <div><dt>The explanation people held</dt><dd><Stressed text={decision.prevailing}/></dd></div>
     </dl>
     <h3>Options, and what became of each</h3>
-    <ul className="investigation-options">{decision.alternatives.map(item => <li key={item.option} data-status={item.status}><span className="investigation-option-status">{optionLabels[item.status]}</span> <strong>{item.option}.</strong> {item.note}</li>)}</ul>
+    <ul className="investigation-options">{decision.alternatives.map(item => <li key={item.option} data-status={item.status}><span className="investigation-option-status">{optionLabels[item.status]}</span> <strong>{item.option}.</strong> <Stressed text={item.note}/></li>)}</ul>
     <dl className="investigation-decision-facts">
-      <div><dt>Who decided</dt><dd>{decision.ownership}</dd></div>
-      <div><dt>What changed in practice</dt><dd>{decision.implementation}</dd></div>
+      <div><dt>Who decided</dt><dd><Stressed text={decision.ownership}/></dd></div>
+      <div><dt>What changed in practice</dt><dd><Stressed text={decision.implementation}/></dd></div>
     </dl>
     <h3>Resource implications</h3>
-    <ul className="investigation-implications">{decision.implications.map(item => <li key={item.text} data-kind={item.kind}><span className="investigation-implication-kind">{implicationLabels[item.kind]}</span> {item.text}</li>)}</ul>
+    <ul className="investigation-implications">{decision.implications.map(item => <li key={item.text} data-kind={item.kind}><span className="investigation-implication-kind">{implicationLabels[item.kind]}</span> <Stressed text={item.text}/></li>)}</ul>
   </section>
 }
 
@@ -103,7 +104,7 @@ export function narrativeContents(narrative: Investigation) {
 export function CaseGlance({ brief, sources = [] }: { brief: NonNullable<Investigation['brief']>; sources?: PublicEvidence[] }) {
   return <section className="investigation-glance" aria-labelledby="investigation-glance-title">
     <h2 id="investigation-glance-title">At a glance</h2>
-    <dl>{([['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}{term === 'How I knew' && sources.length ? <> <SourceCites sources={sources} idPrefix="glance-source"/></> : null}</dd></div>)}</dl>
+    <dl>{([['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd><Stressed text={detail}/>{term === 'How I knew' && sources.length ? <> <SourceCites sources={sources} idPrefix="glance-source"/></> : null}</dd></div>)}</dl>
   </section>
 }
 
@@ -121,7 +122,7 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
   const passage = (key: Field, label: string) => {
     const threaded = narrative.statements.filter(statement => statement.section === key)
     return <React.Fragment key={key}>
-      <p>{narrative[key]}</p>
+      <p><Stressed text={narrative[key]!}/></p>
       {threaded.length ? <EvidenceThread statements={threaded} evidence={evidence} label={label}/> : null}
       {key === 'relationshipDiscovered' && narrative.interactive === 'move-the-checkpoint' ? <MoveTheCheckpoint/> : null}
       {key === 'relationshipDiscovered' && narrative.interactive === 'ask-it-differently' ? <AskItDifferently/> : null}
@@ -143,11 +144,11 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
     {before && after
       ? <PinnedStory states={[{ id: 'before', label: before.label, summary: before.summary }, { id: 'after', label: after.label, summary: after.summary }]} sectionState={pinnedStates}>{questionSections}</PinnedStory>
       : questionSections}
-    {narrative.differently ? <section id="differently" className="investigation-question investigation-differently"><h2>What I’d do differently</h2><p>{narrative.differently}</p></section> : null}
+    {narrative.differently ? <section id="differently" className="investigation-question investigation-differently"><h2>What I’d do differently</h2><p><Stressed text={narrative.differently}/></p></section> : null}
     {hasCaveats ? <section id="how-i-know" className="investigation-how-i-know" aria-labelledby="how-i-know-title"><h2 id="how-i-know-title">How I know</h2>
       {caveats.map(([key, label]) => narrative[key] ? <section key={key}><h3>{label}</h3>{passage(key, label)}</section> : null)}
       {loose.length ? <section className="evidence-list"><h3>Other statements and their limits</h3><ul>{loose.map(statement=><li key={statement.id}>
-        <strong>{kindLabels[statement.kind]}</strong><p>{statement.text}</p>
+        <strong>{kindLabels[statement.kind]}</strong><p><Stressed text={statement.text}/></p>
         <small>{contributionLabels[statement.contribution]}. {statement.limitation}</small>
         <Sources statement={statement} evidence={evidence}/>
       </li>)}</ul></section> : null}

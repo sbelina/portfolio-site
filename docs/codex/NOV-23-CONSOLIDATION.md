@@ -115,3 +115,9 @@ The owner reviewed a teardown of five reference sites and chose to keep plain CS
 Removed as dead: six unused rule groups in `foundation.css` (the earlier journeys, brief, representative-list, featured-status, evidence-boundary and deep-dive-index styles). `tests/interactions.spec.ts` now fails on any unused class in the current-edition stylesheets.
 
 Not built: the deep-dive figures as SVG plates. Their text is private content in KV, and drawing each figure is a separate piece of work.
+
+## Follow-up, 23 November: the pattern and verbal stress
+
+- **“A way of looking”** moved out of the hero, which is now text only, into a new section after the selected investigations: *Related. Not equivalent. The pattern across the work.* The drawing now takes its pairs from the six approved case visuals and opens on Claims. Beside it, a text list gives every case's distinction as a link, as the text equivalent of the graph.
+- **Verbal stress:** the turn, the finding and the label are marked in case copy (see the deck foundation). The self-underlining accent word was removed, because underlines belong to links. The source markers are no longer underlined either. The intro's step prompt keeps its underline, as part of the owner-specified intro.
+- **Release:** the case text changed, so the release was prepared again.

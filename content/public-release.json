@@ -4,39 +4,39 @@
   "note": "Prepared for owner review. This approval takes effect only when the owner merges the pull request that adds it to main; an agent never merges it on its own. Any change to an approved record stops the build until a new release is prepared and approved.",
   "manifest": {
     "schemaVersion": 1,
-    "releaseId": "ba4185c9-d56d-4655-855d-7fbd81fa054f",
-    "applicationRevision": "6815d12830d9960ddc45851d04ccccd168151514",
-    "contentRevision": "6815d12830d9960ddc45851d04ccccd168151514",
+    "releaseId": "601da6be-544b-445d-9062-1b3bb92edeb9",
+    "applicationRevision": "d7e35f2929a0785e1500fd6985179150044ede39",
+    "contentRevision": "dc9a7e833da7818c0899ef27a8db41b987227a95",
     "entries": [
       {
         "id": "6c2f9e3e-23c0-4362-ada4-7d18a6ed998a",
         "revision": 3,
-        "digest": "143315643e299ab9e31e979eeb0a0dc45ba79968f4be5991677be097c2e11063"
+        "digest": "04a991bc7ad3c1bc56eeb07f0234b12bf0aef8c2eac194b97af0a6cf66d6ab16"
       },
       {
         "id": "4c5ececa-e308-4a31-9566-b3cd2fc7a0b2",
         "revision": 1,
-        "digest": "5390a6ab53f767d5a0932769c5d1f30b972e7936cc4d63b309fdb35040447644"
+        "digest": "808f0f826ca8744691befa491d2852ce26ea488aeae1989b037734532aafaf9d"
       },
       {
         "id": "8a218cf2-1ad6-461a-af6e-3f7ccadd9429",
         "revision": 1,
-        "digest": "5841d4e99d445125a4ceca172a7740d03996cdb7a56d6510bfea4c1b830ee558"
+        "digest": "9225f6064da8a30facb92335167e0510bd97535ee6b7acbd0ad9b1062c01a92e"
       },
       {
         "id": "1bb43e26-f27a-4493-b16f-e68682838023",
         "revision": 1,
-        "digest": "9e2f23b2607256f62632e10a84a3bbc1cc69f1e17ef19d3cf924b01df6477959"
+        "digest": "b98896cc6447da0c215556039ac2c151f1de03e9e1ac12a11119e8ecb0770bac"
       },
       {
         "id": "873dde95-923f-41a0-bd19-55041eb4aae1",
         "revision": 1,
-        "digest": "aeb3dddeeac6753b86cf2fd86ec40b51880fd599815a5f3ee754f55bc17948db"
+        "digest": "1bae2c39ce5dd55486f716952c353df6251170e7599bf614fea0074f16bf3e12"
       },
       {
         "id": "36e61934-b32a-4b04-a9c2-d6f99b73b5a2",
         "revision": 1,
-        "digest": "bb7527ac1cbc0b9e740f6687d48c7e53e6d778bb49f18f2743c86059757eb6fe"
+        "digest": "2fe316b0172df67ffbc034441697113962b0f2b7cab57318f076c3ea32846bbc"
       }
     ],
     "relationships": [],
@@ -76,8 +76,8 @@
     "aliases": []
   },
   "approval": {
-    "candidateDigest": "cdc313644ea6dc1d806f3a79415ad10e083c10874a3fa2191c91fe515212bbce",
+    "candidateDigest": "f4b3052790b97437d66cc99dcde02439b0e468bef8b7f17007ca9e6595e46a64",
     "approvedBy": "Sami Belina, by merging the pull request that adds this release to main",
-    "approvedAt": "2026-11-23T20:32:54.922Z"
+    "approvedAt": "2026-11-23T21:43:17.478Z"
   }
 }

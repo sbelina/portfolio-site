@@ -108,3 +108,35 @@ test('each case title shares one view-transition name between its card and its p
   await page.goto(`${origin}/`)
   expect(name(await page.locator('.pc-selected-list h3').first().getAttribute('style'))).toBe('case-claims-operations')
 })
+
+test('verbal stress: orange turn, bold finding, italic label; never an underline outside links', async ({ page }) => {
+  const { plainText } = await import('../src/content/emphasis')
+  expect(plainText('==Delivered ≠ verified.== The **finding**, a *label*.')).toBe('Delivered ≠ verified. The finding, a label.')
+  await page.goto(claims)
+  const turn = page.locator('.pc-turn').first()
+  await expect(turn).toHaveText('Delivered ≠ verified.')
+  expect(await turn.evaluate(element => getComputedStyle(element).textDecorationLine)).toBe('none')
+  // No stress marks leak into the page, its title or its description.
+  const marks = /==[^=]+==|\*\*[^*]+\*\*/
+  expect(await page.locator('main').innerText()).not.toMatch(marks)
+  expect(await page.title()).not.toMatch(marks)
+  expect(await page.locator('meta[name="description"]').getAttribute('content')).not.toMatch(marks)
+  for (const element of await page.locator('main :is(strong, em, b, i)').all()) {
+    if (await element.evaluate(node => node.closest('a'))) continue
+    expect(await element.evaluate(node => getComputedStyle(node).textDecorationLine)).toBe('none')
+  }
+})
+
+test('the pattern illustration sits after the cases, with every case distinction as text', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  try {
+    const page = await context.newPage()
+    await page.goto(`${origin}/`)
+    await expect(page.locator('.pc-hero .pc-inquiry-figure')).toHaveCount(0)
+    const headings = await page.locator('main h2').allInnerTexts()
+    expect(headings.indexOf('Related. Not equivalent.')).toBeGreaterThan(headings.indexOf('What becomes possible when we investigate the problem first?'))
+    const pairs = page.getByRole('list', { name: "Each investigation's distinction" }).getByRole('link')
+    await expect(pairs).toHaveCount(6)
+    await expect(pairs.first()).toHaveAccessibleName('Delivered is not Verified')
+  } finally { await context.close() }
+})

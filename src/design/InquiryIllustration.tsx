@@ -12,18 +12,9 @@ export const inquiryViews: readonly { value: Focus; label: string; description: 
   { value: 'gap', label: 'The gap', description: 'The open circle marks where the explanation stops accounting for what happened. That gap is where an investigation starts.' },
 ]
 
-/**
- * Same shape, different gap: the drawing re-labelled with pairs from the previous edition's published
- * summaries. Each pair looks alike and isn't. The wording restates those published titles; the
- * drawing still encodes no data. `general` is the illustration's own reading.
- */
-export const gapCases: readonly { value: string; label: string; solid: string; dashed: string; description: string; anchor?: string }[] = [
-  { value: 'general', label: 'In general', solid: 'Outcome', dashed: 'Explanation', description: 'An outcome and its explanation start together, then part ways. The gap is where an investigation starts.' },
-  { value: 'claims', label: 'Claims', solid: 'Delivered', dashed: 'Verified', description: 'In claims operations, paperwork recorded as delivered looked like paperwork that had been verified. “Complete” still generated work.', anchor: 'claims-operations' },
-  { value: 'trust', label: 'Trust research', solid: 'Agreement', dashed: 'Trust', description: 'In perception mapping and trust research, agreeing with a message and trusting its source looked like one measure. They were different questions.', anchor: 'brand-research' },
-  { value: 'civic', label: 'Civic service', solid: 'Service categories', dashed: 'Voting questions', description: 'In a civic service, people’s voting questions did not follow the categories the service was organized by.', anchor: 'civic-service' },
-  { value: 'accessibility', label: 'Accessibility', solid: 'Checks passed', dashed: 'Question settled', description: 'In AI-assisted development, the automated checks passed, and a person still noticed a question they did not settle.', anchor: 'accessibility-ai' },
-]
+/** One published case's distinction, from its approved visual: the thing measured, and the thing it was taken for. */
+export type CasePair = { slug: string; label: string; left: string; right: string; explanation: string; href: string }
+const general = { value: 'general', label: 'In general', solid: 'Outcome', dashed: 'Explanation', description: 'An outcome and its explanation start together, then part ways. The gap is where an investigation starts.' }
 
 /**
  * Expressive geometry has no quantities, axes or inferred empirical edges.
@@ -32,13 +23,18 @@ export const gapCases: readonly { value: string; label: string; solid: string; d
  * which part is emphasized; the drawing itself stays aria-hidden because the radio group
  * and the live description carry the same meaning in text.
  */
-/** publishedPaths maps a case slug to its public page; cases without an approved page get no link. */
-export function InquiryIllustration({ publishedPaths = {} }: { publishedPaths?: Readonly<Record<string, string>> } = {}) {
+/**
+ * The pattern across the work (owner direction, 23 November): the same drawing re-labelled with each
+ * published case's own distinction, so the graph illustrates the investigations rather than standing apart.
+ * Pairs come only from approved case visuals. After hydration it opens on the first case.
+ */
+export function InquiryIllustration({ cases = [] }: { cases?: readonly CasePair[] } = {}) {
   const [enhanced, setEnhanced] = useState(false)
   const [focus, setFocus] = useState<Focus>('all')
   const [caseValue, setCaseValue] = useState('general')
-  const gapCase = gapCases.find(item => item.value === caseValue)!
-  useEffect(() => setEnhanced(true), [])
+  const gapCases = [general, ...cases.map(item => ({ value: item.slug, label: item.label, solid: item.left, dashed: item.right, description: item.explanation, href: item.href }))]
+  const gapCase: { solid: string; dashed: string; description: string; href?: string } = gapCases.find(item => item.value === caseValue) ?? general
+  useEffect(() => { setEnhanced(true); if (cases[0]) setCaseValue(cases[0].slug) }, [cases[0]?.slug])
   const current = inquiryViews.find(view => view.value === focus)!
   const select = (value: Focus) => enhanced ? () => setFocus(previous => previous === value ? 'all' : value) : undefined
   return <figure className="pc-inquiry-figure" data-focus={focus} data-enhanced={enhanced} data-case={caseValue}>
@@ -62,15 +58,15 @@ export function InquiryIllustration({ publishedPaths = {} }: { publishedPaths?: 
         {enhanced && caseValue !== 'general' ? <g className="pc-case-labels"><text x="380" y="252" textAnchor="end">{gapCase.solid}</text><text x="380" y="60" textAnchor="end">{gapCase.dashed}</text></g> : null}
       </svg>
     </div>
-    <figcaption><span className="pc-kicker">A way of looking</span><p>An outcome and its explanation are related. They are not the same thing.</p><small>Conceptual illustration · not measured data</small>
+    <figcaption><span className="pc-kicker">A way of looking</span><p>In each investigation, two related things were taken for one. Choose a case to see which.</p><small>Conceptual illustration · not measured data</small>
       {enhanced ? <>
         <fieldset className="pc-inquiry-controls"><legend>Look at</legend>
           {inquiryViews.map(view => <label key={view.value}><input type="radio" name="pc-inquiry-focus" value={view.value} checked={focus === view.value} onChange={() => setFocus(view.value)}/>{view.label}</label>)}
         </fieldset>
-        <fieldset className="pc-inquiry-controls pc-gap-cases"><legend>Same shape, different gap</legend>
+        <fieldset className="pc-inquiry-controls pc-gap-cases"><legend>Same shape, different case</legend>
           {gapCases.map(item => <label key={item.value}><input type="radio" name="pc-gap-case" value={item.value} checked={caseValue === item.value} onChange={() => setCaseValue(item.value)}/>{item.label}</label>)}
         </fieldset>
-        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dashed). {gapCase.description}{gapCase.anchor && publishedPaths[gapCase.anchor] ? <> <a href={publishedPaths[gapCase.anchor]}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
+        <p className="pc-inquiry-reading" aria-live="polite">{caseValue === 'general' ? current.description : <>{focus === 'all' ? '' : `${current.description} `}<strong>{gapCase.solid}</strong> (solid) and <strong>{gapCase.dashed}</strong> (dashed). {gapCase.description}{gapCase.href ? <> <a href={gapCase.href}>Read the investigation <span aria-hidden="true">→</span></a></> : null}</>}</p>
       </> : null}
       <details className="pc-layer"><summary>Read this illustration</summary><p>The solid line stands for an outcome; the dashed line stands for a working explanation. Their different paths ask whether the explanation accounts for what happened.</p><p>These lines are conceptual. Their shape, points, and spacing encode no measurements or causal evidence.</p><details className="pc-layer"><summary>What would make this evidence?</summary><p>Source observations, a clear method and scope, competing explanations, and limitations. A convincing shape is not proof.</p></details></details>
     </figcaption>
