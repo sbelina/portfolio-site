@@ -126,8 +126,7 @@ The owner supplied a final Trust case: *Designing Better Questions About Trust*,
 
 **Open for the owner:**
 
-- Who ran the 2,000-respondent survey, and when.
-- Does “led to” have a source, such as the survey brief citing the research?
+- **Answered 23 November:** the marketing analytics team ran the follow-up, to define current-state personas, after Sami presented the report to them. Sami confirmed both scores while writing the report. Public copy should say “followed”, not “led to”.
 - Can the product be named?
 
 ---
