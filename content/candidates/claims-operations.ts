@@ -56,9 +56,9 @@ export const claimsCandidate: Entry = {
       evidence: 'My exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. Sources are pending review.',
     },
     notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
-    measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates; each still needs its source, unit and period. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    measurement: 'Nothing here was measured in a controlled way. The guide’s views are counted by the document platform; the years in use are my estimate. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     figures: [
-      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '700+', unit: 'views since it was shared', label: 'Paperwork guide access, estimated from about 30 views a month over 2+ years', basis: 'owner_estimate', qualifier: 'A running total estimated from an average, not a counted figure. Access, not use or effect.', headline: true, evidenceIds: [] },
+      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '835', unit: 'views by 113 people since it was posted', label: 'Paperwork guide views, counted by the document platform; it is still being opened', basis: 'platform_reported', qualifier: 'Lifetime views and distinct viewers as the platform reports them. Views are access, not use or effect.', headline: true, evidenceIds: [] },
       { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', headline: true, evidenceIds: [] },
     ],
     blueprint: {

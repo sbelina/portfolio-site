@@ -11,8 +11,8 @@ const prose = () => [
   claimsCandidate.investigation!.visual.left, claimsCandidate.investigation!.visual.right, claimsCandidate.investigation!.visual.explanation,
   ...claimsCandidate.investigation!.statements.flatMap(statement => [statement.text, statement.limitation]),
   ...Object.values(claimsCandidate.investigation!.brief ?? {}),
-  // Figure values are checked separately below: an owner-approved rounded total (700+) may have three digits.
-  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.unit, figure.label, figure.qualifier]),
+  // Figure values and units are checked separately below: the platform-counted views carry three-digit counts.
+  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.label, figure.qualifier]),
   ...claimsCandidate.blocks.flatMap(block => block.type === 'callout' ? [block.label, block.markdown.replace(claimsCandidateToken, '')] : []),
 ].join('\n')
 
@@ -49,14 +49,11 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).not.toContain('IAA')
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
-  // 700+ is the owner-approved headline for the guide (18 November): a rounded estimate, never a precise count.
-  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '2+ years in use across four offices'])
+  // The guide's views are counted by the platform (owner confirmed, November 2026): exact, labelled as platform-reported.
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['835 views by 113 people since it was posted', '2+ years in use across four offices'])
   for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
-  expect(figures[0].value).toMatch(/^\d+0\+$/) // rounded to tens, with a plus
-  for (const figure of figures) {
-    expect(figure.basis).toBe('owner_estimate')
-    expect(figure.value).toMatch(/^(?:~|\d+\+$)/)
-  }
+  expect(figures.map(figure => figure.basis)).toEqual(['platform_reported', 'owner_estimate'])
+  expect(figures[1].value).toMatch(/^\d+\+$/)
   expect(claimsCandidate.investigation!.notOwned).toContain('I didn’t own the decision')
 })
 
