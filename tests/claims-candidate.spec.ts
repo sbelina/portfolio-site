@@ -170,3 +170,11 @@ test('owner correction, 24 November: collective guide credit and the real onboar
   expect(text).toContain('until a reorganization moved that responsibility to my supervisor')
   expect(text).toContain('Supervisors continue to share the guide across all four offices')
 })
+
+test('owner correction, 24 November: the grant was publicly awarded to United Women of Color; co-signing was an offer', async () => {
+  const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
+  const civic = JSON.stringify(projection.entries.find((entry: { slug: string }) => entry.slug === 'civic-service'))
+  expect(civic).not.toMatch(/co-signed|Grant co-signed and awarded/)
+  expect(civic).toContain('publicly awarded to United Women of Color')
+  expect(civic).toContain('offered the chance to co-sign')
+})

@@ -299,7 +299,7 @@ const civic: Entry = {
     investigation: 'We gathered residents’ questions door to door, on phone calls, on social media, through other organizations, at voter-registration events and in conversations among the volunteers, and compared them with how official information was organized.',
     relationshipDiscovered: '==Voting categories ≠ residents’ questions.== One question could depend on **several offices**.',
     response: 'With the other directors and volunteers, I helped build one shared, plain-language answer source used across channels: social media, the website, email, a phone line, events, and print, including QR yard signs and T-shirts.',
-    consequence: 'Vote Huntsville was asked to co-sign a $20K grant with United Women of Color and the League of Women Voters, and to help define what Vote Gone Viral could be. **The grant was awarded.**',
+    consequence: 'About two months after we formed, Vote Huntsville was offered the chance to co-sign a $20,000 grant and to help define what Vote Gone Viral could be. **The grant was publicly awarded to United Women of Color**, whose program Vote Gone Viral is, and Vote Huntsville took part in the campaign.',
     differently: 'Define reach and track it per channel from the start, so “residents reached” has one clear meaning.',
     notOwned: 'Vote Huntsville was a shared volunteer effort; no one, including the directors, was paid. The grant was a partnership’s work.',
     measurement: 'Reach was not measured with one consistent definition, so no reach figure is given.',
@@ -307,10 +307,10 @@ const civic: Entry = {
     brief: {
       tension: 'Voting information was organized by office, while residents’ questions followed the steps they faced.',
       call: 'With other volunteers, I gathered residents’ questions in person and online and helped build one plain-language answer source for every channel.',
-      result: 'Vote Huntsville was asked to co-sign a $20K grant with two partner organizations, and the grant was awarded.',
+      result: 'Vote Huntsville partnered on Vote Gone Viral, a campaign supported by a $20,000 grant publicly awarded to United Women of Color.',
       evidence: 'Residents’ questions gathered door to door, by phone, online and at events, compared with how official information was organized.',
     },
-    status: { kind: 'recognized', label: 'Grant co-signed and awarded' },
+    status: { kind: 'recognized', label: 'Partner in a funded campaign' },
     deepDive: true,
     decision: {
       stakes: 'Residents who could not find answers in the order they needed them might not complete the steps to vote.',
@@ -319,11 +319,11 @@ const civic: Entry = {
         { option: 'Point residents to each office’s information', status: 'considered', note: 'Complete, but sorted by office rather than by step.' },
         { option: 'One shared answer source for every channel', status: 'chosen', note: 'Plain language, organized around residents’ questions.' },
       ],
-      ownership: 'Decisions were shared among the volunteer directors. The grant was a partnership with United Women of Color and the League of Women Voters.',
+      ownership: 'Decisions were shared among the volunteer directors. The grant was publicly awarded to United Women of Color; by our account the local League of Women Voters was also a partner. How the funding was allocated is not part of this account.',
       implementation: 'The same answers reached residents online, by phone, in person and in print.',
       implications: [
         { kind: 'resource', text: 'One answer source maintained once and reused across channels, by volunteers.' },
-        { kind: 'observed_change', text: 'The project was asked to co-sign a $20K grant, which was awarded.' },
+        { kind: 'observed_change', text: 'Vote Huntsville was offered the chance to co-sign a $20,000 grant, which was publicly awarded to United Women of Color.' },
         { kind: 'unproven', text: 'No reach figure, turnout effect or policy effect is claimed.' },
       ],
     },
@@ -335,7 +335,7 @@ const civic: Entry = {
     },
     statements: [
       { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort.' },
-      { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.civic.id], text: 'The grant Vote Huntsville was asked to co-sign was awarded.', limitation: 'Recognition of a partnership, not of one person.' },
+      { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.civic.id], text: 'The $20,000 grant Vote Huntsville was offered the chance to co-sign was publicly awarded to United Women of Color.', limitation: 'Recognition of a partnership, not of one person. Formal co-signatory status and funding allocation are not documented here.' },
     ],
   },
 }

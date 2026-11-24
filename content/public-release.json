@@ -4,9 +4,9 @@
   "note": "Prepared for owner review. This approval takes effect only when the owner merges the pull request that adds it to main; an agent never merges it on its own. Any change to an approved record stops the build until a new release is prepared and approved.",
   "manifest": {
     "schemaVersion": 1,
-    "releaseId": "8dd17b61-2cb6-4b8c-ad5c-3f9c02545e1f",
-    "applicationRevision": "90491670b1f1d25612ad2e7b2839cb05d8c25d6d",
-    "contentRevision": "03f5b74f7817e5237886658951007f8cdae0f1b4",
+    "releaseId": "cf86fee2-543d-441d-a97f-f6493029cb4c",
+    "applicationRevision": "af44ec12011de3d9cb357655499cd6109dbe4908",
+    "contentRevision": "af44ec12011de3d9cb357655499cd6109dbe4908",
     "entries": [
       {
         "id": "6c2f9e3e-23c0-4362-ada4-7d18a6ed998a",
@@ -31,7 +31,7 @@
       {
         "id": "873dde95-923f-41a0-bd19-55041eb4aae1",
         "revision": 1,
-        "digest": "b68fd8ea6e461e0385ca8c97f3227fea17466e5a0493fafcaf08da9b13f642b5"
+        "digest": "b5f34f61b77e5e29384ce77a36b84fb9c2b8a982aebb22160bbf2ed76c2952e0"
       },
       {
         "id": "36e61934-b32a-4b04-a9c2-d6f99b73b5a2",
@@ -76,8 +76,8 @@
     "aliases": []
   },
   "approval": {
-    "candidateDigest": "006fbdc22f4e7dfe2625a35314c3920122d38099297d97eab998bcf04236d650",
+    "candidateDigest": "65bc2fe016fbb97f1f9e673ae29ca69e268522340b4e53a749ad9566cb695320",
     "approvedBy": "Sami Belina, by merging the pull request that adds this release to main",
-    "approvedAt": "2026-11-24T20:41:18.589Z"
+    "approvedAt": "2026-11-24T21:48:30.434Z"
   }
 }
