@@ -92,13 +92,13 @@ test('a case reads result first: at a glance, the four questions, what I would d
   const narrative = claimsCandidate.investigation!
   const html = renderToStaticMarkup(React.createElement(InvestigationNarrative, { narrative, evidence: [] }))
   const headings = [...html.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map(match => match[1].replace(/<[^>]+>/g, ''))
-  const order = ['At a glance', 'Figures', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know']
+  const order = ['The short read', 'Figures', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know']
   expect(headings.filter(heading => order.includes(heading))).toEqual(order)
-  // The glance opens with the result, not the method or the caveats.
-  expect(html.match(/<dl>.*?<dt>(.*?)<\/dt>/)![1]).toBe('What changed')
+  // The short read opens with the result, not the method or the caveats: 01 What changed.
+  expect(html.match(/class="pc-short-read-list"><li><h3>(.*?)<\/h3>/)![1].replace(/<[^>]+>/g, '').trim()).toBe('01 What changed')
   // Caveats sit inside How I know, after What changed.
   for (const caveat of ['What I didn’t own', 'How this was measured', 'Limitations']) expect(html.indexOf(`<h3>${caveat}</h3>`)).toBeGreaterThan(html.indexOf('>What changed</h2>'))
-  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['At a glance', 'Service blueprint: before and after', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
+  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['The short read', 'Service blueprint: before and after', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
   expect(narrative.differently).toMatch(/^I would /)
 })
 

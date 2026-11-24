@@ -93,7 +93,7 @@ export function DecisionLayer({ decision }: { decision: NonNullable<Investigatio
 /** Contents for the reading's table of contents, in the order the case is told. */
 export function narrativeContents(narrative: Investigation) {
   return [
-    ...(narrative.brief ? [{ id: 'investigation-glance-title', title: 'At a glance' }] : []),
+    ...(narrative.brief ? [{ id: 'investigation-glance-title', title: 'The short read' }] : []),
     ...(narrative.decision ? [{ id: 'decision', title: 'The decision' }] : []),
     ...(narrative.method ? [{ id: 'method', title: 'How the evidence was gathered' }] : []),
     ...(narrative.blueprint ? [{ id: 'blueprint', title: 'Service blueprint: before and after' }] : []),
@@ -103,11 +103,18 @@ export function narrativeContents(narrative: Investigation) {
   ]
 }
 
-/** The case at a glance, result first: what changed, then the problem, what I did and how I knew. */
+/**
+ * The short read (owner direction, 24 November): the first thing on every public case study, after the
+ * owner's reference. Four numbered points, result first: what changed, the problem, what I did, how I knew.
+ */
 export function CaseGlance({ brief, sources = [] }: { brief: NonNullable<Investigation['brief']>; sources?: PublicEvidence[] }) {
-  return <section className="investigation-glance" aria-labelledby="investigation-glance-title">
-    <h2 id="investigation-glance-title">At a glance</h2>
-    <dl>{([['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd><Stressed text={detail}/>{term === 'How I knew' && sources.length ? <> <SourceCites sources={sources} idPrefix="glance-source"/></> : null}</dd></div>)}</dl>
+  const points = [['What changed', brief.result], ['The problem', brief.tension], ['What I did', brief.call], ['How I knew', brief.evidence]] as const
+  return <section className="investigation-glance pc-short-read" aria-labelledby="investigation-glance-title">
+    <h2 id="investigation-glance-title" className="pc-short-read-title"><span className="pc-short-read-rule" aria-hidden="true"/>The short read</h2>
+    <ol className="pc-short-read-list">{points.map(([term, detail], index) => <li key={term}>
+      <h3><span className="pc-short-read-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span> {term}</h3>
+      <p><Stressed text={detail}/>{term === 'How I knew' && sources.length ? <> <SourceCites sources={sources} idPrefix="glance-source"/></> : null}</p>
+    </li>)}</ol>
   </section>
 }
 

@@ -167,11 +167,17 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 @media (prefers-reduced-motion: reduce) { .evidence-note summary, .checkpoint * { transition: none !important; } }
 
 /* Four-question case layout (20 November): result first, caveats in How I know. */
-.investigation-glance { border-block: 1px solid var(--reading-line); padding-block: 1rem 1.25rem; margin-block: 1.5rem 2rem; }
-.investigation-glance dl { display: grid; gap: .75rem; margin: 0; }
-.investigation-glance dt { font-weight: 650; }
-.investigation-glance dd { margin: .15rem 0 0; max-width: 65ch; }
-.investigation-glance div:first-child dd { font-size: 1.1rem; }
+/* The short read (owner reference, 24 November): a short orange rule and a spaced label, then four numbered
+   points: an orange number, a bold title, and the line beneath in a quieter tone, with room between them. */
+.investigation-glance.pc-short-read { margin-block: 2rem 3rem; padding: 0; border: 0; }
+.pc-short-read-title { display: flex; align-items: center; gap: 1.5rem; margin: 0 0 2rem; font-size: .9rem !important; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--reading-muted); }
+.pc-short-read-rule { display: block; width: 4.5rem; height: 3px; background: var(--signal-art, #ff641c); flex-shrink: 0; }
+.pc-short-read-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2.25rem; }
+.pc-short-read-list li { margin: 0; }
+.pc-short-read-list h3 { display: flex; align-items: baseline; gap: .9rem; margin: 0 0 .6rem; font-size: 1.25rem !important; font-weight: 650; letter-spacing: -.01em; color: var(--reading-ink); }
+.pc-short-read-number { color: var(--signal); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pc-short-read-list p { margin: 0; max-width: 62ch; font-size: 1.125rem; line-height: 1.6; color: var(--reading-muted); }
+.pc-short-read-list li:first-child p { color: var(--reading-ink); }
 .investigation-question > h2, .investigation-how-i-know > h2 { margin-top: 2.5rem; }
 .investigation-how-i-know { border-top: 1px solid var(--reading-line); margin-top: 3rem; }
 .investigation-how-i-know h3 { font-size: 1.05rem; margin: 1.5rem 0 .4rem; }
