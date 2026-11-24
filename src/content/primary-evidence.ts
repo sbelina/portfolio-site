@@ -20,11 +20,13 @@ export type InvestigationSummary = {
 export const caseLabels: Readonly<Record<string, string>> = {
   'claims-operations': 'Insurance operations', 'brand-research': 'Customer research', 'enterprise-ai': 'Enterprise innovation',
   telematics: 'Product research', 'civic-service': 'Civic engagement', 'accessibility-ai': 'AI-assisted development',
+  'operational-friction': 'Insurance operations', 'knowledge-binder': 'Insurance operations', 'knowledge-publishing': 'Consumer technology',
 }
 /** The kind of work each case shows, in the terms job descriptions use. */
 export const caseWork: Readonly<Record<string, string>> = {
   'claims-operations': 'Process & service design', 'brand-research': 'Survey & measurement design', 'enterprise-ai': 'Opportunity synthesis & facilitation',
   telematics: 'Usability research & findings recovery', 'civic-service': 'Service & content design', 'accessibility-ai': 'Accessibility evaluation',
+  'operational-friction': 'Operational automation', 'knowledge-binder': 'Knowledge architecture', 'knowledge-publishing': 'Content governance & learning design',
 }
 /** "Setting · kind of work", for card labels. */
 export const caseLabel = (slug?: string) => slug && caseLabels[slug] ? [caseLabels[slug], caseWork[slug]].filter(Boolean).join(' · ') : undefined

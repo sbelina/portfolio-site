@@ -89,6 +89,24 @@ export const investigationSchema = z.strictObject({
     headline: z.boolean().optional(),
     evidenceIds: z.array(z.uuid()).refine(ids => new Set(ids).size === ids.length, 'Duplicate evidence reference'),
   })).max(6).optional(),
+  /**
+   * Working artifacts (owner approval, November 2026): tables and step traces drawn from the evidence
+   * registry. Data only. Each says how it was made (label: FIG · type · caveat) and what it does not
+   * claim (note). Steps name who acted, in words: mine, others', or not yet confirmed.
+   */
+  artifacts: z.array(z.strictObject({
+    id: z.string().regex(/^[a-z][a-z0-9-]*$/),
+    title: z.string().min(1).max(160),
+    label: z.string().min(1).max(200),
+    intro: narrativeText.optional(),
+    table: z.strictObject({
+      columns: z.array(z.string().min(1).max(80)).min(2).max(5),
+      rows: z.array(z.array(z.string().min(1).max(400)).min(2).max(5)).min(1).max(16),
+    }).optional(),
+    steps: z.array(z.strictObject({ title: z.string().min(1).max(120), text: narrativeText.optional(), by: z.enum(['me', 'others', 'shared', 'open']) })).min(2).max(10).optional(),
+    note: narrativeText.optional(),
+  }).refine(artifact => artifact.table || artifact.steps, 'An artifact needs a table or steps')
+    .refine(artifact => !artifact.table || artifact.table.rows.every(row => row.length === artifact.table!.columns.length), 'Every row needs one cell per column')).max(8).optional(),
   /** An optional explorable illustration rendered with the narrative (conceptual, never data). */
   interactive: z.enum(['move-the-checkpoint', 'ask-it-differently', 'proposals-to-problems']).optional(),
   statements: z.array(z.strictObject({

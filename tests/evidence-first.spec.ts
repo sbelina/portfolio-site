@@ -36,7 +36,7 @@ test('production home leads with institutional value and a one-click path to a r
   expect(home).toContain('href="mailto:hello@sbelina.com"')
   expect(home).not.toContain('Download résumé')
   const reading = JSON.parse(home.match(/<script id="home-reading" type="application\/json">(.*?)<\/script>/)![1])
-  expect(reading.entries).toHaveLength(6)
+  expect(reading.entries).toHaveLength(9)
 })
 
 test('the investigations collection pairs each public version with its deep dive', async () => {

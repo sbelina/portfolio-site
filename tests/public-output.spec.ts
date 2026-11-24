@@ -4,7 +4,7 @@ import { auditPublic } from '../scripts/audit-public'
 import {inquiryIllustrationProjection} from '../src/inquiry-space/illustration'
 import { publicStaticRoutes } from '../src/public-routes'
 
-const releaseSlugs = ['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai']
+const releaseSlugs = ['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai', 'operational-friction', 'knowledge-binder', 'knowledge-publishing']
 
 test('default production output contains no local fixtures or private drafts', async () => {
   await auditPublic('dist')

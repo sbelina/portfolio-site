@@ -54,7 +54,7 @@ test('narrative renders literal text safely and production contains no synthetic
   const data=narrative();data.observedCondition='<script>window.bad=true</script>'
   const html=renderToString(React.createElement(InvestigationNarrative,{narrative:data,evidence:[]}))
   expect(html).toContain('&lt;script&gt;');expect(html).not.toContain('<script>')
-  const output=await readFile('dist/public-content.json','utf8');expect(JSON.parse(output).entries.map((entry:{slug:string})=>entry.slug)).toEqual(['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai'])
+  const output=await readFile('dist/public-content.json','utf8');expect(JSON.parse(output).entries.map((entry:{slug:string})=>entry.slug)).toEqual(['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai', 'operational-friction', 'knowledge-binder', 'knowledge-publishing'])
   expect(await readFile('dist/index.html','utf8')).not.toMatch(/\bSam\b|18% → 7.6%|Investigate\. Translate\. Implement\./)
 })
 test('static reading, conceptual comparisons and inquiry disclosures work at narrow width',async({browser,baseURL,browserName})=>{

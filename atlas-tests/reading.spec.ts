@@ -146,8 +146,8 @@ test('strict synthetic contract rejects source, relationship and route mistakes;
 test('public artifact includes only the authorized illustration and keeps manuscript fixtures excluded',async()=>{
   await auditPublic('dist')
   const manifest=JSON.parse(await readFile('dist/route-manifest.json','utf8'));expect(manifest.fixture).toBe(false);expect(manifest.routes).toContain(route)
-  // Only the six case studies approved through the release loader are public content; nothing from the Atlas fixture.
-  const approved=['claims-operations','brand-research','enterprise-ai','telematics','civic-service','accessibility-ai'].map(slug=>`/investigations/${slug}/`)
+  // Only the case studies approved through the release loader are public content; nothing from the Atlas fixture.
+  const approved=['claims-operations','brand-research','enterprise-ai','telematics','civic-service','accessibility-ai','operational-friction','knowledge-binder','knowledge-publishing'].map(slug=>`/investigations/${slug}/`)
   const content=await readFile('dist/public-content.json','utf8')
   expect(JSON.parse(content).entries.map((entry:{path:string})=>entry.path).sort()).toEqual([...approved].sort())
   expect(content).not.toContain(fixtureMarker)

@@ -7,6 +7,7 @@ import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
 import { LayerStack, PinnedStory, SourceCites } from '../design/Interactions'
 import { plainText, Stressed } from '../content/emphasis'
 import { BeforeAfter, MethodProfile, ProcessDial } from '../design/CaseFigures'
+import { CaseArtifacts } from './CaseArtifacts'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -98,6 +99,7 @@ export function narrativeContents(narrative: Investigation) {
     ...(narrative.method ? [{ id: 'method', title: 'How the evidence was gathered' }] : []),
     ...(narrative.blueprint ? [{ id: 'blueprint', title: 'Service blueprint: before and after' }] : []),
     ...questions.filter(question => question.fields.some(key => narrative[key])).map(({ id, title }) => ({ id, title })),
+    ...(narrative.artifacts?.length ? [{ id: 'artifacts', title: 'Working artifacts' }] : []),
     ...(narrative.differently ? [{ id: 'differently', title: 'What I’d do differently' }] : []),
     ...(caveats.some(([key]) => narrative[key]) || narrative.statements.some(statement => !statement.section) ? [{ id: 'how-i-know', title: 'How I know' }] : []),
   ]
@@ -158,6 +160,7 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
     {before && after
       ? <PinnedStory states={[{ id: 'before', label: before.label, summary: before.summary }, { id: 'after', label: after.label, summary: after.summary }]} sectionState={pinnedStates}>{questionSections}</PinnedStory>
       : questionSections}
+    {narrative.artifacts?.length ? <CaseArtifacts artifacts={narrative.artifacts}/> : null}
     {narrative.differently ? <section id="differently" className="investigation-question investigation-differently"><h2>What I’d do differently</h2><p><Stressed text={narrative.differently}/></p></section> : null}
     {hasCaveats ? <section id="how-i-know" className="investigation-how-i-know" aria-labelledby="how-i-know-title"><h2 id="how-i-know-title">How I know</h2>
       {caveats.map(([key, label]) => narrative[key] ? <section key={key}><h3>{label}</h3>{passage(key, label)}</section> : null)}

@@ -18,7 +18,7 @@ test('review candidate keeps legacy identities while removing misleading public 
   await access('dist/investigations/telematics/index.html')
   await expect(access('dist/patterns/related-not-equivalent/index.html')).rejects.toThrow()
   const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
-  expect(projection.entries.map((entry: { slug: string }) => entry.slug)).toEqual(['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai'])
+  expect(projection.entries.map((entry: { slug: string }) => entry.slug)).toEqual(['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai', 'operational-friction', 'knowledge-binder', 'knowledge-publishing'])
   expect(projection.relationships).toEqual([])
   const ledger = JSON.parse(await readFile('docs/codex/generated/migration-ledger.json', 'utf8'))
   expect(ledger.content).toHaveLength(17)
