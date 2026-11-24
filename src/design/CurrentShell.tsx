@@ -5,7 +5,7 @@ import { usePublicHeader } from '../components/usePublicHeader'
 import { publicPath } from '../public-path'
 
 /** Current-edition chrome; historical replay bytes never import this component. */
-export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, inquirySpace = false }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory'; onSkipIntro?: () => void; inquirySpace?: boolean }) {
+export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, onReplayIntro, inquirySpace = false }: { route: string; children: ReactNode; surface?: 'paper' | 'observatory'; onSkipIntro?: () => void; onReplayIntro?: () => void; inquirySpace?: boolean }) {
   const { header, compactHeader, headerMeasured, oversizedHeader } = usePublicHeader()
   const mainId = route === '/' ? 'index' : 'content'
   return <div className="pc-site" data-surface={surface}>
@@ -16,7 +16,7 @@ export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, 
     </header>
     <main id={mainId} className="pc-main" tabIndex={-1}>{children}</main>
     <footer className="pc-footer site-footer build-index-footer">
-      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><a href={publicPath('/about/#counting')}>What this site counts</a><a href={`#${mainId}`}>Back to top ↑</a></div>
+      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><a href={publicPath('/about/#counting')}>What this site counts</a>{onReplayIntro ? <button type="button" className="pc-replay" onClick={onReplayIntro}>Replay introduction</button> : null}<a href={`#${mainId}`}>Back to top ↑</a></div>
       <ExperimentNote inquirySpace={inquirySpace}/>
     </footer>
   </div>

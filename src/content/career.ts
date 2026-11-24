@@ -6,7 +6,7 @@
  * keeps the published case studies from being attributed to a named employer.
  *
  * Owner facts used: degree 2011–2016; early roles at a web-hosting company and others in 2012–2013, during
- * the degree; 2019–2022 consumer technology (owner is writing that context); 2022–2026 enterprise insurance;
+ * the degree; 2019–2022 consumer technology (from the owner's own summary: knowledge structures, publishing, customer-support friction, governance, resource usefulness); 2022–2026 enterprise insurance;
  * the "Next" line. Wording in ownership terms was drafted for owner review and is not yet approved.
  */
 export type Proof = { label: string; href: string }
@@ -52,7 +52,6 @@ export const careerEras: readonly Era[] = [
       { text: 'Traced customer-support friction back to the resources behind it' },
       { text: 'Set governance for what was kept, changed and retired, judged by whether a resource was actually useful' },
     ],
-    pending: true,
   },
   {
     id: 'enterprise-investigation',

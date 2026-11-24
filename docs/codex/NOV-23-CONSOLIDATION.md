@@ -215,3 +215,11 @@ Owner note: fold some homepage sections into accordion-style cards, after resear
   - **Reading the counts:** `scripts/counts-report.ts` prints totals; it needs an Analytics read token.
 - **Introduction:** the same four actions (three steps plus Dive), recast as a short investigation: notice, test, show. It is drawn in the deck palette; see `docs/INTRO-STATES.md`. The legacy fixtures edition is unchanged.
 - **Footer experiment note:** updated for the retired archive, the new introduction and counting.
+
+## Launch, 24 November
+
+- **Owner change before approval:**
+  - *Skip to main content* no longer shows after the introduction. It stays in the page for keyboard and screen-reader users and appears only when focused.
+  - *Replay introduction* moved from the hero to the footer.
+- **2019–2022 era:** the *context being written* marker was removed. Its lines come from the owner's own summary.
+- **Approval:** the owner approved and asked to launch ("the site is ready, launch it").

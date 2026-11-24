@@ -48,7 +48,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
     window.addEventListener('hashchange', followLegacyFragment)
     return () => { window.removeEventListener('hashchange', followLegacyFragment); window.removeEventListener('hashchange', openTarget) }
   }, [])
-  return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined}>
+  return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined} onReplayIntro={introduction.ready ? introduction.replay : undefined}>
     <div className="build-index">
       <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
@@ -58,7 +58,6 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
           <p className="pc-value">{valueLine}</p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
-          {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
         {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
       </section>

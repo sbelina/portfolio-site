@@ -188,3 +188,18 @@ test('the introduction is a short investigation: each step changes the drawing, 
   // Text never fades: the question stays fully opaque through every step.
   expect(await page.locator('.pc-intro .intro-field').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
 })
+
+test('after the introduction, the skip link stays out of sight until focused, and replay waits in the footer', async ({ page }) => {
+  await page.goto(origin + '/')
+  await page.getByRole('button', { name: 'Skip introduction', exact: true }).click()
+  const skip = page.getByRole('link', { name: 'Skip to main content', exact: true })
+  const hidden = (await skip.boundingBox())!
+  expect(hidden.y + hidden.height).toBeLessThanOrEqual(0)
+  await skip.focus()
+  expect((await skip.boundingBox())!.y).toBeGreaterThanOrEqual(0)
+  const replay = page.locator('footer').getByRole('button', { name: 'Replay introduction', exact: true })
+  await expect(replay).toHaveCount(1)
+  await expect(page.locator('.pc-hero').getByRole('button', { name: 'Replay introduction' })).toHaveCount(0)
+  await replay.click()
+  await expect(page.getByRole('region', { name: 'Producing Curiosity introduction' })).toBeVisible()
+})
