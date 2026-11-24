@@ -211,12 +211,6 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-possible-title",
-      "destination": "/#pc-possible-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
       "id": "pc-results-title",
       "destination": "/#pc-results-title",
       "source": "new reading gateway/bootstrap",
@@ -231,12 +225,6 @@
     {
       "id": "pc-pattern-title",
       "destination": "/#pc-pattern-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "pc-folds-title",
-      "destination": "/#pc-folds-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
