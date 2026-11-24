@@ -32,7 +32,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-main h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 1.25rem; }
 .pc-site .pc-kicker { display: block; font: 600 .75rem/1.6 ui-monospace, 'SFMono-Regular', Consolas, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--signal); margin-bottom: 1.4rem; }
 .pc-lead { max-width: 44rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.65; }
-.pc-byline, .pc-meta { color: var(--muted); font-size: .85rem; }
+.pc-meta { color: var(--muted); font-size: .875rem; }
 .pc-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; padding-block: clamp(3rem, 7vw, 6rem); }
 .pc-hero > * { min-width: 0; }
 .pc-hero-copy h1 { font-size: clamp(1.8rem, 3.4vw, 3.5rem); max-width: 22ch; }
@@ -158,7 +158,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-distinction-detail dd { margin: .15rem 0 0; }
 .pc-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (max-width: 360px) { .pc-hero .pc-identity { letter-spacing: .04em; } }
-.pc-byline .pc-areas, .pc-byline .pc-tagline { display: block; }
 
 /* Results strip (homepage) and case status tags, 22 November. */
 .pc-results { margin: 0 0 3rem; border-block: 1px solid var(--line); padding-block: 1.25rem 1.5rem; }
@@ -263,15 +262,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-main :is(h1, h2, h3) .pc-weight { font-weight: 720; color: inherit; }
 
 /* Institutional value homepage (23 November). */
-.pc-value { font-size: 1.05rem; max-width: 52ch; margin: 0 0 1.25rem; }
 .pc-hero-action { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
 .pc-secondary-link { color: var(--muted); }
-.pc-possible { margin-bottom: 3rem; }
-.pc-possible h2 { margin: 0 0 1rem; }
-.pc-possible-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem 2rem; border-block: 1px solid var(--line); padding-block: 1.25rem; }
-.pc-possible-list li { display: grid; gap: .35rem; min-width: 0; }
-.pc-possible-list strong { font-size: 1.15rem; font-weight: 600; }
-.pc-possible-list span { color: var(--muted); }
 .pc-selected-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2rem; }
 .pc-selected-list li { border-top: 1px solid var(--line); padding-top: 1rem; min-width: 0; }
 .pc-selected-list h3 { font-size: 1.25rem; line-height: 1.35; margin: .5rem 0; overflow-wrap: anywhere; }
@@ -298,8 +290,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-writing-subtitle { color: var(--muted); margin: 0 0 .75rem; }
 .pc-writing-list blockquote { margin: 0 0 .75rem; padding-left: 1rem; border-left: 3px solid var(--line); font-style: italic; }
 @media (max-width: 860px) {
-  .pc-possible-list, .pc-selected-list { grid-template-columns: minmax(0, 1fr); }
-  .pc-explore ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pc-explore ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .pc-explore li:nth-child(3) { border-left: 0; }
   .pc-explore li:nth-child(3) a { padding-left: 0; }
   .pc-explore li:nth-child(n+3) { border-top: 1px solid var(--line); }
@@ -318,3 +309,43 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 
 /* The primary call to action keeps paper-on-ink text over the legacy link colour (unlayered on purpose). */
 .pc-main a.pc-cta-primary, a.pc-cta-primary, a.pc-cta-primary:visited, button.pc-cta-primary { color: var(--paper); text-decoration: none; }
+
+/*
+ * Rhythm and type (owner direction, 24 November, after an audit of "AI-generated" tells: identical section
+ * frames, ten text sizes, labels on everything, three equal columns). Spacing now follows meaning: related
+ * sections sit together in bands; only the big shifts get space and a rule. One type scale of five steps:
+ * .875rem small · 1rem body · 1.25rem lead · headings · display. Unlayered to replace the legacy rules.
+ */
+.build-index > .pc-band { margin-block: clamp(3.5rem, 8vw, 7rem); }
+.build-index > .pc-band > :is(.pc-section, .pc-results) { margin: 0; padding-top: 0; border-top: 0; border-block: 0; }
+.build-index > .pc-band > :is(.pc-section, .pc-results, section, a, p) + :is(.pc-section, .pc-results, section) { margin-top: clamp(3rem, 5vw, 4.5rem); }
+.build-index .pc-pattern > .pc-text-link { margin-top: 1.5rem; }
+.build-index > .pc-band--thinking { border-top: 1px solid var(--line); padding-top: clamp(3rem, 6vw, 5rem); }
+.build-index > .pc-hero { padding-block: clamp(2.5rem, 6vw, 5rem) clamp(1rem, 3vw, 2rem); }
+.build-index .pc-results { padding: 0; }
+.build-index .pc-section-heading { margin-bottom: 1.5rem; }
+.pc-main .pc-lead, .pc-main .pc-cta-lead, .pc-main .pc-pattern-lead { font-size: 1.25rem; line-height: 1.55; }
+.pc-main :is(.pc-selected-stakes, .pc-selected-list p) { font-size: 1rem; line-height: 1.6; }
+.pc-main :is(.pc-selected-note, .pc-cta-proof, .pc-result-label, .pc-pattern-why, .pc-field-caption, .pc-legend, .pc-ba-caption, .pc-dial-caption, .pc-method-tags, .case-status) { font-size: .875rem; }
+.pc-main .pc-results a { font-size: .875rem; }
+/* Case studies: one featured, the others beside it, not three equal columns. */
+.build-index .pc-selected-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.5rem 3rem; }
+.build-index .pc-selected-list > li:first-child { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: .5rem 3rem; align-items: start; padding-top: 1.5rem; }
+.build-index .pc-selected-list > li:first-child > .pc-thumb { grid-row: 1 / span 8; align-self: start; }
+.build-index .pc-selected-list > li:first-child h3 { font-size: clamp(1.6rem, 2.6vw, 2.2rem); }
+.build-index .pc-selected-list > li { padding-top: 1.25rem; }
+.build-index .pc-selected-list > li > * + * { margin-top: .75rem; }
+.pc-selected-domain { margin: 0; color: var(--muted); font-size: .875rem; }
+/* The call to action: the argument on one side, what you get on the other. */
+.build-index .pc-cta { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1rem 4rem; align-items: start; }
+.build-index .pc-cta > :not(.pc-cta-offer) { grid-column: 1; }
+.build-index .pc-cta > .pc-cta-offer--list { grid-column: 2; grid-row: 1 / span 4; display: block; margin: 0; }
+.pc-cta-offer--list li { border-top: 1px solid var(--line); padding: 1rem 0; }
+.pc-cta-offer--list li:last-child { border-bottom: 1px solid var(--line); }
+.pc-about-tagline { color: var(--muted); }
+.pc-about-areas { display: block; font-size: .875rem; }
+@media (max-width: 860px) {
+  .build-index .pc-selected-list, .build-index .pc-selected-list > li:first-child, .build-index .pc-cta { grid-template-columns: minmax(0, 1fr); }
+  .build-index .pc-selected-list > li:first-child > .pc-thumb { grid-row: auto; }
+  .build-index .pc-cta > .pc-cta-offer--list { grid-column: 1; grid-row: auto; }
+}

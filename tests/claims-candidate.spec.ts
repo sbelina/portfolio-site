@@ -11,8 +11,8 @@ const prose = () => [
   claimsCandidate.investigation!.visual.left, claimsCandidate.investigation!.visual.right, claimsCandidate.investigation!.visual.explanation,
   ...claimsCandidate.investigation!.statements.flatMap(statement => [statement.text, statement.limitation]),
   ...Object.values(claimsCandidate.investigation!.brief ?? {}),
-  // Figure values are checked separately below: an owner-approved rounded total (700+) may have three digits.
-  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.unit, figure.label, figure.qualifier]),
+  // Figure values and units are checked separately below: the platform-counted views carry three-digit counts.
+  ...(claimsCandidate.investigation!.figures ?? []).flatMap(figure => [figure.label, figure.qualifier]),
   ...claimsCandidate.blocks.flatMap(block => block.type === 'callout' ? [block.label, block.markdown.replace(claimsCandidateToken, '')] : []),
 ].join('\n')
 
@@ -49,14 +49,11 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).not.toContain('IAA')
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
-  // 700+ is the owner-approved headline for the guide (18 November): a rounded estimate, never a precise count.
-  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '~6 new hires a quarter', '2+ years in use across four offices'])
+  // The guide's views are counted by the platform (owner confirmed, November 2026): exact, labelled as platform-reported.
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['835 views by 113 people since it was posted', '2+ years in use across four offices'])
   for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
-  expect(figures[0].value).toMatch(/^\d+0\+$/) // rounded to tens, with a plus
-  for (const figure of figures) {
-    expect(figure.basis).toBe('owner_estimate')
-    expect(figure.value).toMatch(/^(?:~|\d+\+$)/)
-  }
+  expect(figures.map(figure => figure.basis)).toEqual(['platform_reported', 'owner_estimate'])
+  expect(figures[1].value).toMatch(/^\d+\+$/)
   expect(claimsCandidate.investigation!.notOwned).toContain('I didn’t own the decision')
 })
 
@@ -92,13 +89,13 @@ test('a case reads result first: at a glance, the four questions, what I would d
   const narrative = claimsCandidate.investigation!
   const html = renderToStaticMarkup(React.createElement(InvestigationNarrative, { narrative, evidence: [] }))
   const headings = [...html.matchAll(/<h2[^>]*>(.*?)<\/h2>/g)].map(match => match[1].replace(/<[^>]+>/g, ''))
-  const order = ['At a glance', 'Figures', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know']
+  const order = ['The short read', 'Figures', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know']
   expect(headings.filter(heading => order.includes(heading))).toEqual(order)
-  // The glance opens with the result, not the method or the caveats.
-  expect(html.match(/<dl>.*?<dt>(.*?)<\/dt>/)![1]).toBe('What changed')
+  // The short read opens with the result, not the method or the caveats: 01 What changed.
+  expect(html.match(/class="pc-short-read-list"><li><h3>(.*?)<\/h3>/)![1].replace(/<[^>]+>/g, '').trim()).toBe('01 What changed')
   // Caveats sit inside How I know, after What changed.
   for (const caveat of ['What I didn’t own', 'How this was measured', 'Limitations']) expect(html.indexOf(`<h3>${caveat}</h3>`)).toBeGreaterThan(html.indexOf('>What changed</h2>'))
-  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['At a glance', 'Service blueprint: before and after', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
+  expect(narrativeContents(narrative).map(item => item.title)).toEqual(['The short read', 'Service blueprint: before and after', 'What was the problem', 'How I knew', 'What I did', 'What changed', 'What I’d do differently', 'How I know'])
   expect(narrative.differently).toMatch(/^I would /)
 })
 
@@ -158,4 +155,23 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   const strip = home.slice(home.indexOf('class="pc-results"'), home.indexOf('</section>', home.indexOf('class="pc-results"')))
   const approved = JSON.parse(await readFile('dist/public-content.json', 'utf8')).entries.flatMap((entry: { investigation: { figures?: { value: string; headline?: boolean }[] } }) => (entry.investigation.figures ?? []).filter(figure => figure.headline).map(figure => figure.value))
   for (const value of [...strip.matchAll(/<strong>([^<]+)<\/strong>/g)].map(match => match[1].replaceAll('&gt;', '>'))) expect(approved).toContain(value)
+})
+
+test('owner correction, 24 November: collective guide credit and the real onboarding chronology', async () => {
+  const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
+  const claims = projection.entries.find((entry: { slug: string }) => entry.slug === 'claims-operations')
+  const text = JSON.stringify(claims)
+  // No sole authorship of the guide, no ongoing quarterly onboarding, no "~6 new hires a quarter".
+  expect(text).not.toMatch(/guides and training I built|new hires (who arrive )?every quarter|each quarter’s new hires|new hires a quarter/)
+  expect(text).toContain('collective effort with fellow claims processors')
+  expect(text).toContain('until a reorganization moved that responsibility to my supervisor')
+  expect(text).toContain('Supervisors continue to share the guide across all four offices')
+})
+
+test('owner correction, 24 November: the grant was publicly awarded to United Women of Color; co-signing was an offer', async () => {
+  const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
+  const civic = JSON.stringify(projection.entries.find((entry: { slug: string }) => entry.slug === 'civic-service'))
+  expect(civic).not.toMatch(/co-signed|Grant co-signed and awarded/)
+  expect(civic).toContain('publicly awarded to United Women of Color')
+  expect(civic).toContain('offered the chance to co-sign')
 })

@@ -7,7 +7,7 @@ import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 import { caseLabel, caseLabels, primaryEvidenceHref, selectedInvestigations, type InvestigationSummary } from './content/primary-evidence'
 import { legacyFragments } from './content/legacy-fragments'
-import { ctaOffer, homeHeadline, possibilities, practiceAreas, professionalIdentity, recruiterContact, tagline, valueLine } from './content/recruiter'
+import { ctaOffer, homeHeadline, professionalIdentity, recruiterContact } from './content/recruiter'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
 import { LensInterlude } from './design/LensInterlude'
@@ -55,22 +55,18 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
           <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
-          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
-          <p className="pc-value">{valueLine}</p>
-          <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
+          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
         </div>
         {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
       </section>
-      <section className="pc-section pc-possible" aria-labelledby="pc-possible-title">
-        <h2 id="pc-possible-title" className="pc-kicker">Three things my work makes possible</h2>
-        <ul className="pc-possible-list">{possibilities.map(item => <li key={item.title}><strong>{item.title}</strong><span>{item.question}</span></li>)}</ul>
-      </section>
+      {/* Spacing follows meaning (owner, 24 November): the figures and the case studies are one band. */}
+      <div className="pc-band pc-band--evidence">
       <ResultsStrip investigations={investigations}/>
       {selected.length ? <section className="pc-section pc-selected" aria-labelledby="pc-selected-title">
-        <div className="pc-section-heading"><p className="pc-kicker">Selected case studies</p><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
+        <div className="pc-section-heading"><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
         <ol className="pc-selected-list">{selected.map(entry => <li key={entry.id}>
           {entry.visual && entry.composition ? <CaseThumb composition={entry.composition} left={plainText(entry.visual.left)} right={plainText(entry.visual.right)}/> : null}
-          {caseLabel(entry.slug) ? <p className="pc-kicker pc-selected-domain">{caseLabel(entry.slug)}</p> : null}
+          {caseLabel(entry.slug) ? <p className="pc-selected-domain">{caseLabel(entry.slug)}</p> : null}
           {entry.status ? <p className="pc-selected-status"><CaseStatus status={entry.status}/></p> : null}
           <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>
           {entry.stakes ? <p className="pc-selected-stakes"><span className="pc-selected-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}
@@ -80,20 +76,21 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <a className="pc-text-link" href={publicPath('/investigations/')}>All {investigations.length} case studies <span aria-hidden="true">→</span></a>
         <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')} data-count="cta-band">Let’s talk about it <span aria-hidden="true">→</span></a></p>
       </section> : <section className="pc-section" aria-labelledby="pc-selected-title"><p className="pc-kicker">Case studies</p><h2 id="pc-selected-title">Case studies are in review</h2><p>No case study is published in this edition yet.</p></section>}
+      </div>
+      <div className="pc-band pc-band--thinking">
       {pairs.length ? <section className="pc-section pc-pattern" aria-labelledby="pc-pattern-title">
-        <div className="pc-section-heading"><p className="pc-kicker">The pattern across the work</p><h2 id="pc-pattern-title">Related. <em className="pc-accent">Not</em> equivalent.</h2></div>
+        <div className="pc-section-heading"><h2 id="pc-pattern-title">Related. <em className="pc-accent">Not</em> equivalent.</h2></div>
         <p className="pc-pattern-lead">Every case study here began where two related things had been <em>taken for one</em>. The work was finding <strong>where they part</strong>, and what that changes.</p>
         <RelatedField pairs={pairs}/>
         <a className="pc-text-link" href={publicPath('/patterns/')}>Explore the distinctions <span aria-hidden="true">→</span></a>
       </section> : null}
       {/* Optional depth folds into cards (owner direction, 24 November). What every reader needs stays open:
           the call to action, figures, case studies and the pattern. Native <details>, each opening independently. */}
-      <section className="pc-section pc-folds" aria-labelledby="pc-folds-title">
-        <p className="pc-kicker" id="pc-folds-title">Go deeper</p>
+      <section className="pc-section pc-folds" aria-label="Go deeper">
         <details className="pc-fold" id="practice-fold" data-count="practice-open">
           <summary>
             <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M2 12C18 12 22 20 32 20M2 28C18 28 22 20 32 20" className="pc-legend-ink" strokeDasharray="2 4"/><ellipse cx="32" cy="20" rx="4" ry="14" className="pc-legend-check"/><path d="M32 20H62" className="pc-legend-thread"/></svg>
-            <span className="pc-fold-text"><span className="pc-fold-kicker">How I investigate</span><h2 id="pc-practice-title">Test. Show. Enable.</h2><span className="pc-fold-teaser">Three moves, shown on one case study: find the gap, make the evidence visible, and leave people able to act.</span></span>
+            <span className="pc-fold-text"><h2 id="pc-practice-title">Test. Show. Enable.</h2><span className="pc-fold-teaser">Three moves, shown on one case study: find the gap, make the evidence visible, and leave people able to act.</span></span>
             <span className="pc-fold-icon" aria-hidden="true"/>
           </summary>
           <div className="pc-fold-body">
@@ -106,7 +103,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <details className="pc-fold" id="explore-fold" data-count="explore-open">
           <summary>
             <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M8 30L24 12L40 26L56 8" className="pc-legend-ink" strokeDasharray="2 4"/>{[[8, 30], [24, 12], [40, 26]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" className="pc-legend-ink"/>)}<circle cx="56" cy="8" r="3.5" className="pc-legend-turn"/></svg>
-            <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the experiments and a prototype game.</span></span>
+            <span className="pc-fold-text"><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the experiments and a prototype game.</span></span>
             <span className="pc-fold-icon" aria-hidden="true"/>
           </summary>
           <nav className="pc-fold-body pc-explore" aria-labelledby="pc-explore-title">
@@ -114,12 +111,12 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           </nav>
         </details>
       </section>
+      </div>
       <LensInterlude compact/>
       <section id="contact" className="pc-section pc-cta" aria-labelledby="contact-title">
-        <p className="pc-kicker">Work with me</p>
         <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
         <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
-        <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
+        <ul className="pc-cta-offer pc-cta-offer--list">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
         <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-end">Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
         <p className="pc-cta-proof">Worked in insurance operations, customer research, enterprise innovation, product research, civic engagement and AI-assisted development.</p>
       </section>

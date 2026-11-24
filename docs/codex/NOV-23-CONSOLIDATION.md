@@ -223,3 +223,21 @@ Owner note: fold some homepage sections into accordion-style cards, after resear
   - *Replay introduction* moved from the hero to the footer.
 - **2019–2022 era:** the *context being written* marker was removed. Its lines come from the owner's own summary.
 - **Approval:** the owner approved and asked to launch ("the site is ready, launch it").
+
+## Follow-up, 24 November: removing the "generated" look (spacing, type, labels, threes)
+
+**Feedback:** a reader said the site looks AI-generated and called out the spacing. The audit, measured on the live homepage, found:
+- seven sections in an identical frame (1px rule, 48px margin, 40px padding);
+- ten body text sizes, from two type systems;
+- 22 small orange all-caps labels;
+- groups of three repeated five times;
+- six stacked items in the hero.
+
+**Changes:**
+- **Rhythm:** related sections share a band (the figures with the case studies; the pattern with the practice and explore cards), and only the big shifts get space and a rule.
+- **Type:** one scale of five steps: .875rem small, 1rem body, 1.25rem lead, headings, display. `--step--1` and `--step-1` are now fixed values.
+- **Labels:** four remain visible on the homepage (identity, *What changed*, the field's prompt, the interlude). Case settings are plain muted text, not labels.
+- **Hero:** label, headline, the lead, *Start a conversation* and the case study link, beside the constellation. The value line, practice areas and tagline left the hero. The tagline and areas moved to About; the value line duplicated the lead and the call to action, so it was dropped.
+- **Threes:** *Three things my work makes possible* was removed, because the lead and the call to action carry it. The first case study is featured across the full width, with two beside each other below it. The call to action sets the argument against a list of what you get, not three cards.
+- **Waiting on the owner:** headline rewrites (the repeated contrast device, *X. Not Y.*) and a licensed typeface.
+- **Verified:** full suite 854 passed (the only failures were three now-unused rules, since removed; that spec now passes 36 of 36), 14 skipped.

@@ -170,7 +170,6 @@
   .pc-fold > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   .pc-fold-glyph { width: 4rem; height: auto; fill: none; }
   .pc-fold-text { display: grid; gap: var(--space-1); }
-  .pc-fold-kicker { font: 600 .75rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); }
   .pc-fold-text h2 { margin: 0; font-size: var(--step-2); line-height: 1.15; }
   .pc-fold-teaser { color: var(--muted); max-width: 60ch; }
   .pc-fold-icon { position: relative; width: 1.5rem; height: 1.5rem; }

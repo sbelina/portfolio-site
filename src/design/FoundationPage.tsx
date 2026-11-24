@@ -5,7 +5,7 @@ import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
 import { AnnotatedPlate, StrandLine } from './Interactions'
 import { archiveItems, writings } from '../content/writing'
-import { ctaOffer, recruiterContact } from '../content/recruiter'
+import { ctaOffer, practiceAreas, recruiterContact, tagline } from '../content/recruiter'
 import { ExternalArrow } from './ExternalArrow'
 import { ConnectionsField } from './ConnectionsField'
 import { CareerThread } from './CareerThread'
@@ -165,6 +165,7 @@ function About() {
       {portrait ? <figure className="pc-portrait"><img src={publicPath(portrait.src)} alt={portrait.alt} width={portrait.width} height={portrait.height}/></figure> : null}
       <div>
         <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
+        <p className="pc-about-tagline">{tagline} <span className="pc-about-areas">{practiceAreas.join(' · ')}</span></p>
         <p><a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/investigations/')}>The case studies <span aria-hidden="true">→</span></a></p>
       </div>
     </div>

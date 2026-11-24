@@ -198,3 +198,22 @@ Before and after are shown as two parallel lines, Before above After, with the m
 - **Deep dives:** built in the deck grammar (§2), with accent headlines (§1), figure labels (§4) and question links (§6). See [deep dives](../codex/DEEP-DIVE.md).
 - **Interlude:** already a *Beneath* surface. Its drawing is a conceptual illustration.
 - **Next:** accent headlines and the case grammar on public case pages; the *Signal* panel for the practice; the imagery kit as reusable SVG components; and the fonts, once their licences are verified.
+
+## Type: the owner's rules, and fonts pending (24 November 2026)
+
+The owner is choosing the fonts, from their own inspiration. Until then the site uses the system stack. These rules govern the choice; they came from the owner's reference:
+
+1. **Two fonts at most:** one for headings, one for body.
+2. **Match the font to the portfolio:** investigative, editorial, precise.
+3. **Free fonts are fine.** Google Fonts and other openly licensed families (OFL) are acceptable. Self-host the files; don't load from a third-party CDN. Record each licence in `public/licenses/`.
+4. **Consistency matters more than the specific font.** One type scale (see the rhythm and type rules in `NOV-23-CONSOLIDATION.md`: .875 / 1 / 1.25rem, headings, display).
+
+**Pairing strategy** (owner's second reference): contrast with cohesion. The pair should look different enough to create hierarchy and share enough to belong together. The options are one family in two weights, two sans-serifs with different character, or deliberate contrast (a serif for headings with a sans for body). The current mono labels and figure captions are a third voice; when fonts are chosen, decide whether they stay as the system monospace or become part of the body family.
+
+## The short read (24 November 2026)
+
+Every public case study opens with **The short read**, after the owner's reference:
+- a short orange rule and a spaced capital label;
+- four numbered points (01–04), each an orange number with a bold title and a quieter line beneath: *What changed, The problem, What I did, How I knew* (with sources).
+
+It replaces the earlier *At a glance* block, keeping the same approved text and the result-first order.

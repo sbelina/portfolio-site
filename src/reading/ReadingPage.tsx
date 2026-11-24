@@ -23,8 +23,9 @@ const relationWords = {
   contradicts: 'contradicts', depends_on: 'depends on', emerged_from: 'emerged from', shares_pattern: 'shares a pattern with', paired_with: 'is paired with',
 } as const
 
+/** Month and year only (owner direction, 24 November): no day dates in public. */
 function dateLabel(value: string | null) {
-  return value ? new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(value)) : 'Not recorded'
+  return value ? new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value)) : 'Not recorded'
 }
 
 function blockLabel(block: Block, index: number, projection: ReadingContext) {
