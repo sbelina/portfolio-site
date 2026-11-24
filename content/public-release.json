@@ -4,14 +4,14 @@
   "note": "Prepared for owner review. This approval takes effect only when the owner merges the pull request that adds it to main; an agent never merges it on its own. Any change to an approved record stops the build until a new release is prepared and approved.",
   "manifest": {
     "schemaVersion": 1,
-    "releaseId": "080129e9-58cf-4562-bcaa-4e7f9a797636",
-    "applicationRevision": "093f9e8bef12318e83938ee7fc1054a40654faad",
-    "contentRevision": "9b61d2c0dfd286955b1b202501f1ab848c7d7d60",
+    "releaseId": "8dd17b61-2cb6-4b8c-ad5c-3f9c02545e1f",
+    "applicationRevision": "90491670b1f1d25612ad2e7b2839cb05d8c25d6d",
+    "contentRevision": "03f5b74f7817e5237886658951007f8cdae0f1b4",
     "entries": [
       {
         "id": "6c2f9e3e-23c0-4362-ada4-7d18a6ed998a",
         "revision": 3,
-        "digest": "7e65f09cd2c4dfe93dbec63882b607680eb747688334ba3c18edfef7fd9d4e7d"
+        "digest": "e340fc3484182e5ff8d43833b4b1b4a7f7a3c62d731a581b3374e4a762386737"
       },
       {
         "id": "4c5ececa-e308-4a31-9566-b3cd2fc7a0b2",
@@ -76,8 +76,8 @@
     "aliases": []
   },
   "approval": {
-    "candidateDigest": "9d87da8fc40febe44ef27b1ead824dee63b8fb4a32e4faa5873130fdc521777a",
+    "candidateDigest": "006fbdc22f4e7dfe2625a35314c3920122d38099297d97eab998bcf04236d650",
     "approvedBy": "Sami Belina, by merging the pull request that adds this release to main",
-    "approvedAt": "2026-11-24T02:21:48.413Z"
+    "approvedAt": "2026-11-24T20:41:18.589Z"
   }
 }

@@ -50,7 +50,7 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
   // 700+ is the owner-approved headline for the guide (18 November): a rounded estimate, never a precise count.
-  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '~6 new hires a quarter', '2+ years in use across four offices'])
+  expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['700+ views since it was shared', '2+ years in use across four offices'])
   for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
   expect(figures[0].value).toMatch(/^\d+0\+$/) // rounded to tens, with a plus
   for (const figure of figures) {
@@ -158,4 +158,15 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   const strip = home.slice(home.indexOf('class="pc-results"'), home.indexOf('</section>', home.indexOf('class="pc-results"')))
   const approved = JSON.parse(await readFile('dist/public-content.json', 'utf8')).entries.flatMap((entry: { investigation: { figures?: { value: string; headline?: boolean }[] } }) => (entry.investigation.figures ?? []).filter(figure => figure.headline).map(figure => figure.value))
   for (const value of [...strip.matchAll(/<strong>([^<]+)<\/strong>/g)].map(match => match[1].replaceAll('&gt;', '>'))) expect(approved).toContain(value)
+})
+
+test('owner correction, 24 November: collective guide credit and the real onboarding chronology', async () => {
+  const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
+  const claims = projection.entries.find((entry: { slug: string }) => entry.slug === 'claims-operations')
+  const text = JSON.stringify(claims)
+  // No sole authorship of the guide, no ongoing quarterly onboarding, no "~6 new hires a quarter".
+  expect(text).not.toMatch(/guides and training I built|new hires (who arrive )?every quarter|each quarter’s new hires|new hires a quarter/)
+  expect(text).toContain('collective effort with fellow claims processors')
+  expect(text).toContain('until a reorganization moved that responsibility to my supervisor')
+  expect(text).toContain('Supervisors continue to share the guide across all four offices')
 })
