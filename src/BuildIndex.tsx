@@ -1,23 +1,18 @@
 import React, { useEffect } from 'react'
 import { CurrentShell } from './design/CurrentShell'
-import { PracticeMoves } from './design/PracticeMoves'
-import { InquiryIllustration } from './design/InquiryIllustration'
+import { PracticeInMotion } from './design/PracticeInMotion'
+import { RelatedField } from './design/RelatedField'
 import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 import { caseLabel, caseLabels, primaryEvidenceHref, selectedInvestigations, type InvestigationSummary } from './content/primary-evidence'
 import { legacyFragments } from './content/legacy-fragments'
-import { homeHeadline, possibilities, practiceAreas, professionalIdentity, recruiterContact, tagline, valueLine } from './content/recruiter'
-import { RecruiterActions } from './design/RecruiterActions'
+import { ctaOffer, homeHeadline, possibilities, practiceAreas, professionalIdentity, recruiterContact, tagline, valueLine } from './content/recruiter'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
 import { LensInterlude } from './design/LensInterlude'
-import { StrandLine } from './design/Interactions'
 import { plainText, Stressed } from './content/emphasis'
 import { CaseThumb } from './design/CaseFigures'
-
-/** Old homepage anchors kept as targets, so a no-JavaScript visitor following an old link can still find its new home. */
-const movedSections = Object.entries(legacyFragments)
 
 const explore = [
   { href: '/patterns/', kicker: 'Connections', title: 'Related. Not equivalent.', text: 'Distinctions that change how a problem is understood.' },
@@ -35,12 +30,15 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
   const introduction = useHomeIntroduction()
   const evidenceHref = primaryEvidenceHref(investigations)
   const selected = selectedInvestigations(investigations)
-  const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? plainText(entry.title), left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), href: publicPath(entry.path) }))
+  const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? plainText(entry.title), left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), ...(entry.brief ? { changed: plainText(entry.brief.result) } : {}), href: publicPath(entry.path) }))
+  // Test. Show. Enable. walked through the first selected case, in its own approved words.
+  const lead = selected.find(entry => entry.brief && entry.visual && entry.slug)
+  const example = lead ? { label: caseLabels[lead.slug!] ?? plainText(lead.title), href: publicPath(lead.path), left: plainText(lead.visual!.left), right: plainText(lead.visual!.right), test: lead.brief!.tension, show: lead.visual!.explanation, enable: lead.brief!.result } : undefined
   useEffect(() => {
     const followLegacyFragment = () => {
       let fragment: string
       try { fragment = decodeURIComponent(location.hash.slice(1)) } catch { return }
-      if (Object.hasOwn(legacyFragments, fragment) && legacyFragments[fragment] !== '/#contact') location.replace(publicPath(legacyFragments[fragment]))
+      if (Object.hasOwn(legacyFragments, fragment)) location.replace(publicPath(legacyFragments[fragment]))
     }
     followLegacyFragment()
     window.addEventListener('hashchange', followLegacyFragment)
@@ -76,24 +74,17 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-selected-links"><a href={publicPath(entry.path)}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
         </li>)}</ol>
         <a className="pc-text-link" href={publicPath('/investigations/')}>All {investigations.length} case studies <span aria-hidden="true">→</span></a>
+        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')}>Let’s talk about it <span aria-hidden="true">→</span></a></p>
       </section> : <section className="pc-section" aria-labelledby="pc-selected-title"><p className="pc-kicker">Case studies</p><h2 id="pc-selected-title">Case studies are in review</h2><p>No case study is published in this edition yet.</p></section>}
       {pairs.length ? <section className="pc-section pc-pattern" aria-labelledby="pc-pattern-title">
         <div className="pc-section-heading"><p className="pc-kicker">The pattern across the work</p><h2 id="pc-pattern-title">Related. <em className="pc-accent">Not</em> equivalent.</h2></div>
         <p className="pc-pattern-lead">Every case study here began where two related things had been <em>taken for one</em>. The work was finding <strong>where they part</strong>, and what that changes.</p>
-        <div className="pc-pattern-grid">
-          <InquiryIllustration cases={pairs}/>
-          <ul className="pc-pattern-pairs" aria-label="Each case study's distinction">{pairs.map(pair => <li key={pair.slug}>
-            <span className="pc-kicker">{pair.label}</span>
-            <a href={pair.href}><strong>{pair.left}</strong> <span aria-hidden="true">≠</span><span className="pc-sr-only">is not</span> <strong className="pc-turn">{pair.right}</strong></a>
-            <span className="pc-pattern-why">{pair.explanation}</span>
-          </li>)}</ul>
-        </div>
+        <RelatedField pairs={pairs}/>
         <a className="pc-text-link" href={publicPath('/patterns/')}>Explore the distinctions <span aria-hidden="true">→</span></a>
       </section> : null}
       <section className="pc-section" aria-labelledby="pc-practice-title">
         <div className="pc-section-heading"><p className="pc-kicker">How I investigate</p><h2 id="pc-practice-title">Test. Show. Enable.</h2></div>
-        <PracticeMoves/>
-        <StrandLine/>
+        <PracticeInMotion example={example}/>
         <p className="pc-how-i-know"><strong>How I Know:</strong> each case study separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains unproven.</p>
         <p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p>
         <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
@@ -103,16 +94,14 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <ul>{explore.map(item => <li key={item.href}><a href={publicPath(item.href)}><span className="pc-kicker">{item.kicker}</span><strong>{item.title} <span aria-hidden="true">→</span></strong><span>{item.text}</span></a></li>)}</ul>
       </nav>
       <LensInterlude compact/>
-      <section id="contact" className="pc-section pc-contact" aria-labelledby="contact-title">
-        <p className="pc-kicker">Work together</p><h2 id="contact-title">Have a problem that keeps <em className="pc-accent">coming back</em>?</h2>
-        <p>If an organization is investing time, money, or attention in a persistent problem without understanding why it continues, that is where my work begins.</p>
-        <RecruiterActions label="Contact Sami Belina"/>
-        <p className="pc-contact-secondary"><a href="https://www.linkedin.com/in/transplantsam">Professional experience on LinkedIn <ExternalArrow/></a></p>
+      <section id="contact" className="pc-section pc-cta" aria-labelledby="contact-title">
+        <p className="pc-kicker">Work with me</p>
+        <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
+        <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
+        <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
+        <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')}>Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
+        <p className="pc-cta-proof">Worked in insurance operations, customer research, enterprise innovation, product research, civic engagement and AI-assisted development.</p>
       </section>
-      <details className="build-index-legacy pc-disclosure"><summary>Looking for a section from the previous site?</summary>
-        <p>The previous edition has been retired. Each of its sections now has a current home.</p>
-        <ul>{movedSections.map(([id, href]) => <li key={id} id={id}><a href={publicPath(href)}>{id.replaceAll('-', ' ')} <span aria-hidden="true">→</span></a></li>)}</ul>
-      </details>
     </div>
   </CurrentShell></>
 }

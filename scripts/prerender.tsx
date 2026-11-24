@@ -1,4 +1,5 @@
 import BuildIndex from '../src/BuildIndex'
+import { legacyFragments } from '../src/content/legacy-fragments'
 import { FoundationPage, foundationPages, type FoundationKind } from '../src/design/FoundationPage'
 import { publicStaticRoutes } from '../src/public-routes'
 import { setPublicBase, publicPath, publicBase } from '../src/public-path'
@@ -60,7 +61,9 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !preview, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
-for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
+// Every old anchor stays reachable: as a target on the page, or (current edition, owner direction 23 November)
+// as a fragment the homepage redirects to its current page.
+for (const id of baselineAnchors) if (!home.includes(`id="${id}"`) && (fixture || !Object.hasOwn(legacyFragments, id))) throw new Error(`An existing legacy anchor would be lost: ${id}`)
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
 await prerenderEdgeCase(output)

@@ -13,7 +13,7 @@ const currentDestinations = [
   { href: '/practice/', label: 'Practice' },
   { href: '/writing/', label: 'Field Notes' },
   { href: '/lab/', label: 'Observatory' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/contact/', label: 'Contact' },
 ] as const
 
 /** Pages that belong to the Observatory section; its menu link marks them aria-current="true". */

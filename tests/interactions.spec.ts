@@ -13,7 +13,7 @@ test('every class in the current-edition stylesheets is used somewhere (no dead 
   // Classes assembled at runtime, e.g. `effect-${effect}` or `pc-document--${kind}`.
   const dynamicPrefixes = [...sources.matchAll(/([a-z][\w-]*-)\$\{/g)].map(match => match[1])
   const unused = new Set<string>()
-  for (const file of ['src/design/foundation.css', 'src/design/system.css', 'src/design/motion.css', 'src/design/tokens.css', 'src/reading/reading.css']) {
+  for (const file of ['src/design/foundation.css', 'src/design/system.css', 'src/design/motion.css', 'src/design/field.css', 'src/design/tokens.css', 'src/reading/reading.css']) {
     const css = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
     for (const [, name] of css.matchAll(/\.([a-zA-Z][\w-]*)/g)) {
       const literal = new RegExp(`(^|[^\\w-])${name.replace(/-/g, '\\-')}($|[^\\w-])`).test(sources)
@@ -90,6 +90,12 @@ test('reduced motion: no running animations, no progress bar, a paused travellin
     await page.goto(claims)
     await expect(page.locator('.pc-progress')).toBeHidden()
     expect(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length)).toBe(0)
+    // The homepage field and practice figure hold still too, and offer no walk-through.
+    await page.goto(`${origin}/`)
+    await page.locator('.pc-field-points button').first().click()
+    await page.getByRole('button', { name: 'Not the same' }).click()
+    expect(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length)).toBe(0)
+    await expect(page.getByRole('button', { name: 'Play all three' })).toHaveCount(0)
     await page.goto(`${origin}/practice/`)
     expect(await page.locator('.pc-strand > svg').evaluate(svg => (svg as SVGSVGElement).animationsPaused())).toBe(true)
     expect(await page.locator('.pc-strand-thread').evaluate(path => getComputedStyle(path).strokeDashoffset)).toMatch(/^0(px)?$/)
@@ -127,12 +133,12 @@ test('verbal stress: orange turn, bold finding, italic label; never an underline
   }
 })
 
-test('the pattern illustration sits after the cases, with every case distinction as text', async ({ browser }) => {
+test('the pattern field sits after the cases, with every case distinction as text', async ({ browser }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   try {
     const page = await context.newPage()
     await page.goto(`${origin}/`)
-    await expect(page.locator('.pc-hero .pc-inquiry-figure')).toHaveCount(0)
+    await expect(page.locator('.pc-hero .pc-field')).toHaveCount(0)
     const headings = await page.locator('main h2').allInnerTexts()
     expect(headings.indexOf('Related. Not equivalent.')).toBeGreaterThan(headings.indexOf('Three problems, and what changed.'))
     const pairs = page.getByRole('list', { name: "Each case study's distinction" }).getByRole('link')
@@ -144,16 +150,21 @@ test('the pattern illustration sits after the cases, with every case distinction
 test('conceptual drawings use the deck palette: ink, orange, sage, not the status colours', async ({ page }) => {
   const stroke = (selector: string) => page.locator(selector).first().evaluate(element => getComputedStyle(element).stroke)
   // Read each token where the drawing sits: the first-visit intro is a dark surface and may come first in the page.
-  const token = (name: string) => page.locator('.pc-pattern').evaluate((element, token) => {
+  const token = (name: string, where = '.pc-field-stage') => page.locator(where).first().evaluate((element, token) => {
     const probe = document.createElement('span'); probe.style.color = `var(${token})`; element.appendChild(probe)
     const value = getComputedStyle(probe).color; probe.remove(); return value
   }, name)
   await page.goto(`${origin}/`)
-  const [ink, signal, sage, unresolved, holds] = await Promise.all(['--ink', '--signal', '--sage', '--unresolved', '--holds'].map(token))
-  expect(await stroke('.pc-pattern .pc-question-line')).toBe(ink)
-  expect(await stroke('.pc-pattern .pc-observation-line')).toBe(signal)
-  expect(await stroke('.pc-pattern .pc-open-question')).toBe(signal)
-  expect(await stroke('.pc-strand-lens')).toBe(sage)
+  const [art, sage, unresolved, holds] = await Promise.all(['--signal-art', '--sage', '--unresolved', '--holds'].map(name => token(name)))
+  // The field and the moving practice figure draw only in the deck's palette on their night surface.
+  await page.locator('.pc-field-points button').first().click()
+  await page.getByRole('button', { name: 'Not the same' }).click()
+  expect(await stroke('.pc-field-star[data-split] .pc-field-thread')).toBe(art)
+  expect(await stroke('.pc-tse-lens ellipse')).toBe(await token('--sage', '.pc-tse-figure'))
+  expect([unresolved, holds]).not.toContain(await stroke('.pc-field-star[data-split] .pc-field-gap'))
+  await page.goto(`${origin}/practice/`)
+  expect(await stroke('.pc-strand-lens')).toBe(await token('--sage', '.pc-strand'))
+  void sage
   await page.goto(claims)
   for (const selector of ['.investigation-visual svg path', '.investigation-visual .visual-friction']) expect([unresolved, holds]).not.toContain(await stroke(selector))
   expect(await page.locator('.investigation-visual').evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe('rgb(21, 21, 27)')

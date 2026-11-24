@@ -15,5 +15,5 @@ export const legacyFragments: Readonly<Record<string, string>> = Object.freeze({
   practice: '/practice/', 'practice-title': '/practice/', 'inquiry-title': '/practice/', 'study-label': '/practice/', 'practice-language': '/practice/', 'practice-form': '/practice/', 'delta-theory': '/practice/',
   'field-notes': '/writing/', 'field-notes-title': '/writing/', archive: '/writing/#earlier-work',
   ...Object.fromEntries(writing.map(id => [id, `/writing/#${id}`])),
-  'closing-title': '/#contact',
+  'closing-title': '/contact/',
 })

@@ -5,8 +5,8 @@
  * binds the exact digest of every record. Changing any word here changes its digest and stops the build
  * until the release is prepared and approved again.
  *
- * Evidence: every factual statement and figure cites the owner's own account. The underlying employer
- * and partner records stay private and were not inspected; each source says so publicly.
+ * Evidence: every factual statement and figure cites the owner's project records and account. Client and
+ * partner records stay confidential. Owner direction, 23 November: say so once per case, not on every item.
  */
 import type { ContentStore, Entry, Evidence } from '../../src/content/model'
 import { claimsCandidate } from '../candidates/claims-operations'
@@ -16,11 +16,11 @@ const reviewed = '2026-11-23T00:00:00Z'
 
 const evidence = (id: string, subject: string): Evidence => ({
   schemaVersion: 1, id, revision: 1, visibility: 'public', reviewState: 'approved',
-  title: `Sami Belina’s account: ${subject}`,
-  source: 'Owner account (Sami Belina), reviewed with the owner for this edition',
-  locator: 'The underlying records are private and were not inspected for this page',
+  title: `Project records and notes: ${subject}`,
+  source: 'Sami Belina’s project records, notes and deliverables',
+  locator: 'Client and partner records are confidential',
   observedAt: reviewed, role: 'supports',
-  limitations: 'Owner-reported. Employer and partner records stay private, figures are rounded, and nothing here was independently measured.',
+  limitations: 'Figures are rounded. Client and partner records are confidential.',
   assetIds: [], rights: 'cleared', redaction: 'not-required', kind: 'observation',
 })
 
@@ -41,12 +41,12 @@ const base = (id: string, slug: string, createdAt: string) => ({
 
 /** Limitations for the inherited Claims statements, now that the owner's account is the attached evidence. */
 const claimsLimitations: Record<string, string> = {
-  'ed50dcf8-47c0-4ddd-af83-b910c458ad12': 'Owner-reported. Describes the earlier process, not every claim.',
-  '3fb07550-5e1f-4326-b8dd-b01b62502d25': 'Owner-reported. The ranking is my account, not a measured frequency.',
-  '9fa22fd6-7311-4b3f-b078-159e33f558a2': 'Owner-reported. Leadership made the decision; who decides sufficiency and who releases payment did not change.',
-  'df37a6b3-f276-4fc5-81b5-026de7435747': 'Owner-reported. Taking part is not evidence of learning.',
-  '41e8eff7-7faa-4350-8ba8-827721641966': 'Owner-reported. The reach of one resource is never combined with another.',
-  '22229e3b-c7e6-4193-8855-b09427098bdd': 'Owner-reported. Use is not effectiveness.',
+  'ed50dcf8-47c0-4ddd-af83-b910c458ad12': 'Describes the earlier process, not every claim.',
+  '3fb07550-5e1f-4326-b8dd-b01b62502d25': 'A ranking from the error log review, not a measured frequency.',
+  '9fa22fd6-7311-4b3f-b078-159e33f558a2': 'Leadership made the decision; who decides sufficiency and who releases payment did not change.',
+  'df37a6b3-f276-4fc5-81b5-026de7435747': 'Taking part is not evidence of learning.',
+  '41e8eff7-7faa-4350-8ba8-827721641966': 'The reach of one resource is never combined with another.',
+  '22229e3b-c7e6-4193-8855-b09427098bdd': 'Use is not effectiveness.',
 }
 
 // Claims: revision 3 of the reviewed candidate, with the owner's 23 November answers and the decision layer.
@@ -64,12 +64,12 @@ const claims: Entry = {
     ...claimsInvestigation,
     relationshipDiscovered: '==Delivered ≠ verified.== The status the system reported and the state the next step depended on were *related but not equivalent*. The gap was a question of **when sufficiency was checked**, not who had authority.',
     consequence: '“Complete” now means *verified*: adjusters check the paperwork before paying, and the salvage partner still decides whether it is sufficient, so **problems are found before a claim looks finished** rather than after it closes. The guides and training I built from administrators’ knowledge have been in use statewide, across all four offices, for more than two years, and the new hires who arrive every quarter learn from them.',
-    brief: { ...claimsInvestigation.brief!, result: 'Payment now waits for verification, so problems are found before a claim looks finished. The guides and training have been used statewide, across all four offices, for 2+ years, and every quarter’s new hires learn from them.', evidence: 'My four-month exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions. The records stay private.' },
+    brief: { ...claimsInvestigation.brief!, result: 'Payment now waits for verification, so problems are found before a claim looks finished. The guides and training have been used statewide, across all four offices, for 2+ years, and every quarter’s new hires learn from them.', evidence: 'My four-month exception log, walk-throughs with adjusters, administrative staff and the salvage partner, and administrator knowledge sessions.' },
     status: { kind: 'in_use', label: 'In use statewide 2+ years' },
     figures: claimsInvestigation.figures!.map(figure => ({
       ...figure,
       evidenceIds: [caseEvidence.claims.id],
-      ...(figure.id === 'fc27c92c-bd02-4066-b346-5bd85ccc12cc' ? { unit: 'years in use statewide', label: 'Guides and training in continued use across all four offices (owner-reported)', qualifier: 'Use, not effectiveness.' } : {}),
+      ...(figure.id === 'fc27c92c-bd02-4066-b346-5bd85ccc12cc' ? { unit: 'years in use statewide', label: 'Guides and training in continued use across all four offices', qualifier: 'Use, not effectiveness.' } : {}),
     })),
     decision: {
       stakes: 'Total-loss claims could be paid before the paperwork was confirmed sufficient. Defects came back afterwards as rework for customers and staff, on claims that already looked finished, when they were harder to fix.',
@@ -83,11 +83,11 @@ const claims: Entry = {
       implementation: 'Adjusters verify the paperwork before payment. The local manager formed a training team. The guide and training are used statewide, across all four offices, by each quarter’s new hires.',
       implications: [
         { kind: 'resource', text: 'The change moved an existing check earlier and turned knowledge staff already had into shared resources.' },
-        { kind: 'observed_change', text: 'Problems are found before payment instead of after a claim looks finished (owner-reported).' },
+        { kind: 'observed_change', text: 'Problems are found before payment instead of after a claim looks finished.' },
         { kind: 'unproven', text: 'Any change in rework volume, payment time or cost has not been measured. Two rework observations have different scopes and are never compared.' },
       ],
     },
-    measurement: 'Nothing here was measured in a controlled way. The figures are rounded owner estimates. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    measurement: 'Nothing here was measured in a controlled way. Figures are rounded. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     method: {
       how: { tags: ['Exception log', 'Walk-throughs', 'Knowledge sessions'], note: 'I logged recurring exceptions, then walked the process with each group the handoff touched.' },
       when: { tags: ['Four months of logging', 'Before the change'], note: 'The log ran for four months. No baseline was recorded before the change.' },
@@ -97,7 +97,7 @@ const claims: Entry = {
     statements: claimsInvestigation.statements.map(statement => ({
       ...statement,
       ...(claimsLimitations[statement.id] ? { limitation: claimsLimitations[statement.id] } : {}),
-      ...(statement.id === 'f3a8f704-380a-45f6-a9b7-2ced77765186' ? { text: 'The guides and training have been in use statewide, across all four offices, for more than two years, and new hires learn from them every quarter.', limitation: 'Owner-reported; the four offices are the whole state. Use is not effectiveness.' } : {}),
+      ...(statement.id === 'f3a8f704-380a-45f6-a9b7-2ced77765186' ? { text: 'The guides and training have been in use statewide, across all four offices, for more than two years, and new hires learn from them every quarter.', limitation: 'The four offices are the whole state. Use is not effectiveness.' } : {}),
       ...(statement.id === '2f19d6f6-513f-4e67-a16b-7739f23d0334' ? { text: 'I began the work unassigned and kept a log of recurring exceptions over four months.', limitation: 'A working record, not a controlled measure.' } : {}),
       evidenceIds: ['direct_observation', 'documented_outcome', 'measured_result'].includes(statement.kind) ? [caseEvidence.claims.id] : [],
     })),
@@ -149,7 +149,7 @@ const trust: Entry = {
       implementation: 'The survey was fielded with the two measures separated. The readout was discussed across four functions and is still cited in strategy briefs.',
       implications: [
         { kind: 'resource', text: 'A baseline that a later study can compare against, instead of a one-off score.' },
-        { kind: 'observed_change', text: 'Plans narrowed toward life stages, away from weak scenarios (owner-reported).' },
+        { kind: 'observed_change', text: 'Plans narrowed toward life stages, away from weak scenarios.' },
         { kind: 'unproven', text: 'No revenue, retention or trust change is claimed.' },
       ],
     },
@@ -161,7 +161,7 @@ const trust: Entry = {
     },
     statements: [
       { id: '0e5d8098-297b-4fe9-b2a1-5362db15d04f', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.trust.id], text: 'I set the general-to-specific interview sequence that the final guide followed.', limitation: 'The partner conducted the interviews.' },
-      { id: 'b54030f9-6a8d-4003-a61b-96bd9f14c3a4', section: 'consequence', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [caseEvidence.trust.id], text: 'A year later, the readout is still cited in strategy briefs.', limitation: 'Owner-reported. Citation is use, not evidence of effect.' },
+      { id: 'b54030f9-6a8d-4003-a61b-96bd9f14c3a4', section: 'consequence', kind: 'documented_outcome', contribution: 'influenced', evidenceIds: [caseEvidence.trust.id], text: 'A year later, the readout is still cited in strategy briefs.', limitation: 'Citation is use, not evidence of effect.' },
       { id: 'a1cdac77-09ec-490c-8701-949e585a68b2', section: 'relationshipDiscovered', kind: 'practitioner_interpretation', contribution: 'identified', evidenceIds: [], text: 'Agreement and reported influence on trust answer different questions.', limitation: 'An interpretation about measurement, not a finding about what produces trust.' },
     ],
   },
@@ -334,7 +334,7 @@ const civic: Entry = {
       learn: { tags: ['Descriptive', 'Comparison'], note: 'It could compare residents’ questions with how official information was organized. It could not show any effect on turnout.' },
     },
     statements: [
-      { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort; owner-reported.' },
+      { id: 'cd8ac815-e589-442b-8466-3a23780b05ed', section: 'investigation', kind: 'direct_observation', contribution: 'designed_or_facilitated', evidenceIds: [caseEvidence.civic.id], text: 'We gathered residents’ questions door to door, by phone, online, through partner organizations and at events.', limitation: 'A shared volunteer effort.' },
       { id: '7c9bb18d-0ce9-46c1-8332-d36f87484c3e', section: 'consequence', kind: 'documented_outcome', contribution: 'observed_use', evidenceIds: [caseEvidence.civic.id], text: 'The grant Vote Huntsville was asked to co-sign was awarded.', limitation: 'Recognition of a partnership, not of one person.' },
     ],
   },

@@ -23,6 +23,12 @@ export const possibilities = [
   { title: 'Better choices', question: 'Which response is justified?' },
   { title: 'Better implementation', question: 'How can the change work in practice?' },
 ] as const
+/** What an organization gets from working with me: an offer, not a measured result. */
+export const ctaOffer = [
+  { title: 'A tested explanation', text: 'of what is driving the outcome, checked against the record.' },
+  { title: 'A clear choice', text: 'of which responses the evidence supports, and which it does not.' },
+  { title: 'A change people can carry', text: 'guides, training and decisions your team owns after I leave.' },
+] as const
 export const homeHeadlineText = `${homeHeadline.lead}${homeHeadline.cost}${homeHeadline.middle}${homeHeadline.accent}${homeHeadline.end}`
 
 /** Public contact actions repeated on the homepage. */

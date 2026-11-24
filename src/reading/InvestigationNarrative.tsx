@@ -20,7 +20,8 @@ const questions: { id: string; title: string; fields: readonly Field[] }[] = [
 ]
 const caveats = [['notOwned', 'What I didn’t own'], ['measurement', 'How this was measured'], ['limitations', 'Limitations']] as const
 const fields: readonly Field[] = [...questions.flatMap(question => question.fields), ...caveats.map(([key]) => key)]
-const basisLabels = { owner_estimate: 'Approximate · owner estimate', approximate: 'Approximate', platform_reported: 'Platform-reported', measured: 'Measured' } as const
+/** Only a basis that adds weight is named; rounded and owner-estimated figures carry their context line alone (owner direction, 23 November). */
+const basisLabels = { owner_estimate: null, approximate: null, platform_reported: 'Platform-reported', measured: 'Measured' } as const
 
 /** Plain-language names for the evidence vocabulary. The stored values stay precise. */
 export const kindLabels: Record<Investigation['statements'][number]['kind'], string> = {
@@ -58,7 +59,7 @@ export function FigureStrip({ figures }: { figures: NonNullable<Investigation['f
     <ul>{figures.map(figure => <li key={figure.id}>
       <p className="investigation-figure-value"><strong>{figure.value}</strong> <span>{figure.unit}</span></p>
       <p className="investigation-figure-label">{figure.label}</p>
-      <p className="investigation-figure-basis">{basisLabels[figure.basis]}. {figure.qualifier}</p>
+      <p className="investigation-figure-basis">{basisLabels[figure.basis] ? `${basisLabels[figure.basis]}. ` : ''}{figure.qualifier}</p>
     </li>)}</ul>
   </section>
 }

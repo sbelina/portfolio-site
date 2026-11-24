@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { readFile } from 'node:fs/promises'
 
 const origin = 'http://127.0.0.1:4175'
-const destinations = [['Work', '/investigations/'], ['Practice', '/practice/'], ['Field Notes', '/writing/'], ['Observatory — experimental', '/lab/'], ['Contact', '/#contact']] as const
+const destinations = [['Work', '/investigations/'], ['Practice', '/practice/'], ['Field Notes', '/writing/'], ['Observatory — experimental', '/lab/'], ['Contact', '/contact/']] as const
 
 for (const route of ['/', '/practice/', '/patterns/', '/system/']) {
   test(`current edition has initial reading, real menus and no required animation on ${route}`, async ({ browser }) => {
@@ -35,8 +35,10 @@ test('practice moves are prose; homepage and direct method do not load graph or 
     const page = await context.newPage(), errors: string[] = [], requests: string[] = []
     page.on('pageerror', error => errors.push(error.message)); page.on('request', request => requests.push(request.url()))
     await page.goto(origin + '/')
-    await expect(page.locator('.pc-moves h3')).toHaveText(['Test.', 'Show.', 'Enable.'])
-    await expect(page.locator('.pc-moves button')).toHaveCount(0)
+    // Test. Show. Enable. is one moving figure chosen with native radios; every move stays reachable as text.
+    await expect(page.getByRole('radio', { name: /Test|Show|Enable/ })).toHaveCount(3)
+    await expect(page.locator('.pc-tse-text h3')).toHaveText('Test.')
+    await expect(page.getByRole('button', { name: 'Play all three' })).toHaveCount(0)
     const method = page.getByRole('link', { name: 'How I investigate', exact: false })
     await method.focus(); await page.keyboard.press('Enter'); await expect(page).toHaveURL(origin + '/practice/')
     await expect(page.getByRole('heading', { name: 'Test. Show. Enable.', exact: true })).toBeVisible()
@@ -146,6 +148,6 @@ test('enlarged enhanced specimen preserves whole control words and skip targets 
     const header = (await page.locator('.pc-header').boundingBox())!, crumb = (await page.locator('.pc-breadcrumb').boundingBox())!
     expect(crumb.y).toBeGreaterThanOrEqual(header.y + header.height)
     await page.goto(origin + '/')
-    await expect(page.locator('.pc-contact .pc-external-arrow')).toHaveCount(2)
+    await expect(page.locator('.pc-cta .pc-external-arrow')).toHaveCount(1)
   } finally { await context.close() }
 })

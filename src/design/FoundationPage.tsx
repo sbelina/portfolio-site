@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { CurrentShell } from './CurrentShell'
-import { PracticeMoves } from './PracticeMoves'
+import { PracticeInMotion } from './PracticeInMotion'
 import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
 import { AnnotatedPlate, StrandLine } from './Interactions'
 import { archiveItems, writings } from '../content/writing'
+import { ctaOffer, recruiterContact } from '../content/recruiter'
+import { ExternalArrow } from './ExternalArrow'
+import { ConnectionsField } from './ConnectionsField'
 
 export const foundationPages = {
   practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
   patterns: { path: '/patterns/', title: 'Related. Not equivalent.', description: 'Conceptual distinctions and questions for exploring how explanations change. Case-supported connections remain subject to evidence review.', indexable: true },
   writing: { path: '/writing/', title: 'Field Notes', description: 'Field notes, essays and earlier writing by Sami Belina: questions still being worked out, and how she got here.', indexable: true },
+  contact: { path: '/contact/', title: 'Contact', description: 'Start a conversation with Sami Belina about a problem your organization keeps paying to fix, and download the résumé.', indexable: true },
   observatory: { path: '/lab/', title: 'Observatory*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
   system: { path: '/system/', title: 'Design-system specimen', description: 'Inspect the current paper and observatory surfaces, typography, semantic states and native disclosures.', indexable: false },
 } as const
@@ -44,7 +48,7 @@ function Practice() {
   return <>
     <p className="pc-kicker">The practice</p><h1>Test. Show. Enable.</h1>
     <p className="pc-lead">Diagnose the gap, then design the conditions that close it.</p>
-    <PracticeMoves/>
+    <PracticeInMotion example={{ label: 'Insurance operations', href: publicPath('/investigations/claims-operations/'), left: 'Delivered', right: 'Verified', test: 'Paperwork could be marked delivered, and payment released, before anyone confirmed it was sufficient.', show: 'A delivery status records a handoff. Verification checks that the paperwork is sufficient.', enable: 'Payment now waits for verification, so problems are found before a claim looks finished. The guides and training have been used statewide, across all four offices, for 2+ years, and every quarter’s new hires learn from them.' }}/>
     <section className="pc-section"><h2>Investigate the system. Examine the explanation.</h2><p>One line of inquiry examines the structures and mechanisms producing observed behavior. Another examines the assumptions, categories, frameworks, and evidence shaping our explanation of that behavior.</p><blockquote>What way of looking at this makes it appear true?</blockquote><p>This question applies to my own interpretations and development decisions, too.</p></section>
     <section className="pc-section" aria-labelledby="inquiry-title"><p className="pc-kicker">A recurring reasoning practice</p><h2 id="inquiry-title">Notice → Frame → Model → Test → Interrogate → Revise</h2><p>Test. Show. Enable. describes what the work delivers to other people. This loop describes how the reasoning moves along the way; they are not competing processes to memorize.</p><p>A flexible loop, not a rigid sequence. Evidence can send the inquiry back to an earlier question. All six moves are available to read here without operating a model.</p><dl className="pc-inquiry-list">{inquiry.map(([name, text]) => <div key={name}><dt>{name}</dt><dd>{text}</dd></div>)}</dl></section>
     <StrandLine caption="FIG · Conceptual illustration · the thread I follow through the strands; not data"/>
@@ -99,13 +103,54 @@ function Observatory() {
   return <>
     <p className="pc-kicker">The observatory · experimental</p><h1>Observatory<span aria-hidden="true">*</span></h1>
     <p className="pc-lead">A separate place for curiosity to operate: experiments that test ways of exploring questions and connections.</p>
-    <p className="pc-boundary">Everything here is invented or illustrative. None of it is my case studies or evidence, and none of it is needed to read the rest of the site. The asterisk marks an experiment.</p>
+    <p className="pc-boundary">The experiments below are invented or illustrative, and none of them is needed to read the rest of the site. The asterisk marks an experiment. The connections field maps my own work and writing.</p>
+    <ConnectionsField/>
     <ul className="pc-observatory-index">{observatory.map(item => <li key={item.href}>
       <p className="pc-kicker">{item.kind}</p>
       <h2><a href={publicPath(item.href)} aria-label={item.experimental ? `${item.title} — experimental` : undefined}>{item.title}{item.experimental ? <span aria-hidden="true">*</span> : null}</a></h2>
       <p>{item.text}</p>
       {'also' in item ? <p><a className="pc-text-link" href={publicPath(item.also.href)}>{item.also.label} →</a></p> : null}
     </li>)}</ul>
+  </>
+}
+
+/**
+ * Contact (owner direction, 23 November): the message form first, then the latest résumé.
+ * The form needs no server: it opens the visitor's email app with the message written out, and
+ * the address stays visible for anyone whose device has no email app. Nothing is stored or sent here.
+ */
+function Contact() {
+  const [sent, setSent] = useState(false)
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const data = new FormData(event.currentTarget)
+    const value = (name: string) => String(data.get(name) ?? '').trim()
+    const subject = `Conversation request${value('organization') ? ` from ${value('organization')}` : ''}`
+    const body = [`Name: ${value('name')}`, `Email: ${value('email')}`, `Organization: ${value('organization')}`, '', value('problem')].join('\n')
+    location.href = `mailto:${recruiterContact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+    setSent(true)
+  }
+  return <>
+    <p className="pc-kicker">Contact</p><h1>Bring me the problem that keeps <em className="pc-accent">coming back</em>.</h1>
+    <p className="pc-lead">Tell me what your organization is seeing, what has already been tried, and what a better decision would make possible. I reply to every message.</p>
+    <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
+    <section className="pc-contact-form-section" aria-labelledby="contact-form-title">
+      <h2 id="contact-form-title">Start a conversation</h2>
+      <form className="pc-contact-form" action={`mailto:${recruiterContact.email}`} method="post" encType="text/plain" onSubmit={submit}>
+        <label>Your name<input name="name" autoComplete="name" required/></label>
+        <label>Your email<input name="email" type="email" autoComplete="email" required/></label>
+        <label><span>Organization <span className="pc-contact-optional">(optional)</span></span><input name="organization" autoComplete="organization"/></label>
+        <label>What problem keeps coming back?<textarea name="problem" rows={6} required/></label>
+        <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary">Send it <span aria-hidden="true">→</span></button></p>
+        <p className="pc-contact-note">Sending opens your email app with the message written out. Prefer to write directly? <a href={`mailto:${recruiterContact.email}`}>{recruiterContact.email}</a></p>
+        {sent ? <p className="pc-contact-note" role="status">Your email app should have opened with the message. If it didn’t, write to {recruiterContact.email}.</p> : null}
+      </form>
+    </section>
+    <section className="pc-section pc-resume" aria-labelledby="resume-title">
+      <h2 id="resume-title">Résumé</h2>
+      {recruiterContact.resumeHref ? <p><a className="pc-cta-primary" href={publicPath(recruiterContact.resumeHref)}>Download my latest résumé (PDF)</a></p> : null}
+      <p className={recruiterContact.resumeHref ? 'pc-contact-note' : undefined}><a href={recruiterContact.linkedin}>Professional experience on LinkedIn <ExternalArrow/></a></p>
+    </section>
   </>
 }
 
@@ -144,6 +189,6 @@ export function FoundationPage({ kind }: { kind: FoundationKind }) {
   useEffect(() => setEnhanced(true), [])
   return <CurrentShell route={foundationPages[kind].path} surface={surface}><div className={`pc-document pc-document--${kind}`}>
     <a className="pc-breadcrumb" href={publicPath('/')}>Producing Curiosity home</a>
-    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : kind === 'writing' ? <Writing/> : kind === 'observatory' ? <Observatory/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
+    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : kind === 'writing' ? <Writing/> : kind === 'observatory' ? <Observatory/> : kind === 'contact' ? <Contact/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
   </div></CurrentShell>
 }

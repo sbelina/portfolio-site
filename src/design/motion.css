@@ -142,15 +142,13 @@
      italics for a label or spoken stress. Underlines belong to links only. */
   .pc-turn { color: var(--signal); font-weight: 650; }
 
-  /* The pattern across the work: the drawing beside a text list of every case's distinction. */
+  /* The pattern across the work: the text list of every case's distinction. */
   .pc-pattern-lead { max-width: 44rem; font-size: var(--step-1); }
-  .pc-pattern-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-6); align-items: start; margin-block: var(--space-5); }
   .pc-pattern-pairs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
   .pc-pattern-pairs li { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-bottom: 1px solid var(--soft-line); min-width: 0; }
   .pc-pattern-pairs .pc-kicker { margin: 0; }
   .pc-pattern-pairs a { font-size: var(--step-1); text-decoration-thickness: 1px; }
   .pc-pattern-why { color: var(--muted); font-size: var(--step--1); }
-  @media (max-width: 860px) { .pc-pattern-grid { grid-template-columns: minmax(0, 1fr); } }
   :is(.pc-site, .reading-page) :is(strong, b):not(.pc-turn) { font-weight: 650; }
 
   /* 2 + E · Strand line: faint strands, a lens, and the orange thread that draws itself. */

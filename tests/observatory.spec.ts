@@ -13,7 +13,11 @@ test('hub lists every experiment with native links, labels and no JavaScript', a
     expect(response?.status()).toBe(200)
     expect(response?.headers()['x-robots-tag']).toContain('noindex')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Observatory*')
-    await expect(page.getByText('Everything here is invented or illustrative.')).toBeVisible()
+    await expect(page.getByText('The experiments below are invented or illustrative', { exact: false })).toBeVisible()
+    // The layered connections field reads as text without JavaScript, every association a sentence.
+    const field = page.getByRole('region', { name: 'Follow the relationship, not the category.' })
+    await expect(field.locator('.pc-cfield-text')).toHaveAttribute('open', '')
+    await expect(field.locator('.pc-cfield-list')).toContainText('#systems contains #operations')
     const index = page.locator('.pc-observatory-index')
     for (const href of members) {
       await expect(index.locator(`a[href="${href}"]`)).toHaveCount(1)

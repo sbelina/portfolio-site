@@ -142,7 +142,7 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   const dated = structuredClone(narrative)
   dated.figures![0] = { ...dated.figures![0], label: 'Views by November 2026' }
   expect(investigationSchema.safeParse(dated).success).toBe(false)
-  // Renders: nothing without approved headlines; otherwise each figure keeps its basis and case link.
+  // Renders: nothing without approved headlines; otherwise each figure links to its case, with no hedge label (owner, 23 November).
   const { renderToStaticMarkup } = await import('react-dom/server')
   const React = await import('react')
   const { ResultsStrip } = await import('../src/design/ResultsStrip')
@@ -151,7 +151,7 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   const html = renderToStaticMarkup(React.createElement(ResultsStrip, { investigations: [{ id: claimsCandidate.id, path: '/investigations/claims-operations/', title: claimsCandidate.title, summary: claimsCandidate.summary, headlines }] }))
   expect(html).toContain('What changed')
   for (const figure of headlines) expect(html).toContain(figure.value)
-  expect(html).toContain('Approximate · my estimate')
+  expect(html).not.toContain('my estimate')
   expect(html).toContain('href="/investigations/claims-operations/"')
   // Production shows the strip only for approved headline figures, each linked to its case.
   const home = await readFile('dist/index.html', 'utf8')

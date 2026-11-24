@@ -1,0 +1,181 @@
+/*
+ * Interactive figures added 23 November 2026 (owner direction): the Related. Not equivalent. field,
+ * Test. Show. Enable. in motion, and the Observatory's layered connections field.
+ * Same rules as motion.css: complete at rest, movement only (never fading text), and every
+ * animation inside prefers-reduced-motion: no-preference.
+ */
+@layer pc-components {
+  /* ── Related. Not equivalent. ─────────────────────────────────────────────── */
+  .pc-field { display: grid; gap: var(--space-5); margin-block: var(--space-5); }
+  .pc-field-stage { position: relative; background: var(--paper); color: var(--ink); border-radius: 2px; overflow: hidden; container-type: inline-size; box-shadow: var(--elevation-2); }
+  .pc-field-sky { display: block; width: 100%; height: auto; }
+  .pc-field-dust { fill: var(--line); }
+  .pc-field-pattern { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 6; }
+  .pc-field-halo { fill: none; stroke: var(--soft-line); stroke-width: 1; }
+  .pc-field-body { fill: var(--ink); }
+  .pc-field-body--turn { fill: var(--signal-art); }
+  .pc-field-thread { stroke: var(--signal-art); stroke-width: 1.5; visibility: hidden; }
+  .pc-field-gap { fill: none; stroke: var(--signal-art); stroke-width: 1; stroke-dasharray: 2 3; visibility: hidden; }
+  .pc-field-star text { fill: var(--ink); font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+  .pc-field-star[data-split] .pc-field-left { transform: translateX(-46px); }
+  .pc-field-star[data-split] .pc-field-right { transform: translateX(46px); }
+  .pc-field-star[data-split] :is(.pc-field-thread, .pc-field-gap) { visibility: visible; }
+  .pc-field-star[data-split] .pc-field-halo { visibility: hidden; }
+  .pc-field-frame rect { fill: none; stroke: var(--ink); stroke-width: 1; }
+  .pc-field-frame text { fill: var(--ink); font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .pc-field-points { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+  .pc-field-points li { position: absolute; transform: translate(-50%, -50%); }
+  .pc-field-points button { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid transparent; background: transparent; cursor: pointer; }
+  .pc-field-points button:hover { border-color: var(--line); }
+  .pc-field-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-field-points button[aria-pressed="true"] { border-color: transparent; }
+  .pc-field-caption { margin: 0; padding: var(--space-2) var(--space-4) var(--space-3); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-field-panel { max-width: 46ch; }
+  .pc-field-panel > * + * { margin-top: var(--space-3); }
+  .pc-field-prompt, .pc-field-question { font-size: var(--step-1); line-height: 1.4; }
+  .pc-field-answers button, .pc-field-quiet { min-height: 44px; padding: .4rem 1.1rem; font: inherit; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .pc-field-answers button:hover { background: var(--signal-2); }
+  .pc-field-quiet { border-color: var(--line); font-size: var(--step--1); }
+  .pc-field-label { font-weight: 650; }
+  .pc-field-pattern-note { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+  .pc-field-text .pc-pattern-pairs { margin-top: var(--space-4); }
+  @media (min-width: 900px) {
+    .pc-field { grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); align-items: start; }
+    .pc-field-text { grid-column: 1 / -1; }
+  }
+  /* On a narrow field the labels would be too small to read; the panel carries them in text. */
+  @container (max-width: 560px) { .pc-field-star:not([data-active]) text { display: none; } }
+
+  /* ── Test. Show. Enable. in motion ────────────────────────────────────────── */
+  .pc-tse, .pc-tse-static { margin-block: var(--space-5); }
+  .pc-tse-static { list-style: none; padding: 0; display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+  .pc-tse-static h3, .pc-tse-text h3 { font-size: var(--step-3); margin: var(--space-3) 0 var(--space-2); }
+  .pc-tse-static h3 span, .pc-tse-text h3 span { color: var(--signal); }
+  .pc-tse-static .pc-tse-svg { background: var(--panel); }
+  .pc-tse-svg { display: block; width: 100%; height: auto; fill: none; }
+  .pc-tse-svg text { fill: var(--muted); stroke: none; font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+  .pc-tse-strand { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 4; stroke-linecap: round; }
+  .pc-tse-held { stroke: var(--ink); stroke-width: 2; }
+  .pc-tse-lens ellipse { stroke: var(--sage); stroke-width: 2; }
+  .pc-tse-thread { stroke: var(--signal-art); stroke-width: 1.5; }
+  .pc-tse-gap { stroke: var(--signal-art); stroke-dasharray: 2 3; }
+  .pc-tse-node circle { fill: var(--ink); }
+  .pc-tse-node circle.pc-tse-turn { fill: var(--signal-art); }
+  .pc-tse-node--left { transform: translateX(-90px); }
+  .pc-tse-node--right { transform: translateX(90px); }
+  .pc-tse-branch { stroke: var(--ink); stroke-width: 1.25; }
+  .pc-tse-reach circle { fill: var(--sage); }
+  .pc-tse-hub { fill: var(--ink); }
+  .pc-tse-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: center; border: 0; padding: 0; margin: 0 0 var(--space-4); min-width: 0; }
+  .pc-tse-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--step-1); font-weight: 650; cursor: pointer; }
+  .pc-tse-controls input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
+  .pc-tse-number { font: var(--step--1)/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-tse-play { min-height: 44px; padding: .4rem 1.1rem; font: inherit; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .pc-tse-stage { display: grid; gap: var(--space-5); }
+  .pc-tse-figure { position: relative; background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); }
+  .pc-tse-progress { position: absolute; left: var(--space-3); bottom: var(--space-3); display: flex; gap: var(--space-1); }
+  .pc-tse-progress i { display: block; width: 1.5rem; height: 2px; background: var(--soft-line); }
+  .pc-tse-progress i[data-on] { background: var(--signal-art); }
+  .pc-tse-text > * { max-width: 46ch; }
+  .pc-tse-text h3 { margin-top: 0; }
+  .pc-tse-move { font-size: var(--step-1); line-height: 1.4; }
+  .pc-tse-label { font-weight: 650; }
+  .pc-tse-questions { color: var(--muted); }
+  @media (min-width: 900px) { .pc-tse-stage { grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 1fr); align-items: start; } }
+  /* ── The call to action: written for a decision-maker, with one primary action ── */
+  .pc-cta { border-top: 3px solid var(--ink); padding-top: var(--space-6); }
+  .pc-cta h2 { font-size: var(--step-4); line-height: 1.05; max-width: 18ch; }
+  .pc-cta-lead { font-size: var(--step-1); line-height: 1.45; max-width: 44ch; }
+  .pc-cta-offer { list-style: none; padding: 0; margin: var(--space-5) 0; display: grid; gap: var(--space-3) var(--space-5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+  .pc-cta-offer li { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+  .pc-cta-offer strong { display: block; font-size: var(--step-1); }
+  .pc-cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+  .pc-cta-actions a { margin: 0; }
+  .pc-cta .pc-cta-actions .pc-cta-primary, .pc-cta-primary { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 52px; padding: 0 var(--space-5); background: var(--ink); color: var(--paper); font-weight: 650; font-size: var(--step-1); text-decoration: none; box-shadow: var(--elevation-2); }
+  .pc-cta-primary:hover { background: var(--signal-10); }
+  .pc-cta-primary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .pc-cta-proof { color: var(--muted); font-size: var(--step--1); margin-top: var(--space-4); max-width: 60ch; }
+  .pc-cta-band { margin-top: var(--space-6); padding: var(--space-4) var(--space-5); background: var(--signal-2); border-left: 3px solid var(--signal); display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; }
+  .pc-cta-band a { font-weight: 650; }
+  /* ── Contact ─────────────────────────────────────────────────────────────── */
+  .pc-contact-form { display: grid; gap: var(--space-4); max-width: 36rem; margin-top: var(--space-4); }
+  .pc-contact-form label { display: grid; gap: var(--space-2); font-weight: 650; }
+  .pc-contact-form :is(input, textarea) { font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
+  .pc-contact-form :is(input, textarea):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-form button { border: 0; cursor: pointer; font-family: inherit; }
+  .pc-contact-optional { font-weight: 400; color: var(--muted); }
+  .pc-contact-note { color: var(--muted); font-size: var(--step--1); }
+  .pc-contact-submit { margin: 0; }
+  .pc-resume { border-top: 1px solid var(--line); }
+  /* ── Observatory: the layered connections field ─────────────────────────── */
+  .pc-cfield { margin-block: var(--space-6); }
+  .pc-cfield-layers { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); border: 0; padding: 0; margin: var(--space-4) 0; min-width: 0; }
+  .pc-cfield-layers label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-weight: 650; cursor: pointer; }
+  .pc-cfield-layers input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
+  .pc-cfield-grid { display: grid; gap: var(--space-5); }
+  .pc-cfield-stage { position: relative; aspect-ratio: 16 / 11; background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); container-type: inline-size; overflow: hidden; }
+  .pc-cfield-sky { position: absolute; left: 6%; top: 4%; width: 88%; height: 92%; overflow: visible; }
+  .pc-cfield-dust { fill: var(--line); }
+  .pc-cfield-edge { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .pc-cfield-edge[data-layer="thinking"] { stroke: var(--soft-line); stroke-dasharray: 2 4; }
+  .pc-cfield-edge[data-layer="archive"] { stroke: var(--soft-line); stroke-dasharray: 1 5; }
+  .pc-cfield-stage[data-selected] .pc-cfield-edge { stroke: var(--soft-line); }
+  .pc-cfield-stage[data-selected] .pc-cfield-edge[data-lit] { stroke: var(--signal-art); stroke-width: 1.5; stroke-dasharray: none; }
+  .pc-cfield-points { list-style: none; margin: 0; padding: 0; position: absolute; inset: 4% 6%; }
+  .pc-cfield-points li { position: absolute; --depth: 16px; transform: translate(calc(-50% + var(--px, 0) * var(--depth)), calc(-50% + var(--py, 0) * var(--depth))); }
+  .pc-cfield-points li[data-layer="thinking"] { --depth: 9px; }
+  .pc-cfield-points li[data-layer="archive"] { --depth: 4px; }
+  .pc-cfield-points button { display: grid; justify-items: center; gap: 2px; min-width: 32px; min-height: 32px; padding: 2px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font: 11px/1.15 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+  .pc-cfield-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-cfield-mark { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+  [data-kind="project"] .pc-cfield-mark { width: 11px; height: 11px; background: var(--signal-art); }
+  [data-kind="origin"] .pc-cfield-mark { background: var(--sage); }
+  [data-kind="writing"] .pc-cfield-mark, [data-kind="archive"] .pc-cfield-mark { background: transparent; border: 1px solid var(--ink); }
+  .pc-cfield-points li[data-layer="archive"] .pc-cfield-mark { width: 4px; height: 4px; }
+  .pc-cfield-name { max-width: 12ch; color: var(--muted); }
+  [data-kind="tag"] .pc-cfield-name { white-space: nowrap; max-width: none; }
+  /* Topics from deeper layers name themselves only when traced, so the field stays legible. */
+  .pc-cfield-stage li[data-kind="tag"]:not([data-layer="core"]):not([data-near]) .pc-cfield-name { display: none; }
+  [data-kind="project"] .pc-cfield-name { color: var(--ink); font-weight: 600; }
+  .pc-cfield-stage[data-selected] li:not([data-near]) .pc-cfield-name { visibility: hidden; }
+  .pc-cfield-stage[data-selected] li[data-near] .pc-cfield-name { color: var(--ink); }
+  .pc-cfield-points button[aria-pressed="true"] .pc-cfield-mark { box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--signal-art); }
+  .pc-cfield-caption { margin: var(--space-2) 0 0; font: var(--step--1)/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-cfield-panel > * + * { margin-top: var(--space-3); }
+  .pc-cfield-panel h3 { font-size: var(--step-2); }
+  .pc-cfield-label { font-weight: 650; }
+  .pc-cfield-trace { list-style: none; padding: 0; display: grid; gap: var(--space-1); }
+  .pc-cfield-trace button, .pc-cfield-inline { font: inherit; font-weight: 600; text-align: left; border: 0; background: none; color: var(--signal-11); cursor: pointer; min-height: 32px; padding: 0; }
+  .pc-cfield-trace button::before { content: '↳ '; color: var(--muted); }
+  .pc-cfield-list { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+  .pc-cfield-list li { display: grid; gap: var(--space-1); border-top: 1px solid var(--soft-line); padding-top: var(--space-2); }
+  .pc-cfield-list span { color: var(--muted); font-size: var(--step--1); }
+  @media (min-width: 1000px) { .pc-cfield-grid { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); align-items: start; } }
+  /* Too narrow for every name: only the traced points keep theirs. */
+  @container (max-width: 620px) { .pc-cfield-stage li:not([data-near]):not([data-kind="project"]) .pc-cfield-name { display: none; } .pc-cfield-points button { font-size: 10px; } }
+}
+
+@layer pc-motion {
+  @media (prefers-reduced-motion: no-preference) {
+    .pc-field[data-enhanced] :is(.pc-field-left, .pc-field-right) { transition: transform .7s var(--ease-out); }
+    .pc-field[data-enhanced] .pc-field-star[data-split] .pc-field-thread { stroke-dasharray: 92; animation: pc-field-draw .7s var(--ease-out) both; }
+    .pc-field[data-enhanced] .pc-field-star:not([data-split]) .pc-field-halo { transform-box: fill-box; transform-origin: center; animation: pc-field-breathe 3.2s ease-in-out infinite; }
+    .pc-field[data-enhanced] .pc-field-star:nth-of-type(2n) .pc-field-halo { animation-delay: -1.4s; }
+    .pc-field-pattern { stroke-dashoffset: 0; animation: pc-field-pattern 1.6s var(--ease-out) both; }
+    /* Test: the lens travels in, then what held is drawn through it. Show: the two pull apart. Enable: what held reaches out. */
+    .pc-tse .pc-tse-lens { animation: pc-tse-sweep 1s var(--ease-out) both; }
+    .pc-tse [data-scene] .pc-tse-held { stroke-dasharray: 600; animation: pc-tse-draw 1.4s .5s var(--ease-out) both; }
+    .pc-tse :is(.pc-tse-node--left, .pc-tse-node--right) { animation: pc-tse-part .9s .2s var(--ease-out) both; }
+    .pc-tse .pc-tse-thread { stroke-dasharray: 180; animation: pc-tse-draw .9s .3s var(--ease-out) both; }
+    .pc-tse .pc-tse-reach { animation: pc-tse-reach .8s calc(.6s + var(--i) * .15s) var(--ease-out) both; }
+    .pc-tse [data-scene="enable"] .pc-tse-held { animation-delay: 0s; animation-duration: .6s; }
+    .pc-cfield-points li { transition: transform .5s var(--ease-out); }
+  }
+  @keyframes pc-tse-sweep { from { transform: translateX(-150px); } }
+  @keyframes pc-tse-draw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-tse-part { from { transform: translateX(0); } }
+  @keyframes pc-tse-reach { from { transform: translate(-190px, 0) scale(.4); } }
+  @keyframes pc-field-draw { from { stroke-dashoffset: 92; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-field-breathe { 50% { transform: scale(1.45); } }
+  @keyframes pc-field-pattern { from { stroke-dashoffset: 400; } }
+}

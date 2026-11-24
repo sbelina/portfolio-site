@@ -21,12 +21,12 @@ test('old homepage links land on the current page for the same thing', async ({ 
     await page.goto(`${origin}/#${fragment}`)
     await expect(page).toHaveURL(`${origin}${destination}`)
   }
-  // Without JavaScript, each old anchor is still a target with a link to its new home.
+  // The "section from the previous site" list was removed (owner, 23 November); old links redirect instead.
   const context = await browser.newContext({ javaScriptEnabled: false })
   try {
     const page = await context.newPage()
     await page.goto(`${origin}/`)
-    for (const id of Object.keys(legacyFragments)) expect(await page.locator(`[id="${id}"] a`).getAttribute('href'), id).toBe(legacyFragments[id])
+    await expect(page.getByText('Looking for a section from the previous site?')).toHaveCount(0)
   } finally { await context.close() }
 })
 

@@ -9,7 +9,7 @@
 
 @layer pc-tokens {
   /* Derived tokens recompute on every surface that redefines --signal, --paper or --ink. */
-  html[data-edition="current"], .pc-site, .pc-sample, .pc-interlude, .deep-dive-beneath, .pc-site[data-surface="observatory"] {
+  html[data-edition="current"], .pc-site, .pc-sample, .pc-interlude, .deep-dive-beneath, .pc-night, .pc-site[data-surface="observatory"] {
     /* Spacing: one scale, no one-off values in new code. */
     --space-1: .25rem; --space-2: .5rem; --space-3: .75rem; --space-4: 1rem;
     --space-5: 1.5rem; --space-6: 2rem; --space-7: 3rem; --space-8: 4rem;
@@ -42,7 +42,7 @@
     --elevation-2: 0 1px 1px hsl(var(--shadow-color) / .11), 0 2px 2px hsl(var(--shadow-color) / .11), 0 4px 4px hsl(var(--shadow-color) / .11), 0 8px 8px hsl(var(--shadow-color) / .11);
     --ease-out: cubic-bezier(.215, .61, .355, 1);
   }
-  .pc-site[data-surface="observatory"], .pc-interlude[data-surface="observatory"], .deep-dive-beneath[data-surface="observatory"] { --shadow-color: 160deg 20% 2%; }
+  .pc-site[data-surface="observatory"], .pc-interlude[data-surface="observatory"], .pc-night[data-surface="observatory"], .deep-dive-beneath[data-surface="observatory"] { --shadow-color: 160deg 20% 2%; }
 }
 
 @layer pc-utilities {

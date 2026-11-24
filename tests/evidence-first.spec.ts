@@ -29,8 +29,10 @@ test('production home leads with institutional value and a one-click path to a r
   expect(home).toContain(`href="${claimsPath}"`)
   expect(home.toLowerCase()).not.toContain('collective agency')
   for (const kept of ['Test. Show. Enable.', 'Related. Not equivalent.', 'How I Know']) expect(home).toContain(kept)
-  expect(home.match(/class="pc-actions"/g)).toHaveLength(1)
-  expect(home).toContain('hello@sbelina.com</span>')
+  // One call to action, written for a decision-maker, with a primary action to the Contact page.
+  expect(home.match(/class="pc-cta-primary"/g)).toHaveLength(1)
+  expect(home).toContain('href="/contact/"')
+  expect(home).toContain('href="mailto:hello@sbelina.com"')
   expect(home).not.toContain('Download résumé')
   const reading = JSON.parse(home.match(/<script id="home-reading" type="application\/json">(.*?)<\/script>/)![1])
   expect(reading.entries).toHaveLength(6)
@@ -81,15 +83,15 @@ test('one click reaches the Claims investigation from the first screen, by keybo
   }
 })
 
-test('homepage illustration is interactive by keyboard and pointer, with a complete static baseline', async ({ browser }) => {
+test('Related. Not equivalent. is a field to explore: predict, then split, with a complete static baseline', async ({ browser }) => {
   const staticContext = await browser.newContext({ viewport: { width: 1440, height: 900 }, javaScriptEnabled: false })
   try {
     const page = await staticContext.newPage()
     await page.goto(`${origin}/`)
-    const figure = page.locator('.pc-inquiry-figure')
-    await expect(figure).toHaveAttribute('data-focus', 'all')
-    await expect(figure.getByRole('radio')).toHaveCount(0)
-    await expect(figure.getByText('Conceptual illustration · not measured data')).toBeVisible()
+    // At rest every point is already split and every pair is listed as text.
+    await expect(page.locator('.pc-field-star[data-split]')).toHaveCount(6)
+    await expect(page.locator('.pc-field-text li')).toHaveCount(6)
+    await expect(page.locator('.pc-field-points')).toHaveCount(0)
   } finally { await staticContext.close() }
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' })
   try {
@@ -97,20 +99,20 @@ test('homepage illustration is interactive by keyboard and pointer, with a compl
     const errors: string[] = []
     page.on('pageerror', error => errors.push(error.message))
     await page.goto(`${origin}/`)
-    const figure = page.locator('.pc-inquiry-figure')
-    const controls = figure.getByRole('group', { name: 'Look at' })
-    await expect(controls.getByRole('radio')).toHaveCount(4)
-    await controls.getByRole('radio', { name: 'Both' }).focus()
-    await page.keyboard.press('ArrowRight')
-    await expect(controls.getByRole('radio', { name: 'Outcome' })).toBeChecked()
-    await expect(figure).toHaveAttribute('data-focus', 'outcome')
-    await expect(figure.locator('.pc-inquiry-reading')).toContainText('The solid line is what was observed.')
-    await figure.locator('.pc-part--gap .pc-open-question').click({ force: true })
-    await expect(figure).toHaveAttribute('data-focus', 'gap')
-    await expect(controls.getByRole('radio', { name: 'The gap' })).toBeChecked()
-    await expect(figure.locator('.pc-inquiry-reading')).toContainText('where an investigation starts')
-    expect(await figure.locator('.pc-gap-ring').evaluate(element => getComputedStyle(element).animationName)).toBe('none')
-    await expect(figure.locator('.pc-inquiry-drawing')).toHaveAttribute('aria-hidden', 'true')
+    const field = page.locator('.pc-field')
+    await expect(field.locator('.pc-field-star[data-split]')).toHaveCount(0)
+    const point = field.getByRole('button', { name: /Insurance operations: Delivered and Verified/ })
+    await point.focus(); await page.keyboard.press('Enter')
+    await expect(point).toHaveAttribute('aria-pressed', 'true')
+    await expect(field.locator('.pc-field-panel')).toContainText('The same thing?')
+    await field.getByRole('button', { name: 'The same', exact: true }).click()
+    await expect(field.locator('.pc-field-panel')).toContainText('That is the assumption this case study began with.')
+    await expect(field.locator('.pc-field-star[data-split]')).toHaveCount(1)
+    await expect(field.getByRole('link', { name: /Read the case study/ })).toHaveAttribute('href', '/investigations/claims-operations/')
+    await field.getByRole('button', { name: 'Split them all' }).click()
+    await expect(field.locator('.pc-field-star[data-split]')).toHaveCount(6)
+    await expect(field.locator('.pc-field-panel')).toContainText('Six settings, one pattern')
+    await expect(field.locator('.pc-field-sky')).toHaveAttribute('aria-hidden', 'true')
     expect(errors).toEqual([])
   } finally { await context.close() }
 })

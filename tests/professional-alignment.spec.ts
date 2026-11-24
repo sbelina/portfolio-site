@@ -73,10 +73,12 @@ test('contact stays reachable; no résumé is linked until one is approved', asy
 test('practice moves use the clarified definitions on the homepage and Practice page', async ({ page }) => {
   for (const route of ['/', '/practice/']) {
     await page.goto(`${origin}${route}`)
-    const moves = page.locator('.pc-moves')
-    // The owner's final wording (Trust case, Appendix A).
+    const moves = page.locator('.pc-tse')
+    // The owner's final wording (Trust case, Appendix A), one move at a time in the moving figure.
     await expect(moves).toContainText('Diagnose the gap: where a measure, definition, or category has drifted.')
+    await moves.getByRole('radio', { name: /Show/ }).check()
     await expect(moves).toContainText('Make evidence and uncertainty visible so people reach defensible interpretations.')
+    await moves.getByRole('radio', { name: /Enable/ }).check()
     await expect(moves).toContainText('Design the conditions people need to make informed decisions.')
   }
   await expect(page.getByRole('heading', { name: /Notice → Frame → Model → Test → Interrogate → Revise/ })).toBeVisible()
@@ -136,7 +138,7 @@ test('the compact "How I got here" interlude sits at the base of the homepage, a
     const headings = await page.locator('main h2').allInnerTexts()
     const lens = headings.findIndex(text => /how i got here/i.test(text))
     expect(lens).toBeGreaterThan(headings.indexOf('Test. Show. Enable.'))
-    expect(lens).toBeLessThan(headings.indexOf('Have a problem that keeps coming back?'))
+    expect(lens).toBeLessThan(headings.indexOf('Before the next costly fix, understand the problem.'))
     const interlude = page.getByRole('region', { name: 'How I got here' })
     await expect(interlude.locator('blockquote')).toHaveText('Inspiration is needed in geometry, just as much as in poetry.')
     await expect(interlude.locator('.pc-interlude-quote figcaption')).toHaveText('— Alexander Pushkin')

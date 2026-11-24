@@ -146,17 +146,16 @@ test('nested layers retain the visible account, native focus and reading positio
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 }, hasTouch: true })
   try {
     const page = await context.newPage(); await page.goto(origin + '/')
-    await expect(page.locator('.pc-moves h3')).toHaveText(['Test.', 'Show.', 'Enable.'])
+    await expect(page.locator('.pc-tse-static h3')).toHaveText(['Test.', 'Show.', 'Enable.'])
     const questions = page.getByText('Questions behind Test', { exact: true })
     await questions.scrollIntoViewIfNeeded(); await questions.focus(); const before = await page.evaluate(() => scrollY)
     await page.keyboard.press('Enter'); await expect(page.getByText('What else could explain this outcome?', { exact: true })).toBeVisible()
     expect(Math.abs(await page.evaluate(() => scrollY) - before)).toBeLessThanOrEqual(2)
     await page.keyboard.press('Space'); await expect(questions).toBeFocused()
-    await page.getByText('Read this illustration', { exact: true }).tap()
-    await expect(page.getByText('These lines are conceptual.', { exact: false })).toBeVisible()
-    await page.getByText('What would make this evidence?', { exact: true }).tap()
-    await expect(page.getByText('A convincing shape is not proof.', { exact: false })).toBeVisible()
+    // Without JavaScript the pattern is complete text: every case study's distinction, already open.
+    await expect(page.locator('.pc-field-text')).toHaveAttribute('open', '')
+    await expect(page.locator('.pc-field-text li')).toHaveCount(6)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-    await expect(page.getByText('Conceptual illustration · not measured data', { exact: true })).toBeVisible()
+    await expect(page.getByText('FIG · Six case studies · each point is two related things taken for one', { exact: true })).toBeVisible()
   } finally { await context.close() }
 })

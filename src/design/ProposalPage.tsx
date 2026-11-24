@@ -44,7 +44,7 @@ function About() {
       <p>Candidate: an interest in inquiry-based education and in helping people develop independent reasoning, stated as a direction rather than an established teaching career.</p>
       <Pending>Practical areas of collaboration the owner wants to invite.</Pending>
     </section>
-    <section className="pc-section pc-contact" aria-labelledby="about-contact"><h2 id="about-contact">Contact</h2><a href={publicPath('/#contact')}>Contact options on the homepage →</a></section>
+    <section className="pc-section pc-contact" aria-labelledby="about-contact"><h2 id="about-contact">Contact</h2><a href={publicPath('/contact/')}>Contact options →</a></section>
   </>
 }
 
