@@ -300,8 +300,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-explore li + li a { padding-left: 0; }
 }
 /* The hero is text only (23 November): the illustration moved to the pattern section, after the cases. */
-.pc-hero.pc-hero--text { grid-template-columns: minmax(0, 1fr); }
-.pc-hero--text .pc-hero-copy { max-width: 52rem; }
+@media (min-width: 761px) { .pc-hero:has(.pc-field-preview) { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
+.pc-hero-action { align-items: center; }
 .pc-pattern-pairs .pc-kicker { margin: 0; }
 
 .pc-selected-list .pc-selected-domain { margin: 0 0 .35rem; }

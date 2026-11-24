@@ -30,7 +30,8 @@ test('production home leads with institutional value and a one-click path to a r
   expect(home.toLowerCase()).not.toContain('collective agency')
   for (const kept of ['Test. Show. Enable.', 'Related. Not equivalent.', 'How I Know']) expect(home).toContain(kept)
   // One call to action, written for a decision-maker, with a primary action to the Contact page.
-  expect(home.match(/class="pc-cta-primary"/g)).toHaveLength(1)
+  // The primary action sits in the hero and again at the end (owner, 24 November: a call to action near the top).
+  expect(home.match(/class="pc-cta-primary"/g)).toHaveLength(2)
   expect(home).toContain('href="/contact/"')
   expect(home).toContain('href="mailto:hello@sbelina.com"')
   expect(home).not.toContain('Download résumé')
@@ -89,8 +90,11 @@ test('Related. Not equivalent. is a field to explore: predict, then split, with 
     const page = await staticContext.newPage()
     await page.goto(`${origin}/`)
     // At rest every point is already split and every pair is listed as text.
-    await expect(page.locator('.pc-field-star[data-split]')).toHaveCount(6)
+    await expect(page.locator('.pc-field .pc-field-star[data-split]')).toHaveCount(6)
     await expect(page.locator('.pc-field-text li')).toHaveCount(6)
+    // The hero shows the same six pairs as a picture with a text alternative, linked to the field.
+    await expect(page.locator('.pc-hero .pc-field-preview svg')).toHaveAttribute('aria-label', /Delivered and Verified/)
+    await expect(page.locator('.pc-hero').getByRole('link', { name: 'Start a conversation' })).toHaveAttribute('href', '/contact/')
     await expect(page.locator('.pc-field-points')).toHaveCount(0)
   } finally { await staticContext.close() }
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' })

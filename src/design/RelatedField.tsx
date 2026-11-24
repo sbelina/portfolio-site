@@ -97,3 +97,30 @@ export function RelatedField({ pairs }: { pairs: readonly FieldPair[] }) {
     </details>
   </div>
 }
+
+/**
+ * The hero's visual (owner direction, 24 November: a call to action and a visual near the top): the same
+ * six case studies, already split, at rest. It is a picture, not a control; its link leads to the
+ * interactive field further down, and every pair is also given there as text.
+ */
+/** A taller, two-column layout for the narrow hero column, so every label has room. */
+const previewSpots: readonly (readonly [number, number])[] = [[210, 80], [570, 150], [230, 250], [580, 320], [210, 420], [570, 490]]
+
+export function FieldPreview({ pairs, href }: { pairs: readonly FieldPair[]; href: string }) {
+  const items = pairs.slice(0, previewSpots.length)
+  return <figure className="pc-field-preview">
+    <div className="pc-field-stage pc-night" data-surface="observatory">
+      <svg viewBox="0 0 800 560" role="img" aria-label={`Six case studies, each two related things taken for one: ${items.map(item => `${item.left} and ${item.right}`).join('; ')}.`} className="pc-field-sky">
+        {dust.map((star, i) => <circle key={i} cx={star.x} cy={star.y * 1.27} r={star.r} className="pc-field-dust"/>)}
+        <path className="pc-field-pattern" d={`M${items.map((_, i) => previewSpots[i].join(' ')).join(' L')}`}/>
+        {items.map((item, i) => <g key={item.slug} className="pc-field-star" data-split="" transform={`translate(${previewSpots[i][0]} ${previewSpots[i][1]})`}>
+          <line x1={-split} x2={split} y1="0" y2="0" className="pc-field-thread"/>
+          <circle r="8" className="pc-field-gap"/>
+          <g className="pc-field-left"><circle r="5" className="pc-field-body"/><text y="30" textAnchor="middle">{item.left}</text></g>
+          <g className="pc-field-right"><circle r="5" className="pc-field-body pc-field-body--turn"/><text y="-16" textAnchor="middle">{item.right}</text></g>
+        </g>)}
+      </svg>
+    </div>
+    <figcaption><span className="pc-field-preview-label">Six case studies. Each began where two related things were <em>taken for one</em>.</span> <a href={href}>Split them yourself <span aria-hidden="true">↓</span></a></figcaption>
+  </figure>
+}

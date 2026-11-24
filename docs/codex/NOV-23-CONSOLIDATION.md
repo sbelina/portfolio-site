@@ -162,3 +162,11 @@ Owner notes: per-item hedges were undermining credibility; Test. Show. Enable. a
 - **Call to action:** *Before the next costly fix, understand the problem.* It has an offer of three outcomes, one primary action (*Start a conversation*), email and LinkedIn, and a line naming the settings worked in. There is a short prompt after the selected case studies.
 - **Contact (`/contact/`):** the form opens the visitor's email app with the message written out. Nothing is stored or sent by the site. The résumé section follows. Until the owner supplies a reviewed PDF (`recruiterContact.resumeHref`), it shows the LinkedIn link.
 - **Verified:** build passed; full suite in Chromium, WebKit, mobile WebKit (edge-case specs) and Firefox, 839 passed, 0 failed, 11 skipped. Screens checked at 1280 and 375 px. Not established: how readers respond to the predict-then-split field.
+
+## Follow-up, 24 November: the call to action and a visual near the top
+
+Owner note: the call to action and a visual need to be close to the top.
+
+- **Hero action:** *Start a conversation* (to `/contact/`) is now the first action in the hero, before the case study link. The full call to action stays at the end.
+- **Hero visual:** the six case studies' pairs, already split, sit beside the headline as a constellation in a taller two-column layout. The picture has a text alternative and links to the interactive field (*Split them yourself ↓*). On phones it follows the hero text.
+- **Verified:** full suite 839 passed, 0 failed, 11 skipped; Atlas 22 passed. Screens checked at 1280 and 390 px.

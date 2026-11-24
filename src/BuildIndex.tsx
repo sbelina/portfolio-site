@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { CurrentShell } from './design/CurrentShell'
 import { PracticeInMotion } from './design/PracticeInMotion'
-import { RelatedField } from './design/RelatedField'
+import { FieldPreview, RelatedField } from './design/RelatedField'
 import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
@@ -46,16 +46,17 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
   }, [])
   return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined}>
     <div className="build-index">
-      <section className="pc-hero pc-hero--text" aria-labelledby="index-title">
+      <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
           <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
-          <p className="pc-hero-action pc-cluster"><a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
+          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')}>Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
           <p className="pc-value">{valueLine}</p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
+        {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
       </section>
       <section className="pc-section pc-possible" aria-labelledby="pc-possible-title">
         <h2 id="pc-possible-title" className="pc-kicker">Three things my work makes possible</h2>
