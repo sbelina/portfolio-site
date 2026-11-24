@@ -26,31 +26,45 @@ test('the count endpoint stores only event, page and short detail, and only on t
   expect([...workerEvents].sort()).toEqual([...clientEvents].sort())
 })
 
-test('off the live site nothing is sent; the opt-out, notice and toast work and say what they are for', async ({ page }) => {
+test('counting is opt-in: tick, then Agree; Disagree or the close button means no; nothing is sent off the live site', async ({ page }) => {
   const sent: string[] = []
   await page.route('**/api/count', route => { sent.push(route.request().postData() ?? ''); return route.fulfill({ status: 204 }) })
-  await page.goto(`${origin}/about/?count=off`)
-  await expect(page).toHaveURL(`${origin}/about/`)
-  await expect(page.getByRole('status').filter({ hasText: 'This browser won’t be counted.' })).toBeVisible()
+  await page.goto(`${origin}/about/`)
   const card = page.locator('#counting')
-  await expect(card.locator('.pc-counting-status')).toHaveText('You chose not to be counted in this browser.')
-  await card.getByRole('button', { name: 'Count me again' }).click()
-  await expect(card.locator('.pc-counting-status')).toHaveText('This is a preview, so nothing is counted here.')
+  await expect(card.locator('.pc-counting-status')).toHaveText('You haven’t chosen yet, so nothing is counted.')
+  await expect(card).toContainText('Cloudflare, which hosts this site, counts visits, pages and the country')
+  // The notice: Agree only works once the box is ticked.
   await page.evaluate(() => (window as Window & { pcShowCountingNotice?: () => void }).pcShowCountingNotice?.())
   const notice = page.getByRole('complementary', { name: 'What this site counts' })
-  await expect(notice).toContainText('never who uses them')
-  await expect(notice.getByRole('link', { name: 'What’s counted' })).toHaveAttribute('href', '/about/#counting')
-  await notice.getByRole('button', { name: 'Don’t count me' }).click()
+  await expect(notice).toContainText('Only with your agreement')
+  await expect(notice.getByRole('button', { name: 'Agree', exact: true })).toBeDisabled()
+  await notice.getByRole('checkbox', { name: 'Count my visits anonymously' }).check()
+  await notice.getByRole('button', { name: 'Agree', exact: true }).click()
   await expect(notice).toHaveCount(0)
-  await expect(page.getByRole('status').filter({ hasText: 'You won’t be counted in this browser.' })).toBeVisible()
-  await expect(card.locator('.pc-counting-status')).toHaveText('You chose not to be counted in this browser.')
+  await expect(page.getByRole('status').filter({ hasText: 'Counting is on, anonymously' })).toBeVisible()
+  await expect(card.locator('.pc-counting-status')).toHaveText('You agreed. This is a preview, so nothing is counted here.')
+  // The close button means disagree.
+  await page.evaluate(() => (window as Window & { pcShowCountingNotice?: () => void }).pcShowCountingNotice?.())
+  await notice.getByRole('button', { name: 'Close and don’t count me' }).click()
+  await expect(notice).toHaveCount(0)
+  await expect(card.locator('.pc-counting-status')).toHaveText('You said no, so nothing is counted in this browser.')
+  // Disagree, and the About controls.
+  await card.getByRole('button', { name: 'Agree to be counted' }).click()
+  await expect(card.locator('.pc-counting-status')).toHaveText('You agreed. This is a preview, so nothing is counted here.')
+  await page.evaluate(() => (window as Window & { pcShowCountingNotice?: () => void }).pcShowCountingNotice?.())
+  await notice.getByRole('button', { name: 'Disagree' }).click()
+  await expect(card.locator('.pc-counting-status')).toHaveText('You said no, so nothing is counted in this browser.')
+  // ?count=on is the same as agreeing; nothing leaves a preview either way.
+  await page.goto(`${origin}/about/?count=on`)
+  await expect(page).toHaveURL(`${origin}/about/`)
+  await expect(card.locator('.pc-counting-status')).toHaveText('You agreed. This is a preview, so nothing is counted here.')
   expect(sent).toEqual([])
 })
 
 test('a browser that asks not to be tracked is told nothing is counted', async ({ page }) => {
   await page.addInitScript(() => Object.defineProperty(navigator, 'globalPrivacyControl', { value: true }))
   await page.goto(`${origin}/about/`)
-  await expect(page.locator('#counting .pc-counting-status')).toHaveText('Your browser asks sites not to track, so nothing is counted for you.')
+  await expect(page.locator('#counting .pc-counting-status')).toHaveText('Your browser asks sites not to track, so this site counts nothing of its own for you.')
   await expect(page.locator('#counting').getByRole('button')).toHaveCount(0)
 })
 
