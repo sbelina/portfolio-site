@@ -83,7 +83,7 @@ test('Field Notes keeps the writing from the previous edition, without date call
   for (const id of ['the-bends', 'calculus-of-syntax', 'conjunction-conjecture', 'tool-vs-toy', 'mundane-evidence', 'archive-wage', 'archive-left']) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
   await expect(page.locator('#earlier-work')).not.toContainText(/\b20\d{2}\b/)
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link')
-  await expect(navigation).toHaveText(['Work', 'Practice', 'Field Notes', 'Observatory*', 'Contact'])
+  await expect(navigation).toHaveText(['Work', 'Practice', 'Field Notes', 'Experiments*', 'Contact'])
 })
 
 test('readers find the work by the words they use: Work, case studies, setting and kind of work', async ({ page, request }) => {
@@ -100,4 +100,23 @@ test('readers find the work by the words they use: Work, case studies, setting a
   await page.goto(`${origin}/`)
   await expect(page.locator('.pc-selected-domain').first()).toHaveText('Insurance operations · Process & service design')
   await expect(page.locator('.pc-selected-domain, .pc-pattern-pairs .pc-kicker, .pc-hero a')).not.toContainText(['Claims'])
+})
+
+test('every case without the pinned process shows its before and after near the top, in its own words, without JavaScript', async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false })
+  try {
+    const page = await context.newPage()
+    for (const slug of ['brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai']) {
+      await page.goto(`${origin}/investigations/${slug}/`)
+      const figure = page.getByRole('region', { name: 'Before and after' })
+      await expect(figure, slug).toBeVisible()
+      await expect(figure.locator('[data-state="before"] .pc-ba-pair')).toContainText('was treated as')
+      await expect(figure.locator('[data-state="after"] .pc-ba-pair')).toContainText('is not')
+    }
+    await page.goto(`${origin}/investigations/brand-research/`)
+    await expect(page.locator('[data-state="before"] figcaption')).toHaveText('Trust is one attitude: how favorably people rate the company.')
+    // Claims keeps its own pinned before-and-after figure instead.
+    await page.goto(`${origin}/investigations/claims-operations/`)
+    await expect(page.getByRole('region', { name: 'Before and after' })).toHaveCount(0)
+  } finally { await context.close() }
 })

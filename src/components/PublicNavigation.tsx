@@ -12,11 +12,11 @@ const currentDestinations = [
   { href: '/investigations/', label: 'Work' },
   { href: '/practice/', label: 'Practice' },
   { href: '/writing/', label: 'Field Notes' },
-  { href: '/lab/', label: 'Observatory' },
+  { href: '/lab/', label: 'Experiments' },
   { href: '/contact/', label: 'Contact' },
 ] as const
 
-/** Pages that belong to the Observatory section; its menu link marks them aria-current="true". */
+/** Pages that belong to the Experiments section (the Observatory, renamed in the menu 24 November); its menu link marks them aria-current="true". */
 export const observatoryMembers = ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/experiments/reveal-hidden-work/'] as const
 const currentState = (href: string, currentPath?: string) => href === currentPath ? 'page' as const
   : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const
@@ -29,7 +29,7 @@ export function PublicNavigation({ currentPath, home = false, legacy = false }: 
   const destinations = historical ? legacyDestinations : currentDestinations
   return <nav className="public-navigation" aria-label="Primary navigation">
     <ul>{destinations.map(({ href, label }) => <li key={href}>
-      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-label={href === '/lab/' ? 'Observatory — experimental' : undefined} aria-current={historical ? undefined : currentState(href, currentPath)}>{label}{href === '/lab/' ? <span aria-hidden="true">*</span> : null}</a>
+      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-label={href === '/lab/' ? 'Experiments — experimental' : undefined} aria-current={historical ? undefined : currentState(href, currentPath)}>{label}{href === '/lab/' ? <span aria-hidden="true">*</span> : null}</a>
     </li>)}</ul>
   </nav>
 }

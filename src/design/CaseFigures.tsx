@@ -124,3 +124,30 @@ export function CaseThumb({ composition, left, right }: { composition: Compositi
     <span className="pc-thumb-pair">{left} <span aria-hidden="true">≠</span><span className="pc-sr-only">is not</span> {right}</span>
   </div>
 }
+
+/**
+ * Before and after, near the top of each case (owner direction, 24 November, after portfolio research:
+ * reviewers look for the change first). Built only from the case's approved text: before is the
+ * explanation people held, with the two things drawn as one; after is what changed, with them drawn apart.
+ * Static, so it reads the same with or without JavaScript.
+ */
+export function BeforeAfter({ left, right, before, after }: { left: string; right: string; before: string; after: string }) {
+  return <section className="pc-ba" aria-labelledby="pc-ba-title">
+    <h2 id="pc-ba-title">Before and after</h2>
+    <div className="pc-ba-grid">
+      <figure className="pc-ba-panel" data-state="before">
+        <p className="pc-kicker">Before · taken as one</p>
+        <svg viewBox="0 0 240 90" aria-hidden="true" focusable="false"><circle cx="120" cy="45" r="26" className="pc-legend-ink" strokeDasharray="2 4"/><circle cx="124" cy="45" r="26" className="pc-legend-ink" strokeDasharray="2 4"/><circle cx="122" cy="45" r="4" className="pc-ba-dot"/></svg>
+        <p className="pc-ba-pair">{left} <span className="pc-ba-sign" aria-hidden="true">=</span><span className="pc-sr-only">was treated as</span> {right}</p>
+        <figcaption><Stressed text={before}/></figcaption>
+      </figure>
+      <figure className="pc-ba-panel" data-state="after">
+        <p className="pc-kicker">After · kept apart</p>
+        <svg viewBox="0 0 240 90" aria-hidden="true" focusable="false"><line x1="62" y1="45" x2="178" y2="45" className="pc-legend-thread"/><circle cx="120" cy="45" r="9" className="pc-legend-turn" strokeDasharray="2 3"/><circle cx="62" cy="45" r="7" className="pc-ba-dot"/><circle cx="178" cy="45" r="7" className="pc-ba-dot pc-ba-dot--turn"/></svg>
+        <p className="pc-ba-pair">{left} <span className="pc-ba-sign" aria-hidden="true">≠</span><span className="pc-sr-only">is not</span> <strong className="pc-turn">{right}</strong></p>
+        <figcaption><Stressed text={after}/></figcaption>
+      </figure>
+    </div>
+    <p className="pc-ba-caption">FIG · Before and after · drawn from this case study’s own account</p>
+  </section>
+}

@@ -181,6 +181,19 @@
   .pc-fold-body { padding: 0 var(--space-5) var(--space-5); border-top: 1px solid var(--soft-line); }
   .pc-fold .pc-explore { padding-top: var(--space-4); }
   @media (max-width: 540px) { .pc-fold > summary { grid-template-columns: minmax(0, 1fr) auto; padding: var(--space-4); } .pc-fold-glyph { display: none; } .pc-fold-body { padding-inline: var(--space-4); } }
+  /* ── Before and after, near the top of a case ───────────────────────────── */
+  .pc-ba { margin-block: var(--space-6); }
+  .pc-ba-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); margin-top: var(--space-4); }
+  .pc-ba-panel { margin: 0; padding: var(--space-4) var(--space-5) var(--space-5); border: 1px solid var(--line); background: var(--paper); display: grid; gap: var(--space-3); align-content: start; }
+  .pc-ba-panel[data-state="after"] { border-color: var(--ink); box-shadow: var(--elevation-2); }
+  .pc-ba-panel .pc-kicker { margin: 0; }
+  .pc-ba-panel svg { width: 100%; max-width: 15rem; height: auto; fill: none; }
+  .pc-ba-dot { fill: var(--ink); stroke: none; }
+  .pc-ba-dot--turn { fill: var(--signal-art); }
+  .pc-ba-pair { margin: 0; font-size: var(--step-1); font-weight: 650; }
+  .pc-ba-sign { color: var(--muted); font-weight: 400; padding-inline: .2em; }
+  .pc-ba-panel figcaption { color: var(--ink); max-width: 46ch; }
+  .pc-ba-caption { margin-top: var(--space-2); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
 }
 
 @layer pc-motion {

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 const atlas='/lab/atlas/'
 const hub='/lab/'
-const label='Observatory — experimental'
+const label='Experiments — experimental'
 const atlasLabel='Atlas of Inquiry — experimental'
 
 test('current primary menus expose one native experimental Observatory link in initial HTML',async({browser,baseURL})=>{
@@ -14,7 +14,7 @@ test('current primary menus expose one native experimental Observatory link in i
       const nav=page.getByRole('navigation',{name:'Primary navigation',exact:true})
       await expect(nav.getByRole('link')).toHaveCount(5)
       const link=nav.getByRole('link',{name:label,exact:true})
-      await expect(link).toHaveText('Observatory*');await expect(link).toHaveAttribute('href',hub)
+      await expect(link).toHaveText('Experiments*');await expect(link).toHaveAttribute('href',hub)
       expect(await link.evaluate(element=>element.tagName)).toBe('A')
       expect(await link.getAttribute('target')).toBeNull()
     }

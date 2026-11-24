@@ -14,7 +14,7 @@ export const foundationPages = {
   patterns: { path: '/patterns/', title: 'Related. Not equivalent.', description: 'Conceptual distinctions and questions for exploring how explanations change. Case-supported connections remain subject to evidence review.', indexable: true },
   writing: { path: '/writing/', title: 'Field Notes', description: 'Field notes, essays and earlier writing by Sami Belina: questions still being worked out, and how she got here.', indexable: true },
   contact: { path: '/contact/', title: 'Contact', description: 'Start a conversation with Sami Belina about a problem your organization keeps paying to fix, and download the résumé.', indexable: true },
-  observatory: { path: '/lab/', title: 'Observatory*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
+  observatory: { path: '/lab/', title: 'Experiments*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
   system: { path: '/system/', title: 'Design-system specimen', description: 'Inspect the current paper and observatory surfaces, typography, semantic states and native disclosures.', indexable: false },
 } as const
 export type FoundationKind = keyof typeof foundationPages
@@ -101,7 +101,7 @@ const observatory = [
 
 function Observatory() {
   return <>
-    <p className="pc-kicker">The observatory · experimental</p><h1>Observatory<span aria-hidden="true">*</span></h1>
+    <p className="pc-kicker">The Observatory · experimental</p><h1>Experiments<span aria-hidden="true">*</span></h1>
     <p className="pc-lead">A separate place for curiosity to operate: experiments that test ways of exploring questions and connections.</p>
     <p className="pc-boundary">The experiments below are invented or illustrative, and none of them is needed to read the rest of the site. The asterisk marks an experiment. The connections field maps my own work and writing.</p>
     <ConnectionsField/>

@@ -5,8 +5,8 @@ import { MoveTheCheckpoint } from './MoveTheCheckpoint'
 import { ServiceBlueprint } from './ServiceBlueprint'
 import { AskItDifferently, ProposalsToProblems } from './CaseVisuals'
 import { LayerStack, PinnedStory, SourceCites } from '../design/Interactions'
-import { Stressed } from '../content/emphasis'
-import { MethodProfile, ProcessDial } from '../design/CaseFigures'
+import { plainText, Stressed } from '../content/emphasis'
+import { BeforeAfter, MethodProfile, ProcessDial } from '../design/CaseFigures'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
@@ -140,6 +140,8 @@ export function InvestigationNarrative({ narrative, evidence }: { narrative: Inv
   const before = narrative.blueprint?.views[0], after = narrative.blueprint?.views[1]
   return <div className="investigation-narrative">
     {narrative.brief ? <CaseGlance brief={narrative.brief} sources={evidence}/> : null}
+    {/* Claims shows its change in the pinned before-and-after figure; the other cases get the same idea up front. */}
+    {!narrative.blueprint && narrative.decision && narrative.brief ? <BeforeAfter left={plainText(narrative.visual.left)} right={plainText(narrative.visual.right)} before={narrative.decision.prevailing} after={narrative.brief.result}/> : null}
     {narrative.decision ? <DecisionLayer decision={narrative.decision}/> : null}
     {layers ? <LayerStack {...layers}/> : null}
     {narrative.method ? <MethodProfile method={narrative.method}/> : null}

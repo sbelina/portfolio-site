@@ -11,7 +11,7 @@ export function EdgeCasePage({ homeHref = publicPath('/'), navigation = true }: 
         {navigation ? <PublicNavigation currentPath="/lab/edge-case/"/> : null}
       </header>
       <main className="ps-main">
-        {navigation ? <p className="ps-breadcrumb"><a href={publicPath('/lab/')}>← Observatory</a></p> : null}
+        {navigation ? <p className="ps-breadcrumb"><a href={publicPath('/lab/')}>← Experiments</a></p> : null}
         <p className="ps-status-tag">Prototype</p>
         <p className="ps-kicker">Arcade_01</p>
         <h1>Edge Case</h1>

@@ -17,8 +17,8 @@ import { CaseThumb } from './design/CaseFigures'
 const explore = [
   { href: '/patterns/', kicker: 'Connections', title: 'Related. Not equivalent.', text: 'Distinctions that change how a problem is understood.' },
   { href: '/writing/', kicker: 'Field Notes', title: 'Writing and questions', text: 'Essays, notes and ideas still being worked out.' },
-  { href: '/lab/', kicker: 'Observatory*', title: 'Experiments', text: 'Interactive ways of exploring questions. Optional, and clearly invented.' },
-  { href: '/lab/edge-case/', kicker: 'Observatory* · game', title: 'Edge Case', text: 'A prototype game about the limits of apparent rules.' },
+  { href: '/lab/', kicker: 'Experiments*', title: 'The Observatory', text: 'Interactive ways of exploring questions. Optional, and clearly invented.' },
+  { href: '/lab/edge-case/', kicker: 'Experiments* · game', title: 'Edge Case', text: 'A prototype game about the limits of apparent rules.' },
 ] as const
 
 /**
@@ -107,7 +107,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <details className="pc-fold" id="explore-fold">
           <summary>
             <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M8 30L24 12L40 26L56 8" className="pc-legend-ink" strokeDasharray="2 4"/>{[[8, 30], [24, 12], [40, 26]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" className="pc-legend-ink"/>)}<circle cx="56" cy="8" r="3.5" className="pc-legend-turn"/></svg>
-            <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the Observatory and a prototype game.</span></span>
+            <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the experiments and a prototype game.</span></span>
             <span className="pc-fold-icon" aria-hidden="true"/>
           </summary>
           <nav className="pc-fold-body pc-explore" aria-labelledby="pc-explore-title">

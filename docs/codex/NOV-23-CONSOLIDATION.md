@@ -183,3 +183,10 @@ Owner note: fold some homepage sections into accordion-style cards, after resear
 - **Kept open:** the hero (with its call to action and visual), the three possibilities, the figures, the selected case studies, the pattern field, the interlude and the call to action.
 - **Links:** an address or link that targets something inside a folded card opens the card first. Cards open with keyboard and touch, and without JavaScript.
 - **Verified:** full suite 839 passed, 0 failed, 11 skipped; Atlas 22 passed. Screens checked at 1280 and 390 px.
+
+## Follow-up, 24 November: Experiments, before and after, artifacts
+
+- **Menu:** *Observatory\** is now **Experiments\***. The original aim is unchanged: keep experiments apart from evidence (16 November hub decision; confirmed 19 November). The page heading is *Experiments\**, with *The Observatory · experimental* above it. The address stays `/lab/`.
+- **Before and after:** the five cases without the pinned process (Trust, Enterprise AI, telematics, Vote Huntsville, accessibility) now open with a before/after figure under *At a glance*. It is built only from approved text: *Before · taken as one* gives the explanation people held, with the two things drawn as one; *After · kept apart* gives what changed, with them drawn apart. It is static and complete without JavaScript. Claims keeps its pinned figure.
+- **Artifacts:** a private plan (not in the repository) sorts candidate artifacts into three routes: *yours outright*, *rebuilt* (structure only) and *redacted with permission*. It includes a redaction checklist. Real artifacts are added only after the owner clears them, through the normal release.
+- **Verified:** full suite 842 passed, 0 failed, 11 skipped; Atlas suite passed.
