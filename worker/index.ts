@@ -1,12 +1,14 @@
 import { handleDeepDive, type DeepDiveEnv } from './deep-dive'
+import { handleCount, type CountStore } from './count'
 
 /**
- * The site is static assets. This Worker runs first only for /deep-dive/* and the retired /builds/*
+ * The site is static assets. This Worker runs first only for /deep-dive/*, /api/count and the retired /builds/*
  * addresses (see wrangler.jsonc `run_worker_first`); every other request is served by the assets layer.
  */
 export default {
-  async fetch(request: Request, env: DeepDiveEnv): Promise<Response> {
+  async fetch(request: Request, env: DeepDiveEnv & { COUNTS?: CountStore }): Promise<Response> {
     const { pathname } = new URL(request.url)
+    if (pathname === '/api/count') return handleCount(request, env.COUNTS)
     if (pathname === '/deep-dive' || pathname.startsWith('/deep-dive/')) return handleDeepDive(request, env)
     if (pathname === '/builds' || pathname.startsWith('/builds/')) return retiredBuild(request)
     return env.ASSETS.fetch(request)

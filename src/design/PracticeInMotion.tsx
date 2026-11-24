@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { practiceMoves } from './PracticeMoves'
 import { Stressed } from '../content/emphasis'
 import { FigureLegend } from './CaseFigures'
+import { count } from '../analytics'
 
 /**
  * Test. Show. Enable. in motion (owner direction, 23 November 2026): the three moves as one figure
@@ -64,7 +65,7 @@ export function PracticeInMotion({ example }: { example?: PracticeExample }) {
     timer.current = window.setTimeout(() => { if (step < 2) setStep((step + 1) as Step); else setPlaying(false) }, 3800)
     return () => window.clearTimeout(timer.current)
   }, [playing, step])
-  const choose = (value: Step) => { setPlaying(false); setStep(value) }
+  const choose = (value: Step) => { setPlaying(false); setStep(value); count('practice-move', practiceMoves[value].title) }
   const exampleText = (index: Step) => example ? [example.test, example.show, example.enable][index] : undefined
 
   if (!enhanced) return <ol className="pc-tse-static">{practiceMoves.map((move, index) => <li key={move.title}>
@@ -78,7 +79,7 @@ export function PracticeInMotion({ example }: { example?: PracticeExample }) {
   return <div className="pc-tse" data-step={step}>
     <fieldset className="pc-tse-controls"><legend className="pc-sr-only">Choose a move</legend>
       {practiceMoves.map((item, index) => <label key={item.title}><input type="radio" name="pc-tse-move" checked={step === index} onChange={() => choose(index as Step)}/><span className="pc-tse-number" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span> {item.title}</label>)}
-      {canPlay ? <button type="button" className="pc-tse-play" aria-pressed={playing} onClick={() => { if (playing) setPlaying(false); else { setStep(0); setPlaying(true) } }}>{playing ? 'Stop' : 'Play all three'}</button> : null}
+      {canPlay ? <button type="button" className="pc-tse-play" aria-pressed={playing} onClick={() => { if (playing) setPlaying(false); else { setStep(0); setPlaying(true); count('practice-play') } }}>{playing ? 'Stop' : 'Play all three'}</button> : null}
     </fieldset>
     <div className="pc-tse-stage">
       <div className="pc-tse-figure pc-night" data-surface="observatory">

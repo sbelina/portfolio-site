@@ -226,7 +226,7 @@ export function ReadingPage({ page }: { page: ReadingPageData }) {
       {page.illustrative ? <aside className="reading-fixture" aria-label="Synthetic inquiry experiment"><strong>Experimental illustration — invented writing.</strong><p>This is a synthetic example, not Sami’s manuscript, project evidence or an observed response. Its revision date records the illustration; it is not a research date.</p></aside> : null}
       {current && entry?.investigation ? <div className="pc-progress" aria-hidden="true"/> : null}
       <main id="reading-main" tabIndex={-1}>{content}</main>
-      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote inquirySpace={!!entry?.inquirySpace} /></footer>
+      <footer className="reading-footer"><a href={publicPath("/")}>Producing Curiosity home</a><a href={publicPath("/about/#counting")}>What this site counts</a><span>Questions are connected. Their evidence remains distinct.</span><ExperimentNote inquirySpace={!!entry?.inquirySpace} /></footer>
     </div>
   )
 }

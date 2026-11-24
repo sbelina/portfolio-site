@@ -16,7 +16,7 @@ export function CurrentShell({ route, children, surface = 'paper', onSkipIntro, 
     </header>
     <main id={mainId} className="pc-main" tabIndex={-1}>{children}</main>
     <footer className="pc-footer site-footer build-index-footer">
-      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><a href={`#${mainId}`}>Back to top ↑</a></div>
+      <div className="pc-footer-line"><span>© {new Date().getFullYear()} Sami Belina</span><a href={publicPath('/about/#counting')}>What this site counts</a><a href={`#${mainId}`}>Back to top ↑</a></div>
       <ExperimentNote inquirySpace={inquirySpace}/>
     </footer>
   </div>

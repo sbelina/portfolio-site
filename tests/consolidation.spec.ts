@@ -83,7 +83,7 @@ test('Field Notes keeps the writing from the previous edition, without date call
   for (const id of ['the-bends', 'calculus-of-syntax', 'conjunction-conjecture', 'tool-vs-toy', 'mundane-evidence', 'archive-wage', 'archive-left']) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
   await expect(page.locator('#earlier-work')).not.toContainText(/\b20\d{2}\b/)
   const navigation = page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('link')
-  await expect(navigation).toHaveText(['Work', 'Practice', 'Field Notes', 'Experiments*', 'Contact'])
+  await expect(navigation).toHaveText(['Work', 'Practice', 'Field Notes', 'Experiments*', 'About', 'Contact'])
 })
 
 test('readers find the work by the words they use: Work, case studies, setting and kind of work', async ({ page, request }) => {

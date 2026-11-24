@@ -40,4 +40,6 @@ export const recruiterContact = {
    * null hides the action: never link a résumé that has not been reviewed for public release.
    */
   resumeHref: null as string | null,
+  /** The owner's portrait for About (and Contact): a public-safe, rights-cleared file in public/media. null hides it. */
+  portrait: null as null | { src: string; alt: string; width: number; height: number },
 }

@@ -8,11 +8,15 @@ import { archiveItems, writings } from '../content/writing'
 import { ctaOffer, recruiterContact } from '../content/recruiter'
 import { ExternalArrow } from './ExternalArrow'
 import { ConnectionsField } from './ConnectionsField'
+import { CareerThread } from './CareerThread'
+import { count } from '../analytics'
+import { CountingChoice } from './CountingChoice'
 
 export const foundationPages = {
   practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
   patterns: { path: '/patterns/', title: 'Related. Not equivalent.', description: 'Conceptual distinctions and questions for exploring how explanations change. Case-supported connections remain subject to evidence review.', indexable: true },
   writing: { path: '/writing/', title: 'Field Notes', description: 'Field notes, essays and earlier writing by Sami Belina: questions still being worked out, and how she got here.', indexable: true },
+  about: { path: '/about/', title: 'About', description: 'Sami Belina, Applied Research & Systems Strategist: the thread from interface design to enterprise investigation, the proof behind it, and what comes next.', indexable: true },
   contact: { path: '/contact/', title: 'Contact', description: 'Start a conversation with Sami Belina about a problem your organization keeps paying to fix, and download the résumé.', indexable: true },
   observatory: { path: '/lab/', title: 'Experiments*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
   system: { path: '/system/', title: 'Design-system specimen', description: 'Inspect the current paper and observatory surfaces, typography, semantic states and native disclosures.', indexable: false },
@@ -127,6 +131,7 @@ function Contact() {
     const value = (name: string) => String(data.get(name) ?? '').trim()
     const subject = `Conversation request${value('organization') ? ` from ${value('organization')}` : ''}`
     const body = [`Name: ${value('name')}`, `Email: ${value('email')}`, `Organization: ${value('organization')}`, '', value('problem')].join('\n')
+    count('contact-send')
     location.href = `mailto:${recruiterContact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setSent(true)
   }
@@ -146,11 +151,25 @@ function Contact() {
         {sent ? <p className="pc-contact-note" role="status">Your email app should have opened with the message. If it didn’t, write to {recruiterContact.email}.</p> : null}
       </form>
     </section>
-    <section className="pc-section pc-resume" aria-labelledby="resume-title">
-      <h2 id="resume-title">Résumé</h2>
-      {recruiterContact.resumeHref ? <p><a className="pc-cta-primary" href={publicPath(recruiterContact.resumeHref)}>Download my latest résumé (PDF)</a></p> : null}
-      <p className={recruiterContact.resumeHref ? 'pc-contact-note' : undefined}><a href={recruiterContact.linkedin}>Professional experience on LinkedIn <ExternalArrow/></a></p>
-    </section>
+    <CareerThread/>
+  </>
+}
+
+/** About (owner direction, 24 November): the portrait, the thread in place of a résumé, and what the site counts. */
+function About() {
+  const { portrait } = recruiterContact
+  return <>
+    <p className="pc-kicker">About · Sami Belina</p>
+    <h1>I investigate why outcomes and their <em className="pc-accent">explanations</em> part ways.</h1>
+    <div className="pc-about-intro">
+      {portrait ? <figure className="pc-portrait"><img src={publicPath(portrait.src)} alt={portrait.alt} width={portrait.width} height={portrait.height}/></figure> : null}
+      <div>
+        <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
+        <p><a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/investigations/')}>The case studies <span aria-hidden="true">→</span></a></p>
+      </div>
+    </div>
+    <CareerThread/>
+    <CountingChoice/>
   </>
 }
 
@@ -189,6 +208,6 @@ export function FoundationPage({ kind }: { kind: FoundationKind }) {
   useEffect(() => setEnhanced(true), [])
   return <CurrentShell route={foundationPages[kind].path} surface={surface}><div className={`pc-document pc-document--${kind}`}>
     <a className="pc-breadcrumb" href={publicPath('/')}>Producing Curiosity home</a>
-    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : kind === 'writing' ? <Writing/> : kind === 'observatory' ? <Observatory/> : kind === 'contact' ? <Contact/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
+    {kind === 'practice' ? <Practice/> : kind === 'patterns' ? <Patterns/> : kind === 'writing' ? <Writing/> : kind === 'observatory' ? <Observatory/> : kind === 'contact' ? <Contact/> : kind === 'about' ? <About/> : <SystemSpecimen enhanced={enhanced} surface={surface} setSurface={setSurface}/>}
   </div></CurrentShell>
 }

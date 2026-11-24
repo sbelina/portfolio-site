@@ -13,6 +13,7 @@ const currentDestinations = [
   { href: '/practice/', label: 'Practice' },
   { href: '/writing/', label: 'Field Notes' },
   { href: '/lab/', label: 'Experiments' },
+  { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
 ] as const
 

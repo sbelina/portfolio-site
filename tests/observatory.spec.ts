@@ -38,7 +38,7 @@ test('every observatory page marks its section in the primary menu', async ({ pa
 
 test('game page offers global navigation and a way back to the hub', async ({ page }) => {
   await page.goto(`${production}/lab/edge-case/`)
-  await expect(page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link')).toHaveCount(5)
+  await expect(page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link')).toHaveCount(6)
   await page.getByRole('link', { name: '← Experiments' }).click()
   await expect(page).toHaveURL(`${production}/lab/`)
 })

@@ -9,11 +9,11 @@ test('current intro requires exactly three step actions and a separate Dive, nev
   const region = page.getByRole('region', { name: introduction })
   await page.getByRole('button', { name: 'Begin exploring the question: how does one produce curiosity?' }).click()
   await page.clock.runFor(8000)
-  await expect(page.getByRole('button', { name: 'step 2: test the limits' })).toBeVisible()
-  await page.getByRole('button', { name: 'step 2: test the limits' }).click()
+  await expect(page.getByRole('button', { name: 'step 2: test the explanation' })).toBeVisible()
+  await page.getByRole('button', { name: 'step 2: test the explanation' }).click()
   await page.clock.runFor(8000)
-  await expect(page.getByRole('button', { name: 'step 3: recognize patterns' })).toBeVisible()
-  await page.getByRole('button', { name: 'step 3: recognize patterns' }).click()
+  await expect(page.getByRole('button', { name: 'step 3: show where they part' })).toBeVisible()
+  await page.getByRole('button', { name: 'step 3: show where they part' }).click()
   await expect(region).toHaveAttribute('data-intro-phase', 'ready')
   const position = await page.evaluate(() => scrollY)
   await page.clock.runFor(12000)
@@ -31,9 +31,9 @@ test('keyboard focus follows the steps; held third-step Enter cannot also activa
   await page.clock.install(); await page.goto(origin + '/')
   await expect(page.getByRole('button', { name: 'Begin exploring the question: how does one produce curiosity?' })).toBeFocused()
   await page.keyboard.press('Enter')
-  await expect(page.getByRole('button', { name: 'step 2: test the limits' })).toBeFocused()
+  await expect(page.getByRole('button', { name: 'step 2: test the explanation' })).toBeFocused()
   await page.keyboard.press('Space')
-  await expect(page.getByRole('button', { name: 'step 3: recognize patterns' })).toBeFocused()
+  await expect(page.getByRole('button', { name: 'step 3: show where they part' })).toBeFocused()
   await page.keyboard.down('Enter')
   const dive = page.getByRole('button', { name: 'Dive in to the portfolio', exact: true })
   await expect(dive).toBeFocused()
@@ -49,7 +49,7 @@ test('touch uses four independent activations without a third-tap compatibility 
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true })
   try {
     const page = await context.newPage(); await page.clock.install(); await page.goto(origin + '/')
-    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the limits', 'step 3: recognize patterns']) await page.getByRole('button', { name, exact: true }).tap()
+    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the explanation', 'step 3: show where they part']) await page.getByRole('button', { name, exact: true }).tap()
     await page.clock.runFor(8000)
     await expect(page.getByRole('region', { name: introduction })).toHaveAttribute('data-intro-phase', 'ready')
     await page.getByRole('button', { name: 'Dive in to the portfolio', exact: true }).tap()
@@ -67,7 +67,7 @@ test('skip, replay, return visits and reduced-motion replay keep the same explic
     await page.reload(); await expect(page.getByRole('region', { name: introduction })).toHaveCount(0)
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.getByRole('button', { name: 'Replay introduction', exact: true }).click()
-    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the limits', 'step 3: recognize patterns']) await page.getByRole('button', { name, exact: true }).click()
+    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the explanation', 'step 3: show where they part']) await page.getByRole('button', { name, exact: true }).click()
     await expect(page.getByRole('button', { name: 'Dive in to the portfolio', exact: true })).toBeVisible()
     await page.getByRole('button', { name: 'Dive in to the portfolio', exact: true }).click()
     await expect(page.getByRole('region', { name: introduction })).toHaveCount(0)
@@ -97,7 +97,7 @@ test('current intro has contrast, keyboard targets and enlarged narrow reading',
     await expect(page.getByRole('button', { name: 'Begin exploring the question: how does one produce curiosity?', exact: true })).toHaveAccessibleName(/how does one produce curiosity/)
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%' })
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
-    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the limits', 'step 3: recognize patterns']) {
+    for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the explanation', 'step 3: show where they part']) {
       const button = page.getByRole('button', { name, exact: true })
       await button.scrollIntoViewIfNeeded(); await expect(button).toBeInViewport(); await button.tap()
     }
@@ -110,7 +110,7 @@ test('current intro has contrast, keyboard targets and enlarged narrow reading',
 
 test('skip during a Dive cancels its animation and a replay starts at the first step', async ({ page }) => {
   await page.clock.install(); await page.goto(origin + '/')
-  for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the limits', 'step 3: recognize patterns']) await page.getByRole('button', { name, exact: true }).click()
+  for (const name of ['Begin exploring the question: how does one produce curiosity?', 'step 2: test the explanation', 'step 3: show where they part']) await page.getByRole('button', { name, exact: true }).click()
   await page.getByRole('button', { name: 'Dive in to the portfolio', exact: true }).click()
   await page.clock.runFor(200)
   // Skip by keyboard while the Dive is moving: a pointer click waits for the button to stop
@@ -161,4 +161,30 @@ test('nested layers retain the visible account, native focus and reading positio
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
     await expect(page.getByText('FIG · Six case studies · each point is two related things taken for one', { exact: true })).toBeVisible()
   } finally { await context.close() }
+})
+
+test('the introduction is a short investigation: each step changes the drawing, and the words say the same', async ({ page }) => {
+  await page.goto(origin + '/')
+  const scene = page.locator('.pc-intro .intro-scene')
+  await expect(scene).toHaveAttribute('data-stage', '0')
+  await expect(page.locator('.pc-intro .depth-field--scene')).toHaveAttribute('aria-hidden', 'true')
+  await expect(page.locator('.pc-intro .intro-hint').first()).toHaveText('Step 1: notice what doesn’t add up')
+  await page.getByRole('button', { name: 'Begin exploring the question: how does one produce curiosity?' }).click()
+  await expect(scene).toHaveAttribute('data-stage', '1')
+  await expect(scene.locator('.intro-scene-caption')).toHaveText('01 · NOTICE · SOMETHING DOESN’T ADD UP')
+  await expect(page.locator('.pc-intro .sr-only[aria-live]')).toContainText('Noticed: something doesn’t add up.')
+  await page.getByRole('button', { name: 'step 2: test the explanation' }).click()
+  await expect(scene).toHaveAttribute('data-stage', '2')
+  await expect(scene.locator('.intro-scene-lens')).toHaveCount(1)
+  await page.getByRole('button', { name: 'step 3: show where they part' }).click()
+  await expect(scene).toHaveAttribute('data-stage', '3')
+  await expect(scene.locator('.intro-scene-caption')).toHaveText('03 · SHOW · RELATED. NOT EQUIVALENT.')
+  // Deck palette only: the thread is the orange of the drawings, never a status colour.
+  const [thread, art] = await scene.evaluate(svg => {
+    const probe = document.createElement('span'); probe.style.color = 'var(--signal-art)'; svg.parentElement!.append(probe)
+    const value = [getComputedStyle(svg.querySelector('.intro-scene-thread')!).stroke, getComputedStyle(probe).color]; probe.remove(); return value
+  })
+  expect(thread).toBe(art)
+  // Text never fades: the question stays fully opaque through every step.
+  expect(await page.locator('.pc-intro .intro-field').evaluate(element => getComputedStyle(element).opacity)).toBe('1')
 })

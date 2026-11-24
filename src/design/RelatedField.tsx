@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { count } from '../analytics'
 
 /**
  * Related. Not equivalent. as a field to explore (owner direction, 23 November 2026).
@@ -38,8 +39,8 @@ export function RelatedField({ pairs }: { pairs: readonly FieldPair[] }) {
   const current = items.find(item => item.slug === chosen)
   const splitCount = items.filter(item => item.slug in answers).length
   const index = current ? items.indexOf(current) : -1
-  const answer = (value: Answer) => current && setAnswers(previous => ({ ...previous, [current.slug]: value }))
-  const splitAll = () => setAnswers(previous => Object.fromEntries(items.map(item => [item.slug, previous[item.slug] ?? 'different'])))
+  const answer = (value: Answer) => { if (!current) return; count('field-split', `${current.slug} ${value}`); setAnswers(previous => ({ ...previous, [current.slug]: value })) }
+  const splitAll = () => { count('field-split-all'); setAnswers(previous => Object.fromEntries(items.map(item => [item.slug, previous[item.slug] ?? 'different']))) }
   const complete = enhanced && splitCount === items.length
 
   return <div className="pc-field" data-enhanced={enhanced || undefined} data-complete={complete || undefined}>

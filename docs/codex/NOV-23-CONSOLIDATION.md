@@ -190,3 +190,28 @@ Owner note: fold some homepage sections into accordion-style cards, after resear
 - **Before and after:** the five cases without the pinned process (Trust, Enterprise AI, telematics, Vote Huntsville, accessibility) now open with a before/after figure under *At a glance*. It is built only from approved text: *Before · taken as one* gives the explanation people held, with the two things drawn as one; *After · kept apart* gives what changed, with them drawn apart. It is static and complete without JavaScript. Claims keeps its pinned figure.
 - **Artifacts:** a private plan (not in the repository) sorts candidate artifacts into three routes: *yours outright*, *rebuilt* (structure only) and *redacted with permission*. It includes a redaction checklist. Real artifacts are added only after the owner clears them, through the normal release.
 - **Verified:** full suite 842 passed, 0 failed, 11 skipped; Atlas suite passed.
+
+## Follow-up, 24 November: About, the career thread, counting, the introduction
+
+- **About (`/about/`, new, in the menu):**
+  - headline: *I investigate why outcomes and their explanations part ways.*;
+  - a portrait slot (`recruiterContact.portrait`, hidden until the owner supplies a rights-cleared photo);
+  - the lead;
+  - the career thread;
+  - *What this site counts*.
+
+  The fixtures-only About shell is retired.
+- **Career thread** (About and Contact, in place of a résumé, with *Request the full résumé*). Three eras and *Next* along one orange thread, with proof as ink points:
+  - **2011–2019 · Foundations: Design, code and access.** A degree (2011–2016), with early roles in 2012–2013 at one of the largest web-hosting and domain companies serving small businesses, and others.
+  - **2019–2022 · Information systems: Knowledge that has to travel.** A global consumer-technology company known for its devices and support experience. Marked *context being written*; the owner is writing it.
+  - **2022–2026 · Enterprise investigation: Explanations that cost money.** One of the largest U.S. auto insurers, known for usage-based pricing.
+  - **Next · Systems strategy, before the fix.** Its call to action is *Bring me the problem your organization keeps paying to fix.*
+  - **Format:** each era is a turn (*I learned that…*) with what was owned and links to the published case studies. Organizations are described, never named. The ownership wording was drafted for owner review and is not approved.
+- **Counting** (`worker/count.ts`, `src/analytics.ts`):
+  - **What is stored:** `POST /api/count` writes event, path and an optional short detail to Workers Analytics Engine (`producing_curiosity_counts`). No IP address, user agent, cookie or identifier is kept.
+  - **When nothing is stored:** previews and local runs, and Do Not Track or Global Privacy Control signals (honoured in the browser and in the Worker).
+  - **Opting out:** *Don't count me* (or `?count=off`) is remembered in this browser only.
+  - **The notice:** a first-visit notice says what is counted and why, offers a one-click way out, and waits until the introduction has closed. A toast confirms each choice. About shows the current state and the toggle.
+  - **Reading the counts:** `scripts/counts-report.ts` prints totals; it needs an Analytics read token.
+- **Introduction:** the same four actions (three steps plus Dive), recast as a short investigation: notice, test, show. It is drawn in the deck palette; see `docs/INTRO-STATES.md`. The legacy fixtures edition is unchanged.
+- **Footer experiment note:** updated for the retired archive, the new introduction and counting.

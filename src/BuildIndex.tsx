@@ -55,7 +55,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
           <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
-          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')}>Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
+          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
           <p className="pc-value">{valueLine}</p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
           {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
@@ -76,10 +76,10 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>
           {entry.stakes ? <p className="pc-selected-stakes"><span className="pc-selected-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}
           {entry.brief ? <p><span className="pc-selected-label">What changed:</span> <Stressed text={entry.brief.result}/></p> : <p><Stressed text={entry.summary}/></p>}
-          <p className="pc-selected-links"><a href={publicPath(entry.path)}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
+          <p className="pc-selected-links"><a href={publicPath(entry.path)} data-count="case-open" data-count-detail={entry.slug}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} data-count="deep-dive-open" data-count-detail={entry.slug}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
         </li>)}</ol>
         <a className="pc-text-link" href={publicPath('/investigations/')}>All {investigations.length} case studies <span aria-hidden="true">→</span></a>
-        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')}>Let’s talk about it <span aria-hidden="true">→</span></a></p>
+        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')} data-count="cta-band">Let’s talk about it <span aria-hidden="true">→</span></a></p>
       </section> : <section className="pc-section" aria-labelledby="pc-selected-title"><p className="pc-kicker">Case studies</p><h2 id="pc-selected-title">Case studies are in review</h2><p>No case study is published in this edition yet.</p></section>}
       {pairs.length ? <section className="pc-section pc-pattern" aria-labelledby="pc-pattern-title">
         <div className="pc-section-heading"><p className="pc-kicker">The pattern across the work</p><h2 id="pc-pattern-title">Related. <em className="pc-accent">Not</em> equivalent.</h2></div>
@@ -91,7 +91,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           the call to action, figures, case studies and the pattern. Native <details>, each opening independently. */}
       <section className="pc-section pc-folds" aria-labelledby="pc-folds-title">
         <p className="pc-kicker" id="pc-folds-title">Go deeper</p>
-        <details className="pc-fold" id="practice-fold">
+        <details className="pc-fold" id="practice-fold" data-count="practice-open">
           <summary>
             <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M2 12C18 12 22 20 32 20M2 28C18 28 22 20 32 20" className="pc-legend-ink" strokeDasharray="2 4"/><ellipse cx="32" cy="20" rx="4" ry="14" className="pc-legend-check"/><path d="M32 20H62" className="pc-legend-thread"/></svg>
             <span className="pc-fold-text"><span className="pc-fold-kicker">How I investigate</span><h2 id="pc-practice-title">Test. Show. Enable.</h2><span className="pc-fold-teaser">Three moves, shown on one case study: find the gap, make the evidence visible, and leave people able to act.</span></span>
@@ -104,7 +104,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
             <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
           </div>
         </details>
-        <details className="pc-fold" id="explore-fold">
+        <details className="pc-fold" id="explore-fold" data-count="explore-open">
           <summary>
             <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M8 30L24 12L40 26L56 8" className="pc-legend-ink" strokeDasharray="2 4"/>{[[8, 30], [24, 12], [40, 26]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" className="pc-legend-ink"/>)}<circle cx="56" cy="8" r="3.5" className="pc-legend-turn"/></svg>
             <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the experiments and a prototype game.</span></span>
@@ -121,7 +121,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
         <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
         <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
-        <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')}>Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
+        <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-end">Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
         <p className="pc-cta-proof">Worked in insurance operations, customer research, enterprise innovation, product research, civic engagement and AI-assisted development.</p>
       </section>
     </div>

@@ -11,8 +11,9 @@ const fixtures = 'http://127.0.0.1:4174'
 // The Phase 1 homepage and empty-state checks were superseded by the released evidence-first
 // homepage (tests/evidence-first.spec.ts) when main was merged on 19 November.
 
+// The About shell was superseded by the published About page on 24 November (career thread, portrait, counting).
 test('owner-review shells exist only in the local fixtures build', async ({ request }) => {
-  for (const route of ['/about/', '/learning/']) {
+  for (const route of ['/learning/']) {
     expect((await request.get(`${production}${route}`)).status(), route).toBe(404)
     const local = await request.get(`${fixtures}${route}`)
     expect(local.status(), route).toBe(200)
@@ -21,7 +22,8 @@ test('owner-review shells exist only in the local fixtures build', async ({ requ
     expect(html).toMatch(/<meta name="robots" content="[^"]*noindex/)
   }
   const sitemap = await (await request.get(`${production}/sitemap.xml`)).text()
-  expect(sitemap).not.toMatch(/\/(about|learning)\//)
+  expect(sitemap).not.toMatch(/\/learning\//)
+  expect(sitemap).toMatch(/\/about\//)
   expect((await (await request.get(`${fixtures}/route-manifest.json`)).json()).fixture).toBe(true)
 })
 
@@ -47,7 +49,7 @@ test('changed pages reflow at 320px with enlarged text', async ({ browser }) => 
   const context = await browser.newContext({ viewport: { width: 320, height: 740 }, reducedMotion: 'reduce' })
   try {
     const page = await context.newPage()
-    for (const url of [`${production}/`, `${production}/investigations/`, `${fixtures}/learning/`, `${fixtures}/about/`]) {
+    for (const url of [`${production}/`, `${production}/investigations/`, `${fixtures}/learning/`, `${production}/about/`, `${production}/contact/`]) {
       await page.goto(url)
       await page.addStyleTag({ content: ':root{font-size:200%}' })
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), url).toBe(true)
@@ -55,8 +57,3 @@ test('changed pages reflow at 320px with enlarged text', async ({ browser }) => 
   } finally { await context.close() }
 })
 
-test('about shell keeps a readable outline', async ({ page }) => {
-  await page.goto(`${fixtures}/about/`)
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sami Belina')
-  await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Background', 'Where the work happens', 'Why the combination is useful', 'Direction', 'Contact'])
-})

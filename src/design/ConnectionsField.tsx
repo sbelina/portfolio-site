@@ -3,6 +3,7 @@ import { graphEdges, graphNodes, type GraphNode } from '../data'
 import { legacyFragments } from '../content/legacy-fragments'
 import { caseLabels } from '../content/primary-evidence'
 import { publicPath } from '../public-path'
+import { count } from '../analytics'
 
 /**
  * The Observatory's layered connections field (owner direction, 23 November 2026), restored from the
@@ -71,6 +72,7 @@ export function ConnectionsField() {
     const node = nodeById.get(id)
     if (node && layerRank[node.layer ?? 'core'] > layerRank[layer]) setLayer(node.layer ?? 'core')
     setSelected(value => value === id ? null : id)
+    count('cfield-point', id)
   }
 
   const textList = <ul className="pc-cfield-list">{graphNodes.map(node => {
@@ -86,7 +88,7 @@ export function ConnectionsField() {
     <h2 id="pc-cfield-title">Follow the relationship, not the category.</h2>
     <p>The work, the thinking behind it and the earlier work it grew from, in three layers. Choose a point to trace what it connects to. <strong>These are associations I drew, not evidence of cause.</strong></p>
     {enhanced ? <>
-      <fieldset className="pc-cfield-layers"><legend className="pc-sr-only">Layers shown</legend>{(Object.keys(layerNames) as Layer[]).map(value => <label key={value}><input type="radio" name="pc-cfield-layer" checked={layer === value} onChange={() => { setLayer(value); setSelected(null) }}/>{layerNames[value]}</label>)}</fieldset>
+      <fieldset className="pc-cfield-layers"><legend className="pc-sr-only">Layers shown</legend>{(Object.keys(layerNames) as Layer[]).map(value => <label key={value}><input type="radio" name="pc-cfield-layer" checked={layer === value} onChange={() => { setLayer(value); setSelected(null); count('cfield-layer', value) }}/>{layerNames[value]}</label>)}</fieldset>
       <div className="pc-cfield-grid">
         <div className="pc-cfield-figure"><div ref={stage} className="pc-cfield-stage pc-night" data-surface="observatory" data-selected={selected ? 'true' : undefined}>
           <svg className="pc-cfield-sky" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">

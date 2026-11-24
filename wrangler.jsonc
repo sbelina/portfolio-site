@@ -13,9 +13,12 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "force-trailing-slash",
-    "run_worker_first": ["/deep-dive", "/deep-dive/*", "/builds", "/builds/*"]
+    "run_worker_first": ["/deep-dive", "/deep-dive/*", "/builds", "/builds/*", "/api/count"]
   },
   // Private deep-dive store (namespace "portfolio-site-deep-dive", created 23 November 2026).
   // Holds rendered deep dives only; never commit their text. Still closed until both secrets exist.
-  "kv_namespaces": [{ "binding": "DEEP_DIVE", "id": "e234e2df893d4663ad5ff5d61fa4fd84" }]
+  "kv_namespaces": [{ "binding": "DEEP_DIVE", "id": "e234e2df893d4663ad5ff5d61fa4fd84" }],
+  // Anonymous usage counts (24 November 2026): event, path and short detail only; see worker/count.ts.
+  // The dataset is created on first write.
+  "analytics_engine_datasets": [{ "binding": "COUNTS", "dataset": "producing_curiosity_counts" }]
 }

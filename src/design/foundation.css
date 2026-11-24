@@ -55,13 +55,22 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-intro .intro-hint { color: var(--muted); padding: .25rem; }
 .pc-intro .skip-link { position: fixed; top: .75rem; left: 5vw; z-index: 50; padding: .5rem .75rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
 .pc-intro :is(.effect-resist-one,.effect-resist-two,.effect-breakthrough) .intro-source-wrap { animation: none; }
+/* Current edition (24 November): the scene sits above the question, text never fades during the dive,
+   and the drawing, not the words, carries the movement. Unlayered to override the legacy intro rules. */
+.pc-intro [data-dive-mode="explicit"] .intro-field { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3vh, 2rem); opacity: 1; filter: none; }
+.pc-intro [data-dive-mode="explicit"] .depth-field--scene { position: relative; inset: auto; order: -1; width: min(100%, 56rem); opacity: 1; transform: scale(calc(1 + var(--dive-progress) * 1.8)); transform-origin: 50% 50%; transition: none; }
+.pc-intro [data-dive-mode="explicit"] :is(.question, .step-prompt) { font-size: clamp(1.4rem, 3.4vw, 3.4rem); }
+/* Deck palette in the current intro: the words in ink, the final action in the accent. */
+.pc-intro [data-dive-mode="explicit"] .intro-source { color: var(--ink); }
+.pc-intro [data-dive-mode="explicit"][data-intro-phase="ready"] .intro-source .question-trigger { color: var(--signal); }
+.pc-intro [data-dive-mode="explicit"] .question-mark::before, .pc-intro [data-dive-mode="explicit"] .question-mark::after { border-color: color-mix(in srgb, var(--signal) 58%, transparent); }
+.pc-intro [data-dive-mode="explicit"] .depth-field--scene { container-type: inline-size; }
 .pc-intro .effect-resist-one .mirror-stack { animation: yieldOne 720ms ease; }
 .pc-intro .effect-resist-two .mirror-stack { animation: yieldTwo 720ms ease; }
 .pc-intro .effect-breakthrough .mirror-stack { animation: breakThrough 820ms ease; }
 .pc-intro .question-mark::before, .pc-intro .question-mark::after { animation: none; }
 .pc-intro .intro-shell[data-intro-phase="ready"] .step-prompt { text-decoration: underline; text-underline-offset: .2em; }
-.pc-text-link, .pc-contact a, .pc-breadcrumb { display: inline-flex; align-items: center; min-height: 44px; gap: .4rem; }
-.pc-contact a + a { margin-left: 2rem; }
+.pc-text-link, .pc-breadcrumb { display: inline-flex; align-items: center; min-height: 44px; gap: .4rem; }
 .pc-external-arrow { display: inline-block; width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.5; flex-shrink: 0; }
 .pc-disclosure { border: 1px solid var(--line); padding: .8rem 1.25rem; margin-block: 1.5rem; }
 .pc-disclosure > summary { min-height: 44px; cursor: pointer; padding-block: .4rem; font-weight: 600; }
@@ -114,8 +123,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   /* Give enlarged option words the full measure across system-font metrics. */
   .pc-surface-control label { display: grid; grid-template-columns: minmax(0,1fr); justify-items: start; width: 100%; min-width: 0; gap: .25rem; }
   .pc-inquiry-list > div { grid-template-columns: 1fr; gap: .5rem; }
-  .pc-contact a + a { margin-left: 0; }
-  .pc-contact { display: flex; flex-direction: column; align-items: flex-start; }
 }
 @media(max-height:540px) { .pc-intro .intro-field { touch-action: pan-y; } }
 @media(prefers-reduced-motion:reduce) { .pc-site *, .pc-site *::before, .pc-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
