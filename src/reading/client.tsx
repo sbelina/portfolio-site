@@ -2,6 +2,7 @@ import { hydrateRoot } from 'react-dom/client'
 import { ReadingPage, type ReadingPageData } from './ReadingPage'
 import './reading.css'
 import '../design/foundation.css'
+import { initCounting } from '../analytics'
 
 const root = document.getElementById('reading-root')
 const bootstrap = document.getElementById('reading-data')
@@ -21,3 +22,6 @@ if (root && bootstrap?.textContent) {
     // not replace it with an empty client application or a failed loading state.
   }
 }
+
+// Anonymous usage counts; see src/analytics.ts. Never runs off the live site.
+initCounting()

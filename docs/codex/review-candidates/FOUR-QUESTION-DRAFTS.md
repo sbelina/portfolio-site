@@ -44,10 +44,7 @@ The typed candidate is authoritative; this is the at-a-glance version.
   - Use of a resource is not evidence of effectiveness.
   - The two rework observations have different scopes, so they are withheld and never compared.
 
-**Open for the owner:**
-
-- Confirm that the four-office, 2+ year scope applies to both the guides and the training, or say which one.
-- An earlier note described the guide’s use as statewide. Confirm which is right for public copy.
+**Answered 23 November:** the four offices are the whole state, so “statewide” and “four offices” are the same scope, and it applies to the guides and the training. The exception log covered four months.
 
 ---
 
@@ -92,8 +89,8 @@ The owner supplied a final Trust case: *Designing Better Questions About Trust*,
 - **What I did:**
   - I synthesized the 38 proposals into eight challenge areas, using AI-assisted parsing that I checked and interpreted myself.
   - I worked with seven teams.
-  - I led the largest sprint team.
-- **How I knew:** Reading every proposal against the others and checking the AI-assisted groupings by hand. *(Owner to describe how, if at all, the groupings were tested with the teams.)*
+  - I was a lead and coach in the sprint, and led two ideas with one combined team. *(Owner correction, 23 November; replaces “led the largest sprint team”.)*
+- **How I knew:** Reading every proposal against the others and checking the AI-assisted groupings by hand. I tested the groupings with the experienced sprint facilitator who brought the idea to the innovation team, then walked them through with the innovation principal and stakeholders while the sprint teams were defined. *(Owner, 23 November.)*
 - **What I’d do differently (proposed):** Record which challenge areas teams chose and why, so the synthesis’s usefulness could be shown, not only its output.
 - **How I know (caveats):**
   - I did not own the enterprise AI strategy or the sprint’s overall design.
@@ -119,19 +116,17 @@ The owner supplied a final Trust case: *Designing Better Questions About Trust*,
   - I made opportunity recommendations.
 - **How I knew:**
   - Surviving notes and records, with quotations separated from interpretation.
-  - A usability score of about 70 (SUS) and a program recommendation score of about −20 (NPS), both from the same six participants.
+  - A usability score of about 70 (SUS) and a program recommendation score of about −20 (NPS), both from the same five participants. *(Owner correction, 23 November: five, not six.)*
 - **What I’d do differently (proposed):** Agree on a backup and consent process for recordings before the sessions run, so recovery is never the method.
 - **How I know (caveats):**
-  - Six participants is a small sample.
+  - Five participants is a small sample.
   - SUS and NPS are different instruments; they are not one scale or a causal story.
-  - The five-participant recovery account and the six-session scores are kept separate until reconciled.
   - Nothing measures retention or why people left.
   - The follow-up survey was another team’s work; it is not proof that my recommendations were adopted.
 
 **Open for the owner:**
 
-- Who ran the 2,000-respondent survey, and when.
-- Does “led to” have a source, such as the survey brief citing the research?
+- **Answered 23 November:** the marketing analytics team ran the follow-up, to define current-state personas, after Sami presented the report to them. Sami confirmed both scores while writing the report. Public copy should say “followed”, not “led to”.
 - Can the product be named?
 
 ---

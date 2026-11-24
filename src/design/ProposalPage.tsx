@@ -9,7 +9,6 @@ import { publicPath } from '../public-path'
  */
 export const proposalMarker = 'OWNER_REVIEW_PROPOSAL_16NOV'
 export const proposalPages = {
-  about: { path: '/about/', title: 'About (proposal)', description: 'Unapproved local shell for an About page.' },
   learning: { path: '/learning/', title: 'Learning and facilitation (proposal)', description: 'Unapproved local shell for a Learning and Facilitation pathway.' },
 } as const
 export type ProposalKind = keyof typeof proposalPages
@@ -24,29 +23,7 @@ function Banner() {
   </div>
 }
 
-function About() {
-  return <>
-    <Banner/>
-    <p className="pc-kicker">About</p><h1>Sami Belina</h1>
-    <p className="pc-lead">Candidate framing: research, design, language and philosophy meet in one interest, which is how understanding develops and what helps it hold up.</p>
-    <section className="pc-section" aria-labelledby="about-background"><h2 id="about-background">Background</h2>
-      <p>Candidate: an Interdisciplinary Design background, with minors in Digital Media and Philosophy.</p>
-      <Pending>Confirm the institution, degree name and how the owner wants it phrased. No advanced degree, teaching credential or research qualification is implied.</Pending>
-    </section>
-    <section className="pc-section" aria-labelledby="about-practice"><h2 id="about-practice">Where the work happens</h2>
-      <p>Candidate: applied research across organizational, technological and civic settings, drawing on research, design, facilitation and systems inquiry.</p>
-      <Pending>Formal job titles, employers and periods, kept separate from cross-functional projects and independent work. Link each to an approved investigation once one exists.</Pending>
-    </section>
-    <section className="pc-section" aria-labelledby="about-why"><h2 id="about-why">Why the combination is useful</h2>
-      <Pending>One or two paragraphs, in the owner’s words, on how these disciplines inform each other. This is the page’s argument, not a chronological résumé.</Pending>
-    </section>
-    <section className="pc-section" aria-labelledby="about-direction"><h2 id="about-direction">Direction</h2>
-      <p>Candidate: an interest in inquiry-based education and in helping people develop independent reasoning, stated as a direction rather than an established teaching career.</p>
-      <Pending>Practical areas of collaboration the owner wants to invite.</Pending>
-    </section>
-    <section className="pc-section pc-contact" aria-labelledby="about-contact"><h2 id="about-contact">Contact</h2><a href={publicPath('/#contact')}>Contact options on the homepage →</a></section>
-  </>
-}
+/* The About shell was superseded by the published About page (24 November 2026). */
 
 const learningCase = ['Audience and their starting understanding', 'Intended capability or learning objective', 'Activity or resource design', 'Participant interaction', 'Feedback and evaluation', 'Observed use', 'Limitation or unresolved question'] as const
 const inquiryActivity = ['Examine an initially plausible claim.', 'Identify the assumptions it depends on.', 'Compare at least two interpretations.', 'Define the evidence that would distinguish them.', 'Revise the original question.'] as const
@@ -79,5 +56,5 @@ function Learning() {
 
 export function ProposalPage({ kind }: { kind: ProposalKind }) {
   const page = proposalPages[kind]
-  return <CurrentShell route={page.path}><article className="pc-document pc-proposal" data-marker={proposalMarker}>{kind === 'about' ? <About/> : <Learning/>}</article></CurrentShell>
+  return <CurrentShell route={page.path}><article className="pc-document pc-proposal" data-marker={proposalMarker}><Learning/></article></CurrentShell>
 }

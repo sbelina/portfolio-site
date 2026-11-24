@@ -211,32 +211,38 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-representative-title",
-      "destination": "/#pc-representative-title",
+      "id": "pc-possible-title",
+      "destination": "/#pc-possible-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-status-claims-operations",
-      "destination": "/#pc-status-claims-operations",
+      "id": "pc-results-title",
+      "destination": "/#pc-results-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-status-brand-research",
-      "destination": "/#pc-status-brand-research",
+      "id": "pc-selected-title",
+      "destination": "/#pc-selected-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-status-enterprise-ai",
-      "destination": "/#pc-status-enterprise-ai",
+      "id": "pc-pattern-title",
+      "destination": "/#pc-pattern-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-interlude-title",
-      "destination": "/#pc-interlude-title",
+      "id": "pc-folds-title",
+      "destination": "/#pc-folds-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice-fold",
+      "destination": "/#practice-fold",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
@@ -247,8 +253,20 @@
       "verification": "present in initial home HTML"
     },
     {
-      "id": "pc-know-title",
-      "destination": "/#pc-know-title",
+      "id": "explore-fold",
+      "destination": "/#explore-fold",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-explore-title",
+      "destination": "/#pc-explore-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "pc-interlude-title",
+      "destination": "/#pc-interlude-title",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },
@@ -261,252 +279,6 @@
     {
       "id": "contact-title",
       "destination": "/#contact-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "connections",
-      "destination": "/#connections",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "system-map",
-      "destination": "/#system-map",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "connections-title",
-      "destination": "/#connections-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "map-text",
-      "destination": "/#map-text",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work",
-      "destination": "/#work",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "work-title",
-      "destination": "/#work-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "claims-operations",
-      "destination": "/#claims-operations",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "brand-research",
-      "destination": "/#brand-research",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "enterprise-ai",
-      "destination": "/#enterprise-ai",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "documentation-recovery",
-      "destination": "/#documentation-recovery",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "civic-service",
-      "destination": "/#civic-service",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "accessibility-ai",
-      "destination": "/#accessibility-ai",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinctions-title",
-      "destination": "/#distinctions-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinction-claims-operations",
-      "destination": "/#distinction-claims-operations",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinction-brand-research",
-      "destination": "/#distinction-brand-research",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinction-enterprise-ai",
-      "destination": "/#distinction-enterprise-ai",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinction-accessibility-ai",
-      "destination": "/#distinction-accessibility-ai",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "distinction-civic-service",
-      "destination": "/#distinction-civic-service",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "reading-gateway-title",
-      "destination": "/#reading-gateway-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "practice",
-      "destination": "/#practice",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "practice-title",
-      "destination": "/#practice-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "inquiry-title",
-      "destination": "/#inquiry-title",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "study-label",
-      "destination": "/#study-label",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "practice-language",
-      "destination": "/#practice-language",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "practice-form",
-      "destination": "/#practice-form",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "delta-theory",
-      "destination": "/#delta-theory",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "field-notes",
-      "destination": "/#field-notes",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "field-notes-title",
-      "destination": "/#field-notes-title",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "the-bends",
-      "destination": "/#the-bends",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "calculus-of-syntax",
-      "destination": "/#calculus-of-syntax",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "conjunction-conjecture",
-      "destination": "/#conjunction-conjecture",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "tool-vs-toy",
-      "destination": "/#tool-vs-toy",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "mundane-evidence",
-      "destination": "/#mundane-evidence",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive",
-      "destination": "/#archive",
-      "source": "legacy baseline",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-wage",
-      "destination": "/#archive-wage",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-dead-internet",
-      "destination": "/#archive-dead-internet",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-hive-mind",
-      "destination": "/#archive-hive-mind",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-mourning-coffee",
-      "destination": "/#archive-mourning-coffee",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-bridge",
-      "destination": "/#archive-bridge",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "archive-left",
-      "destination": "/#archive-left",
-      "source": "new reading gateway/bootstrap",
-      "verification": "present in initial home HTML"
-    },
-    {
-      "id": "closing-title",
-      "destination": "/#closing-title",
       "source": "legacy baseline",
       "verification": "present in initial home HTML"
     },

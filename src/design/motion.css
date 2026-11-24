@@ -1,0 +1,229 @@
+/*
+ * Motion and interaction (owner decision, 23 November 2026). Every effect:
+ *  - starts from a complete, readable resting state (nothing waits invisible);
+ *  - runs only where the browser supports it (@supports), with plain CSS as the fallback;
+ *  - is off under prefers-reduced-motion;
+ *  - never fades text: reveals move, so measured contrast never changes.
+ */
+
+/* Global at-rules (not layerable). */
+@property --pc-count { syntax: "<integer>"; inherits: false; initial-value: 0; }
+/* A · Cross-page view transitions: a case title travels from its card into the case header. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-group(*) { animation-duration: .4s; animation-timing-function: cubic-bezier(.215, .61, .355, 1); }
+}
+
+@layer pc-motion {
+  /* 1 · Reveal on scroll (after slides.com): sections settle into place as they enter. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      :is(.pc-main > .build-index > .pc-section, .pc-selected-list > li, .pc-results li, .pc-explore li, .reading-cards > li,
+          .investigation-decision, .investigation-question, .case-visual, .checkpoint, .pc-writing-list > li,
+          .pc-distinction-list > section, .pc-plate, .deep-dive-spread) {
+        animation: pc-settle linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 45%;
+      }
+    }
+  }
+  @keyframes pc-settle { from { transform: translateY(14px) } to { transform: none } }
+
+  /* B · Reading progress from the page's own scroll. Hidden where unsupported. */
+  .pc-progress { display: none; }
+  @supports (animation-timeline: scroll()) {
+    .pc-progress {
+      display: block; position: fixed; inset: 0 0 auto; z-index: 30; height: 3px; pointer-events: none;
+      background: var(--signal); transform-origin: 0 50%; transform: scaleX(0);
+      animation: pc-progress linear both; animation-timeline: scroll(root);
+    }
+    @media (prefers-reduced-motion: reduce) { .pc-progress { display: none; } }
+  }
+  @keyframes pc-progress { to { transform: scaleX(1) } }
+
+  /* C · Disclosures open smoothly; still native <details>. */
+  @supports (interpolate-size: allow-keywords) {
+    @media (prefers-reduced-motion: no-preference) {
+      :is(.pc-site, .reading-page) details { interpolate-size: allow-keywords; }
+      :is(.pc-site, .reading-page) details::details-content { block-size: 0; overflow: clip; transition: block-size .32s var(--ease-out), content-visibility .32s allow-discrete; }
+      :is(.pc-site, .reading-page) details[open]::details-content { block-size: auto; }
+    }
+  }
+
+  /* H · One card forward: siblings quiet down while one is hovered or focused (pointer devices only). */
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    :is(.pc-selected-list, .pc-explore ul, .reading-cards) > li { transition: opacity .25s var(--ease-out), box-shadow .3s var(--ease-out), transform .3s var(--ease-out); }
+    :is(.pc-selected-list, .pc-explore ul, .reading-cards):has(> li:is(:hover, :focus-within)) > li:not(:hover, :focus-within) { opacity: .62; }
+    :is(.pc-selected-list, .reading-cards) > li:is(:hover, :focus-within) { box-shadow: var(--elevation-2); }
+  }
+
+
+  /* I · Deep-dive hub as snapping spreads on phones; stacked on wider screens. */
+  @media (max-width: 640px) {
+    .deep-dive-hub { grid-auto-flow: column; grid-auto-columns: 86%; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: var(--space-3); }
+    .deep-dive-hub > li { scroll-snap-align: start; }
+  }
+}
+
+@layer pc-components {
+  /* Shared figure legend: the deck's vocabulary, explained under each figure. */
+  .pc-legend { list-style: none; margin: var(--space-3) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-legend li { display: inline-flex; align-items: center; gap: var(--space-2); }
+  .pc-legend svg, .pc-thumb svg, .pc-method-glyph { overflow: visible; }
+  .pc-legend-ink { fill: none; stroke: var(--reading-ink, var(--ink)); stroke-width: 2; }
+  .pc-legend-thread { fill: none; stroke: var(--signal); stroke-width: 2.5; }
+  .pc-legend-check { fill: none; stroke: var(--reading-sage, var(--sage)); stroke-width: 2; }
+  .pc-legend-turn { fill: var(--reading-paper, var(--paper)); stroke: var(--signal); stroke-width: 2; }
+
+  /* Method profile: four decisions as bands (after a survey-types infographic), in the deck palette. */
+  .pc-method { margin: var(--space-6) 0; }
+  .pc-method-lead { color: var(--reading-muted, var(--muted)); }
+  .pc-method-rows { display: grid; gap: 2px; border: 1px solid var(--reading-line, var(--line)); }
+  .pc-method-row { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: var(--space-4); align-items: start; padding: var(--space-4); }
+  .pc-method-row:nth-child(odd) { background: var(--signal-1); }
+  .pc-method-row:nth-child(even) { background: var(--reading-panel, var(--panel)); }
+  .pc-method-glyph { width: 4rem; height: auto; fill: none; stroke: var(--reading-ink, var(--ink)); stroke-width: 1.5; }
+  .pc-method-glyph .pc-glyph-fill { fill: var(--signal); stroke: var(--signal); }
+  .pc-method-body { min-width: 0; }
+  .pc-method-body h3 { margin: 0 0 var(--space-2); font-size: var(--step-1); }
+  .pc-method-tag { margin-left: var(--space-2); font: 600 .7rem/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-method-tags { list-style: none; margin: 0 0 var(--space-2); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .pc-method-tags li { padding: .15rem .65rem; border: 1px solid var(--reading-ink, var(--ink)); border-radius: 999px; font-size: var(--step--1); }
+  .pc-method-tags li[data-unknown] { border-style: dashed; color: var(--reading-muted, var(--muted)); }
+  .pc-method-body p { margin: 0; }
+  @media (max-width: 560px) { .pc-method-row { grid-template-columns: minmax(0, 1fr); } .pc-method-glyph { width: 3rem; } }
+
+  /* Process dial (after a "typical day" clock): one segment per stage. */
+  .pc-dial { margin: var(--space-6) 0; padding: var(--space-5); border: 1px solid var(--reading-line, var(--line)); }
+  .pc-dial h2 { margin-top: 0; }
+  .pc-dial-controls { border: 0; margin: 0 0 var(--space-4); padding: 0; min-width: 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-4); }
+  .pc-dial-controls legend { padding: 0; font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-dial-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; cursor: pointer; }
+  .pc-dial-controls input { accent-color: var(--signal); width: 1.1rem; height: 1.1rem; }
+  .pc-dial-stage { display: grid; grid-template-columns: minmax(0, 18rem) minmax(0, 1fr); gap: var(--space-6); align-items: center; }
+  .pc-dial-face { position: relative; max-width: 18rem; width: 100%; aspect-ratio: 1; }
+  .pc-dial-face svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .pc-dial-track { fill: none; stroke: var(--reading-line, var(--soft-line)); stroke-width: 1; }
+  .pc-dial-tick { stroke: var(--reading-muted, var(--muted)); stroke-width: 1; }
+  .pc-dial-segment { fill: none; stroke: var(--reading-line, var(--soft-line)); stroke-width: 14; transition: stroke .3s var(--ease-out); }
+  .pc-dial-segment[data-mark="failure"] { stroke: var(--signal-6); }
+  .pc-dial-segment[data-mark="change"] { stroke: var(--reading-sage, var(--sage)); stroke-opacity: .55; }
+  .pc-dial-segment[data-current] { stroke-width: 20; stroke-opacity: 1; }
+  .pc-dial-segment[data-current]:not([data-mark]) { stroke: var(--reading-ink, var(--ink)); }
+  .pc-dial-segment[data-current][data-mark="failure"] { stroke: var(--signal); }
+  .pc-dial-segment[data-current][data-mark="change"] { stroke: var(--reading-sage, var(--sage)); }
+  .pc-dial-center { position: absolute; inset: 22%; display: grid; place-content: center; text-align: center; gap: var(--space-1); }
+  .pc-dial-center strong { font-size: var(--step-1); line-height: 1.2; }
+  .pc-dial-count { font: 600 .75rem ui-monospace, monospace; letter-spacing: .08em; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-note { font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
+  .pc-dial-side { min-width: 0; }
+  .pc-dial-summary { margin-top: 0; }
+  .pc-dial-cells { list-style: none; margin: 0 0 var(--space-4); padding: 0; display: grid; gap: var(--space-2); }
+  .pc-dial-cells li { padding: var(--space-2) var(--space-3); border-left: 3px solid var(--reading-line, var(--line)); }
+  .pc-dial-cells li[data-mark="failure"] { border-left-color: var(--signal); }
+  .pc-dial-cells li[data-mark="change"] { border-left-color: var(--reading-sage, var(--sage)); }
+  .pc-dial-lane { display: block; font: 600 .7rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-steps { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .pc-dial-steps button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+  .pc-dial-steps button:disabled { opacity: .45; cursor: default; }
+  .pc-dial-static { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-5); }
+  .pc-dial-static ol { margin: 0; padding-left: 1.25rem; display: grid; gap: var(--space-3); }
+  .pc-dial-static li[data-mark="failure"] > strong { color: var(--signal); }
+  .pc-dial-caption { margin: var(--space-3) 0 0; font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  @media (max-width: 700px) { .pc-dial-stage { grid-template-columns: minmax(0, 1fr); } .pc-dial-face { margin-inline: auto; max-width: 15rem; } }
+  @media (prefers-reduced-motion: reduce) { .pc-dial-segment { transition: none; } }
+
+  /* Card thumbnails: the case's own distinction, drawn small, with the pair as text. */
+  .pc-thumb { display: grid; gap: var(--space-1); margin-bottom: var(--space-3); padding: var(--space-3); border: 1px solid var(--reading-line, var(--soft-line)); background: var(--signal-1); }
+  .pc-thumb svg { width: 100%; max-width: 12rem; height: auto; }
+  .pc-thumb-pair { font: 600 .78rem/1.4 ui-monospace, monospace; letter-spacing: .02em; }
+
+  /* Verbal stress (src/content/emphasis.tsx): orange + bold for the turn, bold for the finding,
+     italics for a label or spoken stress. Underlines belong to links only. */
+  .pc-turn { color: var(--signal); font-weight: 650; }
+
+  /* The pattern across the work: the text list of every case's distinction. */
+  .pc-pattern-lead { max-width: 44rem; font-size: var(--step-1); }
+  .pc-pattern-pairs { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+  .pc-pattern-pairs li { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-bottom: 1px solid var(--soft-line); min-width: 0; }
+  .pc-pattern-pairs .pc-kicker { margin: 0; }
+  .pc-pattern-pairs a { font-size: var(--step-1); text-decoration-thickness: 1px; }
+  .pc-pattern-why { color: var(--muted); font-size: var(--step--1); }
+  :is(.pc-site, .reading-page) :is(strong, b):not(.pc-turn) { font-weight: 650; }
+
+  /* 2 + E · Strand line: faint strands, a lens, and the orange thread that draws itself. */
+  .pc-strand { margin: var(--space-6) 0 0; }
+  .pc-strand > svg { display: block; width: 100%; height: auto; }
+  .pc-strand .pc-strand-faint { fill: none; stroke: var(--soft-line); stroke-width: 1.5; }
+  .pc-strand .pc-strand-lens { fill: none; stroke: var(--sage); stroke-width: 2; }
+  .pc-strand .pc-strand-plane { fill: var(--signal-4); stroke: var(--signal); stroke-width: 1; }
+  .pc-strand .pc-strand-thread { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+  .pc-strand .pc-strand-mark { fill: var(--signal); }
+  .pc-strand text { fill: var(--muted); font: 600 11px ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .06em; }
+  .pc-strand figcaption { margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .06em; text-transform: uppercase; }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pc-strand .pc-strand-thread { animation: pc-draw linear both; animation-timeline: view(); animation-range: entry 10% cover 45%; }
+    }
+  }
+  @keyframes pc-draw { from { stroke-dashoffset: 1 } to { stroke-dashoffset: 0 } }
+
+  /* 4 · Layers: observed, interpreted, decided, pulled apart on request. A plain list without JavaScript. */
+  .pc-layers { overflow: clip; margin: var(--space-6) 0; padding: var(--space-5); border: 1px solid var(--reading-line, var(--line)); border-radius: 4px; }
+  .pc-layers h2 { margin-top: 0; }
+  .pc-layers-stage { perspective: 900px; padding-block: var(--space-4); }
+  .pc-layers-stack { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-3); transform-style: preserve-3d; transition: transform .6s var(--ease-out); }
+  .pc-layers-stack li { padding: var(--space-3) var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-paper, var(--paper)); transition: transform .6s var(--ease-out); }
+  .pc-layers-stack li[data-layer="observed"] { border-left: 4px solid currentColor; }
+  .pc-layers-stack li[data-layer="interpreted"] { border-left: 4px dotted var(--reading-ink, var(--ink)); }
+  .pc-layers-stack li[data-layer="observed"] { border-left-color: var(--reading-sage, var(--sage)); }
+  .pc-layers-stack li[data-layer="decided"] { border-left: 4px solid var(--signal); }
+  .pc-layers-name { display: block; font: 600 .72rem/1.5 ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  /* Resting: a readable list. Pulled apart: the same rows, tilted and lifted to separate depths. */
+  .pc-layers[data-open="true"] .pc-layers-stack { transform: rotateX(30deg) rotateZ(-6deg); }
+  .pc-layers[data-open="true"] .pc-layers-stack li:nth-child(1) { transform: translateZ(0); }
+  .pc-layers[data-open="true"] .pc-layers-stack li:nth-child(2) { transform: translateZ(28px); }
+  .pc-layers[data-open="true"] .pc-layers-stack li:nth-child(3) { transform: translateZ(56px); box-shadow: var(--elevation-2); }
+  .pc-layers button { min-height: 44px; padding: .5rem 1rem; font: inherit; font-weight: 600; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+  @media (prefers-reduced-motion: reduce) { .pc-layers-stack, .pc-layers-stack li { transition: none; } }
+
+  /* 5 · Annotated plate: a figure with numbered pins and leader-line callouts. */
+  .pc-plate { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 var(--space-5); align-items: start; margin: var(--space-6) 0; }
+  .pc-plate-figure { display: grid; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--line); background: var(--panel); margin: 0; }
+  .pc-plate-figure > div { position: relative; padding: var(--space-2) var(--space-3); border: 1px solid var(--soft-line); background: var(--paper); font-size: var(--step--1); color: var(--muted); }
+  .pc-plate-figure > div::after { content: attr(data-pin); position: absolute; top: -1px; right: -1px; min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem ui-monospace, monospace; background: var(--signal); color: var(--inverse); }
+  .pc-plate-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); counter-reset: pin; }
+  .pc-plate-notes li { counter-increment: pin; position: relative; padding: var(--space-2) var(--space-3) var(--space-2) 2.25rem; border: 1px solid var(--soft-line); background: var(--signal-1); }
+  .pc-plate-notes li::before { content: counter(pin); position: absolute; left: var(--space-2); top: var(--space-2); min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem ui-monospace, monospace; background: var(--signal); color: var(--inverse); }
+  .pc-plate-notes li::after { content: ""; position: absolute; right: 100%; top: 1.1rem; width: var(--space-5); border-top: 1px dashed var(--signal); }
+  .pc-plate-notes strong { display: block; }
+  .pc-plate figcaption, .pc-plate-label { grid-column: 1 / -1; margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
+  @media (max-width: 700px) { .pc-plate { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); } .pc-plate-notes li::after { display: none; } }
+
+  /* D · Source popovers: native [popover], no library. */
+  .pc-cite { font: inherit; font-size: .8em; vertical-align: super; line-height: 0; color: var(--reading-ink, var(--ink)); background: none; border: 0; padding: 0 .15em; min-width: 24px; min-height: 24px; cursor: pointer; text-decoration: none; font-weight: 650; color: var(--signal); }
+  .pc-cite:hover { color: var(--reading-ink, var(--ink)); }
+  [popover].pc-source { margin: auto; max-width: min(92vw, 26rem); padding: var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-panel, var(--panel)); color: var(--reading-ink, var(--ink)); box-shadow: var(--elevation-2); font-size: .95rem; line-height: 1.55; }
+  [popover].pc-source p { margin: 0 0 var(--space-2); }
+  [popover].pc-source button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+
+  /* F · A count that resolves, only where the change is the finding. */
+  .pc-count { --pc-count: var(--pc-count-to); counter-reset: pc-count var(--pc-count); font-variant-numeric: tabular-nums; }
+  .pc-count::after { content: counter(pc-count); }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .pc-count { animation: pc-count linear both; animation-timeline: view(); animation-range: entry 40% cover 50%; }
+    }
+  }
+  @keyframes pc-count { from { --pc-count: var(--pc-count-from) } to { --pc-count: var(--pc-count-to) } }
+
+  /* J · A pinned figure that follows the case from before to after. */
+  .pc-pinned { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem); gap: var(--space-6); align-items: start; }
+  .pc-pinned > .pc-pinned-text { min-width: 0; }
+  .pc-pin { position: sticky; top: calc(var(--site-header-height, 0px) + var(--space-5)); margin-top: var(--space-6); padding: var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-panel, var(--panel)); }
+  .pc-pin-kicker { display: block; font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-pin-state { margin: var(--space-2) 0 0; padding: var(--space-2) var(--space-3); border-left: 4px solid var(--reading-line, var(--line)); }
+  .pc-pin-state strong { display: block; }
+  .pc-pin[data-state="before"] .pc-pin-state[data-state="before"], .pc-pin[data-state="after"] .pc-pin-state[data-state="after"] { border-left-color: var(--signal); background: var(--signal-2); }
+  @media (max-width: 900px) { .pc-pinned { grid-template-columns: minmax(0, 1fr); } .pc-pin { position: static; order: -1; margin-top: var(--space-4); } }
+}

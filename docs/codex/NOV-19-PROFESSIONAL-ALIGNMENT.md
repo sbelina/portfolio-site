@@ -63,7 +63,7 @@ The candidate stays private until it passes the authenticated exact-revision app
 | 1 | Claims operations | Typed candidate exists and is previewable locally (`npm run build:candidate`). The checklist in [the candidate](review-candidates/claims-operations-publication-candidate.md) §C is open. | Owner approves the exact wording; private sources attached; resource scopes stated separately; salvage-vendor naming conflict decided; authenticated approval and trusted release loader. |
 | 2 | Agreement Is Not Trust | [Review candidate](review-candidates/brand-research.md) only | Instrument wording, vendor attribution, reach source (study reach, not outcome); detractor proposal labelled as not adopted. |
 | 3 | Enterprise AI | [Review candidate](review-candidates/enterprise-ai.md) only | Separate synthesis (38 → 8), program structure, leadership and recommendations; no impact claim from counts. |
-| 4 | Telematics | [Review candidate](review-candidates/telematics.md) only; not in the previous edition’s summaries | Reconcile the five-participant recovery account with the six-session SUS/NPS summary; no retention claim. |
+| 4 | Telematics | [Review candidate](review-candidates/telematics.md) only; not in the previous edition’s summaries | Reconciled 23 November: five participants, one set. No retention claim. |
 | 5 | Vote Huntsville (civic) | [Review candidate](review-candidates/civic-service.md) only | Reach figures need their own provenance; no turnout effect. |
 | 6 | AI accessibility | [Review candidate](review-candidates/accessibility-ai.md) only | Keep the restored-code test separate from the human simulation review; the archived repository is not adoption. |
 

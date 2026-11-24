@@ -86,13 +86,13 @@ async function page(env: DeepDiveEnv, request: Request, title: string, body: str
 }
 
 const notOpen = () => `<p class="pc-kicker">Deep dive</p><h1>Deep dives are not open yet.</h1>
-<p>Every investigation has a public version that answers four questions: what was the problem, how I knew, what I did, and what changed.</p>
+<p>Every case study has a public version that answers four questions: what was the problem, how I knew, what I did, and what changed.</p>
 <p><a href="/investigations/">Read the public investigations <span aria-hidden="true">→</span></a></p>
 <p>To ask about a longer version, email <a href="mailto:${contactEmail}">${contactEmail}</a>.</p>`
 
 function loginForm(next: string, failed: boolean) {
   return `<p class="pc-kicker">Deep dive · password required</p><h1>Open the deep dive</h1>
-<p>The deep dive is the longer version of an investigation, with the process, working artifacts and sources in more detail. Every investigation’s public version stays open to everyone.</p>
+<p>The deep dive is the longer version of a case study, with the process, working artifacts and sources in more detail. Every case study’s public version stays open to everyone.</p>
 ${failed ? '<p class="deep-dive-error" role="alert">That password did not work. Check it and try again, or ask for access below.</p>' : ''}
 <form class="deep-dive-login" method="post" action="/deep-dive/login">
   <input type="hidden" name="next" value="${escapeHtml(next)}">
@@ -127,7 +127,7 @@ function hub(index: IndexRecord) {
   return `<div class="deep-dive-beneath" data-surface="observatory">
 <p class="deep-dive-kicker">Beneath · deep dives</p>
 <h1>The longer <em>version</em>.</h1>
-<p class="deep-dive-lede">Each deep dive is the full account behind a public investigation: the first view, what held, my role, who did what, and what changed. One password opens all of them.</p>
+<p class="deep-dive-lede">Each deep dive is the full account behind a public case study: the first view, what held, my role, who did what, and what changed. One password opens all of them.</p>
 ${index.length ? `<ol class="deep-dive-hub">${items}</ol>` : '<p>No deep dives have been uploaded yet.</p>'}
 ${index[0] ? `<p class="deep-dive-next"><a href="/deep-dive/${escapeHtml(index[0].slug)}/"><em>Where did it start?</em> <span aria-hidden="true">→</span></a></p>` : ''}
 ${signOut}

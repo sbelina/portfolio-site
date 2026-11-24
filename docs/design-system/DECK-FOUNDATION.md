@@ -61,6 +61,36 @@ Every headline is two short lines. The first states the familiar reading (the la
 4. In a subhead, accent the verbs of action (“so leaders can **decide** … teams can put it into **practice**”).
 5. In markup, the accent is `<em>` (Markdown `*word*`), styled in the accent colour at the headline’s weight. Its meaning never relies on colour alone, because the word is still emphasized for screen readers and in print.
 
+### A second emphasis in a headline (owner direction, 23 November)
+
+A headline keeps one accent: the orange turn. When it also names a cost or a stake, that phrase may take a second emphasis of a different kind: **heavier weight in ink**, never a second colour and never an underline. The homepage H1 is the model: “I help organizations avoid **costly solutions** to *misunderstood problems*.” Here the cost is in bold ink and the turn is in orange.
+
+### Who the headlines are for (23 November)
+
+The designed-for reader is a hiring leader or institutional decision-maker skimming for 10 to 60 seconds. They scan headings, bold text and numbers for:
+
+1. who this is;
+2. which of their problems it solves;
+3. proof of what changed, and where;
+4. this person's own part;
+5. whether the method holds;
+6. how to make contact.
+
+Every headline should answer one of these. Case titles lead with the outcome or the turn, with one accent word, and carry a domain label above them. Section headings state the content and do not pose rhetorical questions, except for the contact invitation.
+
+### Verbal stress in running text (owner direction, 23 November)
+
+Text formatting carries the emphasis a speaker would give. Use it sparingly: at most one *turn* per passage.
+
+| Mark | Written | Use | Example |
+| --- | --- | --- | --- |
+| **The turn** | `==Delivered ≠ verified.==` | The distinction a passage hinges on. Orange and bold, the body-text partner of the headline accent | ==Agreement ≠ trust.== |
+| **The finding** | `**still cited in strategy briefs**` | What a reader should keep. Bold | **The grant was awarded.** |
+| **A label or spoken stress** | `*the app needed updating*` | A word people used, or one stressed when said aloud. Italics | “Complete” now means *verified* |
+| **A link** | a real link | Underlined. **Underlines belong to links only**; never underline for emphasis | — |
+
+`src/content/emphasis.tsx` renders these marks safely (no HTML passes through) and strips them from titles, metadata and search. Orange in body text still needs a contrast check on each surface.
+
 ## 2. The case grammar (one case, one spread)
 
 Each case or case part is laid out the same way. This is the site’s *four questions* in the deck’s own vocabulary:
@@ -128,6 +158,18 @@ A figure drawn later is also captioned *reconstructed for this portfolio*.
 | Solid line | established, or after |
 | Fan-in to a block, fan-out to audiences | knowledge pooled, then transferred |
 | ≠ chip between two terms | the gap: definition, representation or measurement |
+
+**Colours in drawings (23 November):** conceptual images use only the deck palette.
+
+| Colour | Means |
+| --- | --- |
+| Ink, solid | established |
+| Ink, dotted | inferred or an explanation |
+| Orange | the thread, the turn, or a failure point |
+| Sage (`--sage`) | a check or verification: the lens, the geometry, a change that moved verification |
+| Pale line | faint strands and construction |
+
+The violet, coral and teal status colours stay for labelled text states, not for imagery. `tests/interactions.spec.ts` checks this.
 
 Before and after are shown as two parallel lines, Before above After, with the moved element connected by a dotted line. This is the deck’s *Pay → Verify* over *Verify → Pay*.
 

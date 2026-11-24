@@ -9,17 +9,20 @@ const legacyDestinations = [
   { href: '/#contact', label: 'Contact' },
 ] as const
 const currentDestinations = [
-  { href: '/investigations/', label: 'Investigations' },
-  { href: '/patterns/', label: 'Connections' },
+  { href: '/investigations/', label: 'Work' },
   { href: '/practice/', label: 'Practice' },
-  { href: '/lab/', label: 'Observatory' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/writing/', label: 'Field Notes' },
+  { href: '/lab/', label: 'Experiments' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
 ] as const
 
-/** Pages that belong to the Observatory section; its menu link marks them aria-current="true". */
+/** Pages that belong to the Experiments section (the Observatory, renamed in the menu 24 November); its menu link marks them aria-current="true". */
 export const observatoryMembers = ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/experiments/reveal-hidden-work/'] as const
 const currentState = (href: string, currentPath?: string) => href === currentPath ? 'page' as const
-  : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const : undefined
+  : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const
+  // Connections belongs to Practice in the menu (23 November): five items, no Connections link of its own.
+  : href === '/practice/' && currentPath === '/patterns/' ? 'true' as const : undefined
 
 /** Native links remain available without hydration, including on unavailable URLs. */
 export function PublicNavigation({ currentPath, home = false, legacy = false }: { currentPath?: string; home?: boolean; legacy?: boolean }) {
@@ -27,7 +30,7 @@ export function PublicNavigation({ currentPath, home = false, legacy = false }: 
   const destinations = historical ? legacyDestinations : currentDestinations
   return <nav className="public-navigation" aria-label="Primary navigation">
     <ul>{destinations.map(({ href, label }) => <li key={href}>
-      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-label={href === '/lab/' ? 'Observatory — experimental' : undefined} aria-current={historical ? undefined : currentState(href, currentPath)}>{label}{href === '/lab/' ? <span aria-hidden="true">*</span> : null}</a>
+      <a href={home && href.startsWith('/#') ? href.slice(1) : publicPath(href)} aria-label={href === '/lab/' ? 'Experiments — experimental' : undefined} aria-current={historical ? undefined : currentState(href, currentPath)}>{label}{href === '/lab/' ? <span aria-hidden="true">*</span> : null}</a>
     </li>)}</ul>
   </nav>
 }

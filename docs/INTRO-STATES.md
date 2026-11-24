@@ -4,6 +4,18 @@ Current owner correction, 9 November 2026: **three step actions plus a separate 
 
 ## Current edition — explicit Dive
 
+**24 November 2026: the same four actions, a clearer idea.** On the owner's request to clarify the concept and expand its visual storytelling, the current edition's three steps became a short investigation in the site's own terms. The legacy fixtures edition keeps its earlier wording and visuals.
+
+| Step | Words (button and live status) | Drawing (decorative, deck palette) |
+| --- | --- | --- |
+| Question | *how does one produce curiosity?* · hint *Step 1: notice what doesn't add up* | One point of light in a field: an outcome and its explanation, taken as one |
+| After step 1 | *step 2: test the explanation* · "Noticed: something doesn't add up." | The point is framed (01) and won't sit still |
+| After step 2 | *step 3: show where they part* · "Tested: the explanation and what happened come apart." | A sage lens passes over it; it splits into *what happened* and *what was assumed* |
+| After step 3 (ready) | *Dive in* (in the accent) · "Shown: related, not equivalent." | An orange thread joins the two; six fainter points split and join, one per case study |
+| Dive | unchanged | The view scales toward the thread; text never fades |
+
+The drawing is `aria-hidden`; the button and the live status line carry the same meaning in words. Movement only, inside `prefers-reduced-motion: no-preference`. The violet, coral and teal tones are no longer used in the current intro.
+
 | State | One action | Result |
 | --- | --- | --- |
 | Question / step1 | Activate the whole phrase, native keyboard action, click/tap or supported gesture | Step2; no timer advances it |

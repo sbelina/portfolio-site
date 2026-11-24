@@ -1,85 +1,128 @@
 import React, { useEffect } from 'react'
-import archive from '../content/build-archive.json'
 import { CurrentShell } from './design/CurrentShell'
-import { PracticeMoves } from './design/PracticeMoves'
-import { InquiryIllustration } from './design/InquiryIllustration'
+import { PracticeInMotion } from './design/PracticeInMotion'
+import { FieldPreview, RelatedField } from './design/RelatedField'
 import { ExternalArrow } from './design/ExternalArrow'
 import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
-import { primaryEvidence, previousEditionHref, representativeSummaries, type InvestigationSummary } from './content/primary-evidence'
-import { homeHeadline, professionalIdentity, practiceAreas, tagline } from './content/recruiter'
-import { RecruiterActions } from './design/RecruiterActions'
+import { caseLabel, caseLabels, primaryEvidenceHref, selectedInvestigations, type InvestigationSummary } from './content/primary-evidence'
+import { legacyFragments } from './content/legacy-fragments'
+import { ctaOffer, homeHeadline, possibilities, practiceAreas, professionalIdentity, recruiterContact, tagline, valueLine } from './content/recruiter'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
 import { LensInterlude } from './design/LensInterlude'
+import { plainText, Stressed } from './content/emphasis'
+import { CaseThumb } from './design/CaseFigures'
 
-const currentAnchors = new Set(['root', 'index', 'index-title', 'contact', 'contact-title', 'home-reading'])
-export const archivedAnchors = archive.homeAnchors.filter(id => !currentAnchors.has(id))
-const labels: Record<string, string> = { work: 'Investigations', connections: 'Connections', practice: 'How I investigate', 'field-notes': 'Field notes and essays', archive: 'Writing archive', 'system-map': 'Relationship map' }
+const explore = [
+  { href: '/patterns/', kicker: 'Connections', title: 'Related. Not equivalent.', text: 'Distinctions that change how a problem is understood.' },
+  { href: '/writing/', kicker: 'Field Notes', title: 'Writing and questions', text: 'Essays, notes and ideas still being worked out.' },
+  { href: '/lab/', kicker: 'Experiments*', title: 'The Observatory', text: 'Interactive ways of exploring questions. Optional, and clearly invented.' },
+  { href: '/lab/edge-case/', kicker: 'Experiments* · game', title: 'Edge Case', text: 'A prototype game about the limits of apparent rules.' },
+] as const
 
-/** A new entry point; previous work and its interactions live in the frozen build. */
+/**
+ * The homepage (owner direction, 23 November): institutional value first, then the evidence, the
+ * practice, places to explore, a compact interlude and the call to action. Legacy fragments land on
+ * their current pages; retired builds are never linked.
+ */
 export default function BuildIndex({ investigations = [] }: { investigations?: readonly InvestigationSummary[] }) {
   const introduction = useHomeIntroduction()
-  const evidence = primaryEvidence(investigations, archive.reviewPath)
+  const evidenceHref = primaryEvidenceHref(investigations)
+  const selected = selectedInvestigations(investigations)
+  const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? plainText(entry.title), left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), ...(entry.brief ? { changed: plainText(entry.brief.result) } : {}), href: publicPath(entry.path) }))
+  // Test. Show. Enable. walked through the first selected case, in its own approved words.
+  const lead = selected.find(entry => entry.brief && entry.visual && entry.slug)
+  const example = lead ? { label: caseLabels[lead.slug!] ?? plainText(lead.title), href: publicPath(lead.path), left: plainText(lead.visual!.left), right: plainText(lead.visual!.right), test: lead.brief!.tension, show: lead.visual!.explanation, enable: lead.brief!.result } : undefined
   useEffect(() => {
     const followLegacyFragment = () => {
       let fragment: string
       try { fragment = decodeURIComponent(location.hash.slice(1)) } catch { return }
-      if (archivedAnchors.includes(fragment)) location.replace(`${archive.reviewPath}${location.search}#${encodeURIComponent(fragment)}`)
+      if (Object.hasOwn(legacyFragments, fragment)) location.replace(publicPath(legacyFragments[fragment]))
     }
     followLegacyFragment()
+    // A link or address that targets something inside a folded card opens that card first.
+    const openTarget = () => { const id = location.hash.slice(1); const target = id ? document.getElementById(id) : null; const fold = target?.closest('details'); if (fold && !fold.open) { fold.open = true; target!.scrollIntoView() } }
+    openTarget()
+    window.addEventListener('hashchange', openTarget)
     window.addEventListener('hashchange', followLegacyFragment)
-    return () => window.removeEventListener('hashchange', followLegacyFragment)
+    return () => { window.removeEventListener('hashchange', followLegacyFragment); window.removeEventListener('hashchange', openTarget) }
   }, [])
-  return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined}>
+  return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined} onReplayIntro={introduction.ready ? introduction.replay : undefined}>
     <div className="build-index">
       <section className="pc-hero" aria-labelledby="index-title">
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
-          <h1 id="index-title">{homeHeadline.lead}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
-          <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover overlooked problems, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
-          <p className="pc-hero-action"><a className="pc-text-link" href={publicPath(evidence.href)}>{evidence.status === 'approved' ? 'Read the investigation' : 'Read the Claims case summary'} <span aria-hidden="true">→</span></a></p>
+          <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
+          <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
+          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link pc-secondary-link" href={publicPath('/practice/')}>Explore my approach <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
+          <p className="pc-value">{valueLine}</p>
           <p className="pc-byline"><span className="pc-areas">{practiceAreas.join(' · ')}</span> <span className="pc-tagline">{tagline}</span></p>
-          {introduction.ready ? <button type="button" className="pc-replay" onClick={introduction.replay}>Replay introduction</button> : null}
         </div>
-        <InquiryIllustration archivePath={publicPath(archive.reviewPath)}/>
+        {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
+      </section>
+      <section className="pc-section pc-possible" aria-labelledby="pc-possible-title">
+        <h2 id="pc-possible-title" className="pc-kicker">Three things my work makes possible</h2>
+        <ul className="pc-possible-list">{possibilities.map(item => <li key={item.title}><strong>{item.title}</strong><span>{item.question}</span></li>)}</ul>
       </section>
       <ResultsStrip investigations={investigations}/>
-      <nav className="pc-journeys" aria-label="Explore the portfolio">
-        <a href={publicPath(evidence.href)} data-evidence-status={evidence.status}><span className="pc-kicker">Start with the evidence</span><strong>{evidence.title} <span aria-hidden="true">→</span></strong><span>{evidence.description}{evidence.status === 'previous-edition' ? <> <em className="pc-evidence-boundary">{evidence.boundary}</em></> : null}</span></a>
-        <a href={publicPath('/patterns/')}><span className="pc-kicker">Explore my questions</span><strong>Related. Not equivalent. <span aria-hidden="true">→</span></strong><span>Examine distinctions that can change how a problem is understood.</span></a>
-      </nav>
-      {evidence.status === 'previous-edition' ? <section className="pc-section pc-representative" aria-labelledby="pc-representative-title">
-        <div className="pc-section-heading"><p className="pc-kicker">Representative investigations</p><h2 id="pc-representative-title">Three questions, three kinds of evidence</h2></div>
-        <p className="pc-boundary">Each account separates what I initiated and contributed from the decisions other people owned. These link to case summaries from the previous edition; the full investigations are not yet published.</p>
-        <ol className="pc-representative-list">{representativeSummaries.map(item => <li key={item.anchor}>
-          <p className="pc-kicker">{item.label}</p>
-          <a href={publicPath(previousEditionHref(archive.reviewPath, item.anchor))} aria-describedby={`pc-status-${item.anchor}`}><strong>{item.title}</strong> <span aria-hidden="true">→</span></a>
-          <p className="pc-representative-status" id={`pc-status-${item.anchor}`}>Previous-edition summary · full case unpublished</p>
+      {selected.length ? <section className="pc-section pc-selected" aria-labelledby="pc-selected-title">
+        <div className="pc-section-heading"><p className="pc-kicker">Selected case studies</p><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
+        <ol className="pc-selected-list">{selected.map(entry => <li key={entry.id}>
+          {entry.visual && entry.composition ? <CaseThumb composition={entry.composition} left={plainText(entry.visual.left)} right={plainText(entry.visual.right)}/> : null}
+          {caseLabel(entry.slug) ? <p className="pc-kicker pc-selected-domain">{caseLabel(entry.slug)}</p> : null}
+          {entry.status ? <p className="pc-selected-status"><CaseStatus status={entry.status}/></p> : null}
+          <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>
+          {entry.stakes ? <p className="pc-selected-stakes"><span className="pc-selected-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}
+          {entry.brief ? <p><span className="pc-selected-label">What changed:</span> <Stressed text={entry.brief.result}/></p> : <p><Stressed text={entry.summary}/></p>}
+          <p className="pc-selected-links"><a href={publicPath(entry.path)} data-count="case-open" data-count-detail={entry.slug}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} data-count="deep-dive-open" data-count-detail={entry.slug}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
         </li>)}</ol>
-        <a className="pc-text-link" href={publicPath('/investigations/')}>All investigations and their status <span aria-hidden="true">→</span></a>
+        <a className="pc-text-link" href={publicPath('/investigations/')}>All {investigations.length} case studies <span aria-hidden="true">→</span></a>
+        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')} data-count="cta-band">Let’s talk about it <span aria-hidden="true">→</span></a></p>
+      </section> : <section className="pc-section" aria-labelledby="pc-selected-title"><p className="pc-kicker">Case studies</p><h2 id="pc-selected-title">Case studies are in review</h2><p>No case study is published in this edition yet.</p></section>}
+      {pairs.length ? <section className="pc-section pc-pattern" aria-labelledby="pc-pattern-title">
+        <div className="pc-section-heading"><p className="pc-kicker">The pattern across the work</p><h2 id="pc-pattern-title">Related. <em className="pc-accent">Not</em> equivalent.</h2></div>
+        <p className="pc-pattern-lead">Every case study here began where two related things had been <em>taken for one</em>. The work was finding <strong>where they part</strong>, and what that changes.</p>
+        <RelatedField pairs={pairs}/>
+        <a className="pc-text-link" href={publicPath('/patterns/')}>Explore the distinctions <span aria-hidden="true">→</span></a>
       </section> : null}
-      {evidence.status === 'approved' && evidence.brief ? <section className="pc-section pc-featured-case" aria-labelledby="pc-featured-title">
-        <div className="pc-section-heading"><p className="pc-kicker">Featured investigation</p><h2 id="pc-featured-title">{evidence.title}</h2>{evidence.caseStatus ? <p className="pc-featured-status"><CaseStatus status={evidence.caseStatus}/></p> : null}</div>
-        <dl className="pc-brief">{([['What changed', evidence.brief.result], ['The problem', evidence.brief.tension], ['What I did', evidence.brief.call], ['How I knew', evidence.brief.evidence]] as const).map(([term, detail]) => <div key={term}><dt>{term}</dt><dd>{detail}</dd></div>)}</dl>
-        <a className="pc-text-link" href={publicPath(evidence.href)}>Read the full case, including what I didn’t own <span aria-hidden="true">→</span></a>
-        <RecruiterActions label="Contact after the featured investigation"/>
-      </section> : null}
-      <LensInterlude/>
-      <section className="pc-section" aria-labelledby="pc-practice-title">
-        <div className="pc-section-heading"><p className="pc-kicker">The practice</p><h2 id="pc-practice-title">Test. Show. Enable.</h2></div>
-        <PracticeMoves/>
-        <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
+      {/* Optional depth folds into cards (owner direction, 24 November). What every reader needs stays open:
+          the call to action, figures, case studies and the pattern. Native <details>, each opening independently. */}
+      <section className="pc-section pc-folds" aria-labelledby="pc-folds-title">
+        <p className="pc-kicker" id="pc-folds-title">Go deeper</p>
+        <details className="pc-fold" id="practice-fold" data-count="practice-open">
+          <summary>
+            <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M2 12C18 12 22 20 32 20M2 28C18 28 22 20 32 20" className="pc-legend-ink" strokeDasharray="2 4"/><ellipse cx="32" cy="20" rx="4" ry="14" className="pc-legend-check"/><path d="M32 20H62" className="pc-legend-thread"/></svg>
+            <span className="pc-fold-text"><span className="pc-fold-kicker">How I investigate</span><h2 id="pc-practice-title">Test. Show. Enable.</h2><span className="pc-fold-teaser">Three moves, shown on one case study: find the gap, make the evidence visible, and leave people able to act.</span></span>
+            <span className="pc-fold-icon" aria-hidden="true"/>
+          </summary>
+          <div className="pc-fold-body">
+            <PracticeInMotion example={example}/>
+            <p className="pc-how-i-know"><strong>How I Know:</strong> each case study separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains unproven.</p>
+            <p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p>
+            <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
+          </div>
+        </details>
+        <details className="pc-fold" id="explore-fold" data-count="explore-open">
+          <summary>
+            <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M8 30L24 12L40 26L56 8" className="pc-legend-ink" strokeDasharray="2 4"/>{[[8, 30], [24, 12], [40, 26]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" className="pc-legend-ink"/>)}<circle cx="56" cy="8" r="3.5" className="pc-legend-turn"/></svg>
+            <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the experiments and a prototype game.</span></span>
+            <span className="pc-fold-icon" aria-hidden="true"/>
+          </summary>
+          <nav className="pc-fold-body pc-explore" aria-labelledby="pc-explore-title">
+            <ul>{explore.map(item => <li key={item.href}><a href={publicPath(item.href)}><span className="pc-kicker">{item.kicker}</span><strong>{item.title} <span aria-hidden="true">→</span></strong><span>{item.text}</span></a></li>)}</ul>
+          </nav>
+        </details>
       </section>
-      <section className="pc-section pc-evidence-promise" aria-labelledby="pc-know-title"><p className="pc-kicker">The evidence commitment</p><h2 id="pc-know-title">How I Know</h2><p>Make the sources, methods, interpretations, and limitations inspectable. An observation is not an explanation; a proposed change is not a measured result.</p><p>Useful knowledge should return to affected people and communities, as well as the people making decisions.</p><p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p><RecruiterActions label="Contact after How I Know"/></section>
-      <section id="contact" className="pc-section pc-contact" aria-labelledby="contact-title">
-        <p className="pc-kicker">Continue the conversation</p><h2 id="contact-title">What needs a better explanation?</h2>
-        <a href="mailto:hello@sbelina.com">Email Sami Belina <ExternalArrow/></a><a href="https://www.linkedin.com/in/transplantsam">LinkedIn <ExternalArrow/></a>
+      <LensInterlude compact/>
+      <section id="contact" className="pc-section pc-cta" aria-labelledby="contact-title">
+        <p className="pc-kicker">Work with me</p>
+        <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
+        <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
+        <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
+        <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-end">Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
+        <p className="pc-cta-proof">Worked in insurance operations, customer research, enterprise innovation, product research, civic engagement and AI-assisted development.</p>
       </section>
-      <details className="build-index-legacy pc-disclosure"><summary>Find a section from the previous site</summary>
-        <p>The complete previous experience is preserved, including its introduction, relationship map, writing descriptions, and experiments.</p>
-        <ul>{archivedAnchors.map(id => <li key={id} id={id}><a href={`${archive.reviewPath}#${id}`}>{labels[id] ?? id.replaceAll('-', ' ')} →</a></li>)}</ul>
-      </details>
     </div>
   </CurrentShell></>
 }

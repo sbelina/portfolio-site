@@ -53,6 +53,28 @@ export const investigationSchema = z.strictObject({
   status: z.strictObject({ kind: caseStatusKindSchema, label: undated(40) }).optional(),
   /** A longer, password-protected version exists at /deep-dive/<slug>/; its content is never in this repository. */
   deepDive: z.boolean().optional(),
+  /**
+   * The institutional decision layer (owner direction, 23 November): what was at stake, the explanation
+   * people held, the options and what became of each, who decided, what changed in practice, and its
+   * resource implications, each labelled by how far it is established. Never a financial claim by inference.
+   */
+  decision: z.strictObject({
+    stakes: narrativeText,
+    prevailing: narrativeText,
+    alternatives: z.array(z.strictObject({ option: z.string().min(1).max(160), status: z.enum(['considered', 'recommended', 'chosen', 'not_chosen']), note: narrativeText })).min(1).max(6),
+    ownership: narrativeText,
+    implementation: narrativeText,
+    implications: z.array(z.strictObject({ kind: z.enum(['resource', 'observed_change', 'measured', 'unproven']), text: narrativeText })).min(1).max(6),
+  }).optional(),
+  /**
+   * The method profile (owner direction, 23 November; after the "four decisions" survey-type infographic):
+   * how the evidence was gathered, when, from whom, and what it could and could not establish.
+   * Facts only; a decision that was not recorded says so instead of guessing.
+   */
+  method: z.strictObject(Object.fromEntries((['how', 'when', 'who', 'learn'] as const).map(key => [key, z.strictObject({
+    tags: z.array(z.string().min(1).max(60)).min(1).max(8),
+    note: narrativeText,
+  })])) as Record<'how' | 'when' | 'who' | 'learn', z.ZodObject<{ tags: z.ZodArray<z.ZodString>; note: z.ZodString }, z.core.$strict>>).optional(),
   /** One honest line on what the author would do differently next time (owner's own words). */
   differently: narrativeText.optional(),
   /** What the author did not own or decide. */
@@ -68,7 +90,7 @@ export const investigationSchema = z.strictObject({
     evidenceIds: z.array(z.uuid()).refine(ids => new Set(ids).size === ids.length, 'Duplicate evidence reference'),
   })).max(6).optional(),
   /** An optional explorable illustration rendered with the narrative (conceptual, never data). */
-  interactive: z.enum(['move-the-checkpoint']).optional(),
+  interactive: z.enum(['move-the-checkpoint', 'ask-it-differently', 'proposals-to-problems']).optional(),
   statements: z.array(z.strictObject({
     id: z.uuid(), text: narrativeText, kind: statementKindSchema,
     contribution: contributionLevelSchema,

@@ -4,6 +4,7 @@ import './styles.css'
 import './build-index.css'
 import './design/foundation.css'
 import { emptyHomeReading, type HomeReading } from './home-reading'
+import { initCounting } from './analytics'
 
 const root = document.getElementById('root')!
 const reading: HomeReading = JSON.parse(document.getElementById('home-reading')?.textContent || JSON.stringify(emptyHomeReading))
@@ -14,3 +15,6 @@ const page = reading.fixture
 const application = <React.StrictMode>{page}</React.StrictMode>
 if (root.dataset.prerendered === 'true') ReactDOM.hydrateRoot(root, application)
 else ReactDOM.createRoot(root).render(application)
+
+// Anonymous usage counts; see src/analytics.ts. Never runs off the live site.
+initCounting()

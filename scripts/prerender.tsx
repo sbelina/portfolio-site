@@ -1,7 +1,7 @@
 import BuildIndex from '../src/BuildIndex'
+import { legacyFragments } from '../src/content/legacy-fragments'
 import { FoundationPage, foundationPages, type FoundationKind } from '../src/design/FoundationPage'
 import { publicStaticRoutes } from '../src/public-routes'
-import { mountBuildArchive } from './build-archives'
 import { setPublicBase, publicPath, publicBase } from '../src/public-path'
 import React from 'react'
 import { readFile, writeFile, mkdir, rm } from 'node:fs/promises'
@@ -24,6 +24,8 @@ import { prerenderInquirySpace } from './build-inquiry-space'
 import { inquirySpacePath } from '../src/inquiry-space/paths'
 import { inquiryIllustrationProjection } from '../src/inquiry-space/illustration'
 import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
+import { loadApprovedProjection } from './release'
+import { plainText } from '../src/content/emphasis'
 
 const fixture = process.argv.includes('--fixtures')
 // Local owner-review preview of an UNAPPROVED candidate. Noindex, marked non-production, never deployed.
@@ -35,12 +37,10 @@ const output = path.resolve(outputArgument >= 0 ? process.argv[outputArgument + 
 if (candidate && path.basename(output) === 'dist') throw new Error('Candidate previews never write to the production output directory')
 setPublicBase(process.env.PUBLIC_BASE_PATH ?? '/')
 const origin = siteOrigin
-const empty: PublicProjection = { schemaVersion: 1, entries: [], relationships: [], evidence: [], assets: [], aliases: [] }
 // No canonical-content selection/approval exists. Static illustrative experiments
 // have separate scoped owner authorization; never invent manuscript approval.
-const release = JSON.parse(await readFile('content/public-release.json', 'utf8'))
-if (release.schemaVersion !== 1 || release.status !== 'no-approved-content') throw new Error('A trusted release loader is required before adding approved production content')
-const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : candidate ? (await import('../content/candidates/claims-operations')).claimsCandidatePreviewProjection() : empty
+// Production reads only the owner-approved release, re-verified against exact record digests (scripts/release.ts).
+const projection = fixture ? (await import('../tests/fixtures/reading-content')).fixtureProjection() : candidate ? (await import('../content/candidates/claims-operations')).claimsCandidatePreviewProjection() : await loadApprovedProjection()
 const escapeJson = (value: unknown) => JSON.stringify(value).replaceAll('<', '\\u003c').replaceAll('\u2028', '\\u2028').replaceAll('\u2029', '\\u2029')
 const [homeTemplate, readingTemplate, foundationTemplate] = await Promise.all([readFile(path.join(output, 'index.html'), 'utf8'), readFile(path.join(output, 'reading.html'), 'utf8'), readFile(path.join(output, 'foundation.html'), 'utf8')])
 const legacyIds = new Set([...renderToString(<App />).matchAll(/\bid="([^"]+)"/g)].map(match => match[1]))
@@ -50,7 +50,7 @@ for (const alias of projection.aliases) if (alias.kind === 'fragment') {
   if (legacyIds.has(alias.fragment)) throw new Error('A legacy fragment needs an explicitly reviewed migration before replacement')
   fragmentRedirects[alias.fragment] = projection.entries.find(entry => entry.id === alias.targetId)!.path
 }
-const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, title, summary, investigation }) => ({ id, path, title, summary, ...(investigation?.brief ? { brief: investigation.brief } : {}), ...(investigation?.status ? { status: investigation.status } : {}),
+const reading = { fixture, entries: projection.entries.filter(entry => entry.kind === 'investigation').map(({ id, path, slug, title, summary, investigation }) => ({ id, path, slug, title, summary, ...(investigation?.decision ? { stakes: investigation.decision.stakes } : {}), ...(investigation ? { visual: investigation.visual, composition: investigation.composition } : {}), ...(investigation?.deepDive ? { deepDive: true } : {}), ...(investigation?.brief ? { brief: investigation.brief } : {}), ...(investigation?.status ? { status: investigation.status } : {}),
   ...(investigation?.figures?.some(figure => figure.headline) ? { headlines: investigation.figures.filter(figure => figure.headline).map(({ id, value, unit, label, basis, qualifier }) => ({ id, value, unit, label, basis, qualifier })) } : {}) })), fragmentRedirects }
 // Production home receives only approved, projected investigations; the client hydrates from the same home-reading JSON.
 const homeMarkup = renderToString(fixture ? <App reading={reading} /> : <BuildIndex investigations={reading.entries} />)
@@ -61,7 +61,9 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !preview, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
-for (const id of baselineAnchors) if (!home.includes(`id="${id}"`)) throw new Error('An existing legacy anchor would be lost')
+// Every old anchor stays reachable: as a target on the page, or (current edition, owner direction 23 November)
+// as a fragment the homepage redirects to its current page.
+for (const id of baselineAnchors) if (!home.includes(`id="${id}"`) && (fixture || !Object.hasOwn(legacyFragments, id))) throw new Error(`An existing legacy anchor would be lost: ${id}`)
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
 await prerenderEdgeCase(output)
@@ -79,8 +81,8 @@ async function page(file: string, data: ReadingPageData, title: string, descript
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, 'Investigations — Producing Curiosity', 'Read investigations with evidence, contribution, limitations, and explained connections.', '/investigations/', reading.entries.length > 0)
-for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) }, `${entry.title}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, entry.summary, entry.path)
+await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies — Producing Curiosity', 'Case studies by Sami Belina: the problem, the evidence, what changed, and my part and its limits.', '/investigations/', reading.entries.length > 0)
+for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) }, `${plainText(entry.title)}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, plainText(entry.summary), entry.path)
 for (const entry of illustrativeEntries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(inquiryProjection, 'entry', false, entry.id, inquirySpacePath), illustrative: true }, `${entry.title} — synthetic illustration · Producing Curiosity`, entry.summary, entry.path, false)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
 for (const [kind, metadata] of Object.entries(foundationPages)) {
@@ -107,7 +109,9 @@ if (fixture) for (const [kind, metadata] of Object.entries(proposalPages)) {
   proposalRoutes.push(metadata.path)
 }
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
-if (redirects.length) await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
+// Readers look for “work” and “case studies”; both names lead to the collection (23 November).
+redirects.push('/work/ /investigations/ 301', '/work /investigations/ 301', '/case-studies/ /investigations/ 301', '/case-studies /investigations/ 301')
+await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {
   const asset = projection.assets.find(item => item.id === id)!
   return readFileSync(path.join('content/public-media', path.basename(asset.url)))
@@ -116,10 +120,9 @@ for (const asset of verifyPublicAssets(projection, id => {
 }
 await writeFile(path.join(output, 'public-content.json'), JSON.stringify(projection))
 if (preview) await writeFile(path.join(output, '_headers'), '/*\n  X-Robots-Tag: noindex\n')
-const historicalRoutes = await mountBuildArchive(output)
-await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture: preview, ...(candidate ? { candidate: true } : {}), routes: [...routes.map(publicPath), ...proposalRoutes.map(publicPath), ...historicalRoutes], fragments: fragmentRedirects }))
-await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title, summary }))))
-await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title, kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
+await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schemaVersion: 1, fixture: preview, ...(candidate ? { candidate: true } : {}), routes: [...routes.map(publicPath), ...proposalRoutes.map(publicPath)], fragments: fragmentRedirects }))
+await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title: plainText(title), summary: plainText(summary) }))))
+await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title: plainText(title), kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
 const indexableRoutes = preview || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
 await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
 await mkdir('docs/codex/generated', { recursive: true })
@@ -127,4 +130,4 @@ if (publicBase() === '/' && !preview) await writeFile('docs/codex/generated/migr
 // No generic Vite shell may turn an unknown URL into a soft 200.
 await rm(path.join(output, 'reading.html'))
 await rm(path.join(output, 'foundation.html'))
-console.log(`Prerendered ${routes.length + historicalRoutes.length} routes (${fixture ? 'explicit local synthetic fixtures' : candidate ? 'LOCAL UNAPPROVED CANDIDATE PREVIEW; never deploy' : 'production-safe; no approved canonical content'}).`)
+console.log(`Prerendered ${routes.length} routes (${fixture ? 'explicit local synthetic fixtures' : candidate ? 'LOCAL UNAPPROVED CANDIDATE PREVIEW; never deploy' : projection.entries.length ? `production; ${projection.entries.length} approved entries` : 'production-safe; no approved canonical content'}).`)

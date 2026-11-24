@@ -1,4 +1,5 @@
 import React from 'react'
+import { publicPath } from '../public-path'
 import { A, B, C, D, centre, constructionSteps, freehandPath, radius, rightAngleMarker } from './lens-geometry'
 
 /**
@@ -7,8 +8,25 @@ import { A, B, C, D, centre, constructionSteps, freehandPath, radius, rightAngle
  * from Euclid (src/design/lens-geometry.ts) and the steps are shown as text, so the drawing itself
  * is aria-hidden. It encodes no data.
  */
-export function LensInterlude() {
-  return <section className="pc-interlude" data-surface="observatory" aria-labelledby="pc-interlude-title">
+export function LensInterlude({ compact = false }: { compact?: boolean } = {}) {
+  // Homepage (owner decision, 23 November): the quote, compact, above the call to action. The geometry lives in Field Notes.
+  if (compact) return <section className="pc-interlude pc-interlude--compact" data-surface="observatory" aria-labelledby="pc-interlude-title">
+    <div className="pc-interlude-inner">
+      <div className="pc-interlude-copy">
+        <h2 id="pc-interlude-title" className="pc-kicker">How I got here</h2>
+        <figure className="pc-interlude-quote">
+          <blockquote lang="en"><p>Inspiration is needed in geometry, just as much as in poetry.</p></blockquote>
+          <figcaption>— Alexander Pushkin</figcaption>
+        </figure>
+        <p className="pc-interlude-lens">Design and philosophy taught me the same two things: the inspiration to see a relationship no one has drawn yet, and the discipline to test whether it holds.</p>
+        <details className="pc-interlude-source"><summary>Source</summary>
+          <p>From Pushkin’s critical notes. In Russian: <span lang="ru">«Вдохновение нужно в геометрии, как и в поэзии».</span> The English is a common translation.</p>
+        </details>
+        <p><a className="pc-text-link" href={publicPath('/writing/#how-i-got-here')}>See the geometry behind it <span aria-hidden="true">→</span></a></p>
+      </div>
+    </div>
+  </section>
+  return <section className="pc-interlude" id="how-i-got-here" data-surface="observatory" aria-labelledby="pc-interlude-title">
     <div className="pc-interlude-inner">
       <div className="pc-interlude-copy">
         <h2 id="pc-interlude-title" className="pc-kicker">How I got here</h2>

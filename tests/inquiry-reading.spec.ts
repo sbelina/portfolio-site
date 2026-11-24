@@ -77,8 +77,11 @@ test('published illustration uses its own scoped projection, explicit labels,404
  }
  expect((await request.get(root+inquirySpacePath+'unreviewed/')).status()).toBe(404)
  expect((await request.get(root+'/notes/fixture-folded-margin/')).status()).toBe(404)
- expect(JSON.parse(await(await request.get(root+'/search-index.json')).text())).toEqual([])
- expect(JSON.parse(await(await request.get(root+'/graph-index.json')).text())).toEqual({nodes:[],edges:[]})
+ // Only approved investigations are indexed; synthetic illustrations never are, and no case-to-case edge is asserted.
+ const search=JSON.parse(await(await request.get(root+'/search-index.json')).text()) as {path:string}[]
+ expect(search.every(item=>item.path.startsWith('/investigations/'))).toBe(true)
+ const graph=JSON.parse(await(await request.get(root+'/graph-index.json')).text())
+ expect(graph.edges).toEqual([]);expect(graph.nodes.every((node:{kind:string})=>node.kind==='investigation')).toBe(true)
  expect(await(await request.get(root+'/sitemap.xml')).text()).not.toContain('illustration-')
 })
 

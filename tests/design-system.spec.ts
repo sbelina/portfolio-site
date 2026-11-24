@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { readFile } from 'node:fs/promises'
 
 const origin = 'http://127.0.0.1:4175'
-const destinations = [['Investigations', '/investigations/'], ['Connections', '/patterns/'], ['Practice', '/practice/'], ['Observatory — experimental', '/lab/'], ['Contact', '/#contact']] as const
+const destinations = [['Work', '/investigations/'], ['Practice', '/practice/'], ['Field Notes', '/writing/'], ['Experiments — experimental', '/lab/'], ['About', '/about/'], ['Contact', '/contact/']] as const
 
 for (const route of ['/', '/practice/', '/patterns/', '/system/']) {
   test(`current edition has initial reading, real menus and no required animation on ${route}`, async ({ browser }) => {
@@ -15,7 +15,9 @@ for (const route of ['/', '/practice/', '/patterns/', '/system/']) {
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
       const nav = page.getByRole('navigation', { name: 'Primary navigation', exact: true })
       for (const [label, href] of destinations) await expect(nav.getByRole('link', { name: label, exact: true })).toHaveAttribute('href', href)
-      if (route === '/practice/' || route === '/patterns/') await expect(nav.locator('[aria-current="page"]')).toHaveAttribute('href', route)
+      if (route === '/practice/') await expect(nav.locator('[aria-current="page"]')).toHaveAttribute('href', route)
+      // Connections sits under Practice in the five-item menu.
+      if (route === '/patterns/') await expect(nav.locator('[aria-current="true"]')).toHaveAttribute('href', '/practice/')
       const summary = page.locator('footer .experiment-note > summary')
       await summary.focus(); await page.keyboard.press('Enter')
       await expect(page.getByRole('heading', { name: 'The working hypothesis' })).toBeVisible()
@@ -33,8 +35,14 @@ test('practice moves are prose; homepage and direct method do not load graph or 
     const page = await context.newPage(), errors: string[] = [], requests: string[] = []
     page.on('pageerror', error => errors.push(error.message)); page.on('request', request => requests.push(request.url()))
     await page.goto(origin + '/')
-    await expect(page.locator('.pc-moves h3')).toHaveText(['Test.', 'Show.', 'Enable.'])
-    await expect(page.locator('.pc-moves button')).toHaveCount(0)
+    // Test. Show. Enable. folds into a card (owner, 24 November) and opens to one moving figure with native radios.
+    const fold = page.locator('#practice-fold')
+    await expect(fold).not.toHaveAttribute('open', '')
+    await fold.locator(':scope > summary').focus(); await page.keyboard.press('Enter')
+    await expect(fold).toHaveAttribute('open', '')
+    await expect(page.getByRole('radio', { name: /Test|Show|Enable/ })).toHaveCount(3)
+    await expect(page.locator('.pc-tse-text h3')).toHaveText('Test.')
+    await expect(page.getByRole('button', { name: 'Play all three' })).toHaveCount(0)
     const method = page.getByRole('link', { name: 'How I investigate', exact: false })
     await method.focus(); await page.keyboard.press('Enter'); await expect(page).toHaveURL(origin + '/practice/')
     await expect(page.getByRole('heading', { name: 'Test. Show. Enable.', exact: true })).toBeVisible()
@@ -98,11 +106,12 @@ test('current pages reflow with touch, reduced motion and enlarged text; no-JS s
 
 test('new routes reserve claims for reviewed selections, preserve real 404s and keep specimen out of sitemap', async ({ request }) => {
   const content = await (await request.get(origin + '/public-content.json')).json()
-  expect(content.entries).toEqual([]); expect(content.relationships).toEqual([])
+  expect(content.entries).toHaveLength(6); expect(content.relationships).toEqual([])
   for (const route of ['/practice/missing/', '/patterns/missing/', '/system/private/', '/foundation.html']) expect((await request.get(origin + route)).status()).toBe(404)
   const connections = await (await request.get(origin + '/patterns/')).text()
   expect(connections).toContain('conceptual starting questions')
-  expect(connections).not.toContain('/investigations/claims-operations/')
+  // Three distinctions link to a published investigation; none asserts a case-to-case relationship.
+  expect(connections).toContain('/investigations/claims-operations/')
   const html = await (await request.get(origin + '/')).text()
   expect(html).not.toMatch(/18%|7\.6%|increased wait before payment|approvedByHuman/)
   expect(await readFile('dist/sitemap.xml', 'utf8')).not.toContain('/system/')
@@ -143,6 +152,6 @@ test('enlarged enhanced specimen preserves whole control words and skip targets 
     const header = (await page.locator('.pc-header').boundingBox())!, crumb = (await page.locator('.pc-breadcrumb').boundingBox())!
     expect(crumb.y).toBeGreaterThanOrEqual(header.y + header.height)
     await page.goto(origin + '/')
-    await expect(page.locator('.pc-contact .pc-external-arrow')).toHaveCount(2)
+    await expect(page.locator('.pc-cta .pc-external-arrow')).toHaveCount(1)
   } finally { await context.close() }
 })

@@ -6,17 +6,20 @@ html[data-edition="current"], .pc-site, .pc-sample {
   --signal: #a33a0c; --signal-art: #ff641c; --focus: #734295;
   --unresolved: #714491; --pressure: #9c3e35; --holds: #21675f;
   --inverse: #f3efe7;
+  /* Deck imagery: sage marks a check or verification (the lens). Graphics only; 3:1 or more on paper. */
+  --sage: #4b6a57;
   --serif: Georgia, 'Times New Roman', serif;
   --reading-paper: var(--paper); --reading-panel: var(--panel); --reading-ink: var(--ink);
   --reading-muted: var(--muted); --reading-line: var(--line); --reading-focus: var(--focus);
-  --reading-unresolved: var(--unresolved); --reading-pressure: var(--pressure); --reading-holds: var(--holds);
+  --reading-unresolved: var(--unresolved); --reading-pressure: var(--pressure); --reading-holds: var(--holds); --reading-sage: var(--sage);
 }
 html[data-edition="current"] { background: var(--paper); color: var(--ink); }
-.pc-site[data-surface="observatory"], .pc-sample[data-surface="observatory"], .pc-interlude[data-surface="observatory"], .deep-dive-beneath[data-surface="observatory"] {
+.pc-site[data-surface="observatory"], .pc-sample[data-surface="observatory"], .pc-night[data-surface="observatory"], .pc-interlude[data-surface="observatory"], .deep-dive-beneath[data-surface="observatory"] {
   color-scheme: dark;
   --paper: #111716; --panel: #202925; --panel-2: #28332c;
   --ink: #f3efe7; --muted: #b9c0b6; --line: #87978a; --soft-line: #344039;
   --signal: #ffab7d; --signal-art: #ff641c; --focus: #e5ba72;
   --unresolved: #c9b0ed; --pressure: #ffa89b; --holds: #8bd4c4;
   --inverse: #111716;
+  --sage: #a6cbb2;
 }

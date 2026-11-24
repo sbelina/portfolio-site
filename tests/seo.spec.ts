@@ -14,7 +14,9 @@ test('metadata escapes content and rejects off-site canonical routes', () => {
 test('production documents have one consistent metadata set and factual site schema', async () => {
   for (const [file, route, indexable] of [
     ['index.html', '/', true],
-    ['investigations/index.html', '/investigations/', false],
+    ['investigations/index.html', '/investigations/', true],
+    ['investigations/claims-operations/index.html', '/investigations/claims-operations/', true],
+    ['writing/index.html', '/writing/', true],
     ['experiments/reveal-hidden-work/index.html', '/experiments/reveal-hidden-work/', true],
     ['practice/index.html', '/practice/', true],
     ['patterns/index.html', '/patterns/', true],
@@ -47,7 +49,7 @@ test('production documents have one consistent metadata set and factual site sch
 
 test('sitemap lists only indexable canonical public documents and fixtures never contribute', async () => {
   const sitemap = await readFile('dist/sitemap.xml', 'utf8')
-  expect([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1])).toEqual([`${siteOrigin}/`, `${siteOrigin}/experiments/reveal-hidden-work/`, `${siteOrigin}/practice/`, `${siteOrigin}/patterns/`])
+  expect([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1])).toEqual([`${siteOrigin}/`, `${siteOrigin}/experiments/reveal-hidden-work/`, `${siteOrigin}/practice/`, `${siteOrigin}/patterns/`, `${siteOrigin}/writing/`, `${siteOrigin}/about/`, `${siteOrigin}/contact/`, `${siteOrigin}/investigations/`, ...['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai'].map(slug => `${siteOrigin}/investigations/${slug}/`)])
   expect(await readFile('dist-fixtures/sitemap.xml', 'utf8')).not.toContain('<loc>')
   const manifest = JSON.parse(await readFile('dist-fixtures/route-manifest.json', 'utf8'))
   for (const route of manifest.routes) {

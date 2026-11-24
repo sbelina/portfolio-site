@@ -1,0 +1,318 @@
+/*
+ * Interactive figures added 23 November 2026 (owner direction): the Related. Not equivalent. field,
+ * Test. Show. Enable. in motion, and the Observatory's layered connections field.
+ * Same rules as motion.css: complete at rest, movement only (never fading text), and every
+ * animation inside prefers-reduced-motion: no-preference.
+ */
+@layer pc-components {
+  /* ── Related. Not equivalent. ─────────────────────────────────────────────── */
+  .pc-field { display: grid; gap: var(--space-5); margin-block: var(--space-5); }
+  .pc-field-stage { position: relative; background: var(--paper); color: var(--ink); border-radius: 2px; overflow: hidden; container-type: inline-size; box-shadow: var(--elevation-2); }
+  .pc-field-sky { display: block; width: 100%; height: auto; }
+  .pc-field-dust { fill: var(--line); }
+  .pc-field-pattern { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 6; }
+  .pc-field-halo { fill: none; stroke: var(--soft-line); stroke-width: 1; }
+  .pc-field-body { fill: var(--ink); }
+  .pc-field-body--turn { fill: var(--signal-art); }
+  .pc-field-thread { stroke: var(--signal-art); stroke-width: 1.5; visibility: hidden; }
+  .pc-field-gap { fill: none; stroke: var(--signal-art); stroke-width: 1; stroke-dasharray: 2 3; visibility: hidden; }
+  .pc-field-star text { fill: var(--ink); font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+  .pc-field-star[data-split] .pc-field-left { transform: translateX(-46px); }
+  .pc-field-star[data-split] .pc-field-right { transform: translateX(46px); }
+  .pc-field-star[data-split] :is(.pc-field-thread, .pc-field-gap) { visibility: visible; }
+  .pc-field-star[data-split] .pc-field-halo { visibility: hidden; }
+  .pc-field-frame rect { fill: none; stroke: var(--ink); stroke-width: 1; }
+  .pc-field-frame text { fill: var(--ink); font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .pc-field-points { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
+  .pc-field-points li { position: absolute; transform: translate(-50%, -50%); }
+  .pc-field-points button { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid transparent; background: transparent; cursor: pointer; }
+  .pc-field-points button:hover { border-color: var(--line); }
+  .pc-field-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-field-points button[aria-pressed="true"] { border-color: transparent; }
+  .pc-field-caption { margin: 0; padding: var(--space-2) var(--space-4) var(--space-3); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-field-panel { max-width: 46ch; }
+  .pc-field-panel > * + * { margin-top: var(--space-3); }
+  .pc-field-prompt, .pc-field-question { font-size: var(--step-1); line-height: 1.4; }
+  .pc-field-answers button, .pc-field-quiet { min-height: 44px; padding: .4rem 1.1rem; font: inherit; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .pc-field-answers button:hover { background: var(--signal-2); }
+  .pc-field-quiet { border-color: var(--line); font-size: var(--step--1); }
+  .pc-field-label { font-weight: 650; }
+  .pc-field-pattern-note { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+  .pc-field-text .pc-pattern-pairs { margin-top: var(--space-4); }
+  @media (min-width: 900px) {
+    .pc-field { grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); align-items: start; }
+    .pc-field-text { grid-column: 1 / -1; }
+  }
+  /* On a narrow field the labels would be too small to read; the panel carries them in text. */
+  @container (max-width: 560px) { .pc-field-star:not([data-active]) text { display: none; } }
+  /* The hero's preview: the same field at rest, labels larger so they read in a narrow column. */
+  .pc-field-preview { margin: 0; }
+  .pc-field-preview .pc-field-star text { font-size: 22px; }
+  @container (max-width: 560px) { .pc-field-preview .pc-field-star:not([data-active]) text { display: inline; } }
+  @container (max-width: 340px) { .pc-field-preview .pc-field-star:not([data-active]) text { display: none; } }
+  .pc-field-preview figcaption { margin-top: var(--space-3); font-size: var(--step--1); color: var(--muted); display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); }
+  .pc-field-preview figcaption a { color: var(--ink); font-weight: 600; }
+
+  /* ── Test. Show. Enable. in motion ────────────────────────────────────────── */
+  .pc-tse, .pc-tse-static { margin-block: var(--space-5); }
+  .pc-tse-static { list-style: none; padding: 0; display: grid; gap: var(--space-6); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+  .pc-tse-static h3, .pc-tse-text h3 { font-size: var(--step-3); margin: var(--space-3) 0 var(--space-2); }
+  .pc-tse-static h3 span, .pc-tse-text h3 span { color: var(--signal); }
+  .pc-tse-static .pc-tse-svg { background: var(--panel); }
+  .pc-tse-svg { display: block; width: 100%; height: auto; fill: none; }
+  .pc-tse-svg text { fill: var(--muted); stroke: none; font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+  .pc-tse-strand { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 4; stroke-linecap: round; }
+  .pc-tse-held { stroke: var(--ink); stroke-width: 2; }
+  .pc-tse-lens ellipse { stroke: var(--sage); stroke-width: 2; }
+  .pc-tse-thread { stroke: var(--signal-art); stroke-width: 1.5; }
+  .pc-tse-gap { stroke: var(--signal-art); stroke-dasharray: 2 3; }
+  .pc-tse-node circle { fill: var(--ink); }
+  .pc-tse-node circle.pc-tse-turn { fill: var(--signal-art); }
+  .pc-tse-node--left { transform: translateX(-90px); }
+  .pc-tse-node--right { transform: translateX(90px); }
+  .pc-tse-branch { stroke: var(--ink); stroke-width: 1.25; }
+  .pc-tse-reach circle { fill: var(--sage); }
+  .pc-tse-hub { fill: var(--ink); }
+  .pc-tse-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: center; border: 0; padding: 0; margin: 0 0 var(--space-4); min-width: 0; }
+  .pc-tse-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--step-1); font-weight: 650; cursor: pointer; }
+  .pc-tse-controls input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
+  .pc-tse-number { font: var(--step--1)/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-tse-play { min-height: 44px; padding: .4rem 1.1rem; font: inherit; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; }
+  .pc-tse-stage { display: grid; gap: var(--space-5); }
+  .pc-tse-figure { position: relative; background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); }
+  .pc-tse-progress { position: absolute; left: var(--space-3); bottom: var(--space-3); display: flex; gap: var(--space-1); }
+  .pc-tse-progress i { display: block; width: 1.5rem; height: 2px; background: var(--soft-line); }
+  .pc-tse-progress i[data-on] { background: var(--signal-art); }
+  .pc-tse-text > * { max-width: 46ch; }
+  .pc-tse-text h3 { margin-top: 0; }
+  .pc-tse-move { font-size: var(--step-1); line-height: 1.4; }
+  .pc-tse-label { font-weight: 650; }
+  .pc-tse-questions { color: var(--muted); }
+  @media (min-width: 900px) { .pc-tse-stage { grid-template-columns: minmax(0, 1.3fr) minmax(16rem, 1fr); align-items: start; } }
+  /* ── The call to action: written for a decision-maker, with one primary action ── */
+  .pc-cta { border-top: 3px solid var(--ink); padding-top: var(--space-6); }
+  .pc-cta h2 { font-size: var(--step-4); line-height: 1.05; max-width: 18ch; }
+  .pc-cta-lead { font-size: var(--step-1); line-height: 1.45; max-width: 44ch; }
+  .pc-cta-offer { list-style: none; padding: 0; margin: var(--space-5) 0; display: grid; gap: var(--space-3) var(--space-5); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+  .pc-cta-offer li { border-top: 1px solid var(--line); padding-top: var(--space-3); }
+  .pc-cta-offer strong { display: block; font-size: var(--step-1); }
+  .pc-cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+  .pc-cta-actions a { margin: 0; }
+  .pc-cta .pc-cta-actions .pc-cta-primary, .pc-cta-primary { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 52px; padding: 0 var(--space-5); background: var(--ink); color: var(--paper); font-weight: 650; font-size: var(--step-1); text-decoration: none; box-shadow: var(--elevation-2); }
+  .pc-cta-primary:hover { background: var(--signal-10); }
+  .pc-cta-primary:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+  .pc-cta-proof { color: var(--muted); font-size: var(--step--1); margin-top: var(--space-4); max-width: 60ch; }
+  .pc-cta-band { margin-top: var(--space-6); padding: var(--space-4) var(--space-5); background: var(--signal-2); border-left: 3px solid var(--signal); display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; }
+  .pc-cta-band a { font-weight: 650; }
+  /* ── Contact ─────────────────────────────────────────────────────────────── */
+  .pc-contact-form { display: grid; gap: var(--space-4); max-width: 36rem; margin-top: var(--space-4); }
+  .pc-contact-form label { display: grid; gap: var(--space-2); font-weight: 650; }
+  .pc-contact-form :is(input, textarea) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
+  .pc-contact-form :is(input, textarea):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-form button { border: 0; cursor: pointer; font-family: inherit; }
+  .pc-contact-optional { font-weight: 400; color: var(--muted); }
+  .pc-contact-note { color: var(--muted); font-size: var(--step--1); }
+  .pc-contact-submit { margin: 0; }
+  /* ── Observatory: the layered connections field ─────────────────────────── */
+  .pc-cfield { margin-block: var(--space-6); }
+  .pc-cfield-layers { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); border: 0; padding: 0; margin: var(--space-4) 0; min-width: 0; }
+  .pc-cfield-layers label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-weight: 650; cursor: pointer; }
+  .pc-cfield-layers input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
+  .pc-cfield-grid { display: grid; gap: var(--space-5); }
+  .pc-cfield-stage { position: relative; aspect-ratio: 16 / 11; background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); container-type: inline-size; overflow: hidden; }
+  .pc-cfield-sky { position: absolute; left: 6%; top: 4%; width: 88%; height: 92%; overflow: visible; }
+  .pc-cfield-dust { fill: var(--line); }
+  .pc-cfield-edge { stroke: var(--line); stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .pc-cfield-edge[data-layer="thinking"] { stroke: var(--soft-line); stroke-dasharray: 2 4; }
+  .pc-cfield-edge[data-layer="archive"] { stroke: var(--soft-line); stroke-dasharray: 1 5; }
+  .pc-cfield-stage[data-selected] .pc-cfield-edge { stroke: var(--soft-line); }
+  .pc-cfield-stage[data-selected] .pc-cfield-edge[data-lit] { stroke: var(--signal-art); stroke-width: 1.5; stroke-dasharray: none; }
+  .pc-cfield-points { list-style: none; margin: 0; padding: 0; position: absolute; inset: 4% 6%; }
+  .pc-cfield-points li { position: absolute; --depth: 16px; transform: translate(calc(-50% + var(--px, 0) * var(--depth)), calc(-50% + var(--py, 0) * var(--depth))); }
+  .pc-cfield-points li[data-layer="thinking"] { --depth: 9px; }
+  .pc-cfield-points li[data-layer="archive"] { --depth: 4px; }
+  .pc-cfield-points button { display: grid; justify-items: center; gap: 2px; min-width: 32px; min-height: 32px; padding: 2px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font: 11px/1.15 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+  .pc-cfield-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-cfield-mark { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
+  [data-kind="project"] .pc-cfield-mark { width: 11px; height: 11px; background: var(--signal-art); }
+  [data-kind="origin"] .pc-cfield-mark { background: var(--sage); }
+  [data-kind="writing"] .pc-cfield-mark, [data-kind="archive"] .pc-cfield-mark { background: transparent; border: 1px solid var(--ink); }
+  .pc-cfield-points li[data-layer="archive"] .pc-cfield-mark { width: 4px; height: 4px; }
+  .pc-cfield-name { max-width: 12ch; color: var(--muted); }
+  [data-kind="tag"] .pc-cfield-name { white-space: nowrap; max-width: none; }
+  /* Topics from deeper layers name themselves only when traced, so the field stays legible. */
+  .pc-cfield-stage li[data-kind="tag"]:not([data-layer="core"]):not([data-near]) .pc-cfield-name { display: none; }
+  [data-kind="project"] .pc-cfield-name { color: var(--ink); font-weight: 600; }
+  .pc-cfield-stage[data-selected] li:not([data-near]) .pc-cfield-name { visibility: hidden; }
+  .pc-cfield-stage[data-selected] li[data-near] .pc-cfield-name { color: var(--ink); }
+  .pc-cfield-points button[aria-pressed="true"] .pc-cfield-mark { box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--signal-art); }
+  .pc-cfield-caption { margin: var(--space-2) 0 0; font: var(--step--1)/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-cfield-panel > * + * { margin-top: var(--space-3); }
+  .pc-cfield-panel h3 { font-size: var(--step-2); }
+  .pc-cfield-label { font-weight: 650; }
+  .pc-cfield-trace { list-style: none; padding: 0; display: grid; gap: var(--space-1); }
+  .pc-cfield-trace button, .pc-cfield-inline { font: inherit; font-weight: 600; text-align: left; border: 0; background: none; color: var(--signal-11); cursor: pointer; min-height: 32px; padding: 0; }
+  .pc-cfield-trace button::before { content: '↳ '; color: var(--muted); }
+  .pc-cfield-list { list-style: none; padding: 0; display: grid; gap: var(--space-3); }
+  .pc-cfield-list li { display: grid; gap: var(--space-1); border-top: 1px solid var(--soft-line); padding-top: var(--space-2); }
+  .pc-cfield-list span { color: var(--muted); font-size: var(--step--1); }
+  @media (min-width: 1000px) { .pc-cfield-grid { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); align-items: start; } }
+  /* Too narrow for every name: only the traced points keep theirs. */
+  @container (max-width: 620px) { .pc-cfield-stage li:not([data-near]):not([data-kind="project"]) .pc-cfield-name { display: none; } .pc-cfield-points button { font-size: 10px; } }
+  /* ── Folded cards: optional depth on the homepage (native details, each independent) ── */
+  .pc-folds { display: grid; gap: var(--space-4); }
+  .pc-folds > .pc-kicker { margin: 0; }
+  .pc-fold { border: 1px solid var(--line); background: var(--paper); box-shadow: var(--elevation-1); }
+  .pc-fold[open] { box-shadow: var(--elevation-2); }
+  .pc-fold > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; padding: var(--space-4) var(--space-5); cursor: pointer; list-style: none; min-height: 44px; }
+  .pc-fold > summary::-webkit-details-marker { display: none; }
+  .pc-fold > summary:hover { background: var(--signal-1); }
+  .pc-fold > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-fold-glyph { width: 4rem; height: auto; fill: none; }
+  .pc-fold-text { display: grid; gap: var(--space-1); }
+  .pc-fold-kicker { font: 600 .75rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); }
+  .pc-fold-text h2 { margin: 0; font-size: var(--step-2); line-height: 1.15; }
+  .pc-fold-teaser { color: var(--muted); max-width: 60ch; }
+  .pc-fold-icon { position: relative; width: 1.5rem; height: 1.5rem; }
+  .pc-fold-icon::before, .pc-fold-icon::after { content: ''; position: absolute; inset: 50% 0 auto; height: 2px; margin-top: -1px; background: var(--ink); }
+  .pc-fold-icon::after { transform: rotate(90deg); }
+  .pc-fold[open] .pc-fold-icon::after { transform: rotate(0deg); }
+  .pc-fold-body { padding: 0 var(--space-5) var(--space-5); border-top: 1px solid var(--soft-line); }
+  .pc-fold .pc-explore { padding-top: var(--space-4); }
+  @media (max-width: 540px) { .pc-fold > summary { grid-template-columns: minmax(0, 1fr) auto; padding: var(--space-4); } .pc-fold-glyph { display: none; } .pc-fold-body { padding-inline: var(--space-4); } }
+  /* ── Before and after, near the top of a case ───────────────────────────── */
+  .pc-ba { margin-block: var(--space-6); }
+  .pc-ba-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); margin-top: var(--space-4); }
+  .pc-ba-panel { margin: 0; padding: var(--space-4) var(--space-5) var(--space-5); border: 1px solid var(--line); background: var(--paper); display: grid; gap: var(--space-3); align-content: start; }
+  .pc-ba-panel[data-state="after"] { border-color: var(--ink); box-shadow: var(--elevation-2); }
+  .pc-ba-panel .pc-kicker { margin: 0; }
+  .pc-ba-panel svg { width: 100%; max-width: 15rem; height: auto; fill: none; }
+  .pc-ba-dot { fill: var(--ink); stroke: none; }
+  .pc-ba-dot--turn { fill: var(--signal-art); }
+  .pc-ba-pair { margin: 0; font-size: var(--step-1); font-weight: 650; }
+  .pc-ba-sign { color: var(--muted); font-weight: 400; padding-inline: .2em; }
+  .pc-ba-panel figcaption { color: var(--ink); max-width: 46ch; }
+  .pc-ba-caption { margin-top: var(--space-2); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  /* ── The career thread (About and Contact) ───────────────────────────────── */
+  .pc-career { margin-block: var(--space-7); border-top: 1px solid var(--line); padding-top: var(--space-6); }
+  .pc-career-lead { max-width: 60ch; }
+  .pc-career-figure { margin-top: var(--space-5); background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); container-type: inline-size; }
+  .pc-career-svg { display: block; width: 100%; height: auto; fill: none; }
+  .pc-career-track { stroke: var(--soft-line); stroke-width: 2; stroke-dasharray: 2 6; }
+  .pc-career-thread { stroke: var(--signal-art); stroke-width: 3; }
+  .pc-career-proof { fill: var(--ink); }
+  .pc-career-node { fill: var(--paper); stroke: var(--ink); stroke-width: 2; }
+  [data-active] > .pc-career-node { fill: var(--signal-art); stroke: var(--signal-art); }
+  .pc-career-next { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 3 4; }
+  [data-active] > .pc-career-next { stroke: var(--signal-art); }
+  .pc-career-arrow { stroke: var(--signal-art); stroke-width: 2; }
+  .pc-career-svg text { fill: var(--muted); stroke: none; font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+  .pc-career-svg [data-active] text { fill: var(--ink); font-weight: 700; }
+  @container (max-width: 560px) { .pc-career-title { display: none; } .pc-career-svg text { font-size: 18px; } }
+  .pc-career-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); border: 0; padding: 0; margin: var(--space-4) 0; min-width: 0; }
+  .pc-career-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-weight: 600; cursor: pointer; }
+  .pc-career-controls input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
+  .pc-career-panel, .pc-career-static > li { border-left: 3px solid var(--signal); padding: var(--space-2) 0 var(--space-2) var(--space-5); max-width: 62ch; min-width: 0; }
+  @media (max-width: 540px) { .pc-career-panel, .pc-career-static > li { padding-left: var(--space-3); } }
+  .pc-career-static { list-style: none; padding: 0; display: grid; gap: var(--space-6); margin-top: var(--space-5); }
+  .pc-career-panel h3, .pc-career-static h3 { font-size: var(--step-2); margin: 0 0 var(--space-2); }
+  .pc-career-sub { color: var(--muted); font-weight: 400; }
+  .pc-career-setting { font-style: italic; color: var(--muted); }
+  .pc-career-pending { font-style: normal; font-size: var(--step--1); }
+  .pc-career-turn { font-size: var(--step-1); line-height: 1.4; font-weight: 600; }
+  .pc-career-label { font-weight: 650; margin-bottom: var(--space-1); }
+  .pc-career-parts { padding-left: 1.1rem; display: grid; gap: var(--space-2); }
+  .pc-career-parts a { font-size: var(--step--1); }
+  .pc-career-ask { font-size: var(--step-1); }
+  .pc-career-actions { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); align-items: center; }
+  .pc-career-alongside { margin-top: var(--space-5); color: var(--muted); }
+
+  /* ── About ───────────────────────────────────────────────────────────────── */
+  .pc-about-intro { display: grid; gap: var(--space-5); align-items: start; }
+  .pc-portrait { margin: 0; max-width: 18rem; }
+  .pc-portrait img { display: block; width: 100%; height: auto; box-shadow: var(--elevation-2); }
+  @media (min-width: 760px) { .pc-about-intro:has(.pc-portrait) { grid-template-columns: 16rem minmax(0, 1fr); } }
+
+  /* ── Counting: the first-visit notice, the toast and the About section ──── */
+  .pc-count-notice, .pc-count-toast { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-sizing: border-box; overflow-wrap: anywhere; }
+  .pc-count-notice a { color: inherit; text-underline-offset: .25em; }
+  .pc-count-notice { position: fixed; inset: auto auto var(--space-4) var(--space-4); z-index: 40; max-width: min(26rem, calc(100vw - 2rem)); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); background: var(--paper, #f3efe7); color: var(--ink, #111716); border: 1px solid var(--ink, #111716); box-shadow: var(--elevation-2); font-size: var(--step--1, .88rem); line-height: 1.5; }
+  .pc-count-notice p { margin: 0 0 var(--space-2); }
+  .pc-count-glyph { width: 2.25rem; height: 2.25rem; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .pc-count-glyph circle:last-child { fill: var(--signal-art, #ff641c); stroke: none; }
+  .pc-count-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0; }
+  .pc-count-notice button, .pc-count-toast button, .pc-count-primary { min-height: 44px; padding: .35rem .9rem; font: inherit; font-weight: 600; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
+  .pc-count-notice .pc-count-primary, .pc-counting .pc-count-primary { background: var(--ink, #111716); color: var(--paper, #f3efe7); border-color: var(--ink, #111716); }
+  .pc-count-toast { position: fixed; inset: auto auto var(--space-4) 50%; transform: translateX(-50%); z-index: 41; display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-4); background: var(--ink, #111716); color: var(--paper, #f3efe7); box-shadow: var(--elevation-2); max-width: calc(100vw - 2rem); }
+  .pc-counting-grid { display: grid; gap: var(--space-5); align-items: start; }
+  @media (min-width: 860px) { .pc-counting-grid { grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 1fr); } }
+  .pc-counting-list { display: grid; gap: var(--space-2); padding-left: 1.1rem; }
+  .pc-counting-card { display: grid; gap: var(--space-3); justify-items: start; padding: var(--space-5); background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); }
+  .pc-counting-card .pc-count-primary { background: var(--ink); color: var(--paper); }
+  .pc-counting-status { font-size: var(--step-1); margin: 0; }
+  /* ── The introduction's scene (current edition) ──────────────────────────── */
+  .intro-scene { display: block; width: 100%; height: auto; overflow: visible; fill: none; }
+  .intro-scene-dust { fill: var(--line); }
+  .intro-scene-halo { stroke: var(--soft-line); }
+  .intro-scene-body { fill: var(--ink); }
+  .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-body--turn { fill: var(--signal-art); }
+  .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-left { transform: translateX(-60px); }
+  .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-right { transform: translateX(60px); }
+  .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-halo { visibility: hidden; }
+  .intro-scene-thread { stroke: var(--signal-art); stroke-width: 2; visibility: hidden; }
+  .intro-scene-gap { stroke: var(--signal-art); stroke-dasharray: 2 3; visibility: hidden; }
+  .intro-scene[data-stage="3"] :is(.intro-scene-thread, .intro-scene-gap) { visibility: visible; }
+  .intro-scene-frame rect { stroke: var(--ink); stroke-width: 1; }
+  .intro-scene-lens ellipse { stroke: var(--sage); stroke-width: 2.5; }
+  .intro-scene text { fill: var(--ink); stroke: none; font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; }
+  .intro-scene .intro-scene-caption { fill: var(--muted); font-weight: 400; letter-spacing: .14em; }
+  .intro-scene-other circle { fill: var(--line); }
+  .intro-scene-other-thread { stroke: var(--signal-art); stroke-width: 1; visibility: hidden; }
+  .intro-scene[data-stage="3"] .intro-scene-other-left { transform: translateX(-14px); fill: var(--ink); }
+  .intro-scene[data-stage="3"] .intro-scene-other-right { transform: translateX(14px); fill: var(--signal-art); }
+  .intro-scene[data-stage="3"] .intro-scene-other-thread { visibility: visible; }
+  .intro-scene-pattern { stroke: var(--line); stroke-dasharray: 2 6; }
+  @container (max-width: 520px) { .intro-scene text { font-size: 30px; letter-spacing: .02em; } .intro-scene .intro-scene-caption { font-size: 24px; letter-spacing: .02em; } }
+}
+
+@layer pc-motion {
+  @media (prefers-reduced-motion: no-preference) {
+    .pc-field[data-enhanced] :is(.pc-field-left, .pc-field-right) { transition: transform .7s var(--ease-out); }
+    .pc-field[data-enhanced] .pc-field-star[data-split] .pc-field-thread { stroke-dasharray: 92; animation: pc-field-draw .7s var(--ease-out) both; }
+    .pc-field[data-enhanced] .pc-field-star:not([data-split]) .pc-field-halo { transform-box: fill-box; transform-origin: center; animation: pc-field-breathe 3.2s ease-in-out infinite; }
+    .pc-field[data-enhanced] .pc-field-star:nth-of-type(2n) .pc-field-halo { animation-delay: -1.4s; }
+    .pc-field-pattern { stroke-dashoffset: 0; animation: pc-field-pattern 1.6s var(--ease-out) both; }
+    /* Test: the lens travels in, then what held is drawn through it. Show: the two pull apart. Enable: what held reaches out. */
+    .pc-tse .pc-tse-lens { animation: pc-tse-sweep 1s var(--ease-out) both; }
+    .pc-tse [data-scene] .pc-tse-held { stroke-dasharray: 600; animation: pc-tse-draw 1.4s .5s var(--ease-out) both; }
+    .pc-tse :is(.pc-tse-node--left, .pc-tse-node--right) { animation: pc-tse-part .9s .2s var(--ease-out) both; }
+    .pc-tse .pc-tse-thread { stroke-dasharray: 180; animation: pc-tse-draw .9s .3s var(--ease-out) both; }
+    .pc-tse .pc-tse-reach { animation: pc-tse-reach .8s calc(.6s + var(--i) * .15s) var(--ease-out) both; }
+    .pc-tse [data-scene="enable"] .pc-tse-held { animation-delay: 0s; animation-duration: .6s; }
+    .pc-cfield-points li { transition: transform .5s var(--ease-out); }
+    .pc-fold-icon::after { transition: transform .3s var(--ease-out); }
+    .pc-career-thread { stroke-dasharray: 1000; animation: pc-career-draw 1s var(--ease-out) both; }
+    .pc-count-notice, .pc-count-toast { animation: pc-count-rise .4s var(--ease-out) both; }
+    /* The introduction: the point breathes, then won't sit still, then the lens passes and it splits. */
+    .intro-scene[data-stage="0"] .intro-scene-halo { transform-box: fill-box; transform-origin: center; animation: pc-field-breathe 2.8s ease-in-out infinite; }
+    .intro-scene[data-stage="1"] .intro-scene-left { animation: intro-jitter 1.1s ease-in-out infinite; }
+    .intro-scene[data-stage="1"] .intro-scene-right { animation: intro-jitter 1.1s ease-in-out infinite reverse; }
+    .intro-scene-lens { animation: intro-sweep 1s var(--ease-out) both; }
+    .intro-scene[data-stage="2"] :is(.intro-scene-left, .intro-scene-right) { transition: transform .9s .55s var(--ease-out); }
+    .intro-scene[data-stage="3"] .intro-scene-thread { stroke-dasharray: 120; animation: intro-draw .8s var(--ease-out) both; }
+    .intro-scene[data-stage="3"] :is(.intro-scene-other-left, .intro-scene-other-right) { transition: transform .7s calc(.3s + var(--i, 0) * .1s) var(--ease-out); }
+    .intro-scene[data-stage="3"] .intro-scene-pattern { stroke-dashoffset: 0; animation: pc-field-pattern 1.8s .6s var(--ease-out) both; }
+  }
+  @keyframes pc-career-draw { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-count-rise { from { translate: 0 1.5rem; } }
+  @keyframes intro-jitter { 25% { transform: translate(-3px, 1px); } 75% { transform: translate(3px, -1px); } }
+  @keyframes intro-sweep { from { transform: translateX(-280px); } }
+  @keyframes intro-draw { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-tse-sweep { from { transform: translateX(-150px); } }
+  @keyframes pc-tse-draw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-tse-part { from { transform: translateX(0); } }
+  @keyframes pc-tse-reach { from { transform: translate(-190px, 0) scale(.4); } }
+  @keyframes pc-field-draw { from { stroke-dashoffset: 92; } to { stroke-dashoffset: 0; } }
+  @keyframes pc-field-breathe { 50% { transform: scale(1.45); } }
+  @keyframes pc-field-pattern { from { stroke-dashoffset: 400; } }
+}

@@ -12,8 +12,12 @@ test('hub lists every experiment with native links, labels and no JavaScript', a
     const response = await page.goto(`${production}/lab/`)
     expect(response?.status()).toBe(200)
     expect(response?.headers()['x-robots-tag']).toContain('noindex')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Observatory*')
-    await expect(page.getByText('Everything here is invented or illustrative.')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Experiments*')
+    await expect(page.getByText('The experiments below are invented or illustrative', { exact: false })).toBeVisible()
+    // The layered connections field reads as text without JavaScript, every association a sentence.
+    const field = page.getByRole('region', { name: 'Follow the relationship, not the category.' })
+    await expect(field.locator('.pc-cfield-text')).toHaveAttribute('open', '')
+    await expect(field.locator('.pc-cfield-list')).toContainText('#systems contains #operations')
     const index = page.locator('.pc-observatory-index')
     for (const href of members) {
       await expect(index.locator(`a[href="${href}"]`)).toHaveCount(1)
@@ -27,15 +31,15 @@ test('hub lists every experiment with native links, labels and no JavaScript', a
 test('every observatory page marks its section in the primary menu', async ({ page }) => {
   for (const route of members) {
     await page.goto(`${production}${route}`)
-    const link = page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link', { name: 'Observatory — experimental', exact: true })
+    const link = page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link', { name: 'Experiments — experimental', exact: true })
     await expect(link, route).toHaveAttribute('aria-current', 'true')
   }
 })
 
 test('game page offers global navigation and a way back to the hub', async ({ page }) => {
   await page.goto(`${production}/lab/edge-case/`)
-  await expect(page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link')).toHaveCount(5)
-  await page.getByRole('link', { name: '← Observatory' }).click()
+  await expect(page.getByRole('navigation', { name: 'Primary navigation', exact: true }).getByRole('link')).toHaveCount(6)
+  await page.getByRole('link', { name: '← Experiments' }).click()
   await expect(page).toHaveURL(`${production}/lab/`)
 })
 

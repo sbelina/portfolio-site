@@ -1,11 +1,27 @@
 import React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { IntroScene } from './IntroScene'
 
-const STEPS = [
+/** Legacy wording: the automatic-dive edition kept for fixtures. */
+const LEGACY_STEPS = [
   'step 1: question the boundaries',
   'step 2: test the limits',
   'step 3: recognize patterns',
   'dive in',
+]
+/**
+ * Current edition (owner direction, 24 November 2026): the three steps are a short investigation, in the
+ * site's own terms: notice, test, show. Still three step actions plus a separate Dive (INTRO-STATES.md).
+ */
+const CURRENT_STEPS = [
+  'step 1: notice what doesn’t add up',
+  'step 2: test the explanation',
+  'step 3: show where they part',
+  'dive in',
+]
+const CURRENT_STATUS = [
+  'Noticed: something doesn’t add up. Step 2: test the explanation. Activate to continue.',
+  'Tested: the explanation and what happened come apart. Step 3: show where they part. Activate to continue.',
 ]
 
 type Phase = 'question' | 'steps' | 'ready' | 'dive'
@@ -21,6 +37,7 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automatic' }: Props) {
   const explicitDive = diveMode === 'explicit'
+  const STEPS = explicitDive ? CURRENT_STEPS : LEGACY_STEPS
   const shellRef = useRef<HTMLElement>(null)
   const lockRef = useRef(false)
   const completedRef = useRef(0)
@@ -90,13 +107,13 @@ export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automa
     setPhase('steps')
     setStep(Math.min(completed, 2))
     setEffect(completed === 1 ? 'resist-one' : completed === 2 ? 'resist-two' : 'breakthrough')
-    setStatus(completed === 1 ? 'Question the boundaries. Step 2: test the limits. Activate to continue.' : completed === 2 ? 'Test the limits. Step 3: recognize patterns. Activate to continue.' : 'Recognize patterns. The page opens automatically.')
+    setStatus(explicitDive && completed < 3 ? CURRENT_STATUS[completed - 1] : completed === 1 ? 'Question the boundaries. Step 2: test the limits. Activate to continue.' : completed === 2 ? 'Test the limits. Step 3: recognize patterns. Activate to continue.' : 'Recognize patterns. The page opens automatically.')
     if (completed === 3) {
       lockRef.current = true
       if (explicitDive) {
         setStep(3)
         setPhase('ready')
-        setStatus('Three steps complete. Activate Dive in when you are ready.')
+        setStatus('Shown: related, not equivalent. Three steps complete. Activate Dive in when you are ready.')
         return
       }
       if (reducedMotion) { onComplete(); return }
@@ -309,15 +326,15 @@ export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automa
           } as React.CSSProperties}
         >
           <div className="intro-source-wrap">
-            <div className="mirror-stack" aria-hidden="true">
+            {explicitDive ? null : <div className="mirror-stack" aria-hidden="true">
               <div className="mirror mirror-a">{promptText}</div>
               <div className="mirror mirror-b">{promptText}</div>
               <div className="mirror mirror-c">{promptText}</div>
-            </div>
+            </div>}
 
             <div className="intro-source">
               <div className={phase === 'question' ? `question ${revealed ? 'is-revealed' : ''}` : 'step-copy'}>
-                {phase === 'question' ? <p className="intro-hint">Step 1: question the boundaries</p> : null}
+                {phase === 'question' ? <p className="intro-hint">{explicitDive ? 'Step 1: notice what doesn’t add up' : 'Step 1: question the boundaries'}</p> : null}
                 <button
                   type="button"
                   className={phase === 'question' ? 'question-trigger' : 'question-trigger step-prompt'}
@@ -334,7 +351,7 @@ export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automa
             </div>
           </div>
 
-          <div className="depth-field" aria-hidden="true">
+          {explicitDive ? <div className="depth-field depth-field--scene" aria-hidden="true"><IntroScene stage={phase === 'question' ? 0 : phase === 'steps' ? (step as 1 | 2) : 3}/></div> : <div className="depth-field" aria-hidden="true">
             <span className="depth-ring depth-ring--one" />
             <span className="depth-ring depth-ring--two" />
             <span className="depth-ring depth-ring--three" />
@@ -344,7 +361,7 @@ export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automa
             <span className="depth-token depth-token--b depth-token--unresolved">evidence</span>
             <span className="depth-token depth-token--c depth-token--pressure">turn</span>
             <span className="depth-token depth-token--d depth-token--holds">structure</span>
-          </div>
+          </div>}
           {phase === 'dive' ? <div className="dive-passage" aria-hidden="true" /> : null}
         </div>
 

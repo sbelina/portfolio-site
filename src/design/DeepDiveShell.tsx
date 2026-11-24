@@ -6,5 +6,5 @@ import { CurrentShell } from './CurrentShell'
  * The Worker fills the body after checking the password. This file holds no private content.
  */
 export function DeepDiveShell() {
-  return <CurrentShell route="/deep-dive/"><article className="pc-document deep-dive"><div data-deep-dive-body="">DEEP_DIVE_BODY</div></article></CurrentShell>
+  return <CurrentShell route="/deep-dive/"><div className="pc-progress" aria-hidden="true"/><article className="pc-document deep-dive"><div data-deep-dive-body="">DEEP_DIVE_BODY</div></article></CurrentShell>
 }

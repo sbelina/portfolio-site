@@ -30,7 +30,8 @@ test('initial HTML, comparator, download records and 404s retain the whole bound
   expect(layout.positions).toHaveLength(6);expect(layout.pairs).toHaveLength(15)
   expect(layout.illustrative).toBe(true)
   expect((await request.get(`${route}missing-entry/`)).status()).toBe(404)
-  expect((await request.get('/investigations/claims-operations/')).status()).toBe(404)
+  // The Atlas's invented cases never become real case pages (the six approved case studies are, since 23 November).
+  expect((await request.get('/investigations/not-an-atlas-case/')).status()).toBe(404)
 })
 
 test('one native keyboard action reveals a pair without JavaScript or coordinate changes',async({browser,baseURL})=>{
@@ -145,8 +146,12 @@ test('strict synthetic contract rejects source, relationship and route mistakes;
 test('public artifact includes only the authorized illustration and keeps manuscript fixtures excluded',async()=>{
   await auditPublic('dist')
   const manifest=JSON.parse(await readFile('dist/route-manifest.json','utf8'));expect(manifest.fixture).toBe(false);expect(manifest.routes).toContain(route)
-  expect(JSON.parse(await readFile('dist/public-content.json','utf8')).entries).toEqual([])
-  expect(JSON.parse(await readFile('dist/search-index.json','utf8'))).toEqual([])
+  // Only the six case studies approved through the release loader are public content; nothing from the Atlas fixture.
+  const approved=['claims-operations','brand-research','enterprise-ai','telematics','civic-service','accessibility-ai'].map(slug=>`/investigations/${slug}/`)
+  const content=await readFile('dist/public-content.json','utf8')
+  expect(JSON.parse(content).entries.map((entry:{path:string})=>entry.path).sort()).toEqual([...approved].sort())
+  expect(content).not.toContain(fixtureMarker)
+  expect(JSON.parse(await readFile('dist/search-index.json','utf8')).map((entry:{path:string})=>entry.path).sort()).toEqual([...approved].sort())
   expect(fixtureMarker).toBe('ATLAS_PUBLIC_ILLUSTRATION_14NOV')
   expect(computeSemanticLayout(layoutInput()).inputDigest).toBe('9332dc29248a898bd8720f78f88785bf97c335d1c0e528c56acc8275f12372f2')
   const temp=await mkdtemp(path.join(os.tmpdir(),'atlas-old-proof-'))
