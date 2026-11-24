@@ -71,8 +71,12 @@ test('contact stays reachable; no résumé is linked until one is approved', asy
 })
 
 test('practice moves use the clarified definitions on the homepage and Practice page', async ({ page }) => {
+  // A link into a folded card opens it.
+  await page.goto(`${origin}/#pc-practice-title`)
+  await expect(page.locator('#practice-fold')).toHaveAttribute('open', '')
   for (const route of ['/', '/practice/']) {
     await page.goto(`${origin}${route}`)
+    if (route === '/') await page.locator('#practice-fold > summary').click()
     const moves = page.locator('.pc-tse')
     // The owner's final wording (Trust case, Appendix A), one move at a time in the moving figure.
     await expect(moves).toContainText('Diagnose the gap: where a measure, definition, or category has drifted.')

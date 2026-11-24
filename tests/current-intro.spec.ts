@@ -147,6 +147,9 @@ test('nested layers retain the visible account, native focus and reading positio
   try {
     const page = await context.newPage(); await page.goto(origin + '/')
     await expect(page.locator('.pc-tse-static h3')).toHaveText(['Test.', 'Show.', 'Enable.'])
+    // The practice folds into a native card; it opens without JavaScript.
+    await page.locator('#practice-fold > summary').tap()
+    await expect(page.locator('#practice-fold')).toHaveAttribute('open', '')
     const questions = page.getByText('Questions behind Test', { exact: true })
     await questions.scrollIntoViewIfNeeded(); await questions.focus(); const before = await page.evaluate(() => scrollY)
     await page.keyboard.press('Enter'); await expect(page.getByText('What else could explain this outcome?', { exact: true })).toBeVisible()

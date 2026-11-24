@@ -170,3 +170,16 @@ Owner note: the call to action and a visual need to be close to the top.
 - **Hero action:** *Start a conversation* (to `/contact/`) is now the first action in the hero, before the case study link. The full call to action stays at the end.
 - **Hero visual:** the six case studies' pairs, already split, sit beside the headline as a constellation in a taller two-column layout. The picture has a text alternative and links to the interactive field (*Split them yourself ↓*). On phones it follows the hero text.
 - **Verified:** full suite 839 passed, 0 failed, 11 skipped; Atlas 22 passed. Screens checked at 1280 and 390 px.
+
+## Follow-up, 24 November: optional depth folds into cards
+
+Owner note: fold some homepage sections into accordion-style cards, after researching options.
+
+- **Research:**
+  - Nielsen Norman Group: accordions cost visibility and clicks; on desktop, scrolling is often easier, so fold only what most readers won't need.
+  - GOV.UK Design System: never hide content every user needs, and test the content unfolded first.
+  - Exclusive accordions (shared `name` on `<details>`) are supported in all major browsers, but they close one panel when another opens, which can surprise screen-reader users (Brosset). So each card opens independently.
+- **Folded:** *How I investigate: Test. Show. Enable.* (with How I Know and the purpose line) and *Explore further* (Connections, Field Notes, Observatory, Edge Case). Each is a native `<details>` card under *Go deeper*, with a kicker, a heading, a one-line teaser, a small drawing and a plus that turns to a minus.
+- **Kept open:** the hero (with its call to action and visual), the three possibilities, the figures, the selected case studies, the pattern field, the interlude and the call to action.
+- **Links:** an address or link that targets something inside a folded card opens the card first. Cards open with keyboard and touch, and without JavaScript.
+- **Verified:** full suite 839 passed, 0 failed, 11 skipped; Atlas 22 passed. Screens checked at 1280 and 390 px.

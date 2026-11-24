@@ -235,8 +235,26 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-folds-title",
+      "destination": "/#pc-folds-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "practice-fold",
+      "destination": "/#practice-fold",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-practice-title",
       "destination": "/#pc-practice-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
+      "id": "explore-fold",
+      "destination": "/#explore-fold",
       "source": "new reading gateway/bootstrap",
       "verification": "present in initial home HTML"
     },

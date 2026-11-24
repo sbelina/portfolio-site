@@ -160,6 +160,27 @@
   @media (min-width: 1000px) { .pc-cfield-grid { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); align-items: start; } }
   /* Too narrow for every name: only the traced points keep theirs. */
   @container (max-width: 620px) { .pc-cfield-stage li:not([data-near]):not([data-kind="project"]) .pc-cfield-name { display: none; } .pc-cfield-points button { font-size: 10px; } }
+  /* ── Folded cards: optional depth on the homepage (native details, each independent) ── */
+  .pc-folds { display: grid; gap: var(--space-4); }
+  .pc-folds > .pc-kicker { margin: 0; }
+  .pc-fold { border: 1px solid var(--line); background: var(--paper); box-shadow: var(--elevation-1); }
+  .pc-fold[open] { box-shadow: var(--elevation-2); }
+  .pc-fold > summary { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-4); align-items: center; padding: var(--space-4) var(--space-5); cursor: pointer; list-style: none; min-height: 44px; }
+  .pc-fold > summary::-webkit-details-marker { display: none; }
+  .pc-fold > summary:hover { background: var(--signal-1); }
+  .pc-fold > summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-fold-glyph { width: 4rem; height: auto; fill: none; }
+  .pc-fold-text { display: grid; gap: var(--space-1); }
+  .pc-fold-kicker { font: 600 .75rem/1.6 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); }
+  .pc-fold-text h2 { margin: 0; font-size: var(--step-2); line-height: 1.15; }
+  .pc-fold-teaser { color: var(--muted); max-width: 60ch; }
+  .pc-fold-icon { position: relative; width: 1.5rem; height: 1.5rem; }
+  .pc-fold-icon::before, .pc-fold-icon::after { content: ''; position: absolute; inset: 50% 0 auto; height: 2px; margin-top: -1px; background: var(--ink); }
+  .pc-fold-icon::after { transform: rotate(90deg); }
+  .pc-fold[open] .pc-fold-icon::after { transform: rotate(0deg); }
+  .pc-fold-body { padding: 0 var(--space-5) var(--space-5); border-top: 1px solid var(--soft-line); }
+  .pc-fold .pc-explore { padding-top: var(--space-4); }
+  @media (max-width: 540px) { .pc-fold > summary { grid-template-columns: minmax(0, 1fr) auto; padding: var(--space-4); } .pc-fold-glyph { display: none; } .pc-fold-body { padding-inline: var(--space-4); } }
 }
 
 @layer pc-motion {
@@ -177,6 +198,7 @@
     .pc-tse .pc-tse-reach { animation: pc-tse-reach .8s calc(.6s + var(--i) * .15s) var(--ease-out) both; }
     .pc-tse [data-scene="enable"] .pc-tse-held { animation-delay: 0s; animation-duration: .6s; }
     .pc-cfield-points li { transition: transform .5s var(--ease-out); }
+    .pc-fold-icon::after { transition: transform .3s var(--ease-out); }
   }
   @keyframes pc-tse-sweep { from { transform: translateX(-150px); } }
   @keyframes pc-tse-draw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }

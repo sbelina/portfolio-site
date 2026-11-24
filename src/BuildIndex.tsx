@@ -41,8 +41,12 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       if (Object.hasOwn(legacyFragments, fragment)) location.replace(publicPath(legacyFragments[fragment]))
     }
     followLegacyFragment()
+    // A link or address that targets something inside a folded card opens that card first.
+    const openTarget = () => { const id = location.hash.slice(1); const target = id ? document.getElementById(id) : null; const fold = target?.closest('details'); if (fold && !fold.open) { fold.open = true; target!.scrollIntoView() } }
+    openTarget()
+    window.addEventListener('hashchange', openTarget)
     window.addEventListener('hashchange', followLegacyFragment)
-    return () => window.removeEventListener('hashchange', followLegacyFragment)
+    return () => { window.removeEventListener('hashchange', followLegacyFragment); window.removeEventListener('hashchange', openTarget) }
   }, [])
   return <>{introduction.visible ? <HomeIntroduction replayKey={introduction.replayKey} complete={introduction.complete}/> : null}<CurrentShell route="/" onSkipIntro={introduction.visible ? introduction.complete : undefined}>
     <div className="build-index">
@@ -83,17 +87,34 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <RelatedField pairs={pairs}/>
         <a className="pc-text-link" href={publicPath('/patterns/')}>Explore the distinctions <span aria-hidden="true">→</span></a>
       </section> : null}
-      <section className="pc-section" aria-labelledby="pc-practice-title">
-        <div className="pc-section-heading"><p className="pc-kicker">How I investigate</p><h2 id="pc-practice-title">Test. Show. Enable.</h2></div>
-        <PracticeInMotion example={example}/>
-        <p className="pc-how-i-know"><strong>How I Know:</strong> each case study separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains unproven.</p>
-        <p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p>
-        <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
+      {/* Optional depth folds into cards (owner direction, 24 November). What every reader needs stays open:
+          the call to action, figures, case studies and the pattern. Native <details>, each opening independently. */}
+      <section className="pc-section pc-folds" aria-labelledby="pc-folds-title">
+        <p className="pc-kicker" id="pc-folds-title">Go deeper</p>
+        <details className="pc-fold" id="practice-fold">
+          <summary>
+            <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M2 12C18 12 22 20 32 20M2 28C18 28 22 20 32 20" className="pc-legend-ink" strokeDasharray="2 4"/><ellipse cx="32" cy="20" rx="4" ry="14" className="pc-legend-check"/><path d="M32 20H62" className="pc-legend-thread"/></svg>
+            <span className="pc-fold-text"><span className="pc-fold-kicker">How I investigate</span><h2 id="pc-practice-title">Test. Show. Enable.</h2><span className="pc-fold-teaser">Three moves, shown on one case study: find the gap, make the evidence visible, and leave people able to act.</span></span>
+            <span className="pc-fold-icon" aria-hidden="true"/>
+          </summary>
+          <div className="pc-fold-body">
+            <PracticeInMotion example={example}/>
+            <p className="pc-how-i-know"><strong>How I Know:</strong> each case study separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains unproven.</p>
+            <p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p>
+            <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
+          </div>
+        </details>
+        <details className="pc-fold" id="explore-fold">
+          <summary>
+            <svg className="pc-fold-glyph" viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path d="M8 30L24 12L40 26L56 8" className="pc-legend-ink" strokeDasharray="2 4"/>{[[8, 30], [24, 12], [40, 26]].map(([x, y]) => <circle key={x} cx={x} cy={y} r="3" className="pc-legend-ink"/>)}<circle cx="56" cy="8" r="3.5" className="pc-legend-turn"/></svg>
+            <span className="pc-fold-text"><span className="pc-fold-kicker">Explore further</span><h2 id="pc-explore-title">Connections, writing and experiments</h2><span className="pc-fold-teaser">The distinctions behind the work, Field Notes, the Observatory and a prototype game.</span></span>
+            <span className="pc-fold-icon" aria-hidden="true"/>
+          </summary>
+          <nav className="pc-fold-body pc-explore" aria-labelledby="pc-explore-title">
+            <ul>{explore.map(item => <li key={item.href}><a href={publicPath(item.href)}><span className="pc-kicker">{item.kicker}</span><strong>{item.title} <span aria-hidden="true">→</span></strong><span>{item.text}</span></a></li>)}</ul>
+          </nav>
+        </details>
       </section>
-      <nav className="pc-section pc-explore" aria-labelledby="pc-explore-title">
-        <h2 id="pc-explore-title" className="pc-kicker">Explore further</h2>
-        <ul>{explore.map(item => <li key={item.href}><a href={publicPath(item.href)}><span className="pc-kicker">{item.kicker}</span><strong>{item.title} <span aria-hidden="true">→</span></strong><span>{item.text}</span></a></li>)}</ul>
-      </nav>
       <LensInterlude compact/>
       <section id="contact" className="pc-section pc-cta" aria-labelledby="contact-title">
         <p className="pc-kicker">Work with me</p>
