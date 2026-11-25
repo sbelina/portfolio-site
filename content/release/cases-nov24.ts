@@ -50,7 +50,7 @@ export const friction: Entry = {
     consequence: 'Four peers adopted the purchasing workflow. They, a supervisor and a manager adopted the text shortcuts. My own shortcut counter recorded **445,786 characters** I did not have to type.',
     differently: 'Keep the raw timings in one place from the first test, so the result can be shown, not just reported.',
     notOwned: 'I did not own the forms, the purchasing system or the security rules; the automation works within them. Adopting it was each person’s choice.',
-    measurement: 'The character count is the shortcut tool’s own counter, for my use only. Hours of typing are a model, not measured time saved. Task timings exist but are not yet compiled, so no percentage is shown.',
+    measurement: 'The character count is the shortcut tool’s own counter, for my use only. Hours of typing are a model, not measured time saved. The four working days a year are my estimate (about eight minutes a day × 250 days ÷ 8 hours), not a measurement. Task timings exist but are not yet compiled, so no percentage is shown.',
     limitations: 'Typing time is not freed working time: entering shortcuts, reviewing and keeping templates current are not subtracted. Sharing the method with teams in six states is dissemination, not adoption, and no savings are extrapolated.',
     brief: {
       tension: 'The same details were typed by hand, field by field, many times a day.',
@@ -84,6 +84,7 @@ export const friction: Entry = {
     figures: [
       { id: '443dbc7d-dfcc-4557-a723-b4737ab15d8c', value: '445,786', unit: 'characters not typed', label: 'My shortcut tool’s own counter, my use only', basis: 'platform_reported', qualifier: 'Characters expanded by shortcuts, not time saved.', evidenceIds: [newCaseEvidence.friction.id] },
       { id: 'b85bffd5-fa2f-4c9b-acce-ddadf533e298', value: '~33', unit: 'hours of typing, modeled', label: 'Those characters at 45 words a minute (five characters a word)', basis: 'approximate', qualifier: 'A model of typing time, not freed working time.', evidenceIds: [newCaseEvidence.friction.id] },
+      { id: 'a4b4c09c-8e4c-49da-943a-a44098b68b60', value: '~4', unit: 'working days a year', label: 'My estimate: about eight minutes a day, over a 250-day working year', basis: 'owner_estimate', qualifier: 'An estimate of my own time saved, not measured. A different measure from the typing model, so the two are never combined.', evidenceIds: [newCaseEvidence.friction.id] },
       { id: '8487977d-e83b-4173-bb5a-8eb49f636a18', value: '4', unit: 'peers adopted the workflow', label: 'The police-report purchasing workflow', basis: 'owner_estimate', qualifier: 'Adoption as reported; use not measured. Never added to the shortcut adopters.', evidenceIds: [newCaseEvidence.friction.id] },
     ],
     artifacts: [

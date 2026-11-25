@@ -51,7 +51,7 @@ export const careerEras: readonly Era[] = [
     setting: 'A global consumer-technology company known for its devices and its support experience',
     turn: 'I learned that support friction starts in how knowledge is structured, not where customers ask.',
     parts: [
-      { text: 'Spotted a recurring storm-delivery problem in support chats, and built the workflow leadership shared across countries' },
+      { text: 'Spotted a recurring storm-delivery problem in support chats and built the workflow leadership shared across countries; by my estimate it cut those chats by about a third' },
       { text: 'Audited all of a team’s metadata tags and implemented the approved standard', proof: { label: 'Consumer technology · content governance & learning design', href: '/investigations/knowledge-publishing/' } },
       { text: 'Designed the attributes for a worldwide audit of who learning content represented', proof: { label: 'Consumer technology · content governance & learning design', href: '/investigations/knowledge-publishing/' } },
       { text: 'Led a quarter’s learning collections for four partner audiences, on a six-month assignment' },
