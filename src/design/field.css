@@ -280,6 +280,20 @@
   .intro-scene[data-stage="3"] .intro-scene-other-thread { visibility: visible; }
   .intro-scene-pattern { stroke: var(--line); stroke-dasharray: 2 6; }
   @container (max-width: 520px) { .intro-scene text { font-size: 30px; letter-spacing: .02em; } .intro-scene .intro-scene-caption { font-size: 24px; letter-spacing: .02em; } }
+
+  /* ── About: positioning and the storm workflow (owner direction, 25 November 2026) ── */
+  .pc-positioning-philosophy { font-size: var(--step-1); line-height: 1.5; max-width: 60ch; }
+  .pc-positioning-list { display: grid; gap: 0; margin: var(--space-5) 0; max-width: 70ch; border-top: 1px solid var(--line); }
+  .pc-positioning-list > div { display: grid; gap: var(--space-1); padding-block: var(--space-4); border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .pc-positioning-list > div { grid-template-columns: 14rem minmax(0, 1fr); gap: var(--space-5); } }
+  .pc-positioning-list dt { font-weight: 700; }
+  .pc-positioning-list dd { margin: 0; }
+  .pc-positioning-differentiator { font-size: var(--step-1); line-height: 1.5; max-width: 60ch; border-left: 3px solid var(--signal-art); padding-left: var(--space-4); }
+  .pc-storm-figure { margin: var(--space-5) 0; max-width: 70ch; }
+  .pc-storm-label { margin: 0 0 var(--space-3); font: 600 var(--step--1)/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-storm-steps { margin: 0; padding-left: 1.5rem; display: grid; gap: var(--space-3); }
+  .pc-storm-steps strong { display: block; }
+  .pc-storm-why { color: var(--muted); }
 }
 
 @layer pc-motion {

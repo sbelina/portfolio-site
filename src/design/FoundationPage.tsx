@@ -11,6 +11,7 @@ import { ConnectionsField } from './ConnectionsField'
 import { CareerThread } from './CareerThread'
 import { count } from '../analytics'
 import { CountingChoice } from './CountingChoice'
+import { differentiator, positioningPoints, researchPhilosophy, stormWorkflow } from '../content/about'
 
 export const foundationPages = {
   practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
@@ -169,7 +170,23 @@ function About() {
         <p><a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/investigations/')}>The case studies <span aria-hidden="true">→</span></a></p>
       </div>
     </div>
+    <section className="pc-section pc-positioning" aria-labelledby="about-approach-title">
+      <h2 id="about-approach-title">Where my work <em className="pc-accent">begins</em></h2>
+      <p className="pc-positioning-philosophy">{researchPhilosophy}</p>
+      <dl className="pc-positioning-list">{positioningPoints.map(point => <div key={point.term}><dt>{point.term}</dt><dd>{point.detail}</dd></div>)}</dl>
+      <p className="pc-positioning-differentiator">{differentiator.lead} <strong>{differentiator.turn}</strong></p>
+    </section>
     <CareerThread/>
+    <section className="pc-section pc-storm" aria-labelledby="about-storm-title">
+      <h2 id="about-storm-title">{stormWorkflow.title}</h2>
+      <p>{stormWorkflow.context}</p>
+      <figure className="pc-storm-figure" aria-labelledby="about-storm-label">
+        <p id="about-storm-label" className="pc-storm-label">{stormWorkflow.label}</p>
+        <ol className="pc-storm-steps">{stormWorkflow.steps.map(step => <li key={step.title}><strong>{step.title}</strong> <span>{step.text}</span></li>)}</ol>
+      </figure>
+      <p>{stormWorkflow.outcome}</p>
+      <p className="pc-storm-why">{stormWorkflow.why}</p>
+    </section>
     <CountingChoice/>
   </>
 }

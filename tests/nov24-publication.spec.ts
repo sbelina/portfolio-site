@@ -47,3 +47,12 @@ test('the career thread links the new cases as proof', async () => {
   for (const slug of ['operational-friction', 'knowledge-binder', 'knowledge-publishing']) expect(about).toContain(`href="/investigations/${slug}/"`)
   expect(text(about)).toContain('summer-long arts program')
 })
+
+test('About carries the owner positioning and the reconstructed storm workflow, labelled as such', async () => {
+  const about = text(await readFile('dist/about/index.html', 'utf8'))
+  for (const phrase of ['My work begins where existing explanations become insufficient', 'What I investigate', 'What I change', 'What institutions gain', 'I investigate and redesign the systems through which institutions understand people']) expect(about).toContain(phrase)
+  expect(about).toContain('An early example: the storm workflow')
+  expect(about).toContain('Reconstructed from memory')
+  expect(about).toContain('about a third')
+  expect(about).not.toContain('40%')
+})
