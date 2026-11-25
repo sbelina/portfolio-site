@@ -117,7 +117,7 @@ export const friction: Entry = {
           ['Stable request details and standard notes', 'The shortcut', 'Identical every time'],
           ['Moving from field to field', 'The shortcut', 'The order never changes'],
           ['Two payment-security inputs', 'The person', 'A security requirement; never stored in a template'],
-          ['Three dropdown choices', 'The person', 'A judgment for each case'],
+          ['Three dropdown choices, including the request type: priority delivery or an in-person office appointment', 'The person', 'A judgment for each case'],
           ['Review before sending', 'The person', 'Human verification kept'],
           ['Address checking', 'The person, at review', 'The form checks typed addresses only; addresses filled by the shortcut skip that check'],
         ] },
@@ -143,8 +143,8 @@ export const friction: Entry = {
 
 export const binder: Entry = {
   ...base('53b25756-4072-4d5d-a495-9b5173474084', 'knowledge-binder'),
-  title: 'Scattered sources. ==One== binder.',
-  summary: 'New administrators learned the job from emails, printouts, training pages, spreadsheets and note templates, each holding part of the answer. I designed one organized binder from them; the team reviewed and keeps improving it, and every new administrative hire receives it.',
+  title: 'Scattered sources. ==One== shared binder.',
+  summary: 'New administrators learned the job from emails, printouts, training pages, spreadsheets and note templates, each holding part of the answer. I designed one organized binder from them, a single digital file the whole team shares; the team reviewed and keeps improving it, and every new administrative hire receives it.',
   contribution: 'I originated and designed the binder and synthesized the sources. The team reviewed it and keeps it current with me.',
   evidenceIds: [newCaseEvidence.binder.id],
   investigation: {
@@ -162,7 +162,7 @@ export const binder: Entry = {
     limitations: 'Providing a resource is not proof it was used. The seven hires are a different group from the current team of seven, and the two are never combined.',
     brief: {
       tension: 'The job’s know-how was spread across emails, printouts, training pages, spreadsheets and templates.',
-      call: 'I designed one binder organized by the tasks the work brings, and the team reviewed and revised it with me.',
+      call: 'I designed one shared digital binder organized by the tasks the work brings, and the team reviewed and revised it with me.',
       result: 'Every new administrative hire receives it, and the team keeps it current.',
       evidence: 'The sources I gathered, the binder’s structure, and the record of who has received it.',
     },
@@ -172,7 +172,7 @@ export const binder: Entry = {
       prevailing: 'The information is out there; new people will pick it up.',
       alternatives: [
         { option: 'Keep the sources where they were', status: 'not_chosen', note: 'Complete, but each question sent people to several places.' },
-        { option: 'One binder organized by task, maintained by the team', status: 'chosen', note: 'Reviewed with the team and revised together.' },
+        { option: 'One shared digital binder organized by task, maintained by the team', status: 'chosen', note: 'Reviewed with the team and revised together.' },
       ],
       ownership: 'I designed it; the team reviews and maintains it with me.',
       implementation: 'Every new administrative hire receives the binder.',
@@ -187,12 +187,12 @@ export const binder: Entry = {
     ],
     artifacts: [
       {
-        id: 'sources-to-binder', title: 'From six kinds of source to one binder',
+        id: 'sources-to-binder', title: 'From six kinds of source to one shared digital binder',
         label: 'FIG · Retrospective model · source types from my account · structure only',
         steps: [
           { title: 'Six kinds of source', text: 'Emails, printed legacy resources, internal training pages, documents, spreadsheets and claim-note templates.', by: 'others' },
           { title: 'Synthesis', text: 'Sorted by the task each answers, not by where it came from.', by: 'me' },
-          { title: 'One binder, nine sections', text: 'Requests, documents, processes, assignments, supplies, new-hire support, events, office pages, questions.', by: 'me' },
+          { title: 'One shared digital file, nine sections', text: 'Requests, documents, processes, assignments, supplies, new-hire support, events, office pages, questions.', by: 'me' },
           { title: 'Reviewed with the team', by: 'shared' },
           { title: 'Revised together, kept current', by: 'shared' },
           { title: 'Given at onboarding', text: 'To every new administrative hire.', by: 'others' },
