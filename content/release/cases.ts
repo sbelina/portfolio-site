@@ -305,7 +305,10 @@ const civic: Entry = {
     consequence: 'About two months after we formed, Vote Huntsville was offered the chance to co-sign a $20,000 grant and to help define what Vote Gone Viral could be. **The grant was publicly awarded to United Women of Color**, whose program Vote Gone Viral is, and Vote Huntsville took part in the campaign.',
     differently: 'Define reach and track it per channel from the start, so “residents reached” has one clear meaning.',
     notOwned: 'Vote Huntsville was a shared volunteer effort; no one, including the directors, was paid. The grant was a partnership’s work.',
-    measurement: 'Reach was not measured with one consistent definition, so no reach figure is given.',
+    measurement: 'Vote Huntsville reported reaching 16,000 people in its own Facebook and Instagram posts. How reach was counted is not recorded, so the figure is shown as the organization reported it.',
+    figures: [
+      { id: '05067af2-5326-4c65-a7c3-ab6292ad6e55', value: '16,000', unit: 'people reached, as Vote Huntsville reported', label: 'Reported in the organization’s own Facebook and Instagram posts', basis: 'approximate', qualifier: 'The organization’s public report; how reach was counted is not recorded. Most were reached before the grant, without the partnership.', evidenceIds: [caseEvidence.civic.id] },
+    ],
     limitations: 'No effect on turnout or policy is claimed. The grant’s award is not credited to one person.',
     artifacts: civicArtifacts,
     brief: {
@@ -328,7 +331,7 @@ const civic: Entry = {
       implications: [
         { kind: 'resource', text: 'One answer source maintained once and reused across channels, by volunteers.' },
         { kind: 'observed_change', text: 'Vote Huntsville was offered the chance to co-sign a $20,000 grant, which was publicly awarded to United Women of Color.' },
-        { kind: 'unproven', text: 'No reach figure, turnout effect or policy effect is claimed.' },
+        { kind: 'unproven', text: 'The 16,000 is the organization’s own report. No turnout or policy effect is claimed.' },
       ],
     },
     method: {
