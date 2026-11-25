@@ -106,7 +106,7 @@ test('current pages reflow with touch, reduced motion and enlarged text; no-JS s
 
 test('new routes reserve claims for reviewed selections, preserve real 404s and keep specimen out of sitemap', async ({ request }) => {
   const content = await (await request.get(origin + '/public-content.json')).json()
-  expect(content.entries).toHaveLength(6); expect(content.relationships).toEqual([])
+  expect(content.entries).toHaveLength(9); expect(content.relationships).toEqual([])
   for (const route of ['/practice/missing/', '/patterns/missing/', '/system/private/', '/foundation.html']) expect((await request.get(origin + route)).status()).toBe(404)
   const connections = await (await request.get(origin + '/patterns/')).text()
   expect(connections).toContain('conceptual starting questions')

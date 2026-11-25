@@ -10,6 +10,7 @@
  */
 import type { ContentStore, Entry, Evidence } from '../../src/content/model'
 import { claimsCandidate } from '../candidates/claims-operations'
+import { accessibilityArtifacts, binder, civicArtifacts, claimsArtifacts, friction, knowledge, newCaseEvidence, trustArtifacts } from './cases-nov24'
 
 const owner = '57690867-3e73-434c-93cd-8ed27c8c7674'
 const reviewed = '2026-11-23T00:00:00Z'
@@ -87,7 +88,8 @@ const claims: Entry = {
         { kind: 'unproven', text: 'Any change in rework volume, payment time or cost has not been measured. Two rework observations have different scopes and are never compared.' },
       ],
     },
-    measurement: 'Nothing here was measured in a controlled way. Figures are rounded. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    measurement: 'Nothing here was measured in a controlled way. The guide’s views are counted by the document platform; the years in use are my estimate. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
+    artifacts: claimsArtifacts,
     method: {
       how: { tags: ['Exception log', 'Walk-throughs', 'Knowledge sessions'], note: 'I logged recurring exceptions, then walked the process with each group the handoff touched.' },
       when: { tags: ['Four months of logging', 'Before the change'], note: 'The log ran for four months. No baseline was recorded before the change.' },
@@ -123,6 +125,7 @@ const trust: Entry = {
     notOwned: 'The external research partner conducted and synthesized the interviews and fielded the survey. Marketing and analytics leads co-built the framework and owned the decisions that followed.',
     measurement: 'Fieldwork reached 800+ responses, above target, and the partner closed it early. The measures are self-report, not causal.',
     limitations: 'Proposals are recommendations, not completed outcomes. The full framework was not implemented, and detractors were championed but not sampled. No revenue, retention or trust increase is claimed.',
+    artifacts: trustArtifacts,
     brief: {
       tension: 'Trust was treated as one attitude, how favorably people rate the company, although agreeing with an attribute does not mean it shapes trust.',
       call: 'I set the interview sequence, proposed a perception-mapping framework, and separated agreement from trust influence in the survey.',
@@ -304,6 +307,7 @@ const civic: Entry = {
     notOwned: 'Vote Huntsville was a shared volunteer effort; no one, including the directors, was paid. The grant was a partnership’s work.',
     measurement: 'Reach was not measured with one consistent definition, so no reach figure is given.',
     limitations: 'No effect on turnout or policy is claimed. The grant’s award is not credited to one person.',
+    artifacts: civicArtifacts,
     brief: {
       tension: 'Voting information was organized by office, while residents’ questions followed the steps they faced.',
       call: 'With other volunteers, I gathered residents’ questions in person and online and helped build one plain-language answer source for every channel.',
@@ -359,6 +363,7 @@ const accessibility: Entry = {
     notOwned: 'A developer conducted the human review. The separate initiative, and its decisions, belong to others.',
     measurement: 'Nothing was measured. One simulated review is not a user test.',
     limitations: 'One simulation is not proof of user failure or a standards violation, and the agent did not fail. The archived repository is a security precaution, not adoption. Earlier, repeatable checking is an intended benefit, not a measured saving.',
+    artifacts: accessibilityArtifacts,
     brief: {
       tension: 'Could AI-assisted development keep accessibility intact, and what would automated checks miss?',
       call: 'I originated and co-facilitated an experiment pairing a coding agent with an accessibility agent, plus a planned human review.',
@@ -396,9 +401,9 @@ const accessibility: Entry = {
 
 /** Reading order: the same order as the deep dives, each case's next question leading to the next. */
 export const releaseStore: ContentStore = {
-  entries: [claims, trust, ai, telematics, civic, accessibility],
+  entries: [claims, trust, ai, telematics, civic, accessibility, friction, binder, knowledge],
   relationships: [],
-  evidence: Object.values(caseEvidence),
+  evidence: [...Object.values(caseEvidence), ...Object.values(newCaseEvidence)],
   assets: [],
   aliases: [],
 }

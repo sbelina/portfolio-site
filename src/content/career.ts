@@ -7,7 +7,8 @@
  *
  * Owner facts used: degree 2011–2016; early roles at a web-hosting company and others in 2012–2013, during
  * the degree; 2019–2022 consumer technology (from the owner's own summary: knowledge structures, publishing, customer-support friction, governance, resource usefulness); 2022–2026 enterprise insurance;
- * the "Next" line. Wording in ownership terms was drafted for owner review and is not yet approved.
+ * the "Next" line. Earlier roles and specifics added from the owner's résumés and answers, approved
+ * November 2026 ("I approve"). Titles and figures the owner has not confirmed stay out.
  */
 export type Proof = { label: string; href: string }
 export type Era = {
@@ -32,12 +33,14 @@ export const careerEras: readonly Era[] = [
     years: '2011–2019',
     title: 'Foundations',
     subtitle: 'Design, code and access',
-    setting: 'A degree (2011–2016), with early roles in 2012–2013 at one of the largest web-hosting and domain companies serving small businesses, and others',
+    setting: 'A design degree (2011–2016), with roles at a web-hosting company serving small businesses (2012–2013), a summer camp (2015–2016), a web design firm (2017–2018) and an authorized device-repair provider (2018–2019)',
     turn: 'I learned that a working interface is not the same as a usable one.',
     parts: [
-      { text: 'Designed and built interfaces, and structured the information behind them' },
+      { text: 'Consulted small-business owners on hosting, websites and being found in search' },
+      { text: 'Designed a summer-long arts program for ages 4 to 17, and restored a kiln to teach ceramics' },
+      { text: 'Introduced wireframes and mockups across a design department, and restructured how its work was filed' },
+      { text: 'Handled the bulk of repairs during a battery-replacement program, as a front-line technical lead' },
       { text: 'Made accessibility part of the build, not a review at the end', proof: { label: 'AI-assisted development · accessibility evaluation', href: '/investigations/accessibility-ai/' } },
-      { text: 'Solved technical problems end to end' },
     ],
   },
   {
@@ -48,9 +51,11 @@ export const careerEras: readonly Era[] = [
     setting: 'A global consumer-technology company known for its devices and its support experience',
     turn: 'I learned that support friction starts in how knowledge is structured, not where customers ask.',
     parts: [
-      { text: 'Structured knowledge and ran how it was published' },
-      { text: 'Traced customer-support friction back to the resources behind it' },
-      { text: 'Set governance for what was kept, changed and retired, judged by whether a resource was actually useful' },
+      { text: 'Spotted a recurring storm-delivery problem in support chats, and built the workflow leadership shared across countries' },
+      { text: 'Audited all of a team’s metadata tags and implemented the approved standard', proof: { label: 'Consumer technology · content governance & learning design', href: '/investigations/knowledge-publishing/' } },
+      { text: 'Designed the attributes for a worldwide audit of who learning content represented', proof: { label: 'Consumer technology · content governance & learning design', href: '/investigations/knowledge-publishing/' } },
+      { text: 'Led a quarter’s learning collections for four partner audiences, on a six-month assignment' },
+      { text: 'Curated a Black History Month schedule of daily team presentations, and suggested the sign-language meeting room that became a regular gathering' },
     ],
   },
   {
@@ -62,6 +67,8 @@ export const careerEras: readonly Era[] = [
     turn: 'I learned that the costliest problems were not unsolved. They were explained wrong.',
     parts: [
       { text: 'Diagnosed operational failures without an assignment, and moved where verification happens', proof: { label: 'Insurance operations · process & service design', href: '/investigations/claims-operations/' } },
+      { text: 'Automated repetitive entry with tools we already had; peers and two managers adopted it', proof: { label: 'Insurance operations · operational automation', href: '/investigations/operational-friction/' } },
+      { text: 'Designed the training binder every new administrator receives', proof: { label: 'Insurance operations · knowledge architecture', href: '/investigations/knowledge-binder/' } },
       { text: 'Designed survey measures that kept agreement and trust influence apart', proof: { label: 'Customer research · survey & measurement design', href: '/investigations/brand-research/' } },
       { text: 'Recovered usability findings when the session audio failed', proof: { label: 'Product research · usability research', href: '/investigations/telematics/' } },
       { text: 'Led the synthesis of 38 AI proposals into 8 shared challenge areas, and coached in the sprint', proof: { label: 'Enterprise innovation · opportunity synthesis', href: '/investigations/enterprise-ai/' } },

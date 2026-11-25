@@ -186,7 +186,7 @@ test('case figures: method profile, process dial, legend and card thumbnails rea
     await page.goto(`${origin}/investigations/brand-research/`)
     await expect(page.locator('.pc-method-tags li[data-unknown]')).toContainText(['Survey mode not stated'])
     await page.goto(`${origin}/investigations/`)
-    await expect(page.locator('.reading-cards .pc-thumb-pair')).toHaveCount(6)
+    await expect(page.locator('.reading-cards .pc-thumb-pair')).toHaveCount(9)
     await expect(page.locator('.reading-cards .pc-thumb-pair').first()).toHaveText(/Delivered\s*≠\s*is not\s*Verified/)
   } finally { await context.close() }
 })
