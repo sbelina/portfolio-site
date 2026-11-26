@@ -1,4 +1,5 @@
-:root { --font-main: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --font-second: 'Brandon Grotesque', 'Outfit Variable', ui-sans-serif, system-ui, sans-serif; }
+/* One family: Brandon Grotesque for everything. Outfit (self-hosted, OFL) stands in until licensed Brandon files are added. --font-second stays as an alias so headline rules have one place to change. */
+:root { --font-main: 'Brandon Grotesque', 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --font-second: var(--font-main); }
 /* Current edition: surface-specific roles. Orange is emphasis, never evidence strength. */
 html[data-edition="current"], .pc-site, .pc-sample {
   color-scheme: light;
