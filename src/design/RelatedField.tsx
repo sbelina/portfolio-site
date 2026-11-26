@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { count } from '../analytics'
 
 /**
- * Related. Not equivalent. as a field to explore (owner direction, 23 November 2026).
+ * Related. Not equivalent. as a field to explore.
  *
  * Each published case is one point of light: two related things that someone took for one. The reader
  * chooses a point, says whether the two are the same, and the point splits to show where they part.
@@ -100,7 +100,7 @@ export function RelatedField({ pairs }: { pairs: readonly FieldPair[] }) {
 }
 
 /**
- * The hero's visual (owner direction, 24 November: a call to action and a visual near the top): the same
+ * The hero's visual: the same
  * six case studies, already split, at rest. It is a picture, not a control; its link leads to the
  * interactive field further down, and every pair is also given there as text.
  */

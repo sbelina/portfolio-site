@@ -22,7 +22,7 @@ export const hiddenWork: ProcessExperiment = {
   },
   stages: [{ id: 'request', label: 'Request' }, { id: 'review', label: 'Review' }, { id: 'complete', label: 'Complete' }],
   work: [
-    { id: 'clarify', stageId: 'request', label: 'Clarify the question', meaning: 'unresolved', explanation: 'In this illustration, someone must establish what the request is actually asking before it can move forward.' },
+    { id: 'clarify', stageId: 'request', label: 'Clarify the question', meaning: 'unresolved', explanation: 'In this illustration, someone must establish what the request is asking before it can move forward.' },
     { id: 'context', stageId: 'review', label: 'Find missing context', meaning: 'friction', explanation: 'The fictional review reveals missing context. Gathering it is work that the simple top-level label does not show.' },
     { id: 'return', stageId: 'review', label: 'Return for clarification', meaning: 'friction', explanation: 'The illustrative loop returns to the question. It shows rework, without assigning a duration or blaming the person doing it.' },
     { id: 'receipt', stageId: 'complete', label: 'Check what arrived', meaning: 'learning', explanation: 'Here, completion includes checking whether the next person received what they need. That check creates an opportunity to learn; no improved outcome is asserted.' },

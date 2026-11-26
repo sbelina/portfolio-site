@@ -49,7 +49,7 @@ test('candidate wording uses only rounded estimates, withholds rework figures an
   expect(text).not.toContain('IAA')
   expect(text).toContain('neither is shown and they are never compared')
   const figures = claimsCandidate.investigation!.figures ?? []
-  // The guide's views are counted by the platform (owner confirmed, November 2026): exact, labelled as platform-reported.
+  // The guide's views are counted by the platform: exact, labelled as platform-reported.
   expect(figures.map(figure => `${figure.value} ${figure.unit}`)).toEqual(['835 views by 113 people since it was posted', '2+ years in use across four offices'])
   for (const figure of figures) expect(figure.value).not.toMatch(/\d{4,}|\d[.,]\d/)
   expect(figures.map(figure => figure.basis)).toEqual(['platform_reported', 'owner_estimate'])
@@ -139,7 +139,7 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   const dated = structuredClone(narrative)
   dated.figures![0] = { ...dated.figures![0], label: 'Views by November 2026' }
   expect(investigationSchema.safeParse(dated).success).toBe(false)
-  // Renders: nothing without approved headlines; otherwise each figure links to its case, with no hedge label (owner, 23 November).
+  // Renders: nothing without approved headlines; otherwise each figure links to its case, with no hedge label.
   const { renderToStaticMarkup } = await import('react-dom/server')
   const React = await import('react')
   const { ResultsStrip } = await import('../src/design/ResultsStrip')
@@ -157,7 +157,7 @@ test('status tags and headline figures refuse date call-outs, and the strip show
   for (const value of [...strip.matchAll(/<strong>([^<]+)<\/strong>/g)].map(match => match[1].replaceAll('&gt;', '>'))) expect(approved).toContain(value)
 })
 
-test('owner correction, 24 November: collective guide credit and the real onboarding chronology', async () => {
+test('claims credits the guide collectively and gives the real onboarding chronology', async () => {
   const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
   const claims = projection.entries.find((entry: { slug: string }) => entry.slug === 'claims-operations')
   const text = JSON.stringify(claims)
@@ -168,7 +168,7 @@ test('owner correction, 24 November: collective guide credit and the real onboar
   expect(text).toContain('Supervisors continue to share the guide across all four offices')
 })
 
-test('owner correction, 24 November: the grant was publicly awarded to United Women of Color; co-signing was an offer', async () => {
+test('civic: the grant was publicly awarded to United Women of Color; co-signing was an offer', async () => {
   const projection = JSON.parse(await readFile('dist/public-content.json', 'utf8'))
   const civic = JSON.stringify(projection.entries.find((entry: { slug: string }) => entry.slug === 'civic-service'))
   expect(civic).not.toMatch(/co-signed|Grant co-signed and awarded/)

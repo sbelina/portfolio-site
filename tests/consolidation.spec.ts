@@ -21,7 +21,7 @@ test('old homepage links land on the current page for the same thing', async ({ 
     await page.goto(`${origin}/#${fragment}`)
     await expect(page).toHaveURL(`${origin}${destination}`)
   }
-  // The "section from the previous site" list was removed (owner, 23 November); old links redirect instead.
+  // The "section from the previous site" list was removed; old links redirect instead.
   const context = await browser.newContext({ javaScriptEnabled: false })
   try {
     const page = await context.newPage()

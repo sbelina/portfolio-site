@@ -10,7 +10,7 @@ const LEGACY_STEPS = [
   'dive in',
 ]
 /**
- * Current edition (owner direction, 24 November 2026): the three steps are a short investigation, in the
+ * Current edition: the three steps are a short investigation, in the
  * site's own terms: notice, test, show. Still three step actions plus a separate Dive (INTRO-STATES.md).
  */
 const CURRENT_STEPS = [

@@ -64,8 +64,8 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !preview, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
-// Every old anchor stays reachable: as a target on the page, or (current edition, owner direction 23 November)
-// as a fragment the homepage redirects to its current page.
+// Every old anchor stays reachable: as a target on the page, or as a fragment the homepage redirects
+// to its current page.
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`) && (fixture || !Object.hasOwn(legacyFragments, id))) throw new Error(`An existing legacy anchor would be lost: ${id}`)
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
@@ -133,7 +133,7 @@ if (fixture) for (const [kind, metadata] of Object.entries(proposalPages)) {
   proposalRoutes.push(metadata.path)
 }
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
-// Readers look for “work” and “case studies”; both names lead to the collection (23 November).
+// Readers look for “work” and “case studies”; both names lead to the collection.
 redirects.push('/work/ /investigations/ 301', '/work /investigations/ 301', '/case-studies/ /investigations/ 301', '/case-studies /investigations/ 301')
 await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {

@@ -1,5 +1,5 @@
 /**
- * /api/count: anonymous usage counts (owner direction, 24 November 2026). Each accepted request writes one
+ * /api/count: anonymous usage counts. Each accepted request writes one
  * row to Workers Analytics Engine: the event name, the page path and an optional short detail. Nothing
  * else is read or kept: no IP address, user agent, cookie, referrer or identifier. Counts are only taken
  * on the live hostname; previews and local runs answer 204 and store nothing.

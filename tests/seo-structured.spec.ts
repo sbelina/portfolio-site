@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import { caseSearch } from '../src/content/search-metadata'
 
-/** Search improvements (owner request, November 2026): plain search titles, short descriptions, one structured-data graph. */
+/** Search improvements: plain search titles, short descriptions, one structured-data graph. */
 const graph = (html: string) => [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)].flatMap(match => JSON.parse(match[1])['@graph'])
 const meta = (html: string, name: string) => html.match(new RegExp(`<meta (?:name|property)="${name}" content="([^"]*)"`))?.[1]
 

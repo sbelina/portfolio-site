@@ -21,7 +21,7 @@ for (const route of ['/', '/practice/', '/patterns/', '/system/']) {
       const summary = page.locator('footer .experiment-note > summary')
       await summary.focus(); await page.keyboard.press('Enter')
       await expect(page.getByRole('heading', { name: 'The working hypothesis' })).toBeVisible()
-      await expect(page.locator('footer .experiment-note')).toContainText('not a demonstrated result')
+      await expect(page.locator('footer .experiment-note')).toContainText('is an open question')
       await page.keyboard.press('Space'); await expect(summary).toBeFocused()
       await expect(page.locator('footer .experiment-note')).not.toHaveAttribute('open', '')
       expect(await page.locator('canvas').count()).toBe(0)
@@ -35,7 +35,7 @@ test('practice moves are prose; homepage and direct method do not load graph or 
     const page = await context.newPage(), errors: string[] = [], requests: string[] = []
     page.on('pageerror', error => errors.push(error.message)); page.on('request', request => requests.push(request.url()))
     await page.goto(origin + '/')
-    // Test. Show. Enable. folds into a card (owner, 24 November) and opens to one moving figure with native radios.
+    // Test. Show. Enable. folds into a card and opens to one moving figure with native radios.
     const fold = page.locator('#practice-fold')
     await expect(fold).not.toHaveAttribute('open', '')
     await fold.locator(':scope > summary').focus(); await page.keyboard.press('Enter')

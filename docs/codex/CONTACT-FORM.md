@@ -11,7 +11,7 @@ The Contact form posts to `/api/contact` (`worker/contact.ts`, rules in `worker/
 
 Spam defences:
 - same-origin only;
-- 3 submissions a minute per client (rate-limit binding `CONTACT_LIMIT`);
+- 3 submissions a minute per client (rate-limit binding `CONTACT_LIMIT`), and **at most one message every five minutes for the whole site** (KV namespace `portfolio-site-contact`, which keeps only the time of the last message for five minutes);
 - a hidden honeypot field;
 - a 3-second minimum before submitting;
 - field length limits, a valid reply address and at most 3 links;

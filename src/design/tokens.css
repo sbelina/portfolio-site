@@ -1,3 +1,4 @@
+:root { --font-main: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --font-serif: 'Source Serif 4 Variable', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif; }
 /* Current edition: surface-specific roles. Orange is emphasis, never evidence strength. */
 html[data-edition="current"], .pc-site, .pc-sample {
   color-scheme: light;
@@ -8,7 +9,7 @@ html[data-edition="current"], .pc-site, .pc-sample {
   --inverse: #f3efe7;
   /* Deck imagery: sage marks a check or verification (the lens). Graphics only; 3:1 or more on paper. */
   --sage: #4b6a57;
-  --serif: Georgia, 'Times New Roman', serif;
+  --serif: var(--font-serif);
   --reading-paper: var(--paper); --reading-panel: var(--panel); --reading-ink: var(--ink);
   --reading-muted: var(--muted); --reading-line: var(--line); --reading-focus: var(--focus);
   --reading-unresolved: var(--unresolved); --reading-pressure: var(--pressure); --reading-holds: var(--holds); --reading-sage: var(--sage);

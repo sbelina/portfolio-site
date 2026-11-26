@@ -38,7 +38,7 @@ test('production documents have one consistent metadata set and factual site sch
       expect(html).toContain(homeTitle.replaceAll('&', '&amp;'))
       expect(html).toContain(homeDescription)
       const schema = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)![1])
-      // The site and the person it is about (19 November): public, owner-supplied facts only.
+      // The site and the person it is about: public, owner-supplied facts only.
       expect(schema).toEqual({ '@context': 'https://schema.org', '@graph': [
         { '@type': 'WebSite', '@id': `${siteOrigin}/#website`, name: 'Producing Curiosity', url: `${siteOrigin}/`, description: homeDescription, inLanguage: 'en', author: { '@id': personSchema['@id'] }, publisher: { '@id': personSchema['@id'] } },
         personSchema,

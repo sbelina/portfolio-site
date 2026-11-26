@@ -1,7 +1,7 @@
 import React from 'react'
 
 /**
- * Verbal stress in text (owner direction, 23 November 2026). Case and page copy may mark three kinds of
+ * Verbal stress in text. Case and page copy may mark three kinds of
  * spoken emphasis; nothing else is interpreted, and no HTML is ever passed through.
  *
  *   ==term==   the turn: the distinction a passage hinges on, in the accent colour (orange) and bold

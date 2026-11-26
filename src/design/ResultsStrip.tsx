@@ -7,7 +7,7 @@ import { plainText } from '../content/emphasis'
  * What changed, before how it was done: the headline figures of approved investigations only.
  * Renders nothing until at least one approved case has a headline figure, so it can never
  * publish an unapproved number. Each figure links to the case that explains it, where its context is given.
- * Owner direction, 23 November: no per-figure hedge labels. Directive PC-2026-11-25: each figure says
+ * no per-figure hedge labels. each figure says
  * what it measures (its qualifier), so views read as access and counts read as scope, not impact.
  */
 export function ResultsStrip({ investigations }: { investigations: readonly InvestigationSummary[] }) {

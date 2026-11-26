@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { browserSaysNo, choice, isLive, setChoice, toast } from '../analytics'
 
 /**
- * What this site counts, and the reader's choice (owner direction, 24 November 2026). Without JavaScript
+ * What this site counts, and the reader's choice. Without JavaScript
  * nothing can be counted, so the page says so; with it, the reader sees the current state and can change it.
  */
 export function CountingChoice() {

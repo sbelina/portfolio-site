@@ -1,6 +1,6 @@
 /**
  * The previous edition's homepage fragments, reviewed and mapped to current destinations when the public
- * archive was retired (owner decision, 23 November 2026). An old link such as /#claims-operations now
+ * archive was retired. An old link such as /#claims-operations now
  * lands on the current page for the same thing, never on a retired build.
  */
 const investigations = ['claims-operations', 'brand-research', 'enterprise-ai', 'civic-service', 'accessibility-ai'] as const

@@ -18,7 +18,7 @@ export default {
 }
 
 /**
- * Previous editions of the site are retired from public delivery (owner decision, 23 November 2026).
+ * Previous editions of the site are retired from public delivery.
  * They are preserved privately; every old address, including nested assets, answers 410 Gone.
  */
 export function retiredBuild(request: Request): Response {

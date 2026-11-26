@@ -5,7 +5,7 @@ import { FigureLegend } from './CaseFigures'
 import { count } from '../analytics'
 
 /**
- * Test. Show. Enable. in motion (owner direction, 23 November 2026): the three moves as one figure
+ * Test. Show. Enable. in motion: the three moves as one figure
  * that changes state, walked through one published case in its own approved words.
  *
  *   Test    many explanations pass a check (the sage lens); one holds.

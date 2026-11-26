@@ -1,5 +1,5 @@
 /**
- * Password-protected deep dives (owner direction, 22 November 2026).
+ * Password-protected deep dives.
  *
  * Every case has a public version in the static site. A longer "deep dive" lives in private
  * Cloudflare KV storage, never in this public repository, and is served only here, after a

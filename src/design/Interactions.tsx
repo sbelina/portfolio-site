@@ -3,7 +3,7 @@ import { Stressed } from '../content/emphasis'
 import { FigureLegend } from './CaseFigures'
 
 /**
- * Interaction components (owner decision, 23 November 2026). Each renders its complete meaning as HTML
+ * Interaction components. Each renders its complete meaning as HTML
  * first; JavaScript only adds a control. Styles live in motion.css. None of them encodes data.
  */
 

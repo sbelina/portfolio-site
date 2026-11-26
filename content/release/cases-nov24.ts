@@ -2,7 +2,7 @@
  * Cases and working artifacts approved by the owner in November 2026 ("I approve: make sure we got it all
  * and go live"), drawn from the private evidence registry. Only items the registry marks publishable are
  * here. Withheld: the 88% timing and the eight-minutes-a-day estimate (no records yet), every exact figure
- * from the consumer-technology assignment (generalized by owner decision), organization-reported reach
+ * from the consumer-technology assignment (generalized
  * counts for Vote Huntsville (no single definition), original materials that still need co-founders' and
  * photographed people's permission, and every employer screenshot (never used).
  */
@@ -35,7 +35,7 @@ const base = (id: string, slug: string) => ({
 
 export const friction: Entry = {
   ...base('4b9bd07b-87ba-4040-a2d6-82f904b9d59a', 'operational-friction'),
-  title: 'Typed once. ==Reused== for years.',
+  title: 'One shortcut replaced years of ==retyping==.',
   summary: 'Administrative work repeated the same entries, field by field, every day. I captured the work by hand, automated the repetitive parts with tools we already had, kept the security inputs and judgment calls with people, and shared the method until others adopted it.',
   contribution: 'I observed and decomposed the work, built the automation with existing tools, tested it, and trained and shared it. Four peers adopted the purchasing workflow; they, a supervisor and a manager adopted the text shortcuts.',
   evidenceIds: [newCaseEvidence.friction.id],
@@ -48,7 +48,7 @@ export const friction: Entry = {
     relationshipDiscovered: '==Repetition ≠ judgment.== Most of each entry was **identical every time**; only the payment-security inputs and a few choices needed a person.',
     response: 'With text-expansion tools we already had, one shortcut now fills a form field by field. The two payment-security inputs and three dropdown choices stay with the person, and every form is reviewed before it is sent. I trained colleagues and shared the method with other administrative teams.',
     consequence: 'Four peers adopted the purchasing workflow. They, a supervisor and a manager adopted the text shortcuts. My own shortcut counter recorded **445,786 characters** I did not have to type.',
-    differently: 'Keep the raw timings in one place from the first test, so the result can be shown, not just reported.',
+    differently: 'Keep the raw timings in one place from the first test, so the result can be shown with its evidence.',
     notOwned: 'I did not own the forms, the purchasing system or the security rules; the automation works within them. Adopting it was each person’s choice.',
     measurement: 'The character count is the shortcut tool’s own counter, for my use only. Hours of typing are a model, not measured time saved. The four working days a year are my estimate (about eight minutes a day × 250 days ÷ 8 hours), not a measurement. Task timings exist but are not yet compiled, so no percentage is shown.',
     limitations: 'Typing time is not freed working time: entering shortcuts, reviewing and keeping templates current are not subtracted. Sharing the method with teams in six states is dissemination, not adoption, and no savings are extrapolated.',
@@ -82,10 +82,10 @@ export const friction: Entry = {
       learn: { tags: ['Descriptive', 'Model'], note: 'It can show what was repeated and how much I did not type. It cannot show time saved across the team.' },
     },
     figures: [
-      { id: '443dbc7d-dfcc-4557-a723-b4737ab15d8c', value: '445,786', unit: 'characters not typed', label: 'My shortcut tool’s own counter, my use only', basis: 'platform_reported', qualifier: 'Characters expanded by shortcuts, not time saved.', evidenceIds: [newCaseEvidence.friction.id] },
-      { id: 'b85bffd5-fa2f-4c9b-acce-ddadf533e298', value: '~33', unit: 'hours of typing, modeled', label: 'Those characters at 45 words a minute (five characters a word)', basis: 'approximate', qualifier: 'A model of typing time, not freed working time.', evidenceIds: [newCaseEvidence.friction.id] },
-      { id: 'a4b4c09c-8e4c-49da-943a-a44098b68b60', value: '~4', unit: 'working days a year', label: 'My estimate: about eight minutes a day, over a 250-day working year', basis: 'owner_estimate', qualifier: 'An estimate of my own time saved, not measured. A different measure from the typing model, so the two are never combined.', evidenceIds: [newCaseEvidence.friction.id] },
-      { id: '8487977d-e83b-4173-bb5a-8eb49f636a18', value: '4', unit: 'peers adopted the workflow', label: 'The police-report purchasing workflow', basis: 'owner_estimate', qualifier: 'Adoption as reported; use not measured. Never added to the shortcut adopters.', evidenceIds: [newCaseEvidence.friction.id] },
+      { id: '443dbc7d-dfcc-4557-a723-b4737ab15d8c', value: '445,786', unit: 'characters not typed', label: 'My shortcut tool’s own counter, my use only', basis: 'platform_reported', qualifier: 'Counts characters the shortcuts filled in.', evidenceIds: [newCaseEvidence.friction.id] },
+      { id: 'b85bffd5-fa2f-4c9b-acce-ddadf533e298', value: '~33', unit: 'hours of typing, modeled', label: 'Those characters at 45 words a minute (five characters a word)', basis: 'approximate', qualifier: 'Models typing time only.', evidenceIds: [newCaseEvidence.friction.id] },
+      { id: 'a4b4c09c-8e4c-49da-943a-a44098b68b60', value: '~4', unit: 'working days a year', label: 'My estimate: about eight minutes a day, over a 250-day working year', basis: 'owner_estimate', qualifier: 'My own estimate of time saved, kept separate from the typing model.', evidenceIds: [newCaseEvidence.friction.id] },
+      { id: '8487977d-e83b-4173-bb5a-8eb49f636a18', value: '4', unit: 'peers adopted the workflow', label: 'The police-report purchasing workflow', basis: 'owner_estimate', qualifier: 'Adoption as reported, counted apart from the shortcut adopters.', evidenceIds: [newCaseEvidence.friction.id] },
     ],
     artifacts: [
       {
@@ -119,12 +119,12 @@ export const friction: Entry = {
           ['Two payment-security inputs', 'The person', 'A security requirement; never stored in a template'],
           ['Three dropdown choices, including the request type: priority delivery or an in-person office appointment', 'The person', 'A judgment for each case'],
           ['Review before sending', 'The person', 'Human verification kept'],
-          ['Address checking', 'The person, at review', 'The form checks typed addresses only; addresses filled by the shortcut skip that check'],
+          ['Addresses', 'The shortcut', 'Prefilled by the automated template, so they are never retyped; the form’s own address check runs only on typed entries'],
         ] },
         note: 'Not claimed: a security audit, or fewer errors.',
       },
       {
-        id: 'adoption-scopes', title: 'Three different scopes, never added together',
+        id: 'adoption-scopes', title: 'Who adopted it, and who saw it',
         label: 'FIG · Retrospective · adoption and dissemination kept apart',
         table: { columns: ['Scope', 'Who', 'What it shows'], rows: [
           ['The purchasing workflow', 'Four peers', 'Adoption, as reported'],
@@ -143,7 +143,7 @@ export const friction: Entry = {
 
 export const binder: Entry = {
   ...base('53b25756-4072-4d5d-a495-9b5173474084', 'knowledge-binder'),
-  title: 'Scattered sources. ==One== shared binder.',
+  title: 'Six scattered sources became ==one== shared binder.',
   summary: 'New administrators learned the job from emails, printouts, training pages, spreadsheets and note templates, each holding part of the answer. I designed one organized binder from them, a single digital file the whole team shares; the team reviewed and keeps improving it, and every new administrative hire receives it.',
   contribution: 'I originated and designed the binder and synthesized the sources. The team reviewed it and keeps it current with me.',
   evidenceIds: [newCaseEvidence.binder.id],
@@ -182,8 +182,8 @@ export const binder: Entry = {
       ],
     },
     figures: [
-      { id: '26c97d33-c556-4cdd-aa53-8e3a6621b3a5', value: '7', unit: 'new hires have received it', label: 'Given to every new administrative hire', basis: 'owner_estimate', qualifier: 'Distribution, not use. A different group from the current team of seven.', evidenceIds: [newCaseEvidence.binder.id] },
-      { id: '9b500e03-5fe3-462b-9292-f9535cb822ee', value: '9', unit: 'sections', label: 'Organized by the tasks the work brings', basis: 'owner_estimate', qualifier: 'Structure, not outcome.', evidenceIds: [newCaseEvidence.binder.id] },
+      { id: '26c97d33-c556-4cdd-aa53-8e3a6621b3a5', value: '7', unit: 'new hires have received it', label: 'Given to every new administrative hire', basis: 'owner_estimate', qualifier: 'Counts who received it; a different group from the current team of seven.', evidenceIds: [newCaseEvidence.binder.id] },
+      { id: '9b500e03-5fe3-462b-9292-f9535cb822ee', value: '9', unit: 'sections', label: 'Organized by the tasks the work brings', basis: 'owner_estimate', qualifier: 'Describes the structure.', evidenceIds: [newCaseEvidence.binder.id] },
     ],
     artifacts: [
       {
@@ -218,7 +218,7 @@ export const binder: Entry = {
 
 export const knowledge: Entry = {
   ...base('cab071fd-fbb8-4b7e-9a62-460d754a16da', 'knowledge-publishing'),
-  title: 'Tagged for publishing. Read for ==use==.',
+  title: 'A content library re-tagged for the people ==using== it.',
   summary: 'On a six-month assignment publishing sales learning content, I audited all of the team’s metadata tags and implemented the approved standard, designed the attributes for a worldwide audit of who the content represented, and led the next quarter’s learning collections for four audiences.',
   contribution: 'With colleagues I audited the content library; I audited the team’s tags and implemented the approved changes, developed the representation audit’s attributes, finalized and then developed quiz sets, and led the next quarter’s collections. The team approved changes and set audiences with me.',
   evidenceIds: [newCaseEvidence.knowledge.id],
@@ -228,7 +228,7 @@ export const knowledge: Entry = {
     observedCondition: 'A large sales-learning library had grown by publishing habit: overlapping tags, outdated resources, and content that only some audiences could use.',
     workingExplanation: 'My interpretation: the library was organized for the people **publishing** it, not for the sellers **using** it or the reports judging it.',
     investigation: 'With two colleagues I audited the team’s library of digital sales resources. I audited **all** of the team’s metadata tags from a spreadsheet the team exported, condensing it into a reference. For a worldwide audit of customer scenarios, I pulled content by six tags, removed duplicates and developed the attributes the team would assess.',
-    relationshipDiscovered: '==Published ≠ representative.== Very few resources showed visible disabilities; nonvisible and cognitive disabilities were **not represented**; some combinations of people were missing from business scenarios.',
+    relationshipDiscovered: '==Published ≠ representative.== Few resources showed visible disabilities; nonvisible and cognitive disabilities were **not represented**; some combinations of people were missing from business scenarios.',
     response: 'I implemented the approved metadata changes and reconnected older content to the updated reporting categories. We retired outdated resources and created or updated what was missing. The next quarter, I was asked to lead the learning collections: I wrote the content, structured the collections, developed the quiz set and curated polls, in four versions for four kinds of partner.',
     consequence: 'The team **kept the condensed tag spreadsheet** as its reference, the representation findings were the task force’s to act on, a version of the registration flyer I revised with the team’s feedback shipped, and the four collections launched.',
     differently: 'Write down how each audit attribute was defined and check that two people rate it the same way.',
@@ -363,7 +363,7 @@ export const claimsArtifacts: Artifacts = [
     note: 'Not claimed: statewide or continuous onboarding ownership, supervisory authority, or measured effects on rework or payment time. Views are access, not use.',
   },
   {
-    id: 'three-resources', title: 'Three resources, three audiences',
+    id: 'three-resources', title: 'The guide, the roadshow and onboarding',
     label: 'FIG · Retrospective · the reach of one resource is never added to another',
     table: { columns: ['Resource', 'For', 'My part'], rows: [
       ['The guide', 'Anyone handling the paperwork: purpose, responsibilities, restrictions, errors and examples for each document', 'Facilitated the sessions it came from; a collective effort'],

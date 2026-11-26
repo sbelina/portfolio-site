@@ -1,5 +1,5 @@
 /*
- * Motion and interaction (owner decision, 23 November 2026). Every effect:
+ * Motion and interaction. Every effect:
  *  - starts from a complete, readable resting state (nothing waits invisible);
  *  - runs only where the browser supports it (@supports), with plain CSS as the fallback;
  *  - is off under prefers-reduced-motion;
@@ -86,9 +86,9 @@
   .pc-method-glyph .pc-glyph-fill { fill: var(--signal); stroke: var(--signal); }
   .pc-method-body { min-width: 0; }
   .pc-method-body h3 { margin: 0 0 var(--space-2); font-size: var(--step-1); }
-  .pc-method-tag { margin-left: var(--space-2); font: 600 .7rem/1 ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-method-tag { margin-left: var(--space-2); font: 600 .7rem/1 var(--font-main); letter-spacing: .1em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   .pc-method-tags { list-style: none; margin: 0 0 var(--space-2); padding: 0; display: flex; flex-wrap: wrap; gap: var(--space-2); }
-  .pc-method-tags li { padding: .15rem .65rem; border: 1px solid var(--reading-ink, var(--ink)); border-radius: 999px; font-size: var(--step--1); }
+  .pc-method-tags li { padding: .15rem .65rem; border: 1px solid var(--reading-ink, var(--ink)); border-radius: 2px; font-size: var(--step--1); }
   .pc-method-tags li[data-unknown] { border-style: dashed; color: var(--reading-muted, var(--muted)); }
   .pc-method-body p { margin: 0; }
   @media (max-width: 560px) { .pc-method-row { grid-template-columns: minmax(0, 1fr); } .pc-method-glyph { width: 3rem; } }
@@ -114,7 +114,7 @@
   .pc-dial-segment[data-current][data-mark="change"] { stroke: var(--reading-sage, var(--sage)); }
   .pc-dial-center { position: absolute; inset: 22%; display: grid; place-content: center; text-align: center; gap: var(--space-1); }
   .pc-dial-center strong { font-size: var(--step-1); line-height: 1.2; }
-  .pc-dial-count { font: 600 .75rem ui-monospace, monospace; letter-spacing: .08em; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-count { font: 600 .75rem var(--font-main); letter-spacing: .08em; color: var(--reading-muted, var(--muted)); }
   .pc-dial-note { font-size: var(--step--1); color: var(--reading-muted, var(--muted)); }
   .pc-dial-side { min-width: 0; }
   .pc-dial-summary { margin-top: 0; }
@@ -122,21 +122,23 @@
   .pc-dial-cells li { padding: var(--space-2) var(--space-3); border-left: 3px solid var(--reading-line, var(--line)); }
   .pc-dial-cells li[data-mark="failure"] { border-left-color: var(--signal); }
   .pc-dial-cells li[data-mark="change"] { border-left-color: var(--reading-sage, var(--sage)); }
-  .pc-dial-lane { display: block; font: 600 .7rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-lane { display: block; font: 600 .7rem/1.5 var(--font-main); letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   .pc-dial-steps { display: flex; flex-wrap: wrap; gap: var(--space-2); }
   .pc-dial-steps button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
   .pc-dial-steps button:disabled { opacity: .45; cursor: default; }
   .pc-dial-static { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: var(--space-5); }
   .pc-dial-static ol { margin: 0; padding-left: 1.25rem; display: grid; gap: var(--space-3); }
   .pc-dial-static li[data-mark="failure"] > strong { color: var(--signal); }
-  .pc-dial-caption { margin: var(--space-3) 0 0; font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-dial-caption { margin: var(--space-3) 0 0; font: 600 .72rem/1.5 var(--font-main); letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   @media (max-width: 700px) { .pc-dial-stage { grid-template-columns: minmax(0, 1fr); } .pc-dial-face { margin-inline: auto; max-width: 15rem; } }
   @media (prefers-reduced-motion: reduce) { .pc-dial-segment { transition: none; } }
 
   /* Card thumbnails: the case's own distinction, drawn small, with the pair as text. */
   .pc-thumb { display: grid; gap: var(--space-1); margin-bottom: var(--space-3); padding: var(--space-3); border: 1px solid var(--reading-line, var(--soft-line)); background: var(--signal-1); }
   .pc-thumb svg { width: 100%; max-width: 12rem; height: auto; }
-  .pc-thumb-pair { font: 600 .78rem/1.4 ui-monospace, monospace; letter-spacing: .02em; }
+  .pc-thumb-pair { font: 600 .78rem/1.4 var(--font-main); letter-spacing: .02em; }
+  .pc-struct-node { fill: var(--reading-ink, var(--ink)); }
+  .pc-struct-name { font-size: .8rem; line-height: 1.4; color: var(--reading-muted, var(--muted)); }
 
   /* Verbal stress (src/content/emphasis.tsx): orange + bold for the turn, bold for the finding,
      italics for a label or spoken stress. Underlines belong to links only. */
@@ -159,8 +161,8 @@
   .pc-strand .pc-strand-plane { fill: var(--signal-4); stroke: var(--signal); stroke-width: 1; }
   .pc-strand .pc-strand-thread { fill: none; stroke: var(--signal); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
   .pc-strand .pc-strand-mark { fill: var(--signal); }
-  .pc-strand text { fill: var(--muted); font: 600 11px ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .06em; }
-  .pc-strand figcaption { margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .06em; text-transform: uppercase; }
+  .pc-strand text { fill: var(--muted); font: 600 11px var(--font-main); letter-spacing: .06em; }
+  .pc-strand figcaption { margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 var(--font-main); letter-spacing: .06em; text-transform: uppercase; }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .pc-strand .pc-strand-thread { animation: pc-draw linear both; animation-timeline: view(); animation-range: entry 10% cover 45%; }
@@ -178,7 +180,7 @@
   .pc-layers-stack li[data-layer="interpreted"] { border-left: 4px dotted var(--reading-ink, var(--ink)); }
   .pc-layers-stack li[data-layer="observed"] { border-left-color: var(--reading-sage, var(--sage)); }
   .pc-layers-stack li[data-layer="decided"] { border-left: 4px solid var(--signal); }
-  .pc-layers-name { display: block; font: 600 .72rem/1.5 ui-monospace, 'SFMono-Regular', Consolas, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-layers-name { display: block; font: 600 .72rem/1.5 var(--font-main); letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   /* Resting: a readable list. Pulled apart: the same rows, tilted and lifted to separate depths. */
   .pc-layers[data-open="true"] .pc-layers-stack { transform: rotateX(30deg) rotateZ(-6deg); }
   .pc-layers[data-open="true"] .pc-layers-stack li:nth-child(1) { transform: translateZ(0); }
@@ -191,13 +193,13 @@
   .pc-plate { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0 var(--space-5); align-items: start; margin: var(--space-6) 0; }
   .pc-plate-figure { display: grid; gap: var(--space-2); padding: var(--space-3); border: 1px solid var(--line); background: var(--panel); margin: 0; }
   .pc-plate-figure > div { position: relative; padding: var(--space-2) var(--space-3); border: 1px solid var(--soft-line); background: var(--paper); font-size: var(--step--1); color: var(--muted); }
-  .pc-plate-figure > div::after { content: attr(data-pin); position: absolute; top: -1px; right: -1px; min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem ui-monospace, monospace; background: var(--signal); color: var(--inverse); }
+  .pc-plate-figure > div::after { content: attr(data-pin); position: absolute; top: -1px; right: -1px; min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem var(--font-main); background: var(--signal); color: var(--inverse); }
   .pc-plate-notes { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-2); counter-reset: pin; }
   .pc-plate-notes li { counter-increment: pin; position: relative; padding: var(--space-2) var(--space-3) var(--space-2) 2.25rem; border: 1px solid var(--soft-line); background: var(--signal-1); }
-  .pc-plate-notes li::before { content: counter(pin); position: absolute; left: var(--space-2); top: var(--space-2); min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem ui-monospace, monospace; background: var(--signal); color: var(--inverse); }
+  .pc-plate-notes li::before { content: counter(pin); position: absolute; left: var(--space-2); top: var(--space-2); min-width: 1.25rem; text-align: center; font: 700 .72rem/1.25rem var(--font-main); background: var(--signal); color: var(--inverse); }
   .pc-plate-notes li::after { content: ""; position: absolute; right: 100%; top: 1.1rem; width: var(--space-5); border-top: 1px dashed var(--signal); }
   .pc-plate-notes strong { display: block; }
-  .pc-plate figcaption, .pc-plate-label { grid-column: 1 / -1; margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; }
+  .pc-plate figcaption, .pc-plate-label { grid-column: 1 / -1; margin-top: var(--space-2); color: var(--muted); font: 600 .72rem/1.5 var(--font-main); letter-spacing: .06em; text-transform: uppercase; }
   @media (max-width: 700px) { .pc-plate { grid-template-columns: minmax(0, 1fr); gap: var(--space-3); } .pc-plate-notes li::after { display: none; } }
 
   /* D · Source popovers: native [popover], no library. */
@@ -221,7 +223,7 @@
   .pc-pinned { display: grid; grid-template-columns: minmax(0, 1fr) minmax(12rem, 16rem); gap: var(--space-6); align-items: start; }
   .pc-pinned > .pc-pinned-text { min-width: 0; }
   .pc-pin { position: sticky; top: calc(var(--site-header-height, 0px) + var(--space-5)); margin-top: var(--space-6); padding: var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-panel, var(--panel)); }
-  .pc-pin-kicker { display: block; font: 600 .72rem/1.5 ui-monospace, monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
+  .pc-pin-kicker { display: block; font: 600 .72rem/1.5 var(--font-main); letter-spacing: .08em; text-transform: uppercase; color: var(--reading-muted, var(--muted)); }
   .pc-pin-state { margin: var(--space-2) 0 0; padding: var(--space-2) var(--space-3); border-left: 4px solid var(--reading-line, var(--line)); }
   .pc-pin-state strong { display: block; }
   .pc-pin[data-state="before"] .pc-pin-state[data-state="before"], .pc-pin[data-state="after"] .pc-pin-state[data-state="after"] { border-left-color: var(--signal); background: var(--signal-2); }

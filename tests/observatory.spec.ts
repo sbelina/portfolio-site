@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-// Observatory hub (16 November IA decision; docs/codex/NOV-16-DIRECTION-AUDIT.md).
+// Observatory hub.
 const production = 'http://127.0.0.1:4175'
 const members = ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/experiments/reveal-hidden-work/']
 

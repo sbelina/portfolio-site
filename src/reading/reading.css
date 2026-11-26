@@ -4,7 +4,7 @@
 @import '../components/public-navigation.css';
 :root {
   color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-main);
   background: #151614;
   color: #f1eee5;
   --reading-paper: #151614;
@@ -34,7 +34,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 #reading-main { max-width: 54rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 5rem) 0 5rem; }
 #reading-main:focus { outline: none; }
 .reading-kicker { color: var(--reading-unresolved); font-size: .76rem; font-weight: 650; line-height: 1.5; text-transform: uppercase; letter-spacing: .12em; }
-.reading-entry-header h1, .reading-collection-header h1, .reading-not-found h1 { margin: 1rem 0 1.5rem; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: clamp(2.4rem, 6.5vw, 5.1rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 520; }
+.reading-entry-header h1, .reading-collection-header h1, .reading-not-found h1 { margin: 1rem 0 1.5rem; font-family: var(--font-serif); font-size: clamp(2.4rem, 6.5vw, 5.1rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 520; }
 .reading-summary { max-width: 46rem; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.6; }
 .reading-breadcrumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2.5rem; font-size: .85rem; line-height: 1.6; color: var(--reading-muted); }
 .reading-breadcrumbs [aria-current="page"] { color: var(--reading-ink); }
@@ -106,13 +106,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 }
 
 /* Verse remains literal text. Soft wrapping changes presentation, never the source. */
-.reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
+.reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: var(--font-serif); font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
 .reading-article--poetry .reading-body { max-width: 46rem; }
 
 /* A fragment keeps its authored body separate from optional surrounding thought. */
 .reading-article--fragment { max-width: 48rem; margin-inline: auto; }
 .reading-article--fragment .reading-entry-header { padding-bottom: 1rem; }
-.reading-inquiry-prompt { font-family: Georgia, serif; font-size: 1.4rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reading-inquiry-prompt { font-family: var(--font-serif); font-size: 1.4rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .reading-inquiry-mode { color: var(--reading-unresolved); }
 .reading-inquiry-context { margin: 2rem 0; border-block: 1px solid var(--reading-line); padding-block: .5rem; }
 .reading-inquiry-context summary { cursor: pointer; min-height: 44px; padding: .65rem 0; font-weight: 600; }
@@ -132,7 +132,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .evidence-note { min-width: 0; }
 .evidence-note summary { cursor: pointer; min-width: 0; display: flex; gap: .5rem; align-items: baseline; min-height: 44px; padding: .55rem 0; list-style: none; font-size: .92rem; }
 .evidence-note summary::-webkit-details-marker { display: none; }
-.evidence-note summary::before { content: '+'; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--reading-muted); flex: none; width: 1ch; }
+.evidence-note summary::before { content: '+'; font-family: var(--font-main); color: var(--reading-muted); flex: none; width: 1ch; }
 .evidence-note[open] summary::before { content: '−'; }
 .evidence-kind { flex: none; font-size: .72rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--reading-muted); }
 .evidence-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -166,8 +166,8 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .checkpoint-note { margin: 1rem 0 0; font-size: .85rem; color: var(--reading-muted); }
 @media (prefers-reduced-motion: reduce) { .evidence-note summary, .checkpoint * { transition: none !important; } }
 
-/* Four-question case layout (20 November): result first, caveats in How I know. */
-/* The short read (owner reference, 24 November): a short orange rule and a spaced label, then four numbered
+/* Four-question case layout: result first, caveats in How I know. */
+/* The short read: a short orange rule and a spaced label, then four numbered
    points: an orange number, a bold title, and the line beneath in a quieter tone, with room between them. */
 .investigation-glance.pc-short-read { margin-block: 2rem 3rem; padding: 0; border: 0; }
 .pc-short-read-title { display: flex; align-items: center; gap: 1.5rem; margin: 0 0 2rem; font-size: .9rem !important; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--reading-muted); }
@@ -231,7 +231,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .blueprint-shift { font-weight: 600; max-width: 65ch; border-left: 3px solid var(--reading-holds); padding-left: .75rem; }
 .blueprint thead th:first-child { color: var(--reading-muted); font-weight: 600; }
 
-.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
+.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 2px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
 .case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
 .case-status[data-status="proposal"] { border-style: dashed; color: var(--reading-muted); }
 .reading-card-status, .reading-case-status { margin: .25rem 0 .5rem; }
@@ -241,7 +241,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-deep-dive a { display: inline-flex; align-items: center; min-height: 44px; }
 .reading-deep-dive-note { color: var(--reading-muted); font-size: .9rem; margin-left: .5rem; }
 
-/* Institutional decision layer (23 November): stakes, options, ownership, implications. */
+/* Institutional decision layer: stakes, options, ownership, implications. */
 .investigation-decision { margin-block: 2rem; padding-block: 1rem 1.25rem; border-block: 1px solid var(--reading-line); }
 .investigation-decision h3 { font-size: 1rem; margin: 1.25rem 0 .5rem; }
 .investigation-decision-facts { display: grid; gap: .75rem 2rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); margin: 0; }
@@ -291,7 +291,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .case-visual-count { display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; margin: .5rem 0 1rem; }
 .case-visual-count .pc-count { font-size: 2.5rem; font-weight: 700; line-height: 1; }
 
-/* Case-header visual in the deck palette (23 November): paper panel, ink lines, orange for the turn or friction,
+/* Case-header visual in the deck palette: paper panel, ink lines, orange for the turn or friction,
    sage for the check. The legacy dark-violet styling stays for the fixtures edition only. */
 .pc-reading .investigation-visual { background: var(--reading-panel); border-color: var(--reading-line); color: var(--reading-ink); }
 .pc-reading .investigation-visual svg { stroke: var(--reading-ink); }
@@ -305,11 +305,11 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .investigation-narrative .pc-method { margin-block: 2rem; }
 .investigation-narrative .pc-dial { margin-block: 2rem; }
 
-/* Working artifacts (owner approval, November 2026): provenance first, real tables, steps named in words. */
+/* Working artifacts: provenance first, real tables, steps named in words. */
 .case-artifacts { margin-block: 3rem; }
 .case-artifact { margin: 2.5rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--reading-line); }
 .case-artifact h3 { margin: .25rem 0 .75rem; }
-.case-artifact-label { margin: 0; font: 600 .78rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .04em; color: var(--reading-muted); }
+.case-artifact-label { margin: 0; font: 600 .78rem/1.5 var(--font-main); letter-spacing: .04em; color: var(--reading-muted); }
 .case-artifact-scroll { overflow-x: auto; max-width: 100%; }
 .case-artifact-scroll:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 2px; }
 .case-artifact table { border-collapse: collapse; width: 100%; min-width: 36rem; font-size: .95rem; overflow-wrap: normal; }
@@ -318,23 +318,22 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .case-artifact tbody th { font-weight: 600; }
 .case-artifact-steps { list-style: none; margin: 1rem 0; padding: 0 0 0 1.25rem; border-left: 2px solid var(--signal-art, #ff641c); }
 .case-artifact-steps li { display: grid; gap: .15rem; padding: 0 0 1.1rem; }
-.case-artifact-by { font: 600 .72rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
+.case-artifact-by { font: 600 .72rem/1.4 var(--font-main); letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
 .case-artifact-steps li[data-by="me"] .case-artifact-by { color: inherit; font-weight: 800; }
 .case-artifact-note { margin-top: .75rem; font-size: .9rem; color: var(--reading-muted); max-width: 70ch; }
 @media (max-width: 40rem) { .case-artifact table { min-width: 34rem; font-size: .9rem; } }
 
-/* Work collection and case next steps (directive PC-2026-11-25): capability filter, card brief, by-capability index. */
+/* Work collection and case next steps: capability filter, card brief, by-capability index. */
 .reading-card-brief { margin: .75rem 0; display: grid; gap: .5rem; }
 .reading-card-brief div { display: grid; gap: .1rem; }
 .reading-card-brief dt { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
 .reading-card-brief dd { margin: 0; }
-.reading-card-capabilities { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem .5rem; padding: 0; margin: .5rem 0; }
-.reading-card-capabilities li { font-size: .8rem; padding: .1rem .5rem; border: 1px solid var(--reading-line); border-radius: 999px; }
+.reading-card-capabilities { margin: .5rem 0; font-size: .85rem; color: var(--reading-muted); }
 .reading-filter { margin: 1.5rem 0 2rem; }
 .reading-filter-label { margin: 0 0 .5rem; font-weight: 700; }
 .reading-filter-optional { font-weight: 400; color: var(--reading-muted); }
 .reading-filter ul { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: 0; }
-.reading-filter button, .reading-filter-reset { min-height: 44px; padding: .4rem .85rem; font: inherit; color: inherit; background: transparent; border: 1px solid var(--reading-line); border-radius: 999px; cursor: pointer; }
+.reading-filter button, .reading-filter-reset { min-height: 44px; padding: .4rem .85rem; font: inherit; color: inherit; background: transparent; border: 1px solid var(--reading-line); border-radius: 0; cursor: pointer; }
 .reading-filter button[aria-pressed="true"] { background: var(--reading-ink); color: var(--reading-paper); border-color: var(--reading-ink); font-weight: 700; }
 .reading-filter button:focus-visible, .reading-filter-reset:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 2px; }
 .reading-filter-count { font-variant-numeric: tabular-nums; opacity: .75; }
@@ -346,3 +345,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-by-capability dd p { margin: 0 0 .35rem; color: var(--reading-muted); }
 .reading-by-capability ul, .reading-next-groups ul { margin: .25rem 0 .5rem; padding-left: 1.1rem; }
 .reading-next-actions { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
+
+/* Long reading in the case narrative uses the serif; navigation, labels and figures stay in Outfit. */
+.investigation-question > p, .investigation-differently > p, .investigation-how-i-know p, .reading-entry-header .reading-summary { font-family: var(--font-serif); font-size: 1.08rem; line-height: 1.65; }
+
+/* A case's own structure figure inside the headline visual. Scoped and unlayered so the visual's generic stroke rules don't recolor it. */
+.investigation-visual svg.investigation-visual__structure { max-width: 30rem; max-height: 10rem; margin: .75rem auto; }
+.pc-reading .investigation-visual svg.investigation-visual__structure circle.pc-struct-node, .investigation-visual svg.investigation-visual__structure .pc-struct-node { fill: var(--reading-ink); stroke: none; }
+.investigation-visual__structure .pc-legend-ink { fill: none; stroke: var(--reading-ink); stroke-width: .7; }
+.investigation-visual__structure .pc-legend-thread { fill: none; stroke: var(--signal-art, #ff641c); stroke-width: 1.4; }
+.pc-reading .investigation-visual svg.investigation-visual__structure circle.pc-legend-turn, .investigation-visual__structure circle.pc-legend-turn { fill: var(--reading-paper); stroke: var(--signal-art, #ff641c); stroke-width: 1.2; }

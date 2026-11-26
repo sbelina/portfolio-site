@@ -1,11 +1,11 @@
 /**
- * /api/contact (owner direction, November 2026: "Send the emails to hello@sbelina.com but make sure I can't
+ * /api/contact ("Send the emails to hello@sbelina.com but make sure I can't
  * get spammed"). The Contact form posts here; the Worker sends one plain-text email to the owner through
  * Cloudflare Email Routing and keeps nothing: no database, no log of the message, no cookie.
  *
  * Spam defences, cheapest first:
  *   1. Same-origin only (Origin must be the site), POST only, small JSON body.
- *   2. Rate limit per client (Workers rate-limiting binding, when configured).
+ *   2. Rate limits: 3 a minute per client, and at most one message every five minutes for the whole site.
  *   3. Honeypot field that people never see; filled means a bot.
  *   4. Time trap: a submission sooner than 3 seconds after the form appeared is refused.
  *   5. Field rules: lengths, a valid reply address, at most 3 links, no header injection.
@@ -19,6 +19,8 @@ export interface ContactEnv {
   CONTACT_EMAIL?: { send(message: EmailMessage): Promise<void> }
   TURNSTILE_SECRET?: string
   CONTACT_LIMIT?: { limit(options: { key: string }): Promise<{ success: boolean }> }
+  /** Remembers when the last message went out, so the site sends at most one every five minutes. */
+  CONTACT_STATE?: { get(key: string): Promise<string | null>; put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void> }
 }
 
 import { composeEmail, origins, owner, reply, sender, validateSubmission } from './contact-rules'
@@ -30,6 +32,8 @@ export async function handleContact(request: Request, env: ContactEnv, verify: t
   if (!origins.has(request.headers.get('Origin') ?? '')) return reply(403, { error: 'origin' })
   const client = request.headers.get('CF-Connecting-IP') ?? 'unknown'
   if (env.CONTACT_LIMIT && !(await env.CONTACT_LIMIT.limit({ key: client })).success) return reply(429, { error: 'rate' })
+  // Site-wide: at most one message every five minutes (KV can lag by up to a minute across locations).
+  if (env.CONTACT_STATE && await env.CONTACT_STATE.get('last-sent')) return reply(429, { error: 'wait' })
   const text = await request.text()
   if (text.length > 12_000) return reply(413, { error: 'size' })
   let body: Record<string, unknown>
@@ -43,6 +47,7 @@ export async function handleContact(request: Request, env: ContactEnv, verify: t
   if (!outcome.success) return reply(400, { error: 'challenge' })
   try {
     await env.CONTACT_EMAIL.send(new EmailMessage(sender, owner, composeEmail(checked.value)))
+    await env.CONTACT_STATE?.put('last-sent', new Date().toISOString(), { expirationTtl: 300 })
   } catch {
     return reply(502, { error: 'send' })
   }

@@ -12,7 +12,7 @@ const lenses: Record<Lens, { label: string; question: string; early: string; lat
   },
   everyday: {
     label: 'Everyday terms', question: 'The next step goes ahead when', early: 'It is marked sent', late: 'The receiver confirms it works',
-    steps: [{ title: 'Work is handed off', detail: 'A form, a file, a request' }, { title: 'Marked as sent', detail: 'The status says done' }, { title: 'Receiver checks it', detail: 'Can they actually use it?', check: true }, { title: 'Case closed' }],
+    steps: [{ title: 'Work is handed off', detail: 'A form, a file, a request' }, { title: 'Marked as sent', detail: 'The status says done' }, { title: 'Receiver checks it', detail: 'Can they use it?', check: true }, { title: 'Case closed' }],
     go: { title: 'Next step goes ahead', detail: 'Approval, payment, launch', go: true }, who: 'the person who sent it',
   },
 }

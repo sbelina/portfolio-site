@@ -18,12 +18,12 @@ import { CaseThumb } from './design/CaseFigures'
 const explore = [
   { href: '/patterns/', kicker: 'Connections', title: 'Related. Not equivalent.', text: 'Distinctions that change how a problem is understood.' },
   { href: '/writing/', kicker: 'Field Notes', title: 'Writing and questions', text: 'Essays, notes and ideas still being worked out.' },
-  { href: '/lab/', kicker: 'Experiments*', title: 'The Observatory', text: 'Interactive ways of exploring questions. Optional, and clearly invented.' },
+  { href: '/lab/', kicker: 'Experiments*', title: 'The Observatory', text: 'Interactive ways of exploring questions. Optional, and invented.' },
   { href: '/lab/edge-case/', kicker: 'Experiments* · game', title: 'Edge Case', text: 'A prototype game about the limits of apparent rules.' },
 ] as const
 
 /**
- * The homepage (owner direction, 23 November): institutional value first, then the evidence, the
+ * The homepage: institutional value first, then the evidence, the
  * practice, places to explore, a compact interlude and the call to action. Legacy fragments land on
  * their current pages; retired builds are never linked.
  */
@@ -62,17 +62,16 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         </div>
         {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
       </section>
-      {/* Spacing follows meaning (owner, 24 November): the figures and the case studies are one band. */}
+      {/* Spacing follows meaning: the figures and the case studies are one band. */}
       <div className="pc-band pc-band--evidence">
       <ResultsStrip investigations={investigations}/>
       {selected.length ? <section className="pc-section pc-selected" aria-labelledby="pc-selected-title">
         <div className="pc-section-heading"><h2 id="pc-selected-title">Three problems, and what <em className="pc-accent">changed</em>.</h2></div>
         <ol className="pc-selected-list">{selected.map(entry => <li key={entry.id}>
-          {entry.visual && entry.composition ? <CaseThumb composition={entry.composition} left={plainText(entry.visual.left)} right={plainText(entry.visual.right)}/> : null}
+          {entry.visual && entry.composition ? <CaseThumb composition={entry.composition} left={plainText(entry.visual.left)} right={plainText(entry.visual.right)} slug={entry.slug}/> : null}
           {caseLabel(entry.slug) ? <p className="pc-selected-domain">{caseLabel(entry.slug)}</p> : null}
           {entry.status ? <p className="pc-selected-status"><CaseStatus status={entry.status}/></p> : null}
           <h3 style={entry.slug ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h3>
-          {entry.stakes ? <p className="pc-selected-stakes"><span className="pc-selected-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}
           {entry.brief ? <p><span className="pc-selected-label">What changed:</span> <Stressed text={entry.brief.result}/></p> : <p><Stressed text={entry.summary}/></p>}
           <p className="pc-selected-links"><a href={publicPath(entry.path)} data-count="case-open" data-count-detail={entry.slug}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} data-count="deep-dive-open" data-count-detail={entry.slug}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
         </li>)}</ol>
@@ -91,7 +90,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <RelatedField pairs={pairs}/>
         <a className="pc-text-link" href={publicPath('/patterns/')}>Explore the distinctions <span aria-hidden="true">→</span></a>
       </section> : null}
-      {/* Optional depth folds into cards (owner direction, 24 November). What every reader needs stays open:
+      {/* Optional depth folds into cards. What every reader needs stays open:
           the call to action, figures, case studies and the pattern. Native <details>, each opening independently. */}
       <section className="pc-section pc-folds" aria-label="Go deeper">
         <details className="pc-fold" id="practice-fold" data-count="practice-open">
@@ -102,7 +101,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           </summary>
           <div className="pc-fold-body">
             <PracticeInMotion example={example}/>
-            <p className="pc-how-i-know"><strong>How I Know:</strong> each case study separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains unproven.</p>
+            <p className="pc-how-i-know"><strong>How I Know</strong> is the commitment behind every case study: it separates evidence, interpretation, contribution, implementation and measured outcomes, and says what remains open.</p>
             <p className="pc-purpose">The longer aim is to widen what people and communities can understand, question, imagine, and shape. That is an intention behind the work, not a measured result of it.</p>
             <a className="pc-text-link" href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a>
           </div>
@@ -122,7 +121,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
       <LensInterlude compact/>
       <section id="contact" className="pc-section pc-cta" aria-labelledby="contact-title">
         <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
-        <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
+        <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
         <ul className="pc-cta-offer pc-cta-offer--list">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
         <ul className="pc-pathways" aria-label="Ways to work together">{engagementPaths.map(path => <li key={path.reason}><a href={publicPath(`/contact/?reason=${path.reason}`)}><strong>{path.title} <span aria-hidden="true">→</span></strong></a><span>{path.text}</span></li>)}</ul>
         <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-end">Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>

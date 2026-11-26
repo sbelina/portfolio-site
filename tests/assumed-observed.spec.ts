@@ -95,7 +95,7 @@ test('no-JavaScript disclosures retain source, interpretation and limitation',as
  await expect(details.getByText('Synthetic demonstration script',{exact:false})).toBeVisible()
  await expect(details.getByText('Limitation',{exact:true})).toBeVisible()
  const footer=page.locator('footer .experiment-note');await footer.locator('summary').click()
- await expect(footer).toContainText('Improved comprehension has not been established')
+ await expect(footer).toContainText('evaluated with readers')
  await context.close()
 })
 

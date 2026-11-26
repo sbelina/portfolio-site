@@ -5,7 +5,7 @@ export const statementKindSchema = z.enum(['direct_observation', 'measured_resul
 export const figureBasisSchema = z.enum(['owner_estimate', 'approximate', 'platform_reported', 'measured'])
 export const contributionLevelSchema = z.enum(['identified', 'influenced', 'designed_or_facilitated', 'implemented', 'observed_use', 'measured_impact'])
 const narrativeText = z.string().min(1).max(10000)
-/** Owner direction (22 November): no date call-outs in tags or headline figures; durations such as “2+ years” are fine. */
+/** no date call-outs in tags or headline figures; durations such as “2+ years” are fine. */
 const datePattern = /\b(?:19|20)\d{2}\b|\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b/i
 export const undated = (max: number) => z.string().min(1).max(max).refine(text => !datePattern.test(text), 'No date call-outs: state a duration or an outcome, not a date')
 /** What became of the work, in one short tag. The kind is a fixed vocabulary; the label is the owner's wording. */
@@ -54,7 +54,7 @@ export const investigationSchema = z.strictObject({
   /** A longer, password-protected version exists at /deep-dive/<slug>/; its content is never in this repository. */
   deepDive: z.boolean().optional(),
   /**
-   * The institutional decision layer (owner direction, 23 November): what was at stake, the explanation
+   * The institutional decision layer: what was at stake, the explanation
    * people held, the options and what became of each, who decided, what changed in practice, and its
    * resource implications, each labelled by how far it is established. Never a financial claim by inference.
    */
@@ -67,7 +67,7 @@ export const investigationSchema = z.strictObject({
     implications: z.array(z.strictObject({ kind: z.enum(['resource', 'observed_change', 'measured', 'unproven']), text: narrativeText })).min(1).max(6),
   }).optional(),
   /**
-   * The method profile (owner direction, 23 November; after the "four decisions" survey-type infographic):
+   * The method profile:
    * how the evidence was gathered, when, from whom, and what it could and could not establish.
    * Facts only; a decision that was not recorded says so instead of guessing.
    */
@@ -75,7 +75,7 @@ export const investigationSchema = z.strictObject({
     tags: z.array(z.string().min(1).max(60)).min(1).max(8),
     note: narrativeText,
   })])) as Record<'how' | 'when' | 'who' | 'learn', z.ZodObject<{ tags: z.ZodArray<z.ZodString>; note: z.ZodString }, z.core.$strict>>).optional(),
-  /** One honest line on what the author would do differently next time (owner's own words). */
+  /** One honest line on what the author would do differently next time. */
   differently: narrativeText.optional(),
   /** What the author did not own or decide. */
   notOwned: narrativeText.optional(),
@@ -90,7 +90,7 @@ export const investigationSchema = z.strictObject({
     evidenceIds: z.array(z.uuid()).refine(ids => new Set(ids).size === ids.length, 'Duplicate evidence reference'),
   })).max(6).optional(),
   /**
-   * Working artifacts (owner approval, November 2026): tables and step traces drawn from the evidence
+   * Working artifacts: tables and step traces drawn from the evidence
    * registry. Data only. Each says how it was made (label: FIG · type · caveat) and what it does not
    * claim (note). Steps name who acted, in words: mine, others', or not yet confirmed.
    */

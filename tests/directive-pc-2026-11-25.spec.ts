@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { readFile } from 'node:fs/promises'
 import { capabilities, caseCapabilities, methodFamilies, researchAgenda } from '../src/content/capabilities'
 
-/** Directive PC-2026-11-25 (P0/P1): recognition, capability discovery, engagement and honest contact. */
+/** recognition, capability discovery, engagement and honest contact. */
 const origin = 'http://127.0.0.1:4175'
 const published = ['claims-operations', 'brand-research', 'enterprise-ai', 'telematics', 'civic-service', 'accessibility-ai', 'operational-friction', 'knowledge-binder', 'knowledge-publishing']
 

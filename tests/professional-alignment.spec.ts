@@ -8,7 +8,7 @@ import { selectedSlugs } from '../src/content/primary-evidence'
 const origin = 'http://127.0.0.1:4175'
 
 test('identity is consistent across the homepage, title and description', async () => {
-  // Owner decision, 23 November: identity and the line under it.
+  // identity and the line under it.
   expect(professionalIdentity).toBe('Applied Research & Systems Strategist')
   expect(tagline).toBe('Increasing understanding, effectiveness, and adaptability in complex systems.')
   expect(practiceAreas).toEqual(['Applied research', 'Service design', 'Stakeholder engagement'])
@@ -34,20 +34,20 @@ test('the first screen names Sami, the capability, the H1 and the evidence path'
         const box = (await target.boundingBox())!
         expect(box.y + box.height, `${viewport.width}px`).toBeLessThanOrEqual(viewport.height)
       }
-      // Directive PC-2026-11-25: explore the work first, keep the one-click evidence path, then work with me; never the Atlas or Observatory.
+      // explore the work first, keep the one-click evidence path, then work with me; never the Atlas or Observatory.
       expect(await page.locator('.pc-hero a').evaluateAll(links => links.slice(0, 3).map(link => link.getAttribute('href')))).toEqual(['/investigations/', '/investigations/claims-operations/', '/contact/'])
     } finally { await context.close() }
   }
 })
 
-test('selected investigations show stakes, what changed, and the public and deep-dive versions side by side', async ({ page }) => {
+test('selected investigations show what changed, and the public and deep-dive versions side by side', async ({ page }) => {
   await page.goto(`${origin}/`)
   const section = page.getByRole('region', { name: 'Three problems, and what changed.' })
   const items = section.getByRole('listitem')
   await expect(items).toHaveCount(3)
   for (const [index, slug] of selectedSlugs.entries()) {
     const item = items.nth(index)
-    await expect(item).toContainText('At stake:')
+    await expect(item).not.toContainText('At stake:')
     await expect(item).toContainText('What changed:')
     await expect(item.getByRole('link', { name: /Public version/ })).toHaveAttribute('href', `/investigations/${slug}/`)
     await expect(item.getByRole('link', { name: /Deep dive/ })).toHaveAttribute('href', `/deep-dive/${slug}/`)

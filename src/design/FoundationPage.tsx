@@ -9,7 +9,7 @@ import { contactDelivery, contactReasons, ctaOffer, practiceAreas, recruiterCont
 import { ExternalArrow } from './ExternalArrow'
 import { ConnectionsField } from './ConnectionsField'
 import { CareerThread } from './CareerThread'
-import { careerHistory, education, recognition } from '../content/career'
+import { careerHistory, education, recognition, speaking } from '../content/career'
 import { methodFamilies, researchAgenda } from '../content/capabilities'
 import { caseLabels } from '../content/primary-evidence'
 import { count } from '../analytics'
@@ -134,14 +134,14 @@ function Observatory() {
 }
 
 /**
- * Contact (owner direction, 23 November; directive PC-2026-11-25): a reason for getting in touch, a prompt
+ * Contact: a reason for getting in touch, a prompt
  * that fits it, and an honest action. The form needs no server: "Prepare email" opens the visitor's email
  * app with the message written out, and the address stays visible for anyone without one. Nothing is
  * stored or sent from this page, so nothing here claims a message was delivered. Career history lives on About.
  */
 function Contact() {
   const [prepared, setPrepared] = useState(false)
-  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error' | 'wait'>('idle')
   const [reason, setReason] = useState<string>(contactReasons[1].value)
   const [delivery, setDelivery] = useState(false)
   const [token, setToken] = useState('')
@@ -179,7 +179,7 @@ function Contact() {
     try {
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason, name: value('name'), email: value('email'), organization: value('organization'), message: value('message'), website: value('website'), elapsed: Date.now() - shown.current, token }) })
       if (response.status === 503) { setDelivery(false); setState('idle'); return prepareEmail(value) }
-      setState(response.ok ? 'sent' : 'error')
+      setState(response.ok ? 'sent' : response.status === 429 ? 'wait' : 'error')
     } catch { setState('error') }
   }
   if (state === 'sent') return <>
@@ -204,6 +204,7 @@ function Contact() {
         <div ref={challenge} className="pc-contact-challenge"/>
         <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary" disabled={state === 'sending' || (delivery && !token)}>{delivery ? (state === 'sending' ? 'Sending…' : 'Send message') : 'Prepare email'} <span aria-hidden="true">→</span></button></p>
         <p className="pc-contact-note">{delivery ? 'Your message goes straight to my inbox. Nothing is stored on this site. A quick automated check keeps out spam.' : 'This opens your email app with your message written out, ready for you to send. Nothing is sent from this page.'}</p>
+        {state === 'wait' ? <p className="pc-contact-note" role="alert">To keep spam out, the site sends one message every five minutes. Please try again in a few minutes; your text is still here.</p> : null}
         {state === 'error' ? <p className="pc-contact-note" role="alert">That didn’t go through. Please try again in a minute, or write to me from your own email.</p> : null}
         {prepared ? <p className="pc-contact-note" role="status">Your email app should have opened with the message ready to send. If it didn’t, write from your own email app instead.</p> : null}
       </form>
@@ -212,7 +213,7 @@ function Contact() {
   </>
 }
 
-/** About (owner direction, 24 November): the portrait, the thread in place of a résumé, and what the site counts. */
+/** About: the portrait, the thread in place of a résumé, and what the site counts. */
 function About() {
   const { portrait } = recruiterContact
   return <>
@@ -244,6 +245,8 @@ function About() {
       </div>
       <h3>Recognition</h3>
       <ul className="pc-recognition">{recognition.map(item => <li key={item.text}><span className="pc-recognition-year">{item.year}</span> {item.text}</li>)}</ul>
+      <h3>Speaking</h3>
+      <ul className="pc-speaking">{speaking.map(item => <li key={item.title}><strong>{item.title}</strong> <span className="pc-speaking-where">{item.where}</span> {item.text}</li>)}</ul>
       <h3>Education</h3>
       <p><strong>{education.degree}</strong>, {education.school}. {education.minors}.</p>
       <p><a className="pc-text-link" href={publicPath('/contact/?reason=employment')}>Discuss a role <span aria-hidden="true">→</span></a></p>

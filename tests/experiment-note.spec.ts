@@ -14,7 +14,7 @@ for (const route of ['/', '/investigations/']) {
     await page.keyboard.press('Enter')
     await expect(note).toHaveAttribute('open', '')
     await expect(note.getByRole('heading', { name: 'The working hypothesis' })).toBeVisible()
-    await expect(note).toContainText('not a demonstrated result')
+    await expect(note).toContainText('is an open question')
     await expect(note.getByRole('link', { name: 'Explore the source and development history' })).toHaveAttribute('href', 'https://github.com/sbelina/portfolio-site')
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy()
     await summary.focus()

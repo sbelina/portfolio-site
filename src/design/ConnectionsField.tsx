@@ -6,7 +6,7 @@ import { publicPath } from '../public-path'
 import { count } from '../analytics'
 
 /**
- * The Observatory's layered connections field (owner direction, 23 November 2026), restored from the
+ * The Observatory's layered connections field, restored from the
  * previous edition's system map and redrawn after the constellation references the owner supplied.
  * Three layers, each adding to the last: the work and its topics, then the thinking (field notes,
  * origins, frameworks), then the archive. Deeper layers sit smaller and drift less, so the field reads

@@ -175,3 +175,24 @@ Use the existing [reader evaluation protocol](READER-EVALUATION-PROTOCOL.md), wi
 ## 13. Rollback
 
 Revert the merge commit on `main`; Workers Builds redeploys the previous version.
+
+## 14. Follow-up decisions and changes (owner, November 2026)
+
+- **Employers stay unnamed.** "Request the résumé" sits inside the career history. The current role is described by function, and the official title is on the résumé. There is no public résumé, because one would name employers.
+- **Recognition and speaking:**
+  - Recognition: the strategic foresight selection.
+  - Speaking, from the owner's earlier résumés: "Navigating the Digital Realm" (a company-wide conference talk), an AI Summer Camp presentation on identifying AI-generated images, and Carnegie Mellon University HCII guest speaker and mentor (2023).
+- **Contact delivery:** `/api/contact`, with its own spam defences and a limit of one message every five minutes for the whole site (KV `portfolio-site-contact`). It stays inactive until the owner sets up Email Routing and Turnstile (`CONTACT-FORM.md`).
+- **Typefaces:** Outfit (main) and Source Serif 4 (case headlines and long reading), both self-hosted under the OFL. System monospace is removed from the design and reading CSS.
+- **A figure per case:** each case has its own graph structure (directed path, independent axes, many-to-few mapping, no edge, path across a tree, loop with an outside check, contraction, star, merged classes). It appears on the cards and in the headline visual of each case page, named in words.
+- **AI-tell cleanup:**
+  - Six of nine case headlines rewritten as single statements.
+  - Figure qualifiers rewritten as positive scope statements.
+  - "Not X. Y." turns rewritten.
+  - The three-part offer reduced to two.
+  - The footer note shortened to one evaluation statement.
+  - "At stake:" removed from homepage cards.
+  - Pill shapes squared.
+  - The word "actually" and filler words removed.
+  - Owner-direction and date provenance removed from code comments.
+  - Measured in visible text: em dashes 102 → 48 (the rest are the approved lead, quotations and table placeholders); sentences with "not" 18% → 12%; filler words 18 → 0.

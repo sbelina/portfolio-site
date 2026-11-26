@@ -1,5 +1,5 @@
 /**
- * Search titles and descriptions for case studies (owner request, November 2026: "expert SEO").
+ * Search titles and descriptions for case studies.
  * The page keeps its editorial headline; search results get a plain title that names the kind of
  * work, and a description short enough (≤155 characters) to show whole. Claims match the case text.
  */

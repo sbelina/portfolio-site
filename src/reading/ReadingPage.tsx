@@ -24,7 +24,7 @@ const relationWords = {
   contradicts: 'contradicts', depends_on: 'depends on', emerged_from: 'emerged from', shares_pattern: 'shares a pattern with', paired_with: 'is paired with',
 } as const
 
-/** Month and year only (owner direction, 24 November): no day dates in public. */
+/** Month and year only: no day dates in public. */
 function dateLabel(value: string | null) {
   return value ? new Intl.DateTimeFormat('en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(value)) : 'Not recorded'
 }
@@ -156,7 +156,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
         <h1 id="reading-title" style={entry.kind === 'investigation' && !page.fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><Stressed text={entry.title} heading/></h1>
         {page.candidate ? <p className="reading-candidate-notice" role="note">Owner-review preview. This candidate is not approved or published, and no statement has an attached source yet.</p> : null}
         <p className="reading-summary"><Stressed text={entry.summary}/></p>
-        {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} /> : null}
+        {entry.investigation ? <InvestigationVisual composition={entry.investigation.composition} {...entry.investigation.visual} slug={page.fixture ? undefined : entry.slug} /> : null}
         <dl className="reading-metadata">
           <div><dt>{page.fixture ? 'Fixture revision date' : page.illustrative ? 'Illustration revision date' : page.candidate ? 'Candidate drafted' : 'Created'}</dt><dd><time dateTime={entry.createdAt ?? undefined}>{dateLabel(entry.createdAt)}</time></dd></div>
           {entry.updatedAt !== entry.createdAt ? <div><dt>Updated</dt><dd><time dateTime={entry.updatedAt ?? undefined}>{dateLabel(entry.updatedAt)}</time></dd></div> : null}
@@ -203,7 +203,7 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
 }
 
 /**
- * After a case (directive PC-2026-11-25, layer 8): more work showing the same capabilities, the method,
+ * After a case: more work showing the same capabilities, the method,
  * and a way to discuss a similar question. Grouped by shared capability, which is a classification,
  * not a claim that the cases influenced each other.
  */
@@ -222,7 +222,7 @@ function CaseCard({ entry, fixture, candidate }: { entry: ReadingContext['entrie
   const brief = entry.brief
   const caps = fixture ? [] : capabilitiesOf(entry.slug)
   return <li data-capabilities={caps.map(cap => cap.id).join(' ')}>
-    {entry.thumb && !fixture ? <CaseThumb composition={entry.thumb.composition} left={plainText(entry.thumb.left)} right={plainText(entry.thumb.right)}/> : null}
+    {entry.thumb && !fixture ? <CaseThumb composition={entry.thumb.composition} left={plainText(entry.thumb.left)} right={plainText(entry.thumb.right)} slug={entry.slug}/> : null}
     <p className="reading-kicker">{caseLabel(entry.slug) ?? 'Case study'}{candidate ? ' · unapproved candidate' : ''}</p>
     <h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>
     {entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}
@@ -231,13 +231,13 @@ function CaseCard({ entry, fixture, candidate }: { entry: ReadingContext['entrie
       <div><dt>My part</dt><dd><Stressed text={brief.call}/></dd></div>
       <div><dt>What changed</dt><dd><Stressed text={brief.result}/></dd></div>
     </dl> : <>{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p></>}
-    {caps.length ? <ul className="reading-card-capabilities" aria-label="Capabilities shown">{caps.map(cap => <li key={cap.id}>{cap.label}</li>)}</ul> : null}
+    {caps.length ? <p className="reading-card-capabilities"><span className="reading-card-label">Shows:</span> {caps.map(cap => cap.label).join(' · ')}</p> : null}
     <p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Read the case study: ${plainText(entry.title)}`}>Read the case study <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
   </li>
 }
 
 /**
- * Optional capability filter (directive PC-2026-11-25): every case shows by default and without
+ * Optional capability filter: every case shows by default and without
  * JavaScript; the filter appears once the page is interactive, keeps its state in the address
  * (?capability=…), announces the result count, and always offers All work.
  */

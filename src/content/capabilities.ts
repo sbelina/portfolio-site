@@ -1,5 +1,5 @@
 /**
- * Capability registry (owner directive PC-2026-11-25, P0): one place that says which approved case
+ * Capability registry: one place that says which approved case
  * demonstrates which recognizable professional capability. The homepage, the Work filters, each case's
  * "more work like this" links, and the methods inventory all read from here, so a classification is
  * changed once. A capability appears only when at least one published case demonstrates it.
@@ -10,7 +10,7 @@
 export const capabilities = [
   { id: 'organizational-effectiveness', label: 'Organizational effectiveness', text: 'Diagnosing why work goes wrong, and redesigning where checks and effort sit.' },
   { id: 'research-strategy', label: 'Research strategy', text: 'Deciding what to ask, of whom, and what an answer can and cannot support.' },
-  { id: 'service-design', label: 'Service design', text: 'Designing services around how people actually move through them.' },
+  { id: 'service-design', label: 'Service design', text: 'Designing services around how people move through them.' },
   { id: 'measurement', label: 'Measurement and evaluation', text: 'Making sure a measure answers the question it is used for.' },
   { id: 'responsible-ai', label: 'Responsible AI', text: 'Using AI where it helps, with human judgment kept where it matters.' },
   { id: 'knowledge-systems', label: 'Knowledge and information systems', text: 'Making knowledge findable, classifiable and carried by others.' },

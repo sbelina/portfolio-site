@@ -11,7 +11,7 @@ import { CaseArtifacts } from './CaseArtifacts'
 type Field = 'observedCondition' | 'workingExplanation' | 'investigation' | 'relationshipDiscovered' | 'response' | 'consequence' | 'notOwned' | 'measurement' | 'limitations'
 /**
  * Every case answers four questions, in this order, then says what I'd do differently.
- * Caveats (ownership, measurement, limits) gather in How I know at the end, not up front.
+ * Caveats gather in How I know at the end, not up front.
  */
 const questions: { id: string; title: string; fields: readonly Field[] }[] = [
   { id: 'problem', title: 'What was the problem', fields: ['observedCondition', 'workingExplanation'] },
@@ -21,7 +21,7 @@ const questions: { id: string; title: string; fields: readonly Field[] }[] = [
 ]
 const caveats = [['notOwned', 'What I didn’t own'], ['measurement', 'How this was measured'], ['limitations', 'Limitations']] as const
 const fields: readonly Field[] = [...questions.flatMap(question => question.fields), ...caveats.map(([key]) => key)]
-/** Only a basis that adds weight is named; rounded and owner-estimated figures carry their context line alone (owner direction, 23 November). */
+/** Only a basis that adds weight is named; rounded and owner-estimated figures carry their context line alone. */
 const basisLabels = { owner_estimate: null, approximate: null, platform_reported: 'Platform-reported', measured: 'Measured' } as const
 
 /** Plain-language names for the evidence vocabulary. The stored values stay precise. */
@@ -38,7 +38,7 @@ export const contributionLabels: Record<Investigation['statements'][number]['con
 type Statement = Investigation['statements'][number]
 
 function Sources({ statement, evidence }: { statement: Statement; evidence: PublicEvidence[] }) {
-  return <>{statement.evidenceIds.map(id => { const source = evidence.find(item => item.id === id); return source ? <details key={id}><summary>Inspect source: {source.title}</summary><p>{source.source} — {source.locator}</p><p>Limitation: {source.limitations}</p></details> : null })}</>
+  return <>{statement.evidenceIds.map(id => { const source = evidence.find(item => item.id === id); return source ? <details key={id}><summary>Inspect source: {source.title}</summary><p>{source.source}. {source.locator}.</p><p>Limitation: {source.limitations}</p></details> : null })}</>
 }
 
 /** One compact line per statement, threaded under the passage it supports; opening it shows my part and the limits. */
@@ -106,7 +106,7 @@ export function narrativeContents(narrative: Investigation) {
 }
 
 /**
- * The short read (owner direction, 24 November): the first thing on every public case study, after the
+ * The short read: the first thing on every public case study, after the
  * owner's reference. Four numbered points, result first: what changed, the problem, what I did, how I knew.
  */
 export function CaseGlance({ brief, sources = [] }: { brief: NonNullable<Investigation['brief']>; sources?: PublicEvidence[] }) {

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { composeEmail, validateSubmission } from '../worker/contact-rules'
 
-/** Contact form spam defences and email text (owner direction, November 2026). Pure rules; no network. */
+/** Contact form spam defences and email text. Pure rules; no network. */
 const valid = { reason: 'organization', name: 'A. Visitor', email: 'visitor@example.org', organization: 'Example Org', message: 'We keep paying to fix the same problem.', website: '', elapsed: 8000, token: 'challenge-token' }
 
 test('a reasonable message passes', () => {

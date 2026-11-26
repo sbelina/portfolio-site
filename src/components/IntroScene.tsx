@@ -1,7 +1,7 @@
 import React from 'react'
 
 /**
- * The current edition's introduction as a short investigation (owner direction, 24 November 2026: clarify
+ * The current edition's introduction as a short investigation (clarify
  * the idea, strengthen the execution, more visual storytelling). Each authored step changes the drawing:
  *
  *   0 · the question   one point of light in a field: an outcome and its explanation, taken as one
