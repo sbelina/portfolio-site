@@ -62,3 +62,10 @@ export const contactReasons = [
   { value: 'teaching', label: 'Teaching or speaking', prompt: 'What would you like to explore together?' },
   { value: 'other', label: 'Something else', prompt: 'What would you like to talk about?' },
 ] as const
+
+/**
+ * Contact delivery (owner direction, November 2026). With a Turnstile site key (public, not a secret) the form
+ * sends through /api/contact; without one it prepares an email in the visitor's app. Set the key only after
+ * Email Routing and the Worker's TURNSTILE_SECRET are in place (docs/codex/CONTACT-FORM.md).
+ */
+export const contactDelivery = { turnstileSiteKey: null as string | null }

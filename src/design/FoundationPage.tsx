@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CurrentShell } from './CurrentShell'
 import { PracticeInMotion } from './PracticeInMotion'
 import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
 import { AnnotatedPlate, StrandLine } from './Interactions'
 import { archiveItems, writings } from '../content/writing'
-import { contactReasons, ctaOffer, practiceAreas, recruiterContact, tagline } from '../content/recruiter'
+import { contactDelivery, contactReasons, ctaOffer, practiceAreas, recruiterContact, tagline } from '../content/recruiter'
 import { ExternalArrow } from './ExternalArrow'
 import { ConnectionsField } from './ConnectionsField'
 import { CareerThread } from './CareerThread'
-import { careerHistory, education } from '../content/career'
+import { careerHistory, education, recognition } from '../content/career'
 import { methodFamilies, researchAgenda } from '../content/capabilities'
 import { caseLabels } from '../content/primary-evidence'
 import { count } from '../analytics'
@@ -141,22 +141,52 @@ function Observatory() {
  */
 function Contact() {
   const [prepared, setPrepared] = useState(false)
+  const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [reason, setReason] = useState<string>(contactReasons[1].value)
+  const [delivery, setDelivery] = useState(false)
+  const [token, setToken] = useState('')
+  const shown = useRef(Date.now())
+  const challenge = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const value = new URLSearchParams(location.search).get('reason')
     if (value && contactReasons.some(item => item.value === value)) setReason(value)
+    shown.current = Date.now()
+    const siteKey = contactDelivery.turnstileSiteKey
+    if (!siteKey) return
+    // Server delivery: load Cloudflare Turnstile only on this page, only when configured.
+    const turnstile = () => (window as unknown as { turnstile?: { render(el: HTMLElement, options: Record<string, unknown>): void } }).turnstile
+    const mount = () => { if (challenge.current && turnstile()) { turnstile()!.render(challenge.current, { sitekey: siteKey, callback: (value: string) => setToken(value), 'expired-callback': () => setToken(''), appearance: 'interaction-only' }); setDelivery(true) } }
+    if (turnstile()) { mount(); return }
+    const script = document.createElement('script')
+    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit'
+    script.async = true; script.onload = mount
+    document.head.append(script)
   }, [])
   const current = contactReasons.find(item => item.value === reason) ?? contactReasons[1]
-  const submit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const data = new FormData(event.currentTarget)
-    const value = (name: string) => String(data.get(name) ?? '').trim()
+  const fields = (form: HTMLFormElement) => { const data = new FormData(form); return (name: string) => String(data.get(name) ?? '').trim() }
+  const prepareEmail = (value: (name: string) => string) => {
     const subject = `${current.label}${value('organization') ? `: ${value('organization')}` : ''}`
     const body = [`Name: ${value('name')}`, `Email: ${value('email')}`, `Organization: ${value('organization')}`, `Reason: ${current.label}`, '', value('message')].join('\n')
-    count('contact-send')
     location.href = `mailto:${recruiterContact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setPrepared(true)
   }
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const value = fields(event.currentTarget)
+    count('contact-send')
+    if (!delivery) return prepareEmail(value)
+    setState('sending')
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reason, name: value('name'), email: value('email'), organization: value('organization'), message: value('message'), website: value('website'), elapsed: Date.now() - shown.current, token }) })
+      if (response.status === 503) { setDelivery(false); setState('idle'); return prepareEmail(value) }
+      setState(response.ok ? 'sent' : 'error')
+    } catch { setState('error') }
+  }
+  if (state === 'sent') return <>
+    <p className="pc-kicker">Contact</p><h1>Thank you. Your message is on its <em className="pc-accent">way</em>.</h1>
+    <p className="pc-lead" role="status">It went straight to my inbox, and I reply to every message, usually within a few days.</p>
+    <p><a className="pc-text-link" href={publicPath('/investigations/')}>Back to the work <span aria-hidden="true">→</span></a></p>
+  </>
   return <>
     <p className="pc-kicker">Contact</p><h1>Bring me the problem that keeps <em className="pc-accent">coming back</em>.</h1>
     <p className="pc-lead">A role, an organizational question, a research collaboration, or an invitation to teach or speak. Tell me what you are trying to understand or change. I reply to every message.</p>
@@ -165,13 +195,17 @@ function Contact() {
       <h2 id="contact-form-title">Start a conversation</h2>
       <form className="pc-contact-form" action={`mailto:${recruiterContact.email}`} method="post" encType="text/plain" onSubmit={submit}>
         <label>What brings you here?<select name="reason" value={reason} onChange={event => setReason(event.currentTarget.value)}>{contactReasons.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
-        <label>Your name<input name="name" autoComplete="name" required/></label>
-        <label>Your email<input name="email" type="email" autoComplete="email" required/></label>
-        <label><span>Organization <span className="pc-contact-optional">(optional)</span></span><input name="organization" autoComplete="organization"/></label>
-        <label>{current.prompt}<textarea name="message" rows={6} required/></label>
-        <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary">Prepare email <span aria-hidden="true">→</span></button></p>
-        <p className="pc-contact-note">This opens your email app with your message written out, ready for you to send. Nothing is sent from this page. Prefer to write directly? <a href={`mailto:${recruiterContact.email}`}>{recruiterContact.email}</a></p>
-        {prepared ? <p className="pc-contact-note" role="status">Your email app should have opened with the message ready to send. If it didn’t, write to {recruiterContact.email}.</p> : null}
+        <label>Your name<input name="name" autoComplete="name" maxLength={100} required/></label>
+        <label>Your email<input name="email" type="email" autoComplete="email" maxLength={200} required/></label>
+        <label><span>Organization <span className="pc-contact-optional">(optional)</span></span><input name="organization" autoComplete="organization" maxLength={150}/></label>
+        <label>{current.prompt}<textarea name="message" rows={6} minLength={10} maxLength={5000} required/></label>
+        {/* Left empty by people; bots that fill every field are refused (worker/contact.ts). */}
+        <p className="pc-contact-trap" aria-hidden="true"><label>Leave this empty<input name="website" tabIndex={-1} autoComplete="off"/></label></p>
+        <div ref={challenge} className="pc-contact-challenge"/>
+        <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary" disabled={state === 'sending' || (delivery && !token)}>{delivery ? (state === 'sending' ? 'Sending…' : 'Send message') : 'Prepare email'} <span aria-hidden="true">→</span></button></p>
+        <p className="pc-contact-note">{delivery ? 'Your message goes straight to my inbox. Nothing is stored on this site. A quick automated check keeps out spam.' : 'This opens your email app with your message written out, ready for you to send. Nothing is sent from this page.'}</p>
+        {state === 'error' ? <p className="pc-contact-note" role="alert">That didn’t go through. Please try again in a minute, or write to me from your own email.</p> : null}
+        {prepared ? <p className="pc-contact-note" role="status">Your email app should have opened with the message ready to send. If it didn’t, write from your own email app instead.</p> : null}
       </form>
     </section>
     <p className="pc-contact-elsewhere">Looking for my background first? <a href={publicPath('/about/')}>Career history and education <span aria-hidden="true">→</span></a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
@@ -201,16 +235,18 @@ function About() {
     <CareerThread/>
     <section className="pc-section pc-history" aria-labelledby="about-history-title">
       <h2 id="about-history-title">Career history</h2>
-      <p>Titles as I held them. Employers are described rather than named on this site; the case studies show the work itself.</p>
+      <p>Employers are described rather than named on this site. <a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent('Résumé request')}`}>Request the résumé</a> for names, dates and titles.</p>
       <div className="pc-history-scroll" role="region" aria-labelledby="about-history-title" tabIndex={0}>
         <table className="pc-history-table">
           <thead><tr><th scope="col">Years</th><th scope="col">Role</th><th scope="col">Setting</th></tr></thead>
           <tbody>{careerHistory.map(item => <tr key={item.role}><td>{item.years}</td><th scope="row">{item.role}{'note' in item ? <span className="pc-history-note">{item.note}</span> : null}</th><td>{item.setting}</td></tr>)}</tbody>
         </table>
       </div>
+      <h3>Recognition</h3>
+      <ul className="pc-recognition">{recognition.map(item => <li key={item.text}><span className="pc-recognition-year">{item.year}</span> {item.text}</li>)}</ul>
       <h3>Education</h3>
       <p><strong>{education.degree}</strong>, {education.school}. {education.minors}.</p>
-      <p><a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent('Résumé request')}`}>Request the full résumé</a> <a className="pc-text-link" href={publicPath('/contact/?reason=employment')}>Discuss a role <span aria-hidden="true">→</span></a></p>
+      <p><a className="pc-text-link" href={publicPath('/contact/?reason=employment')}>Discuss a role <span aria-hidden="true">→</span></a></p>
     </section>
     <section className="pc-section pc-storm" aria-labelledby="about-storm-title">
       <h2 id="about-storm-title">{stormWorkflow.title}</h2>

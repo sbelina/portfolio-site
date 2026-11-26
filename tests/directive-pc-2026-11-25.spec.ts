@@ -72,7 +72,9 @@ test('About gives titles as held, education, and a résumé request, without nam
   for (const role of ['Publishing Specialist (six-month contract loan-in)', 'Service Chat Specialist', 'UX Designer', 'Small Business Consultant']) expect(about).toContain(role)
   expect(about).toContain('BA, Interdisciplinary Design')
   expect(about).toContain('Iowa State University')
-  expect(about).toContain('Request the full résumé')
+  expect(about).toContain('Request the résumé')
+  expect(about).toContain('one of 12, from more than 66,000 employees')
+  expect(about).not.toContain('Claims Administrative Support Specialist')
 })
 
 test('every case ends with capability-grouped next steps, the method and a way to discuss a similar question', async () => {

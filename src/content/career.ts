@@ -73,7 +73,7 @@ export const careerEras: readonly Era[] = [
       { text: 'Recovered usability findings when the session audio failed', proof: { label: 'Product research · usability research', href: '/investigations/telematics/' } },
       { text: 'Led the synthesis of 38 AI proposals into 8 shared challenge areas, and coached in the sprint', proof: { label: 'Enterprise innovation · opportunity synthesis', href: '/investigations/enterprise-ai/' } },
       { text: 'Originated an AI-assisted development experiment, and evaluated what automated checks miss', proof: { label: 'AI-assisted development · accessibility evaluation', href: '/investigations/accessibility-ai/' } },
-      { text: 'Took part in strategic foresight work' },
+      { text: 'Selected as one of 12, from more than 66,000 employees, for an enterprise strategic foresight program' },
     ],
   },
 ] as const
@@ -93,10 +93,11 @@ export const careerNext = {
 /**
  * Conventional career history (directive PC-2026-11-25, About): titles as the owner held them, from the
  * owner's résumés and answers (November 2026). Employers stay described, not named, until the owner approves
- * naming them; the current role's official title is not yet confirmed, so its function is given instead.
+ * naming them (owner decision, November 2026: do not name them). The current role is described by its function
+ * at the owner's preference; the official title appears on the résumé, which is available on request.
  */
 export const careerHistory = [
-  { years: '2022–present', role: 'Claims operations and administration', setting: 'One of the largest U.S. auto insurers', note: 'Official title to be confirmed; the work is in the case studies.' },
+  { years: '2022–present', role: 'Claims operations and administrative support', setting: 'One of the largest U.S. auto insurers', note: 'Described by function; the official title is on the résumé.' },
   { years: '2021', role: 'Publishing Specialist (six-month contract loan-in)', setting: 'Sales enablement, a global consumer-technology company' },
   { years: '2020–2021', role: 'Service Chat Specialist', setting: 'Remote customer support, the same company' },
   { years: '2019–2021', role: 'Product Zone Specialist; selected for Creative', setting: 'Retail, the same company' },
@@ -109,3 +110,11 @@ export const careerHistory = [
 
 /** Education, from the owner's résumés; listed as the owner's directive gives it. */
 export const education = { degree: 'BA, Interdisciplinary Design', school: 'Iowa State University', minors: 'Minors in Digital Media and Philosophy' } as const
+
+/**
+ * Recognition (owner direction, November 2026: "You should have the strategic foresight recognition").
+ * From the owner's résumé of 23 November 2026; the employer stays unnamed.
+ */
+export const recognition = [
+  { year: '2026', text: 'Selected as one of 12, from more than 66,000 employees, for an enterprise strategic foresight program.' },
+] as const

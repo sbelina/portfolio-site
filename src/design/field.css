@@ -109,6 +109,7 @@
   .pc-contact-form label { display: grid; gap: var(--space-2); font-weight: 650; }
   .pc-contact-form :is(input, textarea, select) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
   .pc-contact-form :is(input, textarea, select):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   .pc-contact-form button { border: 0; cursor: pointer; font-family: inherit; }
   .pc-contact-optional { font-weight: 400; color: var(--muted); }
   .pc-contact-note { color: var(--muted); font-size: var(--step--1); }
@@ -301,6 +302,8 @@
   .pc-history-table :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--line); }
   .pc-history-table thead th { font-size: var(--step--1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
   .pc-history-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pc-recognition { list-style: none; padding: 0; margin: var(--space-2) 0 var(--space-4); max-width: 70ch; }
+  .pc-recognition-year { font-weight: 700; font-variant-numeric: tabular-nums; margin-right: var(--space-2); }
   .pc-history-note { display: block; font-weight: 400; font-size: var(--step--1); color: var(--muted); }
 
   .pc-method-inventory { display: grid; gap: 0; margin: var(--space-3) 0 var(--space-5); max-width: 75ch; border-top: 1px solid var(--line); }
