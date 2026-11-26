@@ -93,7 +93,7 @@ test('readers find the work by the words they use: Work, case studies, setting a
     expect(response.headers().location).toMatch(/\/investigations\/$/)
   }
   await page.goto(`${origin}/investigations/`)
-  await expect(page).toHaveTitle('Case studies — Producing Curiosity')
+  await expect(page).toHaveTitle('Case studies in applied research and systems strategy · Sami Belina')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Case studies')
   await expect(page.locator('.reading-cards .reading-kicker').first()).toHaveText('Insurance operations · Process & service design')
   // "Claims" alone reads as claims-as-assertions on an evidence site; it never labels the work.

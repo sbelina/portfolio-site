@@ -84,7 +84,7 @@ async function page(file: string, data: ReadingPageData, title: string, descript
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies — Producing Curiosity', 'Case studies by Sami Belina: the problem, the evidence, what changed, and my part and its limits.', '/investigations/', reading.entries.length > 0, { jsonLd: [
+await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies in applied research and systems strategy · Sami Belina', `${projection.entries.filter(entry => entry.kind === 'investigation').length} case studies by Sami Belina in organizational effectiveness, research and measurement, service design, knowledge systems and responsible AI.`, '/investigations/', reading.entries.length > 0, { jsonLd: [
   { '@type': 'CollectionPage', '@id': `${siteOrigin}/investigations/#page`, name: 'Case studies', url: `${siteOrigin}/investigations/`, author: personRef, isPartOf: websiteRef,
     mainEntity: { '@type': 'ItemList', itemListElement: projection.entries.map((entry, index) => ({ '@type': 'ListItem', position: index + 1, url: siteOrigin + entry.path, name: plainText(entry.title) })) } },
   breadcrumbs([{ name: 'Home', path: '/' }, { name: 'Case studies', path: '/investigations/' }]),

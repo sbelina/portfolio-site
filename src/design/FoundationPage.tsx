@@ -5,20 +5,23 @@ import { publicPath } from '../public-path'
 import { LensInterlude } from './LensInterlude'
 import { AnnotatedPlate, StrandLine } from './Interactions'
 import { archiveItems, writings } from '../content/writing'
-import { ctaOffer, practiceAreas, recruiterContact, tagline } from '../content/recruiter'
+import { contactReasons, ctaOffer, practiceAreas, recruiterContact, tagline } from '../content/recruiter'
 import { ExternalArrow } from './ExternalArrow'
 import { ConnectionsField } from './ConnectionsField'
 import { CareerThread } from './CareerThread'
+import { careerHistory, education } from '../content/career'
+import { methodFamilies, researchAgenda } from '../content/capabilities'
+import { caseLabels } from '../content/primary-evidence'
 import { count } from '../analytics'
 import { CountingChoice } from './CountingChoice'
 import { differentiator, positioningPoints, researchPhilosophy, stormWorkflow } from '../content/about'
 
 export const foundationPages = {
-  practice: { path: '/practice/', title: 'How I investigate', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
+  practice: { path: '/practice/', title: 'Research methods and practice', description: 'Test. Show. Enable. A flexible inquiry practice for examining explanations, evidence and useful action.', indexable: true },
   patterns: { path: '/patterns/', title: 'Related. Not equivalent.', description: 'Conceptual distinctions and questions for exploring how explanations change. Case-supported connections remain subject to evidence review.', indexable: true },
-  writing: { path: '/writing/', title: 'Field Notes', description: 'Field notes, essays and earlier writing by Sami Belina: questions still being worked out, and how she got here.', indexable: true },
+  writing: { path: '/writing/', title: 'Field Notes: essays and research writing', description: 'Field notes, essays and earlier writing by Sami Belina: questions still being worked out, and how she got here.', indexable: true },
   about: { path: '/about/', title: 'About Sami Belina', description: 'Sami Belina, Applied Research & Systems Strategist: the thread from interface design to enterprise investigation, the proof behind it, and what comes next.', indexable: true },
-  contact: { path: '/contact/', title: 'Contact', description: 'Start a conversation with Sami Belina about a problem your organization keeps paying to fix, and download the résumé.', indexable: true },
+  contact: { path: '/contact/', title: 'Contact', description: 'Contact Sami Belina about a role, an organizational problem, a research collaboration, or teaching and speaking.', indexable: true },
   observatory: { path: '/lab/', title: 'Experiments*', description: 'Experiments for exploring questions and connections: the Atlas of Inquiry, Je ne sais qu’a, Edge Case and Reveal the hidden work. Their contents are invented.', indexable: false },
   system: { path: '/system/', title: 'Design-system specimen', description: 'Inspect the current paper and observatory surfaces, typography, semantic states and native disclosures.', indexable: false },
 } as const
@@ -59,6 +62,17 @@ function Practice() {
     <StrandLine caption="FIG · Conceptual illustration · the thread I follow through the strands; not data"/>
     <section className="pc-section" aria-labelledby="practice-outputs-title"><p className="pc-kicker">What each move produces</p><h2 id="practice-outputs-title">Decisions, not only findings.</h2>
       <dl className="pc-inquiry-list">{practiceOutputs.map(item => <div key={item.move}><dt>{item.move}</dt><dd>{item.output} <a href={publicPath(item.href)}>{item.example} <span aria-hidden="true">→</span></a></dd></div>)}</dl>
+    </section>
+    <section className="pc-section pc-methods" aria-labelledby="methods-title"><p className="pc-kicker">Methods, and where they are shown</p><h2 id="methods-title">Each method links to the <em className="pc-accent">work</em> that shows it.</h2>
+      <p>Methods I have used in published case studies. A link shows one instance, not a formal credential in the method.</p>
+      {methodFamilies.map(family => <section key={family.family} aria-labelledby={`methods-${family.family.split(' ')[0].toLowerCase()}`}><h3 id={`methods-${family.family.split(' ')[0].toLowerCase()}`}>{family.family}</h3>
+        <dl className="pc-method-inventory">{family.methods.map(item => <div key={item.method}><dt>{item.method}</dt><dd>{item.slugs.map((slug, index) => <React.Fragment key={slug}>{index ? ' · ' : null}<a href={publicPath(`/investigations/${slug}/`)}>{caseLabels[slug] ?? slug}</a></React.Fragment>)}</dd></div>)}</dl>
+      </section>)}
+    </section>
+    <section className="pc-section pc-agenda" aria-labelledby="agenda-title"><p className="pc-kicker">Research agenda</p><h2 id="agenda-title">Questions I keep <em className="pc-accent">returning</em> to.</h2>
+      <p>Continuing research interests, not established theories. Each links to the work where the question first came up, and to the writing and experiments that explore it.</p>
+      <ol className="pc-agenda-list">{researchAgenda.map(item => <li key={item.theme}><h3>{item.theme}</h3><p className="pc-question">{item.question}</p><p className="pc-agenda-links">{item.slugs.map((slug, index) => <React.Fragment key={slug}>{index ? ' · ' : null}<a href={publicPath(`/investigations/${slug}/`)}>{caseLabels[slug] ?? slug}</a></React.Fragment>)}</p></li>)}</ol>
+      <p><a className="pc-text-link" href={publicPath('/writing/')}>Field Notes <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/lab/')}>Experiments <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/patterns/')}>Related. Not equivalent. <span aria-hidden="true">→</span></a></p>
     </section>
     <section className="pc-section" aria-labelledby="case-anatomy-title"><p className="pc-kicker">How a case is read</p><h2 id="case-anatomy-title">Every case, the same <em className="pc-accent">order</em>.</h2>
       <p>Each case study answers the same questions in the same order, so a reader can compare cases and find the limits quickly.</p>
@@ -120,39 +134,47 @@ function Observatory() {
 }
 
 /**
- * Contact (owner direction, 23 November): the message form first, then the latest résumé.
- * The form needs no server: it opens the visitor's email app with the message written out, and
- * the address stays visible for anyone whose device has no email app. Nothing is stored or sent here.
+ * Contact (owner direction, 23 November; directive PC-2026-11-25): a reason for getting in touch, a prompt
+ * that fits it, and an honest action. The form needs no server: "Prepare email" opens the visitor's email
+ * app with the message written out, and the address stays visible for anyone without one. Nothing is
+ * stored or sent from this page, so nothing here claims a message was delivered. Career history lives on About.
  */
 function Contact() {
-  const [sent, setSent] = useState(false)
+  const [prepared, setPrepared] = useState(false)
+  const [reason, setReason] = useState<string>(contactReasons[1].value)
+  useEffect(() => {
+    const value = new URLSearchParams(location.search).get('reason')
+    if (value && contactReasons.some(item => item.value === value)) setReason(value)
+  }, [])
+  const current = contactReasons.find(item => item.value === reason) ?? contactReasons[1]
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const data = new FormData(event.currentTarget)
     const value = (name: string) => String(data.get(name) ?? '').trim()
-    const subject = `Conversation request${value('organization') ? ` from ${value('organization')}` : ''}`
-    const body = [`Name: ${value('name')}`, `Email: ${value('email')}`, `Organization: ${value('organization')}`, '', value('problem')].join('\n')
+    const subject = `${current.label}${value('organization') ? `: ${value('organization')}` : ''}`
+    const body = [`Name: ${value('name')}`, `Email: ${value('email')}`, `Organization: ${value('organization')}`, `Reason: ${current.label}`, '', value('message')].join('\n')
     count('contact-send')
     location.href = `mailto:${recruiterContact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-    setSent(true)
+    setPrepared(true)
   }
   return <>
     <p className="pc-kicker">Contact</p><h1>Bring me the problem that keeps <em className="pc-accent">coming back</em>.</h1>
-    <p className="pc-lead">Tell me what your organization is seeing, what has already been tried, and what a better decision would make possible. I reply to every message.</p>
+    <p className="pc-lead">A role, an organizational question, a research collaboration, or an invitation to teach or speak. Tell me what you are trying to understand or change. I reply to every message.</p>
     <ul className="pc-cta-offer">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
     <section className="pc-contact-form-section" aria-labelledby="contact-form-title">
       <h2 id="contact-form-title">Start a conversation</h2>
       <form className="pc-contact-form" action={`mailto:${recruiterContact.email}`} method="post" encType="text/plain" onSubmit={submit}>
+        <label>What brings you here?<select name="reason" value={reason} onChange={event => setReason(event.currentTarget.value)}>{contactReasons.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
         <label>Your name<input name="name" autoComplete="name" required/></label>
         <label>Your email<input name="email" type="email" autoComplete="email" required/></label>
         <label><span>Organization <span className="pc-contact-optional">(optional)</span></span><input name="organization" autoComplete="organization"/></label>
-        <label>What problem keeps coming back?<textarea name="problem" rows={6} required/></label>
-        <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary">Send it <span aria-hidden="true">→</span></button></p>
-        <p className="pc-contact-note">Sending opens your email app with the message written out. Prefer to write directly? <a href={`mailto:${recruiterContact.email}`}>{recruiterContact.email}</a></p>
-        {sent ? <p className="pc-contact-note" role="status">Your email app should have opened with the message. If it didn’t, write to {recruiterContact.email}.</p> : null}
+        <label>{current.prompt}<textarea name="message" rows={6} required/></label>
+        <p className="pc-contact-submit"><button type="submit" className="pc-cta-primary">Prepare email <span aria-hidden="true">→</span></button></p>
+        <p className="pc-contact-note">This opens your email app with your message written out, ready for you to send. Nothing is sent from this page. Prefer to write directly? <a href={`mailto:${recruiterContact.email}`}>{recruiterContact.email}</a></p>
+        {prepared ? <p className="pc-contact-note" role="status">Your email app should have opened with the message ready to send. If it didn’t, write to {recruiterContact.email}.</p> : null}
       </form>
     </section>
-    <CareerThread/>
+    <p className="pc-contact-elsewhere">Looking for my background first? <a href={publicPath('/about/')}>Career history and education <span aria-hidden="true">→</span></a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
   </>
 }
 
@@ -177,6 +199,19 @@ function About() {
       <p className="pc-positioning-differentiator">{differentiator.lead} <strong>{differentiator.turn}</strong></p>
     </section>
     <CareerThread/>
+    <section className="pc-section pc-history" aria-labelledby="about-history-title">
+      <h2 id="about-history-title">Career history</h2>
+      <p>Titles as I held them. Employers are described rather than named on this site; the case studies show the work itself.</p>
+      <div className="pc-history-scroll" role="region" aria-labelledby="about-history-title" tabIndex={0}>
+        <table className="pc-history-table">
+          <thead><tr><th scope="col">Years</th><th scope="col">Role</th><th scope="col">Setting</th></tr></thead>
+          <tbody>{careerHistory.map(item => <tr key={item.role}><td>{item.years}</td><th scope="row">{item.role}{'note' in item ? <span className="pc-history-note">{item.note}</span> : null}</th><td>{item.setting}</td></tr>)}</tbody>
+        </table>
+      </div>
+      <h3>Education</h3>
+      <p><strong>{education.degree}</strong>, {education.school}. {education.minors}.</p>
+      <p><a href={`mailto:${recruiterContact.email}?subject=${encodeURIComponent('Résumé request')}`}>Request the full résumé</a> <a className="pc-text-link" href={publicPath('/contact/?reason=employment')}>Discuss a role <span aria-hidden="true">→</span></a></p>
+    </section>
     <section className="pc-section pc-storm" aria-labelledby="about-storm-title">
       <h2 id="about-storm-title">{stormWorkflow.title}</h2>
       <p>{stormWorkflow.context}</p>

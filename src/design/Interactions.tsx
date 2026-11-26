@@ -61,12 +61,13 @@ export function SourceCites({ sources, idPrefix }: { sources: readonly { id: str
     const id = `${idPrefix}-${index + 1}`
     return <React.Fragment key={source.id}>
       <button type="button" className="pc-cite" popoverTarget={id} aria-label={`Source ${index + 1}: ${source.title}`}>[{index + 1}]</button>
-      <div id={id} popover="auto" className="pc-source pc-flow" role="note">
-        <p><strong>{source.title}</strong></p>
-        <p>{source.source}. {source.locator}.</p>
-        <p>{source.limitations}</p>
+      {/* Spans, not div and p: the citation sits inside a paragraph, where block elements are invalid HTML and break hydration. */}
+      <span id={id} popover="auto" className="pc-source pc-flow" role="note">
+        <span className="pc-source-line"><strong>{source.title}</strong></span>
+        <span className="pc-source-line">{source.source}. {source.locator}.</span>
+        <span className="pc-source-line">{source.limitations}</span>
         <button type="button" popoverTarget={id} popoverTargetAction="hide">Close</button>
-      </div>
+      </span>
     </React.Fragment>
   })}</>
 }

@@ -339,7 +339,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 /* The call to action: the argument on one side, what you get on the other. */
 .build-index .pc-cta { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1rem 4rem; align-items: start; }
 .build-index .pc-cta > :not(.pc-cta-offer) { grid-column: 1; }
-.build-index .pc-cta > .pc-cta-offer--list { grid-column: 2; grid-row: 1 / span 4; display: block; margin: 0; }
+.build-index .pc-cta > .pc-cta-offer--list { grid-column: 2; grid-row: 1 / span 5; display: block; margin: 0; }
 .pc-cta-offer--list li { border-top: 1px solid var(--line); padding: 1rem 0; }
 .pc-cta-offer--list li:last-child { border-bottom: 1px solid var(--line); }
 .pc-about-tagline { color: var(--muted); }

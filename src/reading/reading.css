@@ -322,3 +322,27 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .case-artifact-steps li[data-by="me"] .case-artifact-by { color: inherit; font-weight: 800; }
 .case-artifact-note { margin-top: .75rem; font-size: .9rem; color: var(--reading-muted); max-width: 70ch; }
 @media (max-width: 40rem) { .case-artifact table { min-width: 34rem; font-size: .9rem; } }
+
+/* Work collection and case next steps (directive PC-2026-11-25): capability filter, card brief, by-capability index. */
+.reading-card-brief { margin: .75rem 0; display: grid; gap: .5rem; }
+.reading-card-brief div { display: grid; gap: .1rem; }
+.reading-card-brief dt { font-size: .78rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--reading-muted); }
+.reading-card-brief dd { margin: 0; }
+.reading-card-capabilities { list-style: none; display: flex; flex-wrap: wrap; gap: .35rem .5rem; padding: 0; margin: .5rem 0; }
+.reading-card-capabilities li { font-size: .8rem; padding: .1rem .5rem; border: 1px solid var(--reading-line); border-radius: 999px; }
+.reading-filter { margin: 1.5rem 0 2rem; }
+.reading-filter-label { margin: 0 0 .5rem; font-weight: 700; }
+.reading-filter-optional { font-weight: 400; color: var(--reading-muted); }
+.reading-filter ul { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; padding: 0; margin: 0; }
+.reading-filter button, .reading-filter-reset { min-height: 44px; padding: .4rem .85rem; font: inherit; color: inherit; background: transparent; border: 1px solid var(--reading-line); border-radius: 999px; cursor: pointer; }
+.reading-filter button[aria-pressed="true"] { background: var(--reading-ink); color: var(--reading-paper); border-color: var(--reading-ink); font-weight: 700; }
+.reading-filter button:focus-visible, .reading-filter-reset:focus-visible { outline: 3px solid var(--reading-focus); outline-offset: 2px; }
+.reading-filter-count { font-variant-numeric: tabular-nums; opacity: .75; }
+.reading-filter-status { margin: .75rem 0 0; color: var(--reading-muted); }
+.reading-by-capability, .reading-next { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--reading-line); }
+.reading-by-capability dl, .reading-next-groups { display: grid; gap: 1.25rem; margin: 1rem 0; }
+.reading-by-capability dt, .reading-next-groups dt { font-weight: 700; }
+.reading-by-capability dd, .reading-next-groups dd { margin: .25rem 0 0; }
+.reading-by-capability dd p { margin: 0 0 .35rem; color: var(--reading-muted); }
+.reading-by-capability ul, .reading-next-groups ul { margin: .25rem 0 .5rem; padding-left: 1.1rem; }
+.reading-next-actions { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }

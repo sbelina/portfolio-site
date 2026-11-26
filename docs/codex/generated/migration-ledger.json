@@ -223,6 +223,12 @@
       "verification": "present in initial home HTML"
     },
     {
+      "id": "pc-capabilities-title",
+      "destination": "/#pc-capabilities-title",
+      "source": "new reading gateway/bootstrap",
+      "verification": "present in initial home HTML"
+    },
+    {
       "id": "pc-pattern-title",
       "destination": "/#pc-pattern-title",
       "source": "new reading gateway/bootstrap",

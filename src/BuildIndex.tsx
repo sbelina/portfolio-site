@@ -7,7 +7,8 @@ import { publicPath } from './public-path'
 import { HomeIntroduction, useHomeIntroduction } from './components/HomeIntroduction'
 import { caseLabel, caseLabels, primaryEvidenceHref, selectedInvestigations, type InvestigationSummary } from './content/primary-evidence'
 import { legacyFragments } from './content/legacy-fragments'
-import { ctaOffer, homeHeadline, professionalIdentity, recruiterContact } from './content/recruiter'
+import { ctaOffer, engagementPaths, homeHeadline, professionalIdentity, recruiterContact, tagline } from './content/recruiter'
+import { demonstratedCapabilities, workHref } from './content/capabilities'
 import { CaseStatus } from './reading/CaseStatus'
 import { ResultsStrip } from './design/ResultsStrip'
 import { LensInterlude } from './design/LensInterlude'
@@ -30,6 +31,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
   const introduction = useHomeIntroduction()
   const evidenceHref = primaryEvidenceHref(investigations)
   const selected = selectedInvestigations(investigations)
+  const capabilityGroups = demonstratedCapabilities(investigations.map(entry => entry.slug).filter((slug): slug is string => !!slug))
   const pairs = investigations.filter(entry => entry.slug && entry.visual).map(entry => ({ slug: entry.slug!, label: caseLabels[entry.slug!] ?? plainText(entry.title), left: plainText(entry.visual!.left), right: plainText(entry.visual!.right), explanation: plainText(entry.visual!.explanation), ...(entry.brief ? { changed: plainText(entry.brief.result) } : {}), href: publicPath(entry.path) }))
   // Test. Show. Enable. walked through the first selected case, in its own approved words.
   const lead = selected.find(entry => entry.brief && entry.visual && entry.slug)
@@ -54,8 +56,9 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <div className="pc-hero-copy">
           <p className="pc-kicker pc-identity"><span className="pc-identity-name">Sami Belina</span> <span aria-hidden="true">·</span> {professionalIdentity}</p>
           <h1 id="index-title">{homeHeadline.lead}<strong className="pc-weight">{homeHeadline.cost}</strong>{homeHeadline.middle}<em className="pc-accent">{homeHeadline.accent}</em>{homeHeadline.end}</h1>
+          <p className="pc-tagline">{tagline}</p>
           <p className="pc-lead">I investigate the human, informational, and operational conditions shaping outcomes—helping institutions uncover <strong>overlooked problems</strong>, redesign how their systems work, and strengthen people’s ability to make informed decisions and navigate change.</p>
-          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-hero">Start a conversation <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
+          <p className="pc-hero-action pc-cluster"><a className="pc-cta-primary" href={publicPath('/investigations/')} data-count="cta-hero">Explore the work <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath(evidenceHref)}>{evidenceHref === '/investigations/' ? 'See the case studies' : 'Read the insurance operations case study'} <span aria-hidden="true">→</span></a> <a className="pc-text-link" href={publicPath('/contact/')}>Work with me <span aria-hidden="true">→</span></a>{recruiterContact.resumeHref ? <> <a className="pc-text-link pc-secondary-link" href={publicPath(recruiterContact.resumeHref)}>View my résumé (PDF)</a></> : null}</p>
         </div>
         {pairs.length ? <FieldPreview pairs={pairs} href="#pc-pattern-title"/> : null}
       </section>
@@ -74,8 +77,12 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
           <p className="pc-selected-links"><a href={publicPath(entry.path)} data-count="case-open" data-count-detail={entry.slug}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} data-count="deep-dive-open" data-count-detail={entry.slug}>Deep dive <span className="pc-selected-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
         </li>)}</ol>
         <a className="pc-text-link" href={publicPath('/investigations/')}>All {investigations.length} case studies <span aria-hidden="true">→</span></a>
-        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/')} data-count="cta-band">Let’s talk about it <span aria-hidden="true">→</span></a></p>
+        <p className="pc-cta-band"><strong>Seeing the same pattern in your organization?</strong> <a href={publicPath('/contact/?reason=organization')} data-count="cta-band">Let’s talk about it <span aria-hidden="true">→</span></a></p>
       </section> : <section className="pc-section" aria-labelledby="pc-selected-title"><p className="pc-kicker">Case studies</p><h2 id="pc-selected-title">Case studies are in review</h2><p>No case study is published in this edition yet.</p></section>}
+      {capabilityGroups.length ? <section className="pc-section pc-capabilities" aria-labelledby="pc-capabilities-title">
+        <div className="pc-section-heading"><h2 id="pc-capabilities-title">Find the work by <em className="pc-accent">capability</em>.</h2></div>
+        <ul className="pc-capability-list">{capabilityGroups.map(group => <li key={group.id}><a href={publicPath(workHref(group.id))}><strong>{group.label}</strong> <span className="pc-capability-count">{group.slugs.length} {group.slugs.length === 1 ? 'case study' : 'case studies'}</span></a><span>{group.text}</span></li>)}</ul>
+      </section> : null}
       </div>
       <div className="pc-band pc-band--thinking">
       {pairs.length ? <section className="pc-section pc-pattern" aria-labelledby="pc-pattern-title">
@@ -117,6 +124,7 @@ export default function BuildIndex({ investigations = [] }: { investigations?: r
         <h2 id="contact-title">Before the next costly fix, understand the <em className="pc-accent">problem</em>.</h2>
         <p className="pc-cta-lead">If your organization keeps spending on a problem that keeps coming back, <strong>I’m who you call</strong>. I find what is actually driving it, show which responses the evidence supports, and leave your team able to act on it.</p>
         <ul className="pc-cta-offer pc-cta-offer--list">{ctaOffer.map(item => <li key={item.title}><strong>{item.title}</strong> {item.text}</li>)}</ul>
+        <ul className="pc-pathways" aria-label="Ways to work together">{engagementPaths.map(path => <li key={path.reason}><a href={publicPath(`/contact/?reason=${path.reason}`)}><strong>{path.title} <span aria-hidden="true">→</span></strong></a><span>{path.text}</span></li>)}</ul>
         <p className="pc-cta-actions"><a className="pc-cta-primary" href={publicPath('/contact/')} data-count="cta-end">Start a conversation <span aria-hidden="true">→</span></a> <a href={`mailto:${recruiterContact.email}`}>Email {recruiterContact.email}</a> <a href={recruiterContact.linkedin}>LinkedIn <ExternalArrow/></a></p>
         <p className="pc-cta-proof">Worked in insurance operations, customer research, enterprise innovation, product research, civic engagement and AI-assisted development.</p>
       </section>

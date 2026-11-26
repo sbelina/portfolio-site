@@ -43,3 +43,22 @@ export const recruiterContact = {
   /** The owner's portrait for About (and Contact): a public-safe, rights-cleared file in public/media. null hides it. */
   portrait: null as null | { src: string; alt: string; width: number; height: number },
 }
+
+/**
+ * Engagement pathways (directive PC-2026-11-25): three visible ways in, each opening Contact with the
+ * matching reason selected. Possibilities to discuss, not fixed offerings, prices or promised outcomes.
+ */
+export const engagementPaths = [
+  { reason: 'employment', title: 'Employment and research leadership', text: 'A role or initiative where investigating the problem comes before choosing the fix.' },
+  { reason: 'organization', title: 'An organizational challenge', text: 'A problem that keeps coming back, competing explanations, or a measure you no longer trust.' },
+  { reason: 'research', title: 'Research, teaching or collaboration', text: 'A question worth investigating together, or a conversation to teach or speak.' },
+] as const
+
+/** Reasons for contact, with the prompt each one asks (Contact form). */
+export const contactReasons = [
+  { value: 'employment', label: 'Employment or leadership opportunity', prompt: 'Tell me about the role or initiative.' },
+  { value: 'organization', label: 'Organizational inquiry', prompt: 'What is your organization trying to understand or change?' },
+  { value: 'research', label: 'Research collaboration', prompt: 'What question or area of inquiry brings you here?' },
+  { value: 'teaching', label: 'Teaching or speaking', prompt: 'What would you like to explore together?' },
+  { value: 'other', label: 'Something else', prompt: 'What would you like to talk about?' },
+] as const

@@ -94,7 +94,7 @@ test('Related. Not equivalent. is a field to explore: predict, then split, with 
     await expect(page.locator('.pc-field-text li')).toHaveCount(6)
     // The hero shows the same six pairs as a picture with a text alternative, linked to the field.
     await expect(page.locator('.pc-hero .pc-field-preview svg')).toHaveAttribute('aria-label', /Delivered and Verified/)
-    await expect(page.locator('.pc-hero').getByRole('link', { name: 'Start a conversation' })).toHaveAttribute('href', '/contact/')
+    await expect(page.locator('.pc-hero').getByRole('link', { name: 'Work with me' })).toHaveAttribute('href', '/contact/')
     await expect(page.locator('.pc-field-points')).toHaveCount(0)
   } finally { await staticContext.close() }
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' })

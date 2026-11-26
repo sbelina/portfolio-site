@@ -204,7 +204,7 @@
   .pc-cite { font: inherit; font-size: .8em; vertical-align: super; line-height: 0; color: var(--reading-ink, var(--ink)); background: none; border: 0; padding: 0 .15em; min-width: 24px; min-height: 24px; cursor: pointer; text-decoration: none; font-weight: 650; color: var(--signal); }
   .pc-cite:hover { color: var(--reading-ink, var(--ink)); }
   [popover].pc-source { margin: auto; max-width: min(92vw, 26rem); padding: var(--space-4); border: 1px solid var(--reading-line, var(--line)); background: var(--reading-panel, var(--panel)); color: var(--reading-ink, var(--ink)); box-shadow: var(--elevation-2); font-size: .95rem; line-height: 1.55; }
-  [popover].pc-source p { margin: 0 0 var(--space-2); }
+  [popover].pc-source .pc-source-line { display: block; margin: 0 0 var(--space-2); }
   [popover].pc-source button { min-height: 44px; padding: .4rem .9rem; font: inherit; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
 
   /* F · A count that resolves, only where the change is the finding. */

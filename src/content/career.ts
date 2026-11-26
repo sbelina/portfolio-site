@@ -89,3 +89,23 @@ export const careerNext = {
   text: 'Investigating the assumptions and mechanisms shaping institutional outcomes, developing alternatives, and helping decision-makers change how systems work.',
   ask: 'Bring me the problem your organization keeps paying to fix.',
 } as const
+
+/**
+ * Conventional career history (directive PC-2026-11-25, About): titles as the owner held them, from the
+ * owner's résumés and answers (November 2026). Employers stay described, not named, until the owner approves
+ * naming them; the current role's official title is not yet confirmed, so its function is given instead.
+ */
+export const careerHistory = [
+  { years: '2022–present', role: 'Claims operations and administration', setting: 'One of the largest U.S. auto insurers', note: 'Official title to be confirmed; the work is in the case studies.' },
+  { years: '2021', role: 'Publishing Specialist (six-month contract loan-in)', setting: 'Sales enablement, a global consumer-technology company' },
+  { years: '2020–2021', role: 'Service Chat Specialist', setting: 'Remote customer support, the same company' },
+  { years: '2019–2021', role: 'Product Zone Specialist; selected for Creative', setting: 'Retail, the same company' },
+  { years: '2020–', role: 'Co-founder; Creative Director & Technical Lead', setting: 'Vote Huntsville, a volunteer civic-information nonprofit' },
+  { years: '2018–2019', role: 'Certified Technical Expert', setting: 'An authorized device-repair provider' },
+  { years: '2017–2018', role: 'UX Designer', setting: 'A web design firm' },
+  { years: '2015–2016', role: 'Arts & Crafts Director, Creative Director, Unit Leader, Ropes Facilitator', setting: 'A summer camp (titles held at different points)' },
+  { years: '2012–2013', role: 'Small Business Consultant', setting: 'A web-hosting and domain company' },
+] as const
+
+/** Education, from the owner's résumés; listed as the owner's directive gives it. */
+export const education = { degree: 'BA, Interdisciplinary Design', school: 'Iowa State University', minors: 'Minors in Digital Media and Philosophy' } as const

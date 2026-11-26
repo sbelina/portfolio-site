@@ -13,6 +13,7 @@ import type { PublicEntry, PublicEvidence } from '../content/model'
 import type { ReadingPageData, ReadingContext } from './page-data'
 import { plainText, Stressed } from '../content/emphasis'
 import { caseLabel } from '../content/primary-evidence'
+import { capabilitiesOf, capabilityLabel, caseCapabilities, demonstratedCapabilities, workHref } from '../content/capabilities'
 import { CaseThumb } from '../design/CaseFigures'
 export type { ReadingPageData } from './page-data'
 
@@ -195,18 +196,92 @@ function EntryView({ entry, page }: { entry: PublicEntry; page: ReadingPageData 
       ] as const).filter(([, value]) => value?.trim()).map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></details> : null}
       {!poetry && extraEvidence.length ? <section id="evidence" className="reading-extra-evidence"><h2>Evidence and provenance</h2>{extraEvidence.map(evidence => <EvidenceDisclosure evidence={evidence} key={evidence.id} />)}</section> : null}
       <Connections entry={entry} projection={page.projection} />
+      {page.related && entry.slug ? <NextActions slug={entry.slug} related={page.related}/> : null}
       <p className="reading-back">{inquiry && page.inquirySpacePath ? <a href={publicPath(page.inquirySpacePath)}>← Return to {inquirySpaceTitle}</a> : <a href={publicPath("/investigations/")}>← All case studies</a>}</p>
     </article>
   )
 }
 
+/**
+ * After a case (directive PC-2026-11-25, layer 8): more work showing the same capabilities, the method,
+ * and a way to discuss a similar question. Grouped by shared capability, which is a classification,
+ * not a claim that the cases influenced each other.
+ */
+function NextActions({ slug, related }: { slug: string; related: NonNullable<ReadingPageData['related']> }) {
+  const mine = caseCapabilities[slug] ?? []
+  const groups = mine.map(id => ({ id, label: capabilityLabel(id)!, cases: related.filter(item => caseCapabilities[item.slug]?.includes(id)) })).filter(group => group.cases.length)
+  return <section className="reading-next" aria-labelledby="reading-next-title">
+    <h2 id="reading-next-title">Where to go next</h2>
+    {groups.length ? <dl className="reading-next-groups">{groups.map(group => <div key={group.id}><dt>More {group.label.toLowerCase()} work</dt><dd><ul>{group.cases.map(item => <li key={item.slug}><a href={publicPath(item.path)}><Stressed text={item.title} heading/></a> <span className="reading-kicker">{caseLabel(item.slug)}</span></li>)}</ul><a href={publicPath(workHref(group.id))}>All {group.label.toLowerCase()} work <span aria-hidden="true">→</span></a></dd></div>)}</dl> : null}
+    <p className="reading-next-actions"><a href={publicPath('/practice/')}>How I investigate <span aria-hidden="true">→</span></a> <a href={publicPath('/contact/?reason=organization')}>Discuss a similar question <span aria-hidden="true">→</span></a></p>
+  </section>
+}
+
+/** One case card, in the directive's order: setting, title, problem, my part, what changed, capabilities. */
+function CaseCard({ entry, fixture, candidate }: { entry: ReadingContext['entries'][number]; fixture: boolean; candidate: boolean }) {
+  const brief = entry.brief
+  const caps = fixture ? [] : capabilitiesOf(entry.slug)
+  return <li data-capabilities={caps.map(cap => cap.id).join(' ')}>
+    {entry.thumb && !fixture ? <CaseThumb composition={entry.thumb.composition} left={plainText(entry.thumb.left)} right={plainText(entry.thumb.right)}/> : null}
+    <p className="reading-kicker">{caseLabel(entry.slug) ?? 'Case study'}{candidate ? ' · unapproved candidate' : ''}</p>
+    <h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>
+    {entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}
+    {brief ? <dl className="reading-card-brief">
+      <div><dt>The problem</dt><dd><Stressed text={brief.tension}/></dd></div>
+      <div><dt>My part</dt><dd><Stressed text={brief.call}/></dd></div>
+      <div><dt>What changed</dt><dd><Stressed text={brief.result}/></dd></div>
+    </dl> : <>{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p></>}
+    {caps.length ? <ul className="reading-card-capabilities" aria-label="Capabilities shown">{caps.map(cap => <li key={cap.id}>{cap.label}</li>)}</ul> : null}
+    <p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Read the case study: ${plainText(entry.title)}`}>Read the case study <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p>
+  </li>
+}
+
+/**
+ * Optional capability filter (directive PC-2026-11-25): every case shows by default and without
+ * JavaScript; the filter appears once the page is interactive, keeps its state in the address
+ * (?capability=…), announces the result count, and always offers All work.
+ */
+function useCapabilityFilter(available: readonly string[]) {
+  const [enhanced, setEnhanced] = React.useState(false)
+  const [active, setActive] = React.useState<string | null>(null)
+  React.useEffect(() => {
+    setEnhanced(true)
+    const read = () => { const value = new URLSearchParams(location.search).get('capability'); setActive(value && available.includes(value) ? value : null) }
+    read(); addEventListener('popstate', read)
+    return () => removeEventListener('popstate', read)
+  }, [available.join(' ')])
+  const choose = (value: string | null) => {
+    setActive(value)
+    const url = new URL(location.href)
+    if (value) url.searchParams.set('capability', value); else url.searchParams.delete('capability')
+    history.pushState(null, '', url)
+  }
+  return { enhanced, active, choose }
+}
+
 function Collection({ projection, fixture, candidate = false }: { projection: ReadingContext; fixture: boolean; candidate?: boolean }) {
   const investigations = projection.entries.filter(entry => entry.kind === 'investigation')
   const patterns = projection.entries.filter(entry => entry.kind === 'pattern')
+  const groups = fixture ? [] : demonstratedCapabilities(investigations.map(entry => entry.slug).filter((slug): slug is string => !!slug))
+  const filter = useCapabilityFilter(groups.map(group => group.id))
+  const shown = filter.active ? investigations.filter(entry => entry.slug && caseCapabilities[entry.slug]?.includes(filter.active as never)) : investigations
+  const activeLabel = filter.active ? capabilityLabel(filter.active) : undefined
   return (
     <>
-      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">{fixture ? 'Investigations' : 'Case studies'}</h1><p className="reading-summary">Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.</p></header>
-      {investigations.length ? <ul className="reading-cards">{investigations.map(entry => <li key={entry.id}>{entry.thumb && !fixture ? <CaseThumb composition={entry.thumb.composition} left={plainText(entry.thumb.left)} right={plainText(entry.thumb.right)}/> : null}<p className="reading-kicker">{caseLabel(entry.slug) ?? 'Case study'}{candidate ? ' · unapproved candidate' : ''}</p><h2 style={entry.slug && !fixture ? { viewTransitionName: `case-${entry.slug}` } as React.CSSProperties : undefined}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a></h2>{entry.status ? <p className="reading-card-status"><CaseStatus status={entry.status}/></p> : null}{entry.stakes ? <p className="reading-card-stakes"><span className="reading-card-label">At stake:</span> <Stressed text={entry.stakes}/></p> : null}<p><Stressed text={entry.summary ?? ''}/></p><p className="reading-card-links"><a href={publicPath(entry.path)} aria-label={`Public version: ${plainText(entry.title)}`}>Public version <span aria-hidden="true">→</span></a>{entry.deepDive && entry.slug && !candidate ? <> <a href={publicPath(`/deep-dive/${entry.slug}/`)} aria-label={`Deep dive, password required: ${plainText(entry.title)}`}>Deep dive <span className="reading-deep-dive-note">(password)</span> <span aria-hidden="true">→</span></a></> : null}</p></li>)}</ul> : <div className="reading-empty"><p>No case study is published in this edition yet. Each awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
+      <header className="reading-collection-header"><p className="reading-kicker">{fixture ? 'Seeing What Systems Miss' : practiceAreas.join(' · ')}</p><h1 id="reading-title">{fixture ? 'Investigations' : 'Case studies'}</h1><p className="reading-summary">{fixture ? 'Questions, evidence, contributions, and limits. Read the work directly, then follow a connection when its explanation is useful.' : `${investigations.length} case studies. Each gives the problem, my part, what changed, and the evidence and its limits.`}</p></header>
+      {filter.enhanced && groups.length ? <div className="reading-filter" role="group" aria-labelledby="reading-filter-label">
+        <p id="reading-filter-label" className="reading-filter-label">Show work by capability <span className="reading-filter-optional">(optional)</span></p>
+        <ul>
+          <li><button type="button" aria-pressed={!filter.active} onClick={() => filter.choose(null)}>All work <span className="reading-filter-count">{investigations.length}</span></button></li>
+          {groups.map(group => <li key={group.id}><button type="button" aria-pressed={filter.active === group.id} onClick={() => filter.choose(group.id)}>{group.label} <span className="reading-filter-count">{group.slugs.length}</span></button></li>)}
+        </ul>
+        <p className="reading-filter-status" role="status">{activeLabel ? `Showing ${shown.length} of ${investigations.length} case studies: ${activeLabel}.` : `Showing all ${investigations.length} case studies.`}</p>
+      </div> : null}
+      {shown.length ? <ul className="reading-cards">{shown.map(entry => <CaseCard key={entry.id} entry={entry} fixture={fixture} candidate={candidate}/>)}</ul> : investigations.length ? <div className="reading-empty"><p>No case study matches that capability.</p><p><button type="button" className="reading-filter-reset" onClick={() => filter.choose(null)}>Show all work</button></p></div> : <div className="reading-empty"><p>No case study is published in this edition yet. Each awaits source, privacy and publication review.</p><p><a href={publicPath('/practice/')}>Read the inquiry practice →</a></p></div>}
+      {groups.length ? <section className="reading-by-capability" aria-labelledby="reading-by-capability-title">
+        <h2 id="reading-by-capability-title">The work, by capability</h2>
+        <dl>{groups.map(group => <div key={group.id}><dt>{group.label}</dt><dd><p>{group.text}</p><ul>{group.slugs.map(slug => { const entry = investigations.find(item => item.slug === slug)!; return <li key={slug}><a href={publicPath(entry.path)}><Stressed text={entry.title} heading/></a> <span className="reading-kicker">{caseLabel(slug)}</span></li> })}</ul></dd></div>)}</dl>
+      </section> : null}
       {patterns.length ? <section className="reading-patterns" aria-labelledby="reading-patterns-title"><p className="reading-kicker">Connected interpretation</p><h2 id="reading-patterns-title">Patterns to investigate</h2><ul>{patterns.map(entry => <li key={entry.id}><a href={publicPath(entry.path)}>{entry.title}</a><p>{entry.summary}</p></li>)}</ul></section> : null}
     </>
   )

@@ -34,8 +34,8 @@ test('the first screen names Sami, the capability, the H1 and the evidence path'
         const box = (await target.boundingBox())!
         expect(box.y + box.height, `${viewport.width}px`).toBeLessThanOrEqual(viewport.height)
       }
-      // The hero leads with the call to action, then evidence; never the Atlas or Observatory (owner, 24 November).
-      expect(await page.locator('.pc-hero a').evaluateAll(links => links.slice(0, 2).map(link => link.getAttribute('href')))).toEqual(['/contact/', '/investigations/claims-operations/'])
+      // Directive PC-2026-11-25: explore the work first, keep the one-click evidence path, then work with me; never the Atlas or Observatory.
+      expect(await page.locator('.pc-hero a').evaluateAll(links => links.slice(0, 3).map(link => link.getAttribute('href')))).toEqual(['/investigations/', '/investigations/claims-operations/', '/contact/'])
     } finally { await context.close() }
   }
 })

@@ -107,8 +107,8 @@
   /* ── Contact ─────────────────────────────────────────────────────────────── */
   .pc-contact-form { display: grid; gap: var(--space-4); max-width: 36rem; margin-top: var(--space-4); }
   .pc-contact-form label { display: grid; gap: var(--space-2); font-weight: 650; }
-  .pc-contact-form :is(input, textarea) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
-  .pc-contact-form :is(input, textarea):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-form :is(input, textarea, select) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
+  .pc-contact-form :is(input, textarea, select):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
   .pc-contact-form button { border: 0; cursor: pointer; font-family: inherit; }
   .pc-contact-optional { font-weight: 400; color: var(--muted); }
   .pc-contact-note { color: var(--muted); font-size: var(--step--1); }
@@ -280,6 +280,37 @@
   .intro-scene[data-stage="3"] .intro-scene-other-thread { visibility: visible; }
   .intro-scene-pattern { stroke: var(--line); stroke-dasharray: 2 6; }
   @container (max-width: 520px) { .intro-scene text { font-size: 30px; letter-spacing: .02em; } .intro-scene .intro-scene-caption { font-size: 24px; letter-spacing: .02em; } }
+
+  /* ── Professional orientation (directive PC-2026-11-25): tagline, figure meaning, capabilities, pathways ── */
+  .pc-tagline { margin: 0; font-size: var(--step-1); color: var(--muted); max-width: 52ch; }
+  @media (max-width: 640px) { .pc-tagline { font-size: 1rem; line-height: 1.5; } }
+  .pc-result-basis { margin: var(--space-1) 0 0; font-size: var(--step--1); color: var(--muted); max-width: 34ch; }
+  .pc-capability-list { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: grid; gap: 0; border-top: 1px solid var(--line); max-width: 75ch; }
+  .pc-capability-list li { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .pc-capability-list li { grid-template-columns: 20rem minmax(0, 1fr); gap: var(--space-5); align-items: baseline; } }
+  .pc-capability-list a { display: inline-flex; flex-wrap: wrap; gap: 0 var(--space-2); align-items: baseline; min-height: 44px; }
+  .pc-capability-count { font-size: var(--step--1); color: var(--muted); font-weight: 400; }
+  .pc-pathways { list-style: none; padding: 0; margin: var(--space-4) 0; display: grid; gap: var(--space-3); max-width: 60ch; }
+  .pc-pathways li { display: grid; gap: var(--space-1); }
+  .pc-pathways a { display: inline-flex; min-height: 44px; align-items: center; }
+  .pc-pathways span { color: var(--muted); }
+
+  .pc-history-scroll { overflow-x: auto; max-width: 75ch; }
+  .pc-history-scroll:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-history-table { border-collapse: collapse; width: 100%; min-width: 34rem; overflow-wrap: normal; }
+  .pc-history-table :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--line); }
+  .pc-history-table thead th { font-size: var(--step--1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .pc-history-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pc-history-note { display: block; font-weight: 400; font-size: var(--step--1); color: var(--muted); }
+
+  .pc-method-inventory { display: grid; gap: 0; margin: var(--space-3) 0 var(--space-5); max-width: 75ch; border-top: 1px solid var(--line); }
+  .pc-method-inventory > div { display: grid; gap: var(--space-1); padding-block: var(--space-2); border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .pc-method-inventory > div { grid-template-columns: 18rem minmax(0, 1fr); gap: var(--space-4); } }
+  .pc-method-inventory dt { font-weight: 650; }
+  .pc-method-inventory dd { margin: 0; }
+  .pc-agenda-list { padding-left: 1.5rem; display: grid; gap: var(--space-4); max-width: 70ch; }
+  .pc-agenda-list h3 { margin: 0; }
+  .pc-agenda-links { margin: var(--space-1) 0 0; font-size: var(--step--1); }
 
   /* ── About: positioning and the storm workflow (owner direction, 25 November 2026) ── */
   .pc-positioning-philosophy { font-size: var(--step-1); line-height: 1.5; max-width: 60ch; }
