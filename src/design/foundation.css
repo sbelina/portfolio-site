@@ -1,5 +1,4 @@
 @import '@fontsource-variable/outfit/index.css';
-@import '@fontsource-variable/source-serif-4/index.css';
 @import './tokens.css';
 @import './system.css';
 @import './motion.css';
@@ -23,13 +22,13 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-header[data-compact="true"] { padding-block: .5rem; }
 .pc-header[data-oversized="true"], .pc-header:not([data-measured="true"]) { position: static; }
 .pc-wordmark { display: inline-flex; align-items: center; gap: .7rem; min-height: 44px; font-weight: 700; text-decoration: none; letter-spacing: -.025em; }
-.pc-wordmark > span { color: var(--signal); font: 2.5rem/1 var(--font-serif); align-self: center; padding-top: .5rem; }
+.pc-wordmark > span { color: var(--signal); font: 2.5rem/1 var(--font-second); align-self: center; padding-top: .5rem; }
 .pc-site .public-navigation { font-size: .9rem; }
 .pc-site .public-navigation a { color: var(--ink); text-decoration-thickness: 1px; }
 .pc-site .public-navigation a[aria-current] { text-decoration-thickness: 3px; color: var(--signal); }
 .pc-main { width: min(100%, 80rem); margin-inline: auto; padding: 0 clamp(1.25rem, 5vw, 2rem); outline: none; }
 .pc-main :is(h1,h2,h3,p,figure) { margin-top: 0; }
-.pc-main :is(h1,h2,h3) { font-family: inherit; font-weight: 540; letter-spacing: -.045em; line-height: 1.1; }
+.pc-main :is(h1,h2,h3) { font-family: var(--font-second); font-weight: 540; letter-spacing: -.045em; line-height: 1.1; }
 .pc-main h1 { max-width: 19ch; font-size: clamp(2.25rem, 4.8vw, 4.7rem); margin-bottom: 1.5rem; }
 .pc-main h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 1.25rem; }
 .pc-site .pc-kicker { display: block; font: 600 .75rem/1.6 var(--font-main); text-transform: uppercase; letter-spacing: .08em; color: var(--signal); margin-bottom: 1.4rem; }
@@ -107,7 +106,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-state--learning { color: var(--holds); }
 .pc-sample { padding: clamp(1.25rem,4vw,2rem); background: var(--paper); color: var(--ink); margin-block: 3rem; border: 1px solid var(--line); }
 .pc-sample a { display: inline-flex; align-items: center; min-height: 44px; }
-.pc-type-sample { font: 1.5rem/1.7 var(--font-serif); }
+.pc-type-sample { font: 1.5rem/1.7 var(--font-second); }
 .pc-site.pc-reading { --reading-paper: var(--paper); --reading-panel: var(--panel); --reading-ink: var(--ink); }
 .pc-site.pc-reading .reading-wordmark { font-weight: 700; font-family: inherit; }
 .pc-site.pc-reading .reading-kicker { color: var(--signal); }

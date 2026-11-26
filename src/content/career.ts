@@ -119,9 +119,11 @@ export const recognition = [
   { year: '2026', text: 'Selected as one of 12, from more than 66,000 employees, for an enterprise strategic foresight program.' },
 ] as const
 
-/** Talks and guest teaching, from the owner's earlier résumés; the employer stays unnamed. */
-export const speaking = [
+/** Talks and guest teaching, from the owner's résumés and answers; the employer stays unnamed. Text is optional. */
+export const speaking: readonly { title: string; where: string; text?: string }[] = [
   { title: 'Navigating the Digital Realm', where: 'Company-wide conference talk', text: 'Inclusive design, accessibility and innovation.' },
+  { title: 'Designing for What Isn’t Said', where: 'Inclusive design talk' },
+  { title: 'Inclusive UI language', where: 'World Usability Day', text: 'Co-built and co-facilitated the day’s section on inclusive interface language.' },
   { title: 'Identifying AI-generated images', where: 'AI Summer Camp presentation', text: 'How to recognize generated images, and what that means for working with AI.' },
   { title: 'Guest speaker and mentor', where: 'Carnegie Mellon University, Human-Computer Interaction Institute (2023)', text: 'Mentored student teams prototyping personalization in grocery and retail, balancing privacy and equity.' },
-] as const
+]

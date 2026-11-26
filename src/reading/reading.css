@@ -34,7 +34,7 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 #reading-main { max-width: 54rem; margin: 0 auto; padding: clamp(2.5rem, 6vw, 5rem) 0 5rem; }
 #reading-main:focus { outline: none; }
 .reading-kicker { color: var(--reading-unresolved); font-size: .76rem; font-weight: 650; line-height: 1.5; text-transform: uppercase; letter-spacing: .12em; }
-.reading-entry-header h1, .reading-collection-header h1, .reading-not-found h1 { margin: 1rem 0 1.5rem; font-family: var(--font-serif); font-size: clamp(2.4rem, 6.5vw, 5.1rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 520; }
+.reading-entry-header h1, .reading-collection-header h1, .reading-not-found h1 { margin: 1rem 0 1.5rem; font-family: var(--font-second); font-size: clamp(2.4rem, 6.5vw, 5.1rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 520; }
 .reading-summary { max-width: 46rem; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.6; }
 .reading-breadcrumbs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2.5rem; font-size: .85rem; line-height: 1.6; color: var(--reading-muted); }
 .reading-breadcrumbs [aria-current="page"] { color: var(--reading-ink); }
@@ -106,13 +106,13 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 }
 
 /* Verse remains literal text. Soft wrapping changes presentation, never the source. */
-.reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: var(--font-serif); font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
+.reading-verse { white-space: pre-wrap; overflow-wrap: anywhere; tab-size: 4; font-family: var(--font-second); font-size: 1.2em; line-height: 1.9; max-width: 100%; margin: 0; }
 .reading-article--poetry .reading-body { max-width: 46rem; }
 
 /* A fragment keeps its authored body separate from optional surrounding thought. */
 .reading-article--fragment { max-width: 48rem; margin-inline: auto; }
 .reading-article--fragment .reading-entry-header { padding-bottom: 1rem; }
-.reading-inquiry-prompt { font-family: var(--font-serif); font-size: 1.4rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.reading-inquiry-prompt { font-family: var(--font-second); font-size: 1.4rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
 .reading-inquiry-mode { color: var(--reading-unresolved); }
 .reading-inquiry-context { margin: 2rem 0; border-block: 1px solid var(--reading-line); padding-block: .5rem; }
 .reading-inquiry-context summary { cursor: pointer; min-height: 44px; padding: .65rem 0; font-weight: 600; }
@@ -345,9 +345,6 @@ a:focus-visible, summary:focus-visible { outline: 3px solid var(--reading-focus)
 .reading-by-capability dd p { margin: 0 0 .35rem; color: var(--reading-muted); }
 .reading-by-capability ul, .reading-next-groups ul { margin: .25rem 0 .5rem; padding-left: 1.1rem; }
 .reading-next-actions { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
-
-/* Long reading in the case narrative uses the serif; navigation, labels and figures stay in Outfit. */
-.investigation-question > p, .investigation-differently > p, .investigation-how-i-know p, .reading-entry-header .reading-summary { font-family: var(--font-serif); font-size: 1.08rem; line-height: 1.65; }
 
 /* A case's own structure figure inside the headline visual. Scoped and unlayered so the visual's generic stroke rules don't recolor it. */
 .investigation-visual svg.investigation-visual__structure { max-width: 30rem; max-height: 10rem; margin: .75rem auto; }

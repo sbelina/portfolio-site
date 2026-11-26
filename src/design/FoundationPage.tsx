@@ -246,7 +246,7 @@ function About() {
       <h3>Recognition</h3>
       <ul className="pc-recognition">{recognition.map(item => <li key={item.text}><span className="pc-recognition-year">{item.year}</span> {item.text}</li>)}</ul>
       <h3>Speaking</h3>
-      <ul className="pc-speaking">{speaking.map(item => <li key={item.title}><strong>{item.title}</strong> <span className="pc-speaking-where">{item.where}</span> {item.text}</li>)}</ul>
+      <ul className="pc-speaking">{speaking.map(item => <li key={item.title}><strong>{item.title}</strong> <span className="pc-speaking-where">{item.where}</span>{item.text ? <> {item.text}</> : null}</li>)}</ul>
       <h3>Education</h3>
       <p><strong>{education.degree}</strong>, {education.school}. {education.minors}.</p>
       <p><a className="pc-text-link" href={publicPath('/contact/?reason=employment')}>Discuss a role <span aria-hidden="true">→</span></a></p>
