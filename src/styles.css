@@ -2,7 +2,7 @@
 @import './components/experiment-note.css';
 @import './components/public-navigation.css';
 :root {
-  font-family: 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Spline Sans Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #f1eee5;
   background: #151614;
   font-synthesis: none;

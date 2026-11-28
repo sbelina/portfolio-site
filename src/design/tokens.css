@@ -1,5 +1,5 @@
-/* One family: Brandon Grotesque for everything. Outfit (self-hosted, OFL) stands in until licensed Brandon files are added. --font-second stays as an alias so headline rules have one place to change. */
-:root { --font-main: 'Brandon Grotesque', 'Outfit Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --font-second: var(--font-main); }
+/* Two families, both self-hosted under the SIL Open Font License: Spline Sans for body text, navigation and labels (--font-main); Montserrat for headlines (--font-second). */
+:root { --font-main: 'Spline Sans Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; --font-second: 'Montserrat Variable', 'Spline Sans Variable', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 /* Current edition: surface-specific roles. Orange is emphasis, never evidence strength. */
 html[data-edition="current"], .pc-site, .pc-sample {
   color-scheme: light;

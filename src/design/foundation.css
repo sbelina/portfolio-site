@@ -1,4 +1,5 @@
-@import '@fontsource-variable/outfit/index.css';
+@import '@fontsource-variable/spline-sans/index.css';
+@import '@fontsource-variable/montserrat/index.css';
 @import './tokens.css';
 @import './system.css';
 @import './motion.css';
