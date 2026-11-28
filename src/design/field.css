@@ -1,5 +1,5 @@
 /*
- * Interactive figures added 23 November 2026 (owner direction): the Related. Not equivalent. field,
+ * Interactive figures added 23 November 2026: the Related. Not equivalent. field,
  * Test. Show. Enable. in motion, and the Observatory's layered connections field.
  * Same rules as motion.css: complete at rest, movement only (never fading text), and every
  * animation inside prefers-reduced-motion: no-preference.
@@ -16,20 +16,20 @@
   .pc-field-body--turn { fill: var(--signal-art); }
   .pc-field-thread { stroke: var(--signal-art); stroke-width: 1.5; visibility: hidden; }
   .pc-field-gap { fill: none; stroke: var(--signal-art); stroke-width: 1; stroke-dasharray: 2 3; visibility: hidden; }
-  .pc-field-star text { fill: var(--ink); font: 600 15px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .02em; }
+  .pc-field-star text { fill: var(--ink); font: 600 15px/1 var(--font-main); letter-spacing: .02em; }
   .pc-field-star[data-split] .pc-field-left { transform: translateX(-46px); }
   .pc-field-star[data-split] .pc-field-right { transform: translateX(46px); }
   .pc-field-star[data-split] :is(.pc-field-thread, .pc-field-gap) { visibility: visible; }
   .pc-field-star[data-split] .pc-field-halo { visibility: hidden; }
   .pc-field-frame rect { fill: none; stroke: var(--ink); stroke-width: 1; }
-  .pc-field-frame text { fill: var(--ink); font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .pc-field-frame text { fill: var(--ink); font: 13px/1 var(--font-main); }
   .pc-field-points { list-style: none; margin: 0; padding: 0; position: absolute; inset: 0; }
   .pc-field-points li { position: absolute; transform: translate(-50%, -50%); }
   .pc-field-points button { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid transparent; background: transparent; cursor: pointer; }
   .pc-field-points button:hover { border-color: var(--line); }
   .pc-field-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   .pc-field-points button[aria-pressed="true"] { border-color: transparent; }
-  .pc-field-caption { margin: 0; padding: var(--space-2) var(--space-4) var(--space-3); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-field-caption { margin: 0; padding: var(--space-2) var(--space-4) var(--space-3); font: var(--step--1)/1.4 var(--font-main); color: var(--muted); }
   .pc-field-panel { max-width: 46ch; }
   .pc-field-panel > * + * { margin-top: var(--space-3); }
   .pc-field-prompt, .pc-field-question { font-size: var(--step-1); line-height: 1.4; }
@@ -60,7 +60,7 @@
   .pc-tse-static h3 span, .pc-tse-text h3 span { color: var(--signal); }
   .pc-tse-static .pc-tse-svg { background: var(--panel); }
   .pc-tse-svg { display: block; width: 100%; height: auto; fill: none; }
-  .pc-tse-svg text { fill: var(--muted); stroke: none; font: 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+  .pc-tse-svg text { fill: var(--muted); stroke: none; font: 11px/1 var(--font-main); letter-spacing: .08em; }
   .pc-tse-strand { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 4; stroke-linecap: round; }
   .pc-tse-held { stroke: var(--ink); stroke-width: 2; }
   .pc-tse-lens ellipse { stroke: var(--sage); stroke-width: 2; }
@@ -76,7 +76,7 @@
   .pc-tse-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); align-items: center; border: 0; padding: 0; margin: 0 0 var(--space-4); min-width: 0; }
   .pc-tse-controls label { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 44px; font-size: var(--step-1); font-weight: 650; cursor: pointer; }
   .pc-tse-controls input { width: 1.1rem; height: 1.1rem; accent-color: var(--signal); }
-  .pc-tse-number { font: var(--step--1)/1 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-tse-number { font: var(--step--1)/1 var(--font-main); color: var(--muted); }
   .pc-tse-play { min-height: 44px; padding: .4rem 1.1rem; font: inherit; border: 1px solid var(--ink); background: var(--paper); color: var(--ink); cursor: pointer; }
   .pc-tse-stage { display: grid; gap: var(--space-5); }
   .pc-tse-figure { position: relative; background: var(--paper); color: var(--ink); box-shadow: var(--elevation-2); }
@@ -107,8 +107,9 @@
   /* ── Contact ─────────────────────────────────────────────────────────────── */
   .pc-contact-form { display: grid; gap: var(--space-4); max-width: 36rem; margin-top: var(--space-4); }
   .pc-contact-form label { display: grid; gap: var(--space-2); font-weight: 650; }
-  .pc-contact-form :is(input, textarea) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
-  .pc-contact-form :is(input, textarea):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-form :is(input, textarea, select) { width: 100%; min-width: 0; box-sizing: border-box; font: inherit; font-weight: 400; color: var(--ink); background: var(--paper); border: 1px solid var(--line); padding: var(--space-3); min-height: 44px; }
+  .pc-contact-form :is(input, textarea, select):focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+  .pc-contact-trap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   .pc-contact-form button { border: 0; cursor: pointer; font-family: inherit; }
   .pc-contact-optional { font-weight: 400; color: var(--muted); }
   .pc-contact-note { color: var(--muted); font-size: var(--step--1); }
@@ -131,7 +132,7 @@
   .pc-cfield-points li { position: absolute; --depth: 16px; transform: translate(calc(-50% + var(--px, 0) * var(--depth)), calc(-50% + var(--py, 0) * var(--depth))); }
   .pc-cfield-points li[data-layer="thinking"] { --depth: 9px; }
   .pc-cfield-points li[data-layer="archive"] { --depth: 4px; }
-  .pc-cfield-points button { display: grid; justify-items: center; gap: 2px; min-width: 32px; min-height: 32px; padding: 2px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font: 11px/1.15 ui-monospace, SFMono-Regular, Menlo, monospace; text-align: center; }
+  .pc-cfield-points button { display: grid; justify-items: center; gap: 2px; min-width: 32px; min-height: 32px; padding: 2px 4px; border: 0; background: transparent; color: var(--ink); cursor: pointer; font: 11px/1.15 var(--font-main); text-align: center; }
   .pc-cfield-points button:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
   .pc-cfield-mark { display: block; width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
   [data-kind="project"] .pc-cfield-mark { width: 11px; height: 11px; background: var(--signal-art); }
@@ -146,7 +147,7 @@
   .pc-cfield-stage[data-selected] li:not([data-near]) .pc-cfield-name { visibility: hidden; }
   .pc-cfield-stage[data-selected] li[data-near] .pc-cfield-name { color: var(--ink); }
   .pc-cfield-points button[aria-pressed="true"] .pc-cfield-mark { box-shadow: 0 0 0 4px var(--paper), 0 0 0 5px var(--signal-art); }
-  .pc-cfield-caption { margin: var(--space-2) 0 0; font: var(--step--1)/1.3 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-cfield-caption { margin: var(--space-2) 0 0; font: var(--step--1)/1.3 var(--font-main); color: var(--muted); }
   .pc-cfield-panel > * + * { margin-top: var(--space-3); }
   .pc-cfield-panel h3 { font-size: var(--step-2); }
   .pc-cfield-label { font-weight: 650; }
@@ -191,7 +192,7 @@
   .pc-ba-pair { margin: 0; font-size: var(--step-1); font-weight: 650; }
   .pc-ba-sign { color: var(--muted); font-weight: 400; padding-inline: .2em; }
   .pc-ba-panel figcaption { color: var(--ink); max-width: 46ch; }
-  .pc-ba-caption { margin-top: var(--space-2); font: var(--step--1)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-ba-caption { margin-top: var(--space-2); font: var(--step--1)/1.4 var(--font-main); color: var(--muted); }
   /* ── The career thread (About and Contact) ───────────────────────────────── */
   .pc-career { margin-block: var(--space-7); border-top: 1px solid var(--line); padding-top: var(--space-6); }
   .pc-career-lead { max-width: 60ch; }
@@ -205,7 +206,7 @@
   .pc-career-next { fill: none; stroke: var(--ink); stroke-width: 2; stroke-dasharray: 3 4; }
   [data-active] > .pc-career-next { stroke: var(--signal-art); }
   .pc-career-arrow { stroke: var(--signal-art); stroke-width: 2; }
-  .pc-career-svg text { fill: var(--muted); stroke: none; font: 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+  .pc-career-svg text { fill: var(--muted); stroke: none; font: 13px/1 var(--font-main); letter-spacing: .08em; }
   .pc-career-svg [data-active] text { fill: var(--ink); font-weight: 700; }
   @container (max-width: 560px) { .pc-career-title { display: none; } .pc-career-svg text { font-size: 18px; } }
   .pc-career-controls { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-5); border: 0; padding: 0; margin: var(--space-4) 0; min-width: 0; }
@@ -233,7 +234,7 @@
   @media (min-width: 760px) { .pc-about-intro:has(.pc-portrait) { grid-template-columns: 16rem minmax(0, 1fr); } }
 
   /* ── Counting: the first-visit notice, the toast and the About section ──── */
-  .pc-count-notice, .pc-count-toast { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; box-sizing: border-box; overflow-wrap: anywhere; }
+  .pc-count-notice, .pc-count-toast { font-family: var(--font-main); box-sizing: border-box; overflow-wrap: anywhere; }
   .pc-count-notice a { color: inherit; text-underline-offset: .25em; }
   .pc-count-notice { position: fixed; inset: auto auto var(--space-4) var(--space-4); z-index: 40; max-width: min(26rem, calc(100vw - 2rem)); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-3); padding: var(--space-4); background: var(--paper, #f3efe7); color: var(--ink, #111716); border: 1px solid var(--ink, #111716); box-shadow: var(--elevation-2); font-size: var(--step--1, .88rem); line-height: 1.5; }
   .pc-count-notice p { margin: 0 0 var(--space-2); }
@@ -260,7 +261,9 @@
   /* ── The introduction's scene (current edition) ──────────────────────────── */
   .intro-scene { display: block; width: 100%; height: auto; overflow: visible; fill: none; }
   .intro-scene-dust { fill: var(--line); }
+  .intro-scene-mesh line { stroke: var(--soft-line); stroke-width: .75; }
   .intro-scene-halo { stroke: var(--soft-line); }
+  .intro-scene-focus { stroke: var(--signal-art); stroke-width: 1.5; stroke-dasharray: 3 4; }
   .intro-scene-body { fill: var(--ink); }
   .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-body--turn { fill: var(--signal-art); }
   .intro-scene:is([data-stage="2"], [data-stage="3"]) .intro-scene-left { transform: translateX(-60px); }
@@ -269,19 +272,68 @@
   .intro-scene-thread { stroke: var(--signal-art); stroke-width: 2; visibility: hidden; }
   .intro-scene-gap { stroke: var(--signal-art); stroke-dasharray: 2 3; visibility: hidden; }
   .intro-scene[data-stage="3"] :is(.intro-scene-thread, .intro-scene-gap) { visibility: visible; }
-  .intro-scene-frame rect { stroke: var(--ink); stroke-width: 1; }
+  .intro-scene-frame path { stroke: var(--ink); stroke-width: 1.5; }
   .intro-scene-lens ellipse { stroke: var(--sage); stroke-width: 2.5; }
-  .intro-scene text { fill: var(--ink); stroke: none; font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .1em; }
+  .intro-scene-leader { stroke: var(--line); stroke-width: 1; }
+  .intro-scene text { fill: var(--ink); stroke: none; font: 600 12px/1 var(--font-main); letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+  .intro-scene-tag rect { fill: var(--paper); stroke: var(--line); stroke-width: 1; }
+  .intro-scene-tag--turn rect { stroke: var(--signal-art); }
+  .intro-scene-case-label text { font-weight: 500; letter-spacing: .02em; fill: var(--muted); }
   .intro-scene .intro-scene-caption { fill: var(--muted); font-weight: 400; letter-spacing: .14em; }
-  .intro-scene-other circle { fill: var(--line); }
-  .intro-scene-other-thread { stroke: var(--signal-art); stroke-width: 1; visibility: hidden; }
-  .intro-scene[data-stage="3"] .intro-scene-other-left { transform: translateX(-14px); fill: var(--ink); }
-  .intro-scene[data-stage="3"] .intro-scene-other-right { transform: translateX(14px); fill: var(--signal-art); }
-  .intro-scene[data-stage="3"] .intro-scene-other-thread { visibility: visible; }
-  .intro-scene-pattern { stroke: var(--line); stroke-dasharray: 2 6; }
-  @container (max-width: 520px) { .intro-scene text { font-size: 30px; letter-spacing: .02em; } .intro-scene .intro-scene-caption { font-size: 24px; letter-spacing: .02em; } }
+  .intro-scene-tiles rect { stroke: var(--soft-line); stroke-width: 1; fill: var(--paper); }
+  .intro-scene-tiles path { stroke: var(--muted); stroke-width: 1.5; }
+  .intro-scene-tiles text { fill: var(--muted); letter-spacing: 0; }
+  .intro-scene-tiles .is-done rect { fill: var(--soft-line); stroke: var(--line); }
+  .intro-scene-tiles .is-done text { fill: var(--ink); }
+  .intro-scene-tiles .is-current rect { stroke: var(--signal-art); stroke-width: 1.5; }
+  .intro-scene-tiles .is-current text { fill: var(--signal-art); }
+  .intro-scene-tiles .is-current path { stroke: var(--signal-art); }
+  .intro-scene-case circle { fill: var(--line); }
+  .intro-scene-case-thread { stroke: var(--signal-art); stroke-width: 1; visibility: hidden; }
+  .intro-scene[data-stage="3"] .intro-scene-case-left { transform: translateX(-8px); fill: var(--ink); }
+  .intro-scene[data-stage="3"] .intro-scene-case-right { transform: translateX(8px); fill: var(--signal-art); }
+  .intro-scene[data-stage="3"] .intro-scene-case-thread { visibility: visible; }
+  .intro-scene-spoke { stroke: var(--line); stroke-width: .75; stroke-dasharray: 2 5; }
+  .intro-scene-signal { stroke: var(--signal-art); stroke-width: 2.5; stroke-linecap: round; visibility: hidden; }
+  /* On narrow screens the labels would be too small to read, so the case tags step aside and the rest grows. */
+  @container (max-width: 520px) { .intro-scene text { font-size: 26px; letter-spacing: .02em; } .intro-scene .intro-scene-caption { font-size: 22px; letter-spacing: .02em; } .intro-scene-case-label, .intro-scene-tiles { display: none; } .intro-scene-tag text { font-size: 20px; } }
 
-  /* ── About: positioning and the storm workflow (owner direction, 25 November 2026) ── */
+  /* ── Professional orientation: tagline, figure meaning, capabilities, pathways ── */
+  .pc-tagline { margin: 0; font-size: var(--step-1); color: var(--muted); max-width: 52ch; }
+  @media (max-width: 640px) { .pc-tagline { font-size: 1rem; line-height: 1.5; } }
+  .pc-result-basis { margin: var(--space-1) 0 0; font-size: var(--step--1); color: var(--muted); max-width: 34ch; }
+  .pc-capability-list { list-style: none; padding: 0; margin: var(--space-4) 0 0; display: grid; gap: 0; border-top: 1px solid var(--line); max-width: 75ch; }
+  .pc-capability-list li { display: grid; gap: var(--space-1); padding-block: var(--space-3); border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .pc-capability-list li { grid-template-columns: 20rem minmax(0, 1fr); gap: var(--space-5); align-items: baseline; } }
+  .pc-capability-list a { display: inline-flex; flex-wrap: wrap; gap: 0 var(--space-2); align-items: baseline; min-height: 44px; }
+  .pc-capability-count { font-size: var(--step--1); color: var(--muted); font-weight: 400; }
+  .pc-pathways { list-style: none; padding: 0; margin: var(--space-4) 0; display: grid; gap: var(--space-3); max-width: 60ch; }
+  .pc-pathways li { display: grid; gap: var(--space-1); }
+  .pc-pathways a { display: inline-flex; min-height: 44px; align-items: center; }
+  .pc-pathways span { color: var(--muted); }
+
+  .pc-history-scroll { overflow-x: auto; max-width: 75ch; }
+  .pc-history-scroll:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pc-history-table { border-collapse: collapse; width: 100%; min-width: 34rem; overflow-wrap: normal; }
+  .pc-history-table :is(th, td) { text-align: left; vertical-align: top; padding: var(--space-2) var(--space-3) var(--space-2) 0; border-bottom: 1px solid var(--line); }
+  .pc-history-table thead th { font-size: var(--step--1); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .pc-history-table td:first-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .pc-recognition { list-style: none; padding: 0; margin: var(--space-2) 0 var(--space-4); max-width: 70ch; }
+  .pc-recognition-year { font-weight: 700; font-variant-numeric: tabular-nums; margin-right: var(--space-2); }
+  .pc-speaking { padding-left: 1.25rem; margin: var(--space-2) 0 var(--space-4); max-width: 70ch; display: grid; gap: var(--space-2); }
+  .pc-speaking-where { display: block; font-size: var(--step--1); color: var(--muted); }
+  .pc-history-note { display: block; font-weight: 400; font-size: var(--step--1); color: var(--muted); }
+
+  .pc-method-inventory { display: grid; gap: 0; margin: var(--space-3) 0 var(--space-5); max-width: 75ch; border-top: 1px solid var(--line); }
+  .pc-method-inventory > div { display: grid; gap: var(--space-1); padding-block: var(--space-2); border-bottom: 1px solid var(--line); }
+  @media (min-width: 760px) { .pc-method-inventory > div { grid-template-columns: 18rem minmax(0, 1fr); gap: var(--space-4); } }
+  .pc-method-inventory dt { font-weight: 650; }
+  .pc-method-inventory dd { margin: 0; }
+  .pc-agenda-list { padding-left: 1.5rem; display: grid; gap: var(--space-4); max-width: 70ch; }
+  .pc-agenda-list h3 { margin: 0; }
+  .pc-agenda-links { margin: var(--space-1) 0 0; font-size: var(--step--1); }
+
+  /* ── About: positioning and the storm workflow ── */
   .pc-positioning-philosophy { font-size: var(--step-1); line-height: 1.5; max-width: 60ch; }
   .pc-positioning-list { display: grid; gap: 0; margin: var(--space-5) 0; max-width: 70ch; border-top: 1px solid var(--line); }
   .pc-positioning-list > div { display: grid; gap: var(--space-1); padding-block: var(--space-4); border-bottom: 1px solid var(--line); }
@@ -290,7 +342,7 @@
   .pc-positioning-list dd { margin: 0; }
   .pc-positioning-differentiator { font-size: var(--step-1); line-height: 1.5; max-width: 60ch; border-left: 3px solid var(--signal-art); padding-left: var(--space-4); }
   .pc-storm-figure { margin: var(--space-5) 0; max-width: 70ch; }
-  .pc-storm-label { margin: 0 0 var(--space-3); font: 600 var(--step--1)/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--muted); }
+  .pc-storm-label { margin: 0 0 var(--space-3); font: 600 var(--step--1)/1.5 var(--font-main); color: var(--muted); }
   .pc-storm-steps { margin: 0; padding-left: 1.5rem; display: grid; gap: var(--space-3); }
   .pc-storm-steps strong { display: block; }
   .pc-storm-why { color: var(--muted); }
@@ -318,16 +370,27 @@
     .intro-scene[data-stage="0"] .intro-scene-halo { transform-box: fill-box; transform-origin: center; animation: pc-field-breathe 2.8s ease-in-out infinite; }
     .intro-scene[data-stage="1"] .intro-scene-left { animation: intro-jitter 1.1s ease-in-out infinite; }
     .intro-scene[data-stage="1"] .intro-scene-right { animation: intro-jitter 1.1s ease-in-out infinite reverse; }
+    .intro-scene-frame path { animation: intro-close .5s var(--ease-out) both; }
+    .intro-scene-frame[data-wide] path { animation-name: intro-open; }
     .intro-scene-lens { animation: intro-sweep 1s var(--ease-out) both; }
     .intro-scene[data-stage="2"] :is(.intro-scene-left, .intro-scene-right) { transition: transform .9s .55s var(--ease-out); }
+    .intro-scene[data-stage="2"] .intro-scene-tag { animation: intro-rise .5s 1s var(--ease-out) both; }
     .intro-scene[data-stage="3"] .intro-scene-thread { stroke-dasharray: 120; animation: intro-draw .8s var(--ease-out) both; }
-    .intro-scene[data-stage="3"] :is(.intro-scene-other-left, .intro-scene-other-right) { transition: transform .7s calc(.3s + var(--i, 0) * .1s) var(--ease-out); }
-    .intro-scene[data-stage="3"] .intro-scene-pattern { stroke-dashoffset: 0; animation: pc-field-pattern 1.8s .6s var(--ease-out) both; }
+    .intro-scene[data-stage="3"] .intro-scene-focus { transform-box: fill-box; transform-origin: center; animation: intro-turn 14s linear infinite; }
+    .intro-scene[data-stage="3"] .intro-scene-spoke { stroke-dashoffset: 0; animation: pc-field-pattern 1s calc(.3s + var(--i, 0) * .08s) var(--ease-out) both; }
+    .intro-scene[data-stage="3"] .intro-scene-signal { visibility: visible; stroke-dasharray: 4 600; stroke-dashoffset: 4; animation: intro-signal 2.6s calc(1s + var(--i, 0) * .29s) ease-in infinite; }
+    .intro-scene[data-stage="3"] :is(.intro-scene-case-left, .intro-scene-case-right) { transition: transform .7s calc(.5s + var(--i, 0) * .08s) var(--ease-out); }
+    .intro-scene[data-stage="3"] .intro-scene-case-label { animation: intro-rise .5s calc(.7s + var(--i, 0) * .08s) var(--ease-out) both; }
   }
   @keyframes pc-career-draw { from { stroke-dashoffset: 1000; } to { stroke-dashoffset: 0; } }
   @keyframes pc-count-rise { from { translate: 0 1.5rem; } }
   @keyframes intro-jitter { 25% { transform: translate(-3px, 1px); } 75% { transform: translate(3px, -1px); } }
   @keyframes intro-sweep { from { transform: translateX(-280px); } }
+  @keyframes intro-close { from { transform: scale(1.6); } }
+  @keyframes intro-open { from { transform: scale(.4); } }
+  @keyframes intro-rise { from { transform: translateY(8px); } }
+  @keyframes intro-turn { to { transform: rotate(360deg); } }
+  @keyframes intro-signal { 0% { stroke-dashoffset: 4; } 70%, 100% { stroke-dashoffset: -340; } }
   @keyframes intro-draw { from { stroke-dashoffset: 120; } to { stroke-dashoffset: 0; } }
   @keyframes pc-tse-sweep { from { transform: translateX(-150px); } }
   @keyframes pc-tse-draw { from { stroke-dashoffset: 600; } to { stroke-dashoffset: 0; } }

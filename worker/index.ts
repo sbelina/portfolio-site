@@ -1,14 +1,16 @@
 import { handleDeepDive, type DeepDiveEnv } from './deep-dive'
 import { handleCount, type CountStore } from './count'
+import { handleContact, type ContactEnv } from './contact'
 
 /**
- * The site is static assets. This Worker runs first only for /deep-dive/*, /api/count and the retired /builds/*
+ * The site is static assets. This Worker runs first only for /deep-dive/*, /api/count, /api/contact and the retired /builds/*
  * addresses (see wrangler.jsonc `run_worker_first`); every other request is served by the assets layer.
  */
 export default {
-  async fetch(request: Request, env: DeepDiveEnv & { COUNTS?: CountStore }): Promise<Response> {
+  async fetch(request: Request, env: DeepDiveEnv & ContactEnv & { COUNTS?: CountStore }): Promise<Response> {
     const { pathname } = new URL(request.url)
     if (pathname === '/api/count') return handleCount(request, env.COUNTS)
+    if (pathname === '/api/contact') return handleContact(request, env)
     if (pathname === '/deep-dive' || pathname.startsWith('/deep-dive/')) return handleDeepDive(request, env)
     if (pathname === '/builds' || pathname.startsWith('/builds/')) return retiredBuild(request)
     return env.ASSETS.fetch(request)
@@ -16,7 +18,7 @@ export default {
 }
 
 /**
- * Previous editions of the site are retired from public delivery (owner decision, 23 November 2026).
+ * Previous editions of the site are retired from public delivery.
  * They are preserved privately; every old address, including nested assets, answers 410 Gone.
  */
 export function retiredBuild(request: Request): Response {

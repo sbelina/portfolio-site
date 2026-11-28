@@ -1,5 +1,5 @@
 /**
- * About-page positioning and the storm-workflow example (owner direction, 25 November 2026).
+ * About-page positioning and the storm-workflow example.
  * The owner wrote the supporting points to themself ("You don’t simply research…"); the site states them
  * in the first person. The storm workflow is reconstructed from the owner's account: the original was not
  * saved, and the time saved is the owner's estimate, not a measurement.
@@ -12,7 +12,7 @@ export const positioningPoints = [
   { term: 'What institutions gain', detail: 'More accurate understanding, greater operational effectiveness, reduced organizational and human costs, and stronger capacity to adapt.' },
 ] as const
 
-export const differentiator = { lead: 'I don’t simply research people within systems.', turn: 'I investigate and redesign the systems through which institutions understand people, interpret evidence, and act.' } as const
+export const differentiator = { lead: 'I research people within systems, and', turn: 'I investigate and redesign the systems through which institutions understand people, interpret evidence, and act.' } as const
 
 export const stormWorkflow = {
   title: 'An early example: the storm workflow',

@@ -3,7 +3,7 @@ import { diagramEvidenceIds } from '../content/assumed-observed'
 import type { PublicEntry, PublicProjection } from '../content/model'
 import { renderBlocks } from './render-blocks'
 
-export type LinkedEntry = Pick<PublicEntry, 'id' | 'path' | 'title'> & Partial<Pick<PublicEntry, 'kind' | 'summary' | 'slug'>> & { status?: NonNullable<NonNullable<PublicEntry['investigation']>['status']>; stakes?: string; deepDive?: boolean; thumb?: { composition: NonNullable<PublicEntry['investigation']>['composition']; left: string; right: string } }
+export type LinkedEntry = Pick<PublicEntry, 'id' | 'path' | 'title'> & Partial<Pick<PublicEntry, 'kind' | 'summary' | 'slug'>> & { status?: NonNullable<NonNullable<PublicEntry['investigation']>['status']>; stakes?: string; deepDive?: boolean; brief?: NonNullable<NonNullable<PublicEntry['investigation']>['brief']>; thumb?: { composition: NonNullable<PublicEntry['investigation']>['composition']; left: string; right: string } }
 export type ReadingContext = {
   entries: LinkedEntry[]
   relationships: PublicProjection['relationships']
@@ -23,8 +23,10 @@ export type ReadingPageData = {
   renderedMarkdown: Record<string, string>
   /** Explicit build context; private entry previews need not expose a collection. */
   inquirySpacePath?: string
+  /** Other published case studies (title, path, slug) for capability-based "more work like this" links. Not relationships. */
+  related?: { path: string; title: string; slug: string }[]
 }
-const metadata = ({ id, kind, path, slug, title, summary, investigation }: PublicEntry): LinkedEntry => ({ id, kind, path, slug, title, summary, ...(investigation?.status ? { status: investigation.status } : {}), ...(investigation?.decision ? { stakes: investigation.decision.stakes } : {}), ...(investigation?.deepDive ? { deepDive: true } : {}), ...(investigation ? { thumb: { composition: investigation.composition, left: investigation.visual.left, right: investigation.visual.right } } : {}) })
+const metadata = ({ id, kind, path, slug, title, summary, investigation }: PublicEntry): LinkedEntry => ({ id, kind, path, slug, title, summary, ...(investigation?.status ? { status: investigation.status } : {}), ...(investigation?.decision ? { stakes: investigation.decision.stakes } : {}), ...(investigation?.deepDive ? { deepDive: true } : {}), ...(investigation?.brief ? { brief: investigation.brief } : {}), ...(investigation ? { thumb: { composition: investigation.composition, left: investigation.visual.left, right: investigation.visual.right } } : {}) })
 
 export function readingPageData(projection: PublicProjection, kind: ReadingPageData['kind'], fixture: boolean, entryId?: string, inquirySpacePath?: string): ReadingPageData {
   const empty: ReadingContext = { entries: [], relationships: [], evidence: [], assets: [] }
@@ -40,6 +42,7 @@ export function readingPageData(projection: PublicProjection, kind: ReadingPageD
   const assetIds = new Set([...evidence.flatMap(item => item.assetIds), ...entry.blocks.flatMap(block => block.type === 'image' ? [block.assetId] : [])])
   return {
     kind, fixture, entry: structuredClone(entry), ...(inquirySpacePath ? { inquirySpacePath } : {}),
+    ...(!fixture && entry.kind === 'investigation' ? { related: projection.entries.filter(item => item.kind === 'investigation' && item.id !== entry.id && item.slug).map(item => ({ path: item.path, title: item.title, slug: item.slug! })) } : {}),
     projection: {
       entries: projection.entries.filter(item => linkedIds.has(item.id)).map(({ id, path, title }) => ({ id, path, title })),
       relationships: structuredClone(relationships), evidence: structuredClone(evidence),

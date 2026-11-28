@@ -1,5 +1,5 @@
 /**
- * Trusted release loader for approved public content (owner decision, 23 November 2026).
+ * Trusted release loader for approved public content.
  *
  * How approval works:
  * 1. `npm run release:prepare` digests every record in content/release/cases.ts and writes

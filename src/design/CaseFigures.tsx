@@ -1,9 +1,10 @@
+import { CaseStructure, caseStructures } from './CaseStructure'
 import React, { useEffect, useState } from 'react'
 import type { Blueprint, Investigation, Composition } from '../content/investigation'
 import { Stressed } from '../content/emphasis'
 
 /**
- * Case figures (owner direction, 23 November), each after a reference the owner supplied:
+ * Case figures, each after a reference the owner supplied:
  * the method profile (a survey-types infographic), the process dial (a "typical day" clock),
  * the shared legend (a map legend that encodes certainty) and card thumbnails (case-study galleries).
  * Every one reads completely without JavaScript and encodes no data beyond the case's own approved text.
@@ -113,20 +114,21 @@ export function ProcessDial({ blueprint }: { blueprint: Blueprint }) {
 }
 
 /** A small, decorative mark of the case's own distinction for gallery cards; the pair is given as text. */
-export function CaseThumb({ composition, left, right }: { composition: Composition; left: string; right: string }) {
+export function CaseThumb({ composition, left, right, slug }: { composition: Composition; left: string; right: string; slug?: string }) {
+  const structure = slug ? caseStructures[slug] : undefined
   return <div className="pc-thumb">
-    <svg viewBox="0 0 160 48" aria-hidden="true" focusable="false">
+    {structure ? <CaseStructure slug={slug!}/> : <svg viewBox="0 0 160 48" aria-hidden="true" focusable="false">
       {composition === 'boundary' ? <><path d="M8 24H72M88 24H152" className="pc-legend-ink"/><path d="M80 4V44" className="pc-legend-thread" strokeDasharray="3 4"/></> : null}
       {composition === 'comparison' ? <><ellipse cx="62" cy="24" rx="44" ry="17" className="pc-legend-ink"/><ellipse cx="98" cy="24" rx="44" ry="17" className="pc-legend-check"/></> : null}
       {composition === 'network' ? <>{[[20, 10], [30, 36], [48, 16], [58, 40], [40, 26]].map(([x, y]) => <path key={`${x}${y}`} d={`M${x} ${y}L120 24`} className="pc-legend-ink" strokeDasharray="2 4"/>)}<rect x="112" y="16" width="16" height="16" className="pc-legend-turn"/></> : null}
       {composition === 'revision' ? <><path d="M8 32Q50 4 80 32T152 32" className="pc-legend-ink" strokeDasharray="2 4"/><path d="M8 32Q50 44 80 18T152 32" className="pc-legend-thread"/></> : null}
-    </svg>
+    </svg>}
     <span className="pc-thumb-pair">{left} <span aria-hidden="true">≠</span><span className="pc-sr-only">is not</span> {right}</span>
   </div>
 }
 
 /**
- * Before and after, near the top of each case (owner direction, 24 November, after portfolio research:
+ * Before and after, near the top of each case (
  * reviewers look for the change first). Built only from the case's approved text: before is the
  * explanation people held, with the two things drawn as one; after is what changed, with them drawn apart.
  * Static, so it reads the same with or without JavaScript.

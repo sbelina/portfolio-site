@@ -13,13 +13,19 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "force-trailing-slash",
-    "run_worker_first": ["/deep-dive", "/deep-dive/*", "/builds", "/builds/*", "/api/count"]
+    "run_worker_first": ["/deep-dive", "/deep-dive/*", "/builds", "/builds/*", "/api/count", "/api/contact"]
   },
   // Private deep-dive store (namespace "portfolio-site-deep-dive", created 23 November 2026).
   // Holds rendered deep dives only; never commit their text. Still closed until both secrets exist.
-  "kv_namespaces": [{ "binding": "DEEP_DIVE", "id": "e234e2df893d4663ad5ff5d61fa4fd84" }],
+  "kv_namespaces": [{ "binding": "DEEP_DIVE", "id": "e234e2df893d4663ad5ff5d61fa4fd84" }, { "binding": "CONTACT_STATE", "id": "f02547a8556b41399a4ef52cb60042e3" }],
   // Anonymous usage counts (worker/count.ts): event, path and short detail only. Analytics Engine was
   // enabled on the account on 24 November. This file is the source of truth: a deploy replaces any
   // binding added in the dashboard. The dataset is created on first write.
-  "analytics_engine_datasets": [{ "binding": "COUNTS", "dataset": "producing_curiosity_counts" }]
+  "analytics_engine_datasets": [{ "binding": "COUNTS", "dataset": "producing_curiosity_counts" }],
+  // Contact form (worker/contact.ts). Per-client limit: 3 submissions a minute; CONTACT_STATE (KV namespace
+  // "portfolio-site-contact") holds only the time of the last message, so the site sends one per five minutes. The email binding is added
+  // only after the owner turns on Email Routing for this domain and verifies hello@sbelina.com, because a
+  // deploy with a send_email binding fails until then. Until it exists, /api/contact answers 503 and the
+  // form prepares an email in the visitor's own app instead.
+  "ratelimits": [{ "name": "CONTACT_LIMIT", "namespace_id": "4101", "simple": { "limit": 3, "period": 60 } }]
 }

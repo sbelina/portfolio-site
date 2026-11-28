@@ -23,7 +23,10 @@ import { prerenderAtlas } from './build-atlas'
 import { prerenderInquirySpace } from './build-inquiry-space'
 import { inquirySpacePath } from '../src/inquiry-space/paths'
 import { inquiryIllustrationProjection } from '../src/inquiry-space/illustration'
-import { seoHead, homeTitle, homeDescription, siteOrigin } from './seo'
+import { seoHead, homeTitle, homeDescription, siteOrigin, breadcrumbs, personRef, websiteRef, type JsonLd } from './seo'
+import { caseSearch } from '../src/content/search-metadata'
+import { caseLabel } from '../src/content/primary-evidence'
+import { existsSync } from 'node:fs'
 import { loadApprovedProjection } from './release'
 import { plainText } from '../src/content/emphasis'
 
@@ -61,8 +64,8 @@ const home = homeTemplate.replace(/<!--app-start-->[\s\S]*?<!--app-end-->/, () =
   .replace('<!--seo-head-->', () => seoHead({ title: homeTitle, description: homeDescription, route: '/', indexable: !preview, website: true }))
   .replace('<div id="root">', '<div id="root" data-prerendered="true">')
   .replace('</body>', `<script id="home-reading" type="application/json">${escapeJson(reading)}</script></body>`)
-// Every old anchor stays reachable: as a target on the page, or (current edition, owner direction 23 November)
-// as a fragment the homepage redirects to its current page.
+// Every old anchor stays reachable: as a target on the page, or as a fragment the homepage redirects
+// to its current page.
 for (const id of baselineAnchors) if (!home.includes(`id="${id}"`) && (fixture || !Object.hasOwn(legacyFragments, id))) throw new Error(`An existing legacy anchor would be lost: ${id}`)
 await writeFile(path.join(output, 'index.html'), home)
 await prerenderHiddenWork(output, fixture)
@@ -73,20 +76,41 @@ await prerenderInquirySpace(output, inquiryProjection, fixture)
 const illustrativeEntries = fixture ? [] : inquiryProjection.entries
 const routes = [...publicStaticRoutes, ...projection.entries.map(entry => entry.path), ...illustrativeEntries.map(entry => entry.path)]
 if (new Set(routes).size !== routes.length || projection.aliases.some(alias => alias.kind === 'path' && routes.includes(alias.path))) throw new Error('An illustrative route collides with canonical content, an alias or a static destination')
-async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true) {
-  const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !preview && !!route }))
+async function page(file: string, data: ReadingPageData, title: string, description: string, route?: string, indexable = true, extra: { jsonLd?: JsonLd[]; image?: { path: string; alt: string } } = {}) {
+  const html = readingTemplate.replace('<!--reading-head-->', () => seoHead({ title, description, route, indexable: indexable && !preview && !!route, ...extra }))
     .replace('<html lang="en">', !fixture || !!data.entry?.inquirySpace ? '<html lang="en" data-edition="current">' : '<html lang="en">')
     .replace('<!--reading-html-->', () => renderToString(<ReadingPage page={data} />))
     .replace('<!--reading-data-->', () => `<script id="reading-data" type="application/json">${escapeJson(data)}</script>`)
   const target = path.join(output, file)
   await mkdir(path.dirname(target), { recursive: true }); await writeFile(target, html)
 }
-await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies — Producing Curiosity', 'Case studies by Sami Belina: the problem, the evidence, what changed, and my part and its limits.', '/investigations/', reading.entries.length > 0)
-for (const entry of projection.entries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) }, `${plainText(entry.title)}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, plainText(entry.summary), entry.path)
+await page('investigations/index.html', { ...readingPageData(projection, 'collection', fixture), ...(candidate ? { candidate: true } : {}) }, fixture ? 'Investigations — Producing Curiosity' : 'Case studies in applied research and systems strategy · Sami Belina', `${projection.entries.filter(entry => entry.kind === 'investigation').length} case studies by Sami Belina in organizational effectiveness, research and measurement, service design, knowledge systems and responsible AI.`, '/investigations/', reading.entries.length > 0, { jsonLd: [
+  { '@type': 'CollectionPage', '@id': `${siteOrigin}/investigations/#page`, name: 'Case studies', url: `${siteOrigin}/investigations/`, author: personRef, isPartOf: websiteRef,
+    mainEntity: { '@type': 'ItemList', itemListElement: projection.entries.map((entry, index) => ({ '@type': 'ListItem', position: index + 1, url: siteOrigin + entry.path, name: plainText(entry.title) })) } },
+  breadcrumbs([{ name: 'Home', path: '/' }, { name: 'Case studies', path: '/investigations/' }]),
+] })
+for (const entry of projection.entries) {
+  // Search gets a plain title naming the kind of work; the page keeps its editorial headline.
+  const search = !fixture && !candidate && entry.slug ? caseSearch[entry.slug] : undefined
+  const url = siteOrigin + entry.path
+  const headline = plainText(entry.title)
+  const image = entry.slug && existsSync(path.join('public', 'social', `${entry.slug}.png`)) ? { path: `/social/${entry.slug}.png`, alt: `${headline} A case study by Sami Belina.` } : undefined
+  const jsonLd: JsonLd[] = search ? [
+    { '@type': 'Article', '@id': `${url}#article`, headline, alternativeHeadline: search.title, description: search.description, url, mainEntityOfPage: url,
+      author: personRef, publisher: personRef, isPartOf: websiteRef, inLanguage: 'en', dateModified: entry.updatedAt, datePublished: entry.createdAt,
+      ...(caseLabel(entry.slug) ? { about: caseLabel(entry.slug) } : {}), ...(image ? { image: siteOrigin + image.path } : {}) },
+    breadcrumbs([{ name: 'Home', path: '/' }, { name: 'Case studies', path: '/investigations/' }, { name: headline, path: entry.path }]),
+  ] : []
+  await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(projection, 'entry', fixture, entry.id, fixture && entry.inquirySpace ? inquirySpacePath : undefined), ...(candidate ? { candidate: true } : {}) },
+    search ? `${search.title} · Sami Belina` : `${headline}${candidate ? ' — unapproved candidate' : ''} — Producing Curiosity`, search?.description ?? plainText(entry.summary), entry.path, true, { jsonLd, image })
+}
 for (const entry of illustrativeEntries) await page(`${entry.path.slice(1)}index.html`, { ...readingPageData(inquiryProjection, 'entry', false, entry.id, inquirySpacePath), illustrative: true }, `${entry.title} — synthetic illustration · Producing Curiosity`, entry.summary, entry.path, false)
 await page('404.html', readingPageData(projection, 'not-found', fixture), 'Page not found — Producing Curiosity', 'This reading is not available.')
 for (const [kind, metadata] of Object.entries(foundationPages)) {
-  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !preview }))
+  const html = foundationTemplate.replace('<!--foundation-head-->', () => seoHead({ title: `${metadata.title} — Producing Curiosity`, description: metadata.description, route: metadata.path, indexable: metadata.indexable && !preview, jsonLd: [
+    ...(kind === 'about' ? [{ '@type': 'ProfilePage', '@id': `${siteOrigin}${metadata.path}#page`, url: siteOrigin + metadata.path, name: metadata.title, mainEntity: personRef, isPartOf: websiteRef }] : []),
+    breadcrumbs([{ name: 'Home', path: '/' }, { name: metadata.title, path: metadata.path }]),
+  ] }))
     .replace('data-page=""', `data-page="${kind}"`)
     .replace('<!--foundation-html-->', () => renderToString(<FoundationPage kind={kind as FoundationKind}/>))
   const target = path.join(output, metadata.path.slice(1), 'index.html')
@@ -109,7 +133,7 @@ if (fixture) for (const [kind, metadata] of Object.entries(proposalPages)) {
   proposalRoutes.push(metadata.path)
 }
 const redirects = projection.aliases.filter(alias => alias.kind === 'path').map(alias => `${alias.path} ${projection.entries.find(entry => entry.id === alias.targetId)!.path} 301`)
-// Readers look for “work” and “case studies”; both names lead to the collection (23 November).
+// Readers look for “work” and “case studies”; both names lead to the collection.
 redirects.push('/work/ /investigations/ 301', '/work /investigations/ 301', '/case-studies/ /investigations/ 301', '/case-studies /investigations/ 301')
 await writeFile(path.join(output, '_redirects'), `${redirects.join('\n')}\n`)
 for (const asset of verifyPublicAssets(projection, id => {
@@ -124,7 +148,7 @@ await writeFile(path.join(output, 'route-manifest.json'), JSON.stringify({ schem
 await writeFile(path.join(output, 'search-index.json'), JSON.stringify(projection.entries.map(({ id, path, title, summary }) => ({ id, path, title: plainText(title), summary: plainText(summary) }))))
 await writeFile(path.join(output, 'graph-index.json'), JSON.stringify({ nodes: projection.entries.map(({ id, path, title, kind }) => ({ id, path, title: plainText(title), kind })), edges: projection.relationships.filter(relationship => !relationship.exploration) }))
 const indexableRoutes = preview || publicBase() !== '/' ? [] : ['/', '/experiments/reveal-hidden-work/', ...Object.values(foundationPages).filter(page => page.indexable).map(page => page.path), ...(reading.entries.length ? ['/investigations/'] : []), ...projection.entries.map(entry => entry.path)]
-await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => `<url><loc>${origin}${route}</loc></url>`).join('')}</urlset>`)
+await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${indexableRoutes.map(route => { const modified = projection.entries.find(entry => entry.path === route)?.updatedAt?.slice(0, 7); return `<url><loc>${origin}${route}</loc>${modified ? `<lastmod>${modified}</lastmod>` : ''}</url>` }).join('')}</urlset>`)
 await mkdir('docs/codex/generated', { recursive: true })
 if (publicBase() === '/' && !preview) await writeFile('docs/codex/generated/migration-ledger.json', JSON.stringify(migrationLedger(home), null, 2)+'\n')
 // No generic Vite shell may turn an unknown URL into a soft 200.

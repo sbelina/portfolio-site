@@ -1,5 +1,5 @@
 /**
- * The career thread (owner direction, 24 November 2026): in place of a résumé on About and Contact, with a
+ * The career thread: in place of a résumé on About and Contact, with a
  * link to request the full résumé. Each era is a turn: what I learned that changed what I did next.
  *
  * Organizations are not named. Each is described by what makes it recognizable in its own field, which
@@ -34,7 +34,7 @@ export const careerEras: readonly Era[] = [
     title: 'Foundations',
     subtitle: 'Design, code and access',
     setting: 'A design degree (2011–2016), with roles at a web-hosting company serving small businesses (2012–2013), a summer camp (2015–2016), a web design firm (2017–2018) and an authorized device-repair provider (2018–2019)',
-    turn: 'I learned that a working interface is not the same as a usable one.',
+    turn: 'I learned that working and usable are separate tests.',
     parts: [
       { text: 'Consulted small-business owners on hosting, websites and being found in search' },
       { text: 'Designed a summer-long arts program for ages 4 to 17, and restored a kiln to teach ceramics' },
@@ -49,7 +49,7 @@ export const careerEras: readonly Era[] = [
     title: 'Information systems',
     subtitle: 'Knowledge that has to travel',
     setting: 'A global consumer-technology company known for its devices and its support experience',
-    turn: 'I learned that support friction starts in how knowledge is structured, not where customers ask.',
+    turn: 'I learned that support friction often starts in how knowledge is structured.',
     parts: [
       { text: 'Spotted a recurring storm-delivery problem in support chats and built the workflow leadership shared across countries; by my estimate it cut those chats by about a third' },
       { text: 'Audited all of a team’s metadata tags and implemented the approved standard', proof: { label: 'Consumer technology · content governance & learning design', href: '/investigations/knowledge-publishing/' } },
@@ -64,7 +64,7 @@ export const careerEras: readonly Era[] = [
     title: 'Enterprise investigation',
     subtitle: 'Explanations that cost money',
     setting: 'One of the largest U.S. auto insurers, known for usage-based pricing',
-    turn: 'I learned that the costliest problems were not unsolved. They were explained wrong.',
+    turn: 'I learned that the costliest problems were the ones explained wrong.',
     parts: [
       { text: 'Diagnosed operational failures without an assignment, and moved where verification happens', proof: { label: 'Insurance operations · process & service design', href: '/investigations/claims-operations/' } },
       { text: 'Automated repetitive entry with tools we already had; peers and two managers adopted it', proof: { label: 'Insurance operations · operational automation', href: '/investigations/operational-friction/' } },
@@ -73,7 +73,7 @@ export const careerEras: readonly Era[] = [
       { text: 'Recovered usability findings when the session audio failed', proof: { label: 'Product research · usability research', href: '/investigations/telematics/' } },
       { text: 'Led the synthesis of 38 AI proposals into 8 shared challenge areas, and coached in the sprint', proof: { label: 'Enterprise innovation · opportunity synthesis', href: '/investigations/enterprise-ai/' } },
       { text: 'Originated an AI-assisted development experiment, and evaluated what automated checks miss', proof: { label: 'AI-assisted development · accessibility evaluation', href: '/investigations/accessibility-ai/' } },
-      { text: 'Took part in strategic foresight work' },
+      { text: 'Selected as one of 12, from more than 66,000 employees, for an enterprise strategic foresight program' },
     ],
   },
 ] as const
@@ -89,3 +89,41 @@ export const careerNext = {
   text: 'Investigating the assumptions and mechanisms shaping institutional outcomes, developing alternatives, and helping decision-makers change how systems work.',
   ask: 'Bring me the problem your organization keeps paying to fix.',
 } as const
+
+/**
+ * Conventional career history: titles as the owner held them, from the
+ * owner's résumés and answers. Employers stay described, not named, until the owner approves
+ * naming them. The current role is described by its function
+ * at the owner's preference; the official title appears on the résumé, which is available on request.
+ */
+export const careerHistory = [
+  { years: '2022–present', role: 'Claims operations and administrative support', setting: 'One of the largest U.S. auto insurers', note: 'Described by function; the official title is on the résumé.' },
+  { years: '2021', role: 'Publishing Specialist (six-month contract loan-in)', setting: 'Sales enablement, a global consumer-technology company' },
+  { years: '2020–2021', role: 'Service Chat Specialist', setting: 'Remote customer support, the same company' },
+  { years: '2019–2021', role: 'Product Zone Specialist; selected for Creative', setting: 'Retail, the same company' },
+  { years: '2020–', role: 'Co-founder; Creative Director & Technical Lead', setting: 'Vote Huntsville, a volunteer civic-information nonprofit' },
+  { years: '2018–2019', role: 'Certified Technical Expert', setting: 'An authorized device-repair provider' },
+  { years: '2017–2018', role: 'UX Designer', setting: 'A web design firm' },
+  { years: '2015–2016', role: 'Arts & Crafts Director, Creative Director, Unit Leader, Ropes Facilitator', setting: 'A summer camp (titles held at different points)' },
+  { years: '2012–2013', role: 'Small Business Consultant', setting: 'A web-hosting and domain company' },
+] as const
+
+/** Education, from the owner's résumés; listed as the owner's directive gives it. */
+export const education = { degree: 'BA, Interdisciplinary Design', school: 'Iowa State University', minors: 'Minors in Digital Media and Philosophy' } as const
+
+/**
+ * Recognition.
+ * From the owner's résumé of 23 November 2026; the employer stays unnamed.
+ */
+export const recognition = [
+  { year: '2026', text: 'Selected as one of 12, from more than 66,000 employees, for an enterprise strategic foresight program.' },
+] as const
+
+/** Talks and guest teaching, from the owner's résumés and answers; the employer stays unnamed. Text is optional. */
+export const speaking: readonly { title: string; where: string; text?: string }[] = [
+  { title: 'Navigating the Digital Realm', where: 'Company-wide conference talk', text: 'Inclusive design, accessibility and innovation.' },
+  { title: 'Designing for What Isn’t Said', where: 'Inclusive design talk' },
+  { title: 'Inclusive UI language', where: 'World Usability Day', text: 'Co-built and co-facilitated the day’s section on inclusive interface language.' },
+  { title: 'Identifying AI-generated images', where: 'AI Summer Camp presentation', text: 'How to recognize generated images, and what that means for working with AI.' },
+  { title: 'Guest speaker and mentor', where: 'Carnegie Mellon University, Human-Computer Interaction Institute (2023)', text: 'Mentored student teams prototyping personalization in grocery and retail, balancing privacy and equity.' },
+]

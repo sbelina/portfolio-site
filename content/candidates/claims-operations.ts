@@ -6,8 +6,8 @@
  * projection validator rejects this entry (editorialState 'review', visibility
  * 'restricted'). Only `npm run build:candidate` renders it, into dist-candidate/,
  * which is noindex and marked non-production for the public artifact audit.
- * Internal figures appear only as rounded/averaged owner estimates (owner direction,
- * 16 November); exact values stay in the owner's private notes, outside this repository.
+ * Internal figures appear only as rounded or averaged estimates; exact values stay in private notes,
+ * outside this repository.
  */
 import type { Entry, PublicProjection } from '../../src/content/model'
 import { entryPath } from '../../src/content/model'
@@ -58,8 +58,8 @@ export const claimsCandidate: Entry = {
     notOwned: 'I didn’t own the decision: management chose to change the review timing. The salvage partner decides whether paperwork is sufficient, adjusters release payment, trainers deliver the training, and a process team built the later national letter.',
     measurement: 'Nothing here was measured in a controlled way. The guide’s views are counted by the document platform; the years in use are my estimate. Two rework observations exist, but they cover different scopes, so neither is shown and they are never compared.',
     figures: [
-      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '835', unit: 'views by 113 people since it was posted', label: 'Paperwork guide views, counted by the document platform; it is still being opened', basis: 'platform_reported', qualifier: 'Lifetime views and distinct viewers as the platform reports them. Views are access, not use or effect.', headline: true, evidenceIds: [] },
-      { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported)', basis: 'owner_estimate', qualifier: 'Use, not effectiveness. Confirm the scope applies to each resource.', headline: true, evidenceIds: [] },
+      { id: 'bdf2bbe1-ba80-477f-9b3e-82542a2c03b9', value: '835', unit: 'views by 113 people since it was posted', label: 'Paperwork guide views, counted by the document platform; it is still being opened', basis: 'platform_reported', qualifier: 'Lifetime views and distinct viewers, as the platform reports them. Views measure access.', headline: true, evidenceIds: [] },
+      { id: 'fc27c92c-bd02-4066-b346-5bd85ccc12cc', value: '2+', unit: 'years in use across four offices', label: 'Guides and training in continued use (owner-reported)', basis: 'owner_estimate', qualifier: 'Measures continued use.', headline: true, evidenceIds: [] },
     ],
     blueprint: {
       title: 'Pay, then verify. Verify, then pay.',

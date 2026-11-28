@@ -9,7 +9,7 @@ import { A, B, C, D, centre, constructionSteps, freehandPath, radius, rightAngle
  * is aria-hidden. It encodes no data.
  */
 export function LensInterlude({ compact = false }: { compact?: boolean } = {}) {
-  // Homepage (owner decision, 23 November): the quote, compact, above the call to action. The geometry lives in Field Notes.
+  // Homepage: the quote, compact, above the call to action. The geometry lives in Field Notes.
   if (compact) return <section className="pc-interlude pc-interlude--compact" data-surface="observatory" aria-labelledby="pc-interlude-title">
     <div className="pc-interlude-inner">
       <div className="pc-interlude-copy">

@@ -2,6 +2,8 @@ Current owner-authorized release, 14 November: [Atlas of Inquiry* navigation and
 
 # Codex context: start here
 
+Branch work, 26 November: [master directive PC-2026-11-25 implementation report](PC-2026-11-25-IMPLEMENTATION.md), covering capability discovery, Work filters, homepage orientation, Contact reasons, career history, the methods inventory and research agenda, the hydration fix, and the owner-decision register. Live only after the owner merges.
+
 Released 17 November at the owner's request: [evidence-first homepage and Claims publication candidate](NOV-16-EVIDENCE-FIRST-REVIEW.md). The homepage changes are live; the Claims candidate stays unpublished until the authenticated review process approves its exact wording.
 
 Private tool, 17 November: [text-to-archive Thoughts page and public field notes](THOUGHT-CAPTURE.md). It runs as its own Worker (`producing-curiosity-thoughts`). Only notes the owner marks public appear at `/field-notes/`.

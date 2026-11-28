@@ -14,7 +14,7 @@ export type InvestigationSummary = {
 }
 
 /**
- * How readers find work (owner direction, 23 November): by the setting they recognize and the kind of work
+ * How readers find work: by the setting they recognize and the kind of work
  * they hire for, not by internal shorthand. "Claims" alone read as claims-as-assertions on an evidence site.
  */
 export const caseLabels: Readonly<Record<string, string>> = {
@@ -31,7 +31,7 @@ export const caseWork: Readonly<Record<string, string>> = {
 /** "Setting · kind of work", for card labels. */
 export const caseLabel = (slug?: string) => slug && caseLabels[slug] ? [caseLabels[slug], caseWork[slug]].filter(Boolean).join(' · ') : undefined
 
-/** The homepage's three selected investigations (owner priority): Claims, trust research, enterprise AI. */
+/** The homepage's three selected investigations: Claims, trust research, enterprise AI. */
 export const selectedSlugs = ['claims-operations', 'brand-research', 'enterprise-ai'] as const
 
 /** Selected cases in priority order, from the approved projection only. Unapproved cases never appear. */

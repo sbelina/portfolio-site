@@ -1,3 +1,5 @@
+@import '@fontsource-variable/spline-sans/index.css';
+@import '@fontsource-variable/montserrat/index.css';
 @import './tokens.css';
 @import './system.css';
 @import './motion.css';
@@ -7,13 +9,13 @@
 
 html[data-edition="current"] { scroll-behavior: auto; scroll-padding-top: calc(var(--site-header-height, 0px) + 1rem); }
 html[data-edition="current"] body { margin: 0; min-width: 320px; background: var(--paper); color: var(--ink); }
-.pc-site { background: var(--paper); color: var(--ink); min-height: 100vh; font: 1rem/1.7 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; overflow-wrap: anywhere; }
+.pc-site { background: var(--paper); color: var(--ink); min-height: 100vh; font: 1rem/1.7 var(--font-main); overflow-wrap: anywhere; }
 .pc-site *, .pc-site *::before, .pc-site *::after { box-sizing: border-box; }
 .pc-site a { color: inherit; text-underline-offset: .25em; }
 .pc-site a:hover { color: var(--signal); }
 .pc-site :is(a, button, summary, input):focus-visible { outline: 3px solid var(--focus); outline-offset: 5px; }
 .pc-site ::selection { background: var(--ink); color: var(--inverse); }
-/* The skip link is for keyboard and screen-reader users: hidden until it receives focus (owner, 24 November). */
+/* The skip link is for keyboard and screen-reader users: hidden until it receives focus. */
 .pc-skip { position: absolute; left: 1rem; top: .5rem; z-index: 60; display: inline-flex; align-items: center; min-height: 44px; padding: .3rem 1rem; font-size: .9rem; background: var(--ink); color: var(--paper); transform: translateY(-200%); }
 .pc-skip:focus, .pc-skip:focus-visible { transform: none; outline: 3px solid var(--focus); outline-offset: 2px; }
 .pc-site .pc-skip, .pc-site .pc-skip:hover { color: var(--paper); }
@@ -21,16 +23,16 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-header[data-compact="true"] { padding-block: .5rem; }
 .pc-header[data-oversized="true"], .pc-header:not([data-measured="true"]) { position: static; }
 .pc-wordmark { display: inline-flex; align-items: center; gap: .7rem; min-height: 44px; font-weight: 700; text-decoration: none; letter-spacing: -.025em; }
-.pc-wordmark > span { color: var(--signal); font: 2.5rem/1 Georgia, serif; align-self: center; padding-top: .5rem; }
+.pc-wordmark > span { color: var(--signal); font: 2.5rem/1 var(--font-second); align-self: center; padding-top: .5rem; }
 .pc-site .public-navigation { font-size: .9rem; }
 .pc-site .public-navigation a { color: var(--ink); text-decoration-thickness: 1px; }
 .pc-site .public-navigation a[aria-current] { text-decoration-thickness: 3px; color: var(--signal); }
 .pc-main { width: min(100%, 80rem); margin-inline: auto; padding: 0 clamp(1.25rem, 5vw, 2rem); outline: none; }
 .pc-main :is(h1,h2,h3,p,figure) { margin-top: 0; }
-.pc-main :is(h1,h2,h3) { font-family: inherit; font-weight: 540; letter-spacing: -.045em; line-height: 1.1; }
+.pc-main :is(h1,h2,h3) { font-family: var(--font-second); font-weight: 540; letter-spacing: -.045em; line-height: 1.1; }
 .pc-main h1 { max-width: 19ch; font-size: clamp(2.25rem, 4.8vw, 4.7rem); margin-bottom: 1.5rem; }
 .pc-main h2 { font-size: clamp(1.8rem, 3.5vw, 3rem); margin-bottom: 1.25rem; }
-.pc-site .pc-kicker { display: block; font: 600 .75rem/1.6 ui-monospace, 'SFMono-Regular', Consolas, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--signal); margin-bottom: 1.4rem; }
+.pc-site .pc-kicker { display: block; font: 600 .75rem/1.6 var(--font-main); text-transform: uppercase; letter-spacing: .08em; color: var(--signal); margin-bottom: 1.4rem; }
 .pc-lead { max-width: 44rem; font-size: clamp(1.1rem, 1.5vw, 1.3rem); line-height: 1.65; }
 .pc-meta { color: var(--muted); font-size: .875rem; }
 .pc-hero { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 5rem); align-items: center; padding-block: clamp(3rem, 7vw, 6rem); }
@@ -56,9 +58,11 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-intro .intro-source-wrap, .pc-intro .intro-source, .pc-intro .question, .pc-intro .step-copy { min-width: 0; max-width: 100%; }
 .pc-intro .question-trigger { max-width: 100%; min-height: 44px; overflow-wrap: anywhere; }
 .pc-intro .intro-hint { color: var(--muted); padding: .25rem; }
+/* The phrase keeps a clear keyboard focus ring, lighter than the site default so it reads as focus rather than a frame. */
+.pc-intro [data-dive-mode="explicit"] .question-trigger:focus-visible { outline-width: 2px; outline-offset: .45em; border-radius: 2px; }
 .pc-intro .skip-link { position: fixed; top: .75rem; left: 5vw; z-index: 50; padding: .5rem .75rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
 .pc-intro :is(.effect-resist-one,.effect-resist-two,.effect-breakthrough) .intro-source-wrap { animation: none; }
-/* Current edition (24 November): the scene sits above the question, text never fades during the dive,
+/* Current edition: the scene sits above the question, text never fades during the dive,
    and the drawing, not the words, carries the movement. Unlayered to override the legacy intro rules. */
 .pc-intro [data-dive-mode="explicit"] .intro-field { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1rem, 3vh, 2rem); opacity: 1; filter: none; }
 .pc-intro [data-dive-mode="explicit"] .depth-field--scene { position: relative; inset: auto; order: -1; width: min(100%, 56rem); opacity: 1; transform: scale(calc(1 + var(--dive-progress) * 1.8)); transform-origin: 50% 50%; transition: none; }
@@ -105,7 +109,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-state--learning { color: var(--holds); }
 .pc-sample { padding: clamp(1.25rem,4vw,2rem); background: var(--paper); color: var(--ink); margin-block: 3rem; border: 1px solid var(--line); }
 .pc-sample a { display: inline-flex; align-items: center; min-height: 44px; }
-.pc-type-sample { font: 1.5rem/1.7 Georgia,serif; }
+.pc-type-sample { font: 1.5rem/1.7 var(--font-second); }
 .pc-site.pc-reading { --reading-paper: var(--paper); --reading-panel: var(--panel); --reading-ink: var(--ink); }
 .pc-site.pc-reading .reading-wordmark { font-weight: 700; font-family: inherit; }
 .pc-site.pc-reading .reading-kicker { color: var(--signal); }
@@ -150,7 +154,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-observatory-index p:not(.pc-kicker) { max-width: 46ch; }
 @media (max-width: 760px) { .pc-observatory-index { grid-template-columns: minmax(0,1fr); } }
 
-/* Professional identity and representative investigations (19 November). */
+/* Professional identity and representative investigations. */
 .pc-identity-name { color: var(--ink); }
 .pc-purpose { max-width: 65ch; }
 .pc-distinction-detail { margin: .75rem 0 0; }
@@ -169,7 +173,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-result-label { margin: .35rem 0 0; max-width: 34ch; }
 .pc-results a { display: inline-flex; align-items: center; min-height: 44px; overflow-wrap: anywhere; }
 
-.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 999px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
+.case-status { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .45rem; border: 1px solid currentColor; border-radius: 2px; padding: .15rem .65rem; font-size: .8rem; font-weight: 600; line-height: 1.4; }
 .case-status-kind { text-transform: uppercase; letter-spacing: .05em; font-size: .7rem; }
 .case-status[data-status="proposal"] { border-style: dashed; color: var(--muted); }
 
@@ -204,7 +208,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 @media (max-width: 760px) { .pc-interlude-inner { grid-template-columns: minmax(0, 1fr); gap: 2rem; } .pc-interlude-drawing { max-width: 18rem; } }
 .pc-interlude-figure { margin: 0; }
 .pc-interlude-right-angle { stroke: var(--sage); stroke-width: 1.25; }
-.pc-interlude-labels text { fill: var(--muted); stroke: none; font: 600 12px ui-monospace, Menlo, Consolas, monospace; }
+.pc-interlude-labels text { fill: var(--muted); stroke: none; font: 600 12px var(--font-main); }
 .pc-interlude-steps { margin-top: 1rem; font-size: .88rem; color: var(--muted); }
 .pc-interlude-steps summary { cursor: pointer; display: list-item; padding-block: .65rem; color: var(--ink); }
 .pc-interlude-steps ol { margin: .25rem 0 0; padding-left: 1.25rem; display: grid; gap: .4rem; }
@@ -227,7 +231,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .deep-dive-parts li { counter-increment: part; }
 .deep-dive-parts li::before { content: counter(part, decimal-leading-zero) " · "; color: var(--muted); font-size: .8rem; letter-spacing: .1em; }
 .deep-dive-spread { border: 1px solid var(--line); padding: clamp(1.25rem, 3vw, 2.5rem); margin: 0 0 2.5rem; position: relative; scroll-margin-top: 5rem; }
-.deep-dive-spread::before, .deep-dive-spread::after { content: "+"; position: absolute; font: 300 1.1rem/1 ui-monospace, Menlo, monospace; color: var(--muted); }
+.deep-dive-spread::before, .deep-dive-spread::after { content: "+"; position: absolute; font: 300 1.1rem/1 var(--font-main); color: var(--muted); }
 .deep-dive-spread::before { top: -.6rem; left: -.35rem; }
 .deep-dive-spread::after { bottom: -.55rem; right: -.35rem; }
 .deep-dive-top, .deep-dive-bottom { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem 2.5rem; }
@@ -261,7 +265,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 /* The second headline emphasis: the cost, in ink at a heavier weight. Never orange, never underlined. */
 .pc-main :is(h1, h2, h3) .pc-weight { font-weight: 720; color: inherit; }
 
-/* Institutional value homepage (23 November). */
+/* Institutional value homepage. */
 .pc-hero-action { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; }
 .pc-secondary-link { color: var(--muted); }
 .pc-selected-list { list-style: none; padding: 0; margin: 1.5rem 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem 2rem; }
@@ -270,7 +274,6 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-selected-list h3 a { text-underline-offset: .2em; }
 .pc-selected-status { margin: 0; }
 .pc-selected-label { font-weight: 600; }
-.pc-selected-stakes { font-size: .95rem; }
 .pc-selected-links { display: flex; flex-wrap: wrap; gap: .25rem 1.25rem; margin: .5rem 0 0; }
 .pc-selected-links a { display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; }
 .pc-selected-note { color: var(--muted); font-size: .85em; }
@@ -300,7 +303,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
   .pc-explore li + li { border-left: 0; border-top: 1px solid var(--line); }
   .pc-explore li + li a { padding-left: 0; }
 }
-/* The hero is text only (23 November): the illustration moved to the pattern section, after the cases. */
+/* The hero is text only: the illustration moved to the pattern section, after the cases. */
 @media (min-width: 761px) { .pc-hero:has(.pc-field-preview) { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; } }
 .pc-hero-action { align-items: center; }
 .pc-pattern-pairs .pc-kicker { margin: 0; }
@@ -311,7 +314,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-main a.pc-cta-primary, a.pc-cta-primary, a.pc-cta-primary:visited, button.pc-cta-primary { color: var(--paper); text-decoration: none; }
 
 /*
- * Rhythm and type (owner direction, 24 November, after an audit of "AI-generated" tells: identical section
+ * Rhythm and type (identical section
  * frames, ten text sizes, labels on everything, three equal columns). Spacing now follows meaning: related
  * sections sit together in bands; only the big shifts get space and a rule. One type scale of five steps:
  * .875rem small · 1rem body · 1.25rem lead · headings · display. Unlayered to replace the legacy rules.
@@ -325,7 +328,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .build-index .pc-results { padding: 0; }
 .build-index .pc-section-heading { margin-bottom: 1.5rem; }
 .pc-main .pc-lead, .pc-main .pc-cta-lead, .pc-main .pc-pattern-lead { font-size: 1.25rem; line-height: 1.55; }
-.pc-main :is(.pc-selected-stakes, .pc-selected-list p) { font-size: 1rem; line-height: 1.6; }
+.pc-main .pc-selected-list p { font-size: 1rem; line-height: 1.6; }
 .pc-main :is(.pc-selected-note, .pc-cta-proof, .pc-result-label, .pc-pattern-why, .pc-field-caption, .pc-legend, .pc-ba-caption, .pc-dial-caption, .pc-method-tags, .case-status) { font-size: .875rem; }
 .pc-main .pc-results a { font-size: .875rem; }
 /* Case studies: one featured, the others beside it, not three equal columns. */
@@ -339,7 +342,7 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 /* The call to action: the argument on one side, what you get on the other. */
 .build-index .pc-cta { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 1rem 4rem; align-items: start; }
 .build-index .pc-cta > :not(.pc-cta-offer) { grid-column: 1; }
-.build-index .pc-cta > .pc-cta-offer--list { grid-column: 2; grid-row: 1 / span 4; display: block; margin: 0; }
+.build-index .pc-cta > .pc-cta-offer--list { grid-column: 2; grid-row: 1 / span 5; display: block; margin: 0; }
 .pc-cta-offer--list li { border-top: 1px solid var(--line); padding: 1rem 0; }
 .pc-cta-offer--list li:last-child { border-bottom: 1px solid var(--line); }
 .pc-about-tagline { color: var(--muted); }

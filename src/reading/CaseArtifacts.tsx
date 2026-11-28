@@ -10,7 +10,7 @@ export const stepByLabels: Record<NonNullable<Artifact['steps']>[number]['by'], 
 }
 
 /**
- * Working artifacts (owner approval, November 2026): each is a figure with its provenance label first,
+ * Working artifacts: each is a figure with its provenance label first,
  * a real table or an ordered list of steps, and what it does not claim. Readable without script or colour.
  */
 export function CaseArtifacts({ artifacts }: { artifacts: NonNullable<Investigation['artifacts']> }) {

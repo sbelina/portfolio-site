@@ -1,5 +1,5 @@
 /**
- * Counting what gets used (owner direction, 24 November 2026: "I want to understand what is compelling and
+ * Counting what gets used ("I want to understand what is compelling and
  * producing curiosity on the site, and it's acceptable not to want to participate").
  *
  *  - Counts, not people: each event is a name, the page path and an optional short detail. No cookies,
@@ -7,7 +7,7 @@
  *  - Only on the live site. Previews and local builds never send anything.
  *  - Off when the browser sends Do Not Track or Global Privacy Control, or when the reader chooses
  *    "Don't count me" (remembered in this browser only). ?count=off and ?count=on set the same choice.
- *  - Opt-in (owner direction, 24 November): nothing is counted until the reader agrees. The notice has a
+ *  - Opt-in: nothing is counted until the reader agrees. The notice has a
  *    checkbox, Agree (enabled once ticked), Disagree, and a close button that also means disagree.
  *  - A short notice explains this on a first visit; /about/#counting explains it in full.
  */

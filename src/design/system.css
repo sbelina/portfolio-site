@@ -1,5 +1,5 @@
 /*
- * System layer (owner decision, 23 November 2026: no Tailwind; adopt its good habits in plain CSS).
+ * System layer.
  *
  * New code lives in cascade layers. Existing component CSS stays unlayered, and unlayered rules beat
  * layered ones, so nothing here can override a component that already renders. Migrate a component

@@ -5,7 +5,7 @@ import { handleCount, type CountStore } from '../worker/count'
 import { countEvents as clientEvents } from '../src/analytics'
 import { countEvents as workerEvents } from '../worker/count'
 
-// About, the career thread and anonymous counting (owner direction, 24 November 2026).
+// About, the career thread and anonymous counting.
 const origin = 'http://127.0.0.1:4175'
 
 test('the count endpoint stores only event, page and short detail, and only on the live site', async () => {
@@ -68,7 +68,7 @@ test('a browser that asks not to be tracked is told nothing is counted', async (
   await expect(page.locator('#counting').getByRole('button')).toHaveCount(0)
 })
 
-test('About and Contact carry the career thread in place of a résumé, with proof links and a résumé request', async ({ browser, page }) => {
+test('About carries the career thread in place of a résumé, with proof links and a résumé request; Contact links to it', async ({ browser, page }) => {
   const context = await browser.newContext({ javaScriptEnabled: false })
   try {
     const plain = await context.newPage()
@@ -79,7 +79,9 @@ test('About and Contact carry the career thread in place of a résumé, with pro
     await expect(thread.getByRole('link', { name: 'Request the full résumé' }).first()).toHaveAttribute('href', /^mailto:[^?]+\?subject=R%C3%A9sum%C3%A9%20request$/)
     await plain.goto(`${origin}/contact/`)
     await expect(plain.locator('.pc-contact-form')).toBeVisible()
-    await expect(plain.locator('.pc-career')).toBeVisible()
+    // career history lives on About; Contact links there instead of repeating it.
+    await expect(plain.locator('.pc-career')).toHaveCount(0)
+    await expect(plain.getByRole('link', { name: /Career history and education/ })).toHaveAttribute('href', '/about/')
   } finally { await context.close() }
   await page.goto(`${origin}/about/`)
   await page.getByRole('radio', { name: /Next/ }).check()

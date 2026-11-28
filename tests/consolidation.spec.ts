@@ -21,7 +21,7 @@ test('old homepage links land on the current page for the same thing', async ({ 
     await page.goto(`${origin}/#${fragment}`)
     await expect(page).toHaveURL(`${origin}${destination}`)
   }
-  // The "section from the previous site" list was removed (owner, 23 November); old links redirect instead.
+  // The "section from the previous site" list was removed; old links redirect instead.
   const context = await browser.newContext({ javaScriptEnabled: false })
   try {
     const page = await context.newPage()
@@ -93,7 +93,7 @@ test('readers find the work by the words they use: Work, case studies, setting a
     expect(response.headers().location).toMatch(/\/investigations\/$/)
   }
   await page.goto(`${origin}/investigations/`)
-  await expect(page).toHaveTitle('Case studies — Producing Curiosity')
+  await expect(page).toHaveTitle('Case studies in applied research and systems strategy · Sami Belina')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Case studies')
   await expect(page.locator('.reading-cards .reading-kicker').first()).toHaveText('Insurance operations · Process & service design')
   // "Claims" alone reads as claims-as-assertions on an evidence site; it never labels the work.

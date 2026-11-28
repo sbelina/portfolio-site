@@ -1,12 +1,12 @@
 /**
- * The public versions of six investigations (owner direction, 23 November 2026): each pairs with a
+ * The public versions of six investigations: each pairs with a
  * password-protected deep dive at /deep-dive/<slug>/. These records become public only through the
  * trusted release loader (scripts/release.ts) and the approval in content/public-release.json, which
  * binds the exact digest of every record. Changing any word here changes its digest and stops the build
  * until the release is prepared and approved again.
  *
  * Evidence: every factual statement and figure cites the owner's project records and account. Client and
- * partner records stay confidential. Owner direction, 23 November: say so once per case, not on every item.
+ * partner records stay confidential. say so once per case, not on every item.
  */
 import type { ContentStore, Entry, Evidence } from '../../src/content/model'
 import { claimsCandidate } from '../candidates/claims-operations'
@@ -70,7 +70,7 @@ const claims: Entry = {
     figures: claimsInvestigation.figures!.map(figure => ({
       ...figure,
       evidenceIds: [caseEvidence.claims.id],
-      ...(figure.id === 'fc27c92c-bd02-4066-b346-5bd85ccc12cc' ? { unit: 'years in use across four offices', label: 'The guide, still shared by supervisors', qualifier: 'Distribution and continued use, not measured effectiveness.' } : {}),
+      ...(figure.id === 'fc27c92c-bd02-4066-b346-5bd85ccc12cc' ? { unit: 'years in use across four offices', label: 'The guide, still shared by supervisors', qualifier: 'Measures distribution and continued use.' } : {}),
     })),
     decision: {
       stakes: 'Total-loss claims could be paid before the paperwork was confirmed sufficient. Defects came back afterwards as rework for customers and staff, on claims that already looked finished, when they were harder to fix.',
@@ -136,8 +136,8 @@ const trust: Entry = {
     deepDive: true,
     interactive: 'ask-it-differently',
     figures: [
-      { id: '599f27ac-7662-4086-a133-b6498cef6921', value: '800+', unit: 'survey responses', label: 'Fieldwork, above target; the partner closed it early', basis: 'approximate', qualifier: 'Responses, not representativeness or effect.', headline: true, evidenceIds: [caseEvidence.trust.id] },
-      { id: '330d4dcd-03d0-4a55-bd40-8cbdc7eea247', value: '13', unit: 'people across four functions', label: 'Discussed the readout, two of them directors', basis: 'owner_estimate', qualifier: 'Reach of the readout, not adoption of every recommendation.', evidenceIds: [caseEvidence.trust.id] },
+      { id: '599f27ac-7662-4086-a133-b6498cef6921', value: '800+', unit: 'survey responses', label: 'Fieldwork, above target; the partner closed it early', basis: 'approximate', qualifier: 'Counts the responses collected.', headline: true, evidenceIds: [caseEvidence.trust.id] },
+      { id: '330d4dcd-03d0-4a55-bd40-8cbdc7eea247', value: '13', unit: 'people across four functions', label: 'Discussed the readout, two of them directors', basis: 'owner_estimate', qualifier: 'Counts who discussed the readout.', evidenceIds: [caseEvidence.trust.id] },
     ],
     decision: {
       stakes: 'A single favorability score could steer strategy toward what people already accept, rather than what moves their trust.',
@@ -172,7 +172,7 @@ const trust: Entry = {
 
 const ai: Entry = {
   ...base('8a218cf2-1ad6-461a-af6e-3f7ccadd9429', 'enterprise-ai', '2026-11-20T00:00:00Z'),
-  title: '38 proposals. ==8== shared challenges.',
+  title: '38 AI proposals came down to ==eight== shared challenges.',
   summary: 'Nearly forty AI requests arrived without a shared way to compare them. I led a synthesis into eight challenge areas that teams could discuss and choose among, then coached in the sprint, which now runs every year.',
   contribution: 'I recognized the need for a synthesis and led it, tested the groupings with the sprint facilitator, then walked them through with innovation leadership, and was a lead and coach in the sprint, leading two ideas with one combined team. The innovation team owned the program.',
   evidenceIds: [caseEvidence.ai.id],
@@ -199,8 +199,8 @@ const ai: Entry = {
     deepDive: true,
     interactive: 'proposals-to-problems',
     figures: [
-      { id: '1792beec-01da-4351-97fe-5e149401c27c', value: '38 → 8', unit: 'proposals into challenge areas', label: 'The synthesis I led', basis: 'owner_estimate', qualifier: 'Counts of the synthesis, not impact.', headline: true, evidenceIds: [caseEvidence.ai.id] },
-      { id: '23b210a5-05d1-4480-9cb7-b47c18a6bda6', value: '7', unit: 'teams', label: 'Teams I worked with as a lead and coach', basis: 'owner_estimate', qualifier: 'Involvement, not outcomes.', evidenceIds: [caseEvidence.ai.id] },
+      { id: '1792beec-01da-4351-97fe-5e149401c27c', value: '38 → 8', unit: 'proposals into challenge areas', label: 'The synthesis I led', basis: 'owner_estimate', qualifier: 'Counts the synthesis itself.', headline: true, evidenceIds: [caseEvidence.ai.id] },
+      { id: '23b210a5-05d1-4480-9cb7-b47c18a6bda6', value: '7', unit: 'teams', label: 'Teams I worked with as a lead and coach', basis: 'owner_estimate', qualifier: 'Counts the teams I worked with.', evidenceIds: [caseEvidence.ai.id] },
     ],
     decision: {
       stakes: 'An innovation program could spread its effort across nearly forty separate requests, or focus it on the challenges they shared.',
@@ -231,7 +231,7 @@ const ai: Entry = {
 
 const telematics: Entry = {
   ...base('1bb43e26-f27a-4493-b16f-e68682838023', 'telematics', '2026-11-20T00:00:00Z'),
-  title: 'Usability is ==not== recommendation.',
+  title: 'The app worked. Whether people would ==recommend== it was another question.',
   summary: 'I was asked why participants were leaving a large discount program built around a usage-based insurance app. With unreliable audio, I recovered findings from on-screen behavior, and showed that a usable app and a recommended program are different questions.',
   contribution: 'I analyzed moderated sessions that others conducted, recovered findings from on-screen behavior, wrote the report and confirmed both scores, made opportunity recommendations, and took the report to the marketing analytics team.',
   evidenceIds: [caseEvidence.telematics.id],
@@ -257,9 +257,9 @@ const telematics: Entry = {
     status: { kind: 'follow_on', label: 'Taken up by marketing analytics' },
     deepDive: true,
     figures: [
-      { id: '7269df5f-4a08-4c66-ae78-3171913ae3ad', value: '~70', unit: 'SUS', label: 'App usability, five participants', basis: 'approximate', qualifier: 'A different instrument from NPS; not comparable on one scale.', evidenceIds: [caseEvidence.telematics.id] },
+      { id: '7269df5f-4a08-4c66-ae78-3171913ae3ad', value: '~70', unit: 'SUS', label: 'App usability, five participants', basis: 'approximate', qualifier: 'A separate instrument from NPS, on its own scale.', evidenceIds: [caseEvidence.telematics.id] },
       { id: 'a41ece58-0294-4cd7-b2b0-26028a6c1dec', value: '~−20', unit: 'NPS', label: 'Program recommendation, the same five participants', basis: 'approximate', qualifier: 'Unstable at this sample size.', evidenceIds: [caseEvidence.telematics.id] },
-      { id: 'c0d2aaf6-5ed1-46dc-bdd2-505d55415bca', value: '~2,000', unit: 'respondents', label: 'Follow-up survey run by marketing analytics', basis: 'owner_estimate', qualifier: 'Another team’s work; not adoption of my recommendations.', evidenceIds: [caseEvidence.telematics.id] },
+      { id: 'c0d2aaf6-5ed1-46dc-bdd2-505d55415bca', value: '~2,000', unit: 'respondents', label: 'Follow-up survey run by marketing analytics', basis: 'owner_estimate', qualifier: 'Another team’s work, separate from my recommendations.', evidenceIds: [caseEvidence.telematics.id] },
     ],
     decision: {
       stakes: 'A large discount program was losing participants. Treating that as an app problem risked fixing the interface while the program’s value went unexamined.',
@@ -290,7 +290,7 @@ const telematics: Entry = {
 
 const civic: Entry = {
   ...base('873dde95-923f-41a0-bd19-55041eb4aae1', 'civic-service', '2026-11-20T00:00:00Z'),
-  title: 'Organized by office. Asked by ==step==.',
+  title: 'Voting answers, reorganized around the ==steps== residents take.',
   summary: 'Residents’ voting questions followed the steps in front of them, not the offices that publish the answers. As a volunteer co-founder of Vote Huntsville, I helped build one plain-language answer source used across every channel.',
   contribution: 'I co-founded the nonpartisan Vote Huntsville with other directors and volunteers, all unpaid. We gathered residents’ questions and built one shared, plain-language answer source used across channels.',
   evidenceIds: [caseEvidence.civic.id],
@@ -307,7 +307,7 @@ const civic: Entry = {
     notOwned: 'Vote Huntsville was a shared volunteer effort; no one, including the directors, was paid. The grant was a partnership’s work.',
     measurement: 'Vote Huntsville reported reaching 16,000 people in its own Facebook and Instagram posts. How reach was counted is not recorded, so the figure is shown as the organization reported it.',
     figures: [
-      { id: '05067af2-5326-4c65-a7c3-ab6292ad6e55', value: '16,000', unit: 'people reached, as Vote Huntsville reported', label: 'Reported in the organization’s own Facebook and Instagram posts', basis: 'approximate', qualifier: 'The organization’s public report; how reach was counted is not recorded. Most were reached before the grant, without the partnership.', evidenceIds: [caseEvidence.civic.id] },
+      { id: '05067af2-5326-4c65-a7c3-ab6292ad6e55', value: '16,000', unit: 'people reached, as Vote Huntsville reported', label: 'Reported in the organization’s own Facebook and Instagram posts', basis: 'approximate', qualifier: 'The organization’s own public figure; its counting method is unrecorded. Most were reached before the grant.', evidenceIds: [caseEvidence.civic.id] },
     ],
     limitations: 'No effect on turnout or policy is claimed. The grant’s award is not credited to one person.',
     artifacts: civicArtifacts,
@@ -349,7 +349,7 @@ const civic: Entry = {
 
 const accessibility: Entry = {
   ...base('36e61934-b32a-4b04-a9c2-d6f99b73b5a2', 'accessibility-ai', '2026-11-20T00:00:00Z'),
-  title: 'Passing checks. A ==separate== question.',
+  title: 'Passing automated checks left a ==separate== question open.',
   summary: 'In an AI-assisted development experiment I originated, the accessibility agent restored code we removed on purpose. A planned human review still raised a question the automated checks did not settle.',
   contribution: 'I originated the experiment and co-facilitated it, the only participant from outside the department. A colleague advocated the idea to the organizer, and a developer conducted the human review.',
   evidenceIds: [caseEvidence.accessibility.id],

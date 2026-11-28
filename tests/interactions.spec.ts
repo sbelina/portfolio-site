@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
-// Interactions and system layer (owner decision, 23 November 2026): no Tailwind; plain CSS with
+// Interactions and system layer: no Tailwind; plain CSS with
 // layers, tokens and a handful of utilities; every effect reads completely without it.
 const origin = 'http://127.0.0.1:4175'
 const claims = `${origin}/investigations/claims-operations/`
@@ -166,7 +166,8 @@ test('conceptual drawings use the deck palette: ink, orange, sage, not the statu
   expect(await stroke('.pc-strand-lens')).toBe(await token('--sage', '.pc-strand'))
   void sage
   await page.goto(claims)
-  for (const selector of ['.investigation-visual svg path', '.investigation-visual .visual-friction']) expect([unresolved, holds]).not.toContain(await stroke(selector))
+  // Each case draws its own structure; its lines use ink and orange, never the status colours.
+  for (const selector of ['.investigation-visual svg path', '.investigation-visual__structure .pc-legend-thread']) expect([unresolved, holds]).not.toContain(await stroke(selector))
   expect(await page.locator('.investigation-visual').evaluate(element => getComputedStyle(element).backgroundColor)).not.toBe('rgb(21, 21, 27)')
   await page.goto(`${origin}/writing/`)
   expect(await stroke('.pc-interlude-geometry')).not.toBe(holds)

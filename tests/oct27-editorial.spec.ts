@@ -8,7 +8,7 @@ const legacyCases = ['claims-operations', 'brand-research', 'enterprise-ai', 'do
 test('review candidate keeps legacy identities while removing misleading public claims', async () => {
   expect(projects.map(project => project.id)).toEqual(legacyCases)
   for (const id of legacyCases) expect(graphNodes.find(node => node.id === id)?.href).toBe(`#${id}`)
-  // The retired archive held the previous thesis; the current edition publishes only approved cases (23 November).
+  // The retired archive held the previous thesis; the current edition publishes only approved cases.
   void thesis
   const current = await readFile('dist/index.html', 'utf8')
   expect(current).toContain('I help organizations avoid <strong class="pc-weight">costly solutions</strong> to <em class="pc-accent">misunderstood problems</em>.')

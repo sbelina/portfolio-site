@@ -23,7 +23,7 @@ function Banner() {
   </div>
 }
 
-/* The About shell was superseded by the published About page (24 November 2026). */
+/* The About shell was superseded by the published About page. */
 
 const learningCase = ['Audience and their starting understanding', 'Intended capability or learning objective', 'Activity or resource design', 'Participant interaction', 'Feedback and evaluation', 'Observed use', 'Limitation or unresolved question'] as const
 const inquiryActivity = ['Examine an initially plausible claim.', 'Identify the assumptions it depends on.', 'Compare at least two interpretations.', 'Define the evidence that would distinguish them.', 'Revise the original question.'] as const

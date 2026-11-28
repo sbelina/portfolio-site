@@ -6,7 +6,7 @@ import { FigureLegend } from './CaseFigures'
 import { count } from '../analytics'
 
 /**
- * The career thread (owner direction, 24 November 2026), in the deck's drawing vocabulary: one orange
+ * The career thread, in the deck's drawing vocabulary: one orange
  * thread through the eras, proof as ink points along it, and the next step as an open ring. Choosing an
  * era draws the thread up to it and shows the turn, what I owned and the proof already on the site.
  * Without JavaScript every era is listed in full, and the drawing is at rest.

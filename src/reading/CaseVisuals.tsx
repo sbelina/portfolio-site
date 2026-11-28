@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Count } from '../design/Interactions'
 
 /**
- * Case visuals (owner direction, 23 November): visual-first readings that never stand in for data.
+ * Case visuals: visual-first readings that never stand in for data.
  * Each renders its complete meaning without JavaScript; after hydration, native radio controls let a
  * reader switch views. Nothing here encodes a measurement.
  */
@@ -20,7 +20,7 @@ const questions = {
     wording: '“How much does reliable service affect your trust in this company?”',
     measures: 'Whether people report that an attribute shapes their trust.',
     supports: 'Which attributes people say matter to trust, worth testing further.',
-    cannot: 'What actually produces trust. Self-report is not a causal measure.',
+    cannot: 'What produces trust. Self-report is not a causal measure.',
   },
 } as const
 type QuestionKey = keyof typeof questions

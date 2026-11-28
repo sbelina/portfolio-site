@@ -21,7 +21,7 @@ const currentDestinations = [
 export const observatoryMembers = ['/lab/atlas/', '/lab/atlas/text/', '/lab/atlas/je-ne-sais-qua/', '/lab/edge-case/', '/experiments/reveal-hidden-work/'] as const
 const currentState = (href: string, currentPath?: string) => href === currentPath ? 'page' as const
   : href === '/lab/' && currentPath && (observatoryMembers as readonly string[]).includes(currentPath) ? 'true' as const
-  // Connections belongs to Practice in the menu (23 November): five items, no Connections link of its own.
+  // Connections belongs to Practice in the menu: five items, no Connections link of its own.
   : href === '/practice/' && currentPath === '/patterns/' ? 'true' as const : undefined
 
 /** Native links remain available without hydration, including on unavailable URLs. */

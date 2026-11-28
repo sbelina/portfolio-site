@@ -32,12 +32,12 @@ test('nothing the evidence registry withholds is published', async () => {
   const all = text((await Promise.all(['operational-friction', 'knowledge-binder', 'knowledge-publishing', 'civic-service', 'claims-operations', 'accessibility-ai'].map(page))).join(' '))
   // Unverified or superseded figures.
   for (const withheld of ['88%', '20.64', '40%', 'turnout increased', '20,000 residents', '8% of']) expect(all).not.toContain(withheld)
-  // Generalized by owner decision: exact assignment figures and internal names.
+  // Generalized by exact assignment figures and internal names.
   for (const exact of ['240', '10,000', '73 partner', '3%', '100+', 'SEED', 'Quip', 'Apple']) expect(all).not.toContain(exact)
   // The typing model is the corrected one (characters ÷ 5).
   expect(all).toContain('4.13')
   expect(all).toContain('445,786')
-  // Owner decisions, November 2026: the time-saved estimate as days a year; reach as the organization reported it.
+  // the time-saved estimate as days a year; reach as the organization reported it.
   expect(all).toContain('working days a year')
   expect(all).toContain('as Vote Huntsville reported')
 })
