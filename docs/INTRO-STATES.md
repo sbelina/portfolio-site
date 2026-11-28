@@ -4,14 +4,16 @@ Current owner correction, 9 November 2026: **three step actions plus a separate 
 
 ## Current edition — explicit Dive
 
+**28 November 2026: tightened, with more splash.** Progress tiles (1 · 2 · 3 · dive) sit above the drawing; the instruction appears once, at the start; the phrase's keyboard focus ring is lighter (2px). The drawing borrows from network-graph posters: faint links in the field, pill labels with leader lines, travelling signals, all in the deck palette and decorative.
+
 **24 November 2026: the same four actions, a clearer idea.** On the owner's request to clarify the concept and expand its visual storytelling, the current edition's three steps became a short investigation in the site's own terms. The legacy fixtures edition keeps its earlier wording and visuals.
 
 | Step | Words (button and live status) | Drawing (decorative, deck palette) |
 | --- | --- | --- |
-| Question | *how does one produce curiosity?* · hint *Step 1: notice what doesn't add up* | One point of light in a field: an outcome and its explanation, taken as one |
-| After step 1 | *step 2: test the explanation* · "Noticed: something doesn't add up." | The point is framed (01) and won't sit still |
-| After step 2 | *step 3: show where they part* · "Tested: the explanation and what happened come apart." | A sage lens passes over it; it splits into *what happened* and *what was assumed* |
-| After step 3 (ready) | *Dive in* (in the accent) · "Shown: related, not equivalent." | An orange thread joins the two; six fainter points split and join, one per case study |
+| Question | *how does one produce curiosity?* · hint *Step 1: notice what doesn't add up*, then one short instruction | One point of light in a faint network: an outcome and its explanation, taken as one |
+| After step 1 | *step 2: test the explanation* · "Noticed: something doesn't add up." | Corner brackets close on the point, and it won't sit still |
+| After step 2 | *step 3: show where they part* · "Tested: the explanation and what happened come apart." | A sage lens passes over it; it splits into *what happened* and *what was assumed*, each in a labelled tag |
+| After step 3 (ready) | *Dive in* (in the accent) · "Shown: related, not equivalent." · hint *Three steps done. Dive in when you're ready.* | An orange thread joins the two; the nine published case studies light up around it, each split and joined and tagged with its structure (tags hidden on narrow screens), while signals travel out along the spokes. Spokes mean one way of looking applied to each case, not relationships between cases |
 | Dive | unchanged | The view scales toward the thread; text never fades |
 
 The drawing is `aria-hidden`; the button and the live status line carry the same meaning in words. Movement only, inside `prefers-reduced-motion: no-preference`. The violet, coral and teal tones are no longer used in the current intro.

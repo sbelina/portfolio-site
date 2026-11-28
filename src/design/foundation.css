@@ -58,6 +58,8 @@ html[data-edition="current"] body { margin: 0; min-width: 320px; background: var
 .pc-intro .intro-source-wrap, .pc-intro .intro-source, .pc-intro .question, .pc-intro .step-copy { min-width: 0; max-width: 100%; }
 .pc-intro .question-trigger { max-width: 100%; min-height: 44px; overflow-wrap: anywhere; }
 .pc-intro .intro-hint { color: var(--muted); padding: .25rem; }
+/* The phrase keeps a clear keyboard focus ring, lighter than the site default so it reads as focus rather than a frame. */
+.pc-intro [data-dive-mode="explicit"] .question-trigger:focus-visible { outline-width: 2px; outline-offset: .45em; border-radius: 2px; }
 .pc-intro .skip-link { position: fixed; top: .75rem; left: 5vw; z-index: 50; padding: .5rem .75rem; border: 1px solid var(--line); background: var(--paper); color: var(--ink); }
 .pc-intro :is(.effect-resist-one,.effect-resist-two,.effect-breakthrough) .intro-source-wrap { animation: none; }
 /* Current edition: the scene sits above the question, text never fades during the dive,

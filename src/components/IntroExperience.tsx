@@ -345,7 +345,10 @@ export function IntroExperience({ forceReplayKey, onComplete, diveMode = 'automa
                 >
                   {phase === 'question' ? <>how does one produce curiosity<span className="question-mark" aria-hidden="true">?</span></> : phase === 'ready' ? 'Dive in' : STEPS[step]}
                 </button>
-                {phase === 'ready' ? <p className="intro-hint">Three steps complete. One final action to dive in. Waiting will not advance the introduction.</p> : phase !== 'dive' && effect !== 'breakthrough' ? <p className="intro-hint">{explicitDive ? 'One action per step. Activate the phrase, or swipe sideways. Keyboard: Enter or Space. Skip at any time.' : 'One action per step. Activate the phrase, drag, or swipe. Keyboard: Enter or Space. Skip at any time.'}</p> : null}
+                {explicitDive
+                  ? phase === 'ready' ? <p className="intro-hint">Three steps done. Dive in when you’re ready.</p>
+                    : phase === 'question' ? <p className="intro-hint">Three steps, then dive in. Click, tap, swipe or press Enter. Skip any time.</p> : null
+                  : phase === 'ready' ? <p className="intro-hint">Three steps complete. One final action to dive in. Waiting will not advance the introduction.</p> : phase !== 'dive' && effect !== 'breakthrough' ? <p className="intro-hint">One action per step. Activate the phrase, drag, or swipe. Keyboard: Enter or Space. Skip at any time.</p> : null}
                 {phase === 'dive' && !explicitDive ? <button type="button" className="dive-arrow" aria-label="Dive into the portfolio" onClick={event => { event.stopPropagation(); dive() }}><span aria-hidden="true">↓</span></button> : null}
               </div>
             </div>
